@@ -10,6 +10,8 @@ namespace Rocket.Infrastructure.MongoDb
     {
         private readonly IMongoClient _mongoClient;
 
+        private readonly IMongoDatabase _mongoDatabase;
+
         public MongoDbClient(
             IOptions<MongoDbConfigurationOptions> optionsAccessor,
             ILogger<MongoDbClient> logger
@@ -23,10 +25,20 @@ namespace Rocket.Infrastructure.MongoDb
                 var options = optionsAccessor.Value;
 
                 _mongoClient =
-                    new MongoClient(options?.ConnectionString ?? throw new ConfigurationErrorsException(nameof(options.ConnectionString)));
+                    new MongoClient(
+                        options.ConnectionString ??
+                        throw new ConfigurationErrorsException(nameof(options.ConnectionString))
+                    );
 
                 logger
                     .LogInformation("Successfully connected to MongoDB");
+
+                _mongoDatabase =
+                    _mongoClient
+                        .GetDatabase(
+                            options.DatabaseName ??
+                            throw new ConfigurationErrorsException(nameof(options.DatabaseName))
+                        );
             }
             catch (MongoConfigurationException ex)
             {
@@ -44,5 +56,7 @@ namespace Rocket.Infrastructure.MongoDb
         }
 
         public IMongoClient GetClient() => _mongoClient;
+
+        public IMongoDatabase GetDatabase() => _mongoDatabase;
     }
 }

@@ -22,6 +22,7 @@ services
     .AddMvc(options => options.Filters.Add<RocketExceptionFilter>());
 
 services
+    .AddMongoDbServices(configuration)
     .AddBottleRocketApiServices();
 
 services

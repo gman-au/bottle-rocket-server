@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Api.Host.Exceptions;
+using Rocket.Infrastructure;
 using Rocket.Infrastructure.MongoDb;
 using Rocket.Infrastructure.MongoDb.Options;
+using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Injection
 {
@@ -11,7 +13,8 @@ namespace Rocket.Api.Host.Injection
         public static IServiceCollection AddBottleRocketApiServices(this IServiceCollection services)
         {
             services
-                .AddTransient<IRocketExceptionWrapper, RocketExceptionWrapper>();
+                .AddTransient<IRocketExceptionWrapper, RocketExceptionWrapper>()
+                .AddTransient<IScannedImageHandler, ScannedImageHandler>();
 
             return services;
         }
@@ -29,6 +32,9 @@ namespace Rocket.Api.Host.Injection
 
             services
                 .AddSingleton<IMongoDbClient, MongoDbClient>();
+
+            services
+                .AddTransient<IScannedImageRepository, MongoDbScannedImageRepository>();
 
             return services;
         }

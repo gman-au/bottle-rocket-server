@@ -13,6 +13,7 @@
         <ProjectReference Include="..\Rocket.Api.Contracts\Rocket.Api.Contracts.csproj" />
         <ProjectReference Include="..\Rocket.Domain\Rocket.Domain.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.MongoDb\Rocket.Infrastructure.MongoDb.csproj"/>
+        <ProjectReference Include="..\Rocket.Infrastructure\Rocket.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
