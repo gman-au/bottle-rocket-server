@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Rocket.Api.Host.Filters;
+using Rocket.Api.Host.Injection;
 
 var builder =
     WebApplication
@@ -15,6 +17,12 @@ var services =
 
 services
     .AddControllers();
+
+services
+    .AddMvc(options => options.Filters.Add<RocketExceptionFilter>());
+
+services
+    .AddBottleRocketApiServices();
 
 services
     .AddEndpointsApiExplorer();

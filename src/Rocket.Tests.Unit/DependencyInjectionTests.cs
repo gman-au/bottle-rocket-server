@@ -12,32 +12,32 @@ namespace Rocket.Tests.Unit
 {
     public class DependencyInjectionTests
     {
-        private readonly TestContext _testContext = new();
+        private readonly TestContext _context = new();
 
         [Fact]
         public void Test_Missing_Configuration()
         {
-            _testContext.ArrangeServiceLoading();
-            _testContext.ActInjectServices();
-            Assert.Throws<ConfigurationErrorsException>(() => _testContext.AssertServicesCanBeResolved());
+            _context.ArrangeServiceLoading();
+            _context.ActInjectServices();
+            Assert.Throws<ConfigurationErrorsException>(() => _context.AssertServicesCanBeResolved());
         }
 
         [Fact]
         public void Test_Invalid_Configuration()
         {
-            _testContext.ArrangeInvalidConfiguration();
-            _testContext.ArrangeServiceLoading();
-            _testContext.ActInjectServices();
-            Assert.Throws<ConfigurationErrorsException>(() => _testContext.AssertServicesCanBeResolved());
+            _context.ArrangeInvalidConfiguration();
+            _context.ArrangeServiceLoading();
+            _context.ActInjectServices();
+            Assert.Throws<ConfigurationErrorsException>(() => _context.AssertServicesCanBeResolved());
         }
 
         [Fact]
         public void Test_Valid_Service_Loading()
         {
-            _testContext.ArrangeValidConfiguration();
-            _testContext.ArrangeServiceLoading();
-            _testContext.ActInjectServices();
-            _testContext.AssertServicesCanBeResolved();
+            _context.ArrangeValidConfiguration();
+            _context.ArrangeServiceLoading();
+            _context.ActInjectServices();
+            _context.AssertServicesCanBeResolved();
         }
 
         private class TestContext
@@ -78,6 +78,7 @@ namespace Rocket.Tests.Unit
             {
                 _services
                     .AddLogging(o => o.AddConsole())
+                    .AddBottleRocketApiServices()
                     .AddMongoDbServices(_configuration);
             }
 

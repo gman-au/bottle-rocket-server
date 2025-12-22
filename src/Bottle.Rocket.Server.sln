@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Interfaces", "Rocket
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Tests.Unit", "Rocket.Tests.Unit\Rocket.Tests.Unit.csproj", "{DA986CAB-AC2C-428E-BFA3-624FB29423EE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Api.Contracts", "Rocket.Api.Contracts\Rocket.Api.Contracts.csproj", "{859505EB-BD8A-4C8C-A7DB-FAE217D39B78}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,5 +42,9 @@ Global
 		{DA986CAB-AC2C-428E-BFA3-624FB29423EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA986CAB-AC2C-428E-BFA3-624FB29423EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA986CAB-AC2C-428E-BFA3-624FB29423EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{859505EB-BD8A-4C8C-A7DB-FAE217D39B78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{859505EB-BD8A-4C8C-A7DB-FAE217D39B78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{859505EB-BD8A-4C8C-A7DB-FAE217D39B78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{859505EB-BD8A-4C8C-A7DB-FAE217D39B78}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
