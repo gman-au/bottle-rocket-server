@@ -2,6 +2,14 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Api.Host", "Rocket.Api.Host\Rocket.Api.Host.csproj", "{540D8B5E-1B92-4B78-BEF3-5B7ED0FF119D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.MongoDb", "Rocket.Infrastructure.MongoDb\Rocket.Infrastructure.MongoDb.csproj", "{8F58020A-BD1F-48E7-BB84-A72A1FB78585}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Domain", "Rocket.Domain\Rocket.Domain.csproj", "{DD28A4F8-3123-45EF-B5D2-2B36A0BB44E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Interfaces", "Rocket.Interfaces\Rocket.Interfaces.csproj", "{7D475DD1-9B19-4ABD-A1CE-BF2BD267A17C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Tests.Unit", "Rocket.Tests.Unit\Rocket.Tests.Unit.csproj", "{DA986CAB-AC2C-428E-BFA3-624FB29423EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -16,5 +24,21 @@ Global
 		{540D8B5E-1B92-4B78-BEF3-5B7ED0FF119D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{540D8B5E-1B92-4B78-BEF3-5B7ED0FF119D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{540D8B5E-1B92-4B78-BEF3-5B7ED0FF119D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F58020A-BD1F-48E7-BB84-A72A1FB78585}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F58020A-BD1F-48E7-BB84-A72A1FB78585}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F58020A-BD1F-48E7-BB84-A72A1FB78585}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F58020A-BD1F-48E7-BB84-A72A1FB78585}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD28A4F8-3123-45EF-B5D2-2B36A0BB44E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD28A4F8-3123-45EF-B5D2-2B36A0BB44E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD28A4F8-3123-45EF-B5D2-2B36A0BB44E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD28A4F8-3123-45EF-B5D2-2B36A0BB44E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D475DD1-9B19-4ABD-A1CE-BF2BD267A17C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D475DD1-9B19-4ABD-A1CE-BF2BD267A17C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D475DD1-9B19-4ABD-A1CE-BF2BD267A17C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D475DD1-9B19-4ABD-A1CE-BF2BD267A17C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA986CAB-AC2C-428E-BFA3-624FB29423EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA986CAB-AC2C-428E-BFA3-624FB29423EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA986CAB-AC2C-428E-BFA3-624FB29423EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA986CAB-AC2C-428E-BFA3-624FB29423EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
