@@ -1,6 +1,6 @@
 ﻿using Rocket.Domain.Enum;
 
-namespace Rocket.Domain
+namespace Rocket.Domain.Exceptions
 {
     public class RocketException(
         string message = "There was an error.",

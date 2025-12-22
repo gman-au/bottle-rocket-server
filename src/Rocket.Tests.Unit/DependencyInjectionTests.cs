@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Host.Injection;
-using Rocket.Infrastructure.MongoDb;
+using Rocket.Infrastructure.Db.Mongo;
 using Xunit;
 
 namespace Rocket.Tests.Unit

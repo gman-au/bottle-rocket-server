@@ -6,7 +6,9 @@ namespace Rocket.Interfaces
     public interface IScannedImageHandler
     {
         Task HandleAsync(
-            byte[] toArray,
+            byte[] imageData,
+            string contentType,
+            string fileName,
             CancellationToken cancellationToken
         );
     }

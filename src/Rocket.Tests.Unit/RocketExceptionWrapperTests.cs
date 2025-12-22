@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Host.Exceptions;
-using Rocket.Domain;
 using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Xunit;
 
 namespace Rocket.Tests.Unit

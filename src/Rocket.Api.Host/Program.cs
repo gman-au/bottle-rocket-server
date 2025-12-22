@@ -23,6 +23,7 @@ services
 
 services
     .AddMongoDbServices(configuration)
+    .AddLocalFileBlobStore(configuration)
     .AddBottleRocketApiServices();
 
 services

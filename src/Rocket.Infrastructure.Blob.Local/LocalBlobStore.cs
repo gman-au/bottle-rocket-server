@@ -1,0 +1,79 @@
+﻿using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Rocket.Infrastructure.Blob.Local.Options;
+using Rocket.Interfaces;
+
+namespace Rocket.Infrastructure.Blob.Local
+{
+    public class LocalBlobStore(
+        ILogger<LocalBlobStore> logger,
+        IOptions<LocalBlobConfigurationOptions> optionsAccessor
+    ) : IBlobStore
+    {
+        private readonly LocalBlobConfigurationOptions _options = optionsAccessor.Value;
+
+        public async Task<string> SaveImageAsync(
+            byte[] imageData,
+            string fileExtension,
+            CancellationToken cancellationToken
+        )
+        {
+            var filePath =
+                Guid
+                    .NewGuid()
+                    .ToString();
+
+            using var ms = new MemoryStream();
+
+            var folderPath =
+                Path
+                    .Combine(
+                        _options.LocalBasePath,
+                        _options.LocalSubfolder,
+                        Path.GetDirectoryName(filePath)
+                    );
+
+            EnsureFolderExists(folderPath);
+
+            var fullFilePath = $"{Path.GetFileName(filePath)}{fileExtension}";
+
+            var sourcePath =
+                Path
+                    .Combine(
+                        folderPath,
+                        fullFilePath
+                    );
+
+            logger
+                .LogInformation(
+                    "Using Local File storage path {path}",
+                    sourcePath
+                );
+
+            await
+                File
+                    .WriteAllBytesAsync(
+                        sourcePath,
+                        imageData,
+                        cancellationToken
+                    );
+
+            return filePath;
+        }
+
+        public Task<byte[]> GetImageAsync(string id, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void EnsureFolderExists(string path)
+        {
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+        }
+    }
+}

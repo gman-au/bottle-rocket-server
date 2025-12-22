@@ -1,4 +1,4 @@
-﻿namespace Rocket.Infrastructure.MongoDb.Options
+﻿namespace Rocket.Infrastructure.Db.Mongo.Options
 {
     public class MongoDbConfigurationOptions
     {

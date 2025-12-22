@@ -1,16 +1,69 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Rocket.Domain;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure
 {
-    public class ScannedImageHandler(IScannedImageRepository scannedImageRepository) : IScannedImageHandler
+    public class ScannedImageHandler(
+        ILogger<ScannedImageHandler> logger,
+        IBlobStore blobStore,
+        ISha256Calculator sha256Calculator,
+        IScannedImageRepository scannedImageRepository
+    ) : IScannedImageHandler
     {
-        public async Task HandleAsync(byte[] toArray, CancellationToken cancellationToken)
+        public async Task HandleAsync(
+            byte[] imageData, 
+            string contentType,
+            string fileExtension,
+            CancellationToken cancellationToken
+            )
         {
-            await
-                scannedImageRepository
-                    .SaveCaptureAsync();
+            logger
+                .LogInformation("Writing image data to store and repository");
+
+            try
+            {
+                var scannedImage = new ScannedImage();
+
+                var hashString = 
+                    sha256Calculator
+                        .CalculateSha256HashAndFormat(imageData);
+                
+                var blobId =
+                    await
+                        blobStore
+                            .SaveImageAsync(
+                                imageData,
+                                fileExtension,
+                                cancellationToken
+                            );
+
+                scannedImage.BlobId = blobId;
+                scannedImage.CaptureDate = DateTime.UtcNow;
+                scannedImage.ContentType = contentType;
+                scannedImage.FileExtension = fileExtension;
+                scannedImage.Sha256 = hashString;
+
+                await
+                    scannedImageRepository
+                        .SaveCaptureAsync(
+                            scannedImage,
+                            cancellationToken
+                        );
+            }
+            catch (Exception ex)
+            {
+                logger
+                    .LogError(
+                        "There was an error handling the scanned image: {error}",
+                        ex.Message
+                    );
+
+                throw;
+            }
         }
     }
 }

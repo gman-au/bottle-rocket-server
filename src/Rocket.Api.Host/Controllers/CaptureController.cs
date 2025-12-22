@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Host.Extensions;
-using Rocket.Domain;
 using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers
@@ -46,6 +46,14 @@ namespace Rocket.Api.Host.Controllers
             {
                 using var ms = new MemoryStream();
 
+                var contentType = 
+                    formFile
+                        .ContentType;
+
+                var fileExtension =
+                    Path
+                        .GetExtension(formFile.FileName);
+                
                 await
                     formFile
                         .CopyToAsync(
@@ -57,6 +65,8 @@ namespace Rocket.Api.Host.Controllers
                     scannedImageHandler
                         .HandleAsync(
                             ms.ToArray(),
+                            contentType,
+                            fileExtension,
                             cancellationToken
                         );
             }

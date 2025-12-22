@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
-using Rocket.Domain;
+using Rocket.Domain.Exceptions;
 
 namespace Rocket.Api.Host.Exceptions
 {

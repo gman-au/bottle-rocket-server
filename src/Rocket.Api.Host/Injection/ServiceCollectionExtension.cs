@@ -2,8 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Api.Host.Exceptions;
 using Rocket.Infrastructure;
-using Rocket.Infrastructure.MongoDb;
-using Rocket.Infrastructure.MongoDb.Options;
+using Rocket.Infrastructure.Blob.Local;
+using Rocket.Infrastructure.Blob.Local.Options;
+using Rocket.Infrastructure.Db.Mongo;
+using Rocket.Infrastructure.Db.Mongo.Options;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Injection
@@ -14,11 +16,29 @@ namespace Rocket.Api.Host.Injection
         {
             services
                 .AddTransient<IRocketExceptionWrapper, RocketExceptionWrapper>()
-                .AddTransient<IScannedImageHandler, ScannedImageHandler>();
+                .AddTransient<IScannedImageHandler, ScannedImageHandler>()
+                .AddTransient<ISha256Calculator, Sha256Calculator>();
 
             return services;
         }
-        
+
+        public static IServiceCollection AddLocalFileBlobStore(
+            this IServiceCollection services,
+            IConfiguration configuration
+        )
+        {
+            services
+                .Configure<LocalBlobConfigurationOptions>(
+                    configuration
+                        .GetSection(nameof(LocalBlobConfigurationOptions))
+                );
+
+            services
+                .AddTransient<IBlobStore, LocalBlobStore>();
+
+            return services;
+        }
+
         public static IServiceCollection AddMongoDbServices(
             this IServiceCollection services,
             IConfiguration configuration

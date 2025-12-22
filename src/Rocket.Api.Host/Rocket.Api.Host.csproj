@@ -12,7 +12,8 @@
     <ItemGroup>
         <ProjectReference Include="..\Rocket.Api.Contracts\Rocket.Api.Contracts.csproj" />
         <ProjectReference Include="..\Rocket.Domain\Rocket.Domain.csproj" />
-        <ProjectReference Include="..\Rocket.Infrastructure.MongoDb\Rocket.Infrastructure.MongoDb.csproj"/>
+        <ProjectReference Include="..\Rocket.Infrastructure.Blob.Local\Rocket.Infrastructure.Blob.Local.csproj" />
+        <ProjectReference Include="..\Rocket.Infrastructure.Db.Mongo\Rocket.Infrastructure.Db.Mongo.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure\Rocket.Infrastructure.csproj" />
     </ItemGroup>
 

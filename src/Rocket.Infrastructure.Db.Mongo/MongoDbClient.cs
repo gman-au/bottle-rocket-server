@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using Rocket.Infrastructure.MongoDb.Options;
+using Rocket.Infrastructure.Db.Mongo.Options;
 
-namespace Rocket.Infrastructure.MongoDb
+namespace Rocket.Infrastructure.Db.Mongo
 {
     public class MongoDbClient : IMongoDbClient
     {
