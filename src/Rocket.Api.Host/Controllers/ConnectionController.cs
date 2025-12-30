@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Host.Extensions;
@@ -10,6 +11,7 @@ namespace Rocket.Api.Host.Controllers
     public class ConnectionController(ILogger<ConnectionController> logger) : ControllerBase
     {
         [HttpPost]
+        [Authorize]
         public IActionResult GetConnectionTest()
         {
             logger

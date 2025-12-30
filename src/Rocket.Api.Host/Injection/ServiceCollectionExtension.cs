@@ -17,6 +17,7 @@ namespace Rocket.Api.Host.Injection
             services
                 .AddTransient<IRocketExceptionWrapper, RocketExceptionWrapper>()
                 .AddTransient<IScannedImageHandler, ScannedImageHandler>()
+                .AddTransient<IAuthenticator, Authenticator>()
                 .AddTransient<ISha256Calculator, Sha256Calculator>();
 
             return services;
@@ -54,7 +55,8 @@ namespace Rocket.Api.Host.Injection
                 .AddSingleton<IMongoDbClient, MongoDbClient>();
 
             services
-                .AddTransient<IScannedImageRepository, MongoDbScannedImageRepository>();
+                .AddTransient<IScannedImageRepository, MongoDbScannedImageRepository>()
+                .AddTransient<IUserRepository, MongoDbUserRepository>();
 
             return services;
         }

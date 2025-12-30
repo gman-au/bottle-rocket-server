@@ -1,7 +1,11 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Api.Host.Filters;
+using Rocket.Api.Host.Handlers;
 using Rocket.Api.Host.Injection;
+
+const string basicAuth = "BasicAuthentication";
 
 var builder =
     WebApplication
@@ -29,13 +33,24 @@ services
 services
     .AddEndpointsApiExplorer();
 
+services
+    .AddAuthentication(basicAuth)
+    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(basicAuth, null);
+
+services
+    .AddAuthorization();
+
 var app =
     builder
         .Build();
 
+// Add authentication middleware
 app
-    .UseHttpsRedirection()
+    .UseAuthentication()
     .UseAuthorization();
+
+app
+    .UseHttpsRedirection();
 
 app
     .MapControllers();
