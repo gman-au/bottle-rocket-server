@@ -6,6 +6,7 @@ using Rocket.Infrastructure.Blob.Local;
 using Rocket.Infrastructure.Blob.Local.Options;
 using Rocket.Infrastructure.Db.Mongo;
 using Rocket.Infrastructure.Db.Mongo.Options;
+using Rocket.Infrastructure.Hashing;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Injection
@@ -18,7 +19,11 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IRocketExceptionWrapper, RocketExceptionWrapper>()
                 .AddTransient<IScannedImageHandler, ScannedImageHandler>()
                 .AddTransient<IAuthenticator, Authenticator>()
-                .AddTransient<ISha256Calculator, Sha256Calculator>();
+                .AddTransient<ISha256Calculator, Sha256Calculator>()
+                .AddTransient<IStartupInitialization, StartupInitialization>()
+                .AddTransient<IPasswordGenerator, PasswordGenerator>()
+                .AddTransient<IPasswordHasher, PasswordHasher>()
+                .AddTransient<IUserManager, UserManager>();
 
             return services;
         }

@@ -15,11 +15,12 @@ namespace Rocket.Infrastructure
     ) : IScannedImageHandler
     {
         public async Task HandleAsync(
-            byte[] imageData, 
+            byte[] imageData,
             string contentType,
             string fileExtension,
+            string userId,
             CancellationToken cancellationToken
-            )
+        )
         {
             logger
                 .LogInformation("Writing image data to store and repository");
@@ -28,10 +29,10 @@ namespace Rocket.Infrastructure
             {
                 var scannedImage = new ScannedImage();
 
-                var hashString = 
+                var hashString =
                     sha256Calculator
                         .CalculateSha256HashAndFormat(imageData);
-                
+
                 var blobId =
                     await
                         blobStore
@@ -41,6 +42,7 @@ namespace Rocket.Infrastructure
                                 cancellationToken
                             );
 
+                scannedImage.UserId = userId;
                 scannedImage.BlobId = blobId;
                 scannedImage.CaptureDate = DateTime.UtcNow;
                 scannedImage.ContentType = contentType;
@@ -53,6 +55,12 @@ namespace Rocket.Infrastructure
                             scannedImage,
                             cancellationToken
                         );
+
+                logger
+                    .LogInformation(
+                        "Successfully saved scanned image for user ID: {userId}",
+                        userId
+                    );
             }
             catch (Exception ex)
             {

@@ -1,9 +1,11 @@
+using System.Threading;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Api.Host.Filters;
 using Rocket.Api.Host.Handlers;
 using Rocket.Api.Host.Injection;
+using Rocket.Interfaces;
 
 const string basicAuth = "BasicAuthentication";
 
@@ -35,7 +37,10 @@ services
 
 services
     .AddAuthentication(basicAuth)
-    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(basicAuth, null);
+    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(
+        basicAuth,
+        null
+    );
 
 services
     .AddAuthorization();
@@ -43,6 +48,19 @@ services
 var app =
     builder
         .Build();
+
+// Run startup initialization
+using (var scope = app.Services.CreateScope())
+{
+    var initService =
+        scope
+            .ServiceProvider
+            .GetRequiredService<IStartupInitialization>();
+
+    await
+        initService
+            .InitializeAsync(CancellationToken.None);
+}
 
 // Add authentication middleware
 app

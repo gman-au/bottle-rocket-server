@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -28,6 +29,23 @@ namespace Rocket.Api.Host.Controllers
             logger
                 .LogInformation("Received capture");
 
+            var userId =
+                User
+                    .FindFirst(ClaimTypes.NameIdentifier)?
+                    .Value;
+            
+            if (string.IsNullOrEmpty(userId))
+            {
+                logger
+                    .LogWarning("User authentication information missing from claims");
+                
+                throw new RocketException(
+                    "User authentication failed",
+                    ApiStatusCodeEnum.UnknownUser,
+                    401
+                );
+            }
+            
             var form =
                 model?
                     .Form;
@@ -67,6 +85,7 @@ namespace Rocket.Api.Host.Controllers
                             ms.ToArray(),
                             contentType,
                             fileExtension,
+                            userId,
                             cancellationToken
                         );
             }

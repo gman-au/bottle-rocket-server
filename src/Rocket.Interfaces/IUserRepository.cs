@@ -11,5 +11,7 @@ namespace Rocket.Interfaces
         Task<User> CreateUserAsync(User user, CancellationToken cancellationToken);
         
         Task UpdateLastLoginAsync(string userId, CancellationToken cancellationToken);
+
+        Task DeactivateAdminUserAsync(CancellationToken cancellationToken);
     }
 }

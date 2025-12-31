@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using Rocket.Interfaces;
 
-namespace Rocket.Infrastructure
+namespace Rocket.Infrastructure.Hashing
 {
     public class Sha256Calculator : ISha256Calculator
     {

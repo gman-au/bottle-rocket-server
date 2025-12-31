@@ -8,7 +8,8 @@ namespace Rocket.Interfaces
         Task HandleAsync(
             byte[] imageData,
             string contentType,
-            string fileName,
+            string fileExtension,
+            string userId,
             CancellationToken cancellationToken
         );
     }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using Rocket.Domain;
+using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Db.Mongo
@@ -127,6 +128,57 @@ namespace Rocket.Infrastructure.Db.Mongo
                         userId,
                         ex.Message
                     );
+                throw;
+            }
+        }
+        
+        public async Task DeactivateAdminUserAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var mongoDatabase = 
+                    mongoDbClient
+                        .GetDatabase();
+                
+                var userCollection = 
+                    mongoDatabase
+                        .GetCollection<User>(MongoConstants.UserCollection);
+
+                var filter =
+                    Builders<User>
+                        .Filter
+                        .Eq(
+                            u => u.Username,
+                            DomainConstants.AdminUserName
+                        );
+
+                var update =
+                    Builders<User>
+                        .Update
+                        .Set(
+                            u => u.IsActive,
+                            false
+                        );
+                
+                await 
+                    userCollection
+                        .UpdateOneAsync(
+                            filter,
+                            update,
+                            new UpdateOptions(),
+                            cancellationToken
+                        );
+
+                logger
+                    .LogWarning("Admin account has been deactivated");
+            }
+            catch (Exception ex)
+            {
+                logger
+                    .LogError(
+                    ex,
+                    "Error deactivating admin account"
+                );
                 throw;
             }
         }

@@ -7,9 +7,5 @@ namespace Rocket.Interfaces
     public interface IAuthenticator
     {
         Task<User> AuthenticateAsync(string username, string password, CancellationToken cancellationToken);
-        
-        string HashPassword(string password);
-        
-        bool VerifyPassword(string password, string passwordHash);
     }
 }

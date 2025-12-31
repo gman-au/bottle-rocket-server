@@ -4,6 +4,10 @@
     {
         Ok = 0,
         UnknownError = 1000,
-        NoAttachmentsFound = 1001
+        NoAttachmentsFound,
+        UserAlreadyExists = 2000,
+        UnknownUser,
+        InvalidUsername,
+        InvalidPassword
     }
 }

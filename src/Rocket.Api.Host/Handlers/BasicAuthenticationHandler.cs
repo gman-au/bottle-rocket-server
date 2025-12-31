@@ -27,7 +27,9 @@ namespace Rocket.Api.Host.Handlers
         {
             if (!Request.Headers.ContainsKey("Authorization"))
             {
-                return AuthenticateResult.Fail("Missing Authorization Header");
+                return 
+                    AuthenticateResult
+                        .Fail("Missing Authorization Header");
             }
 
             try
