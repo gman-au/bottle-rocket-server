@@ -8,6 +8,7 @@ using Rocket.Api.Contracts;
 using Rocket.Api.Host.Exceptions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Tests.Unit.Extensions;
 using Xunit;
 
 namespace Rocket.Tests.Unit
@@ -23,7 +24,7 @@ namespace Rocket.Tests.Unit
             _context.ActCatchException();
             _context.AssertHttp500CodeWithUnknownApiError();
         }
-        
+
         [Fact]
         private void Test_Rocket_Explicit_Exception_Is_Wrapped()
         {
@@ -31,7 +32,7 @@ namespace Rocket.Tests.Unit
             _context.ActCatchException();
             _context.AssertExplicitRocketExceptionIsWrapped();
         }
-        
+
         [Fact]
         private void Test_Rocket_Implied_Exception_Is_Wrapped()
         {
@@ -51,21 +52,12 @@ namespace Rocket.Tests.Unit
             public TestContext()
             {
                 var fixture =
-                    new Fixture()
-                        .Customize(new AutoNSubstituteCustomization());
+                    FixtureEx
+                        .CreateNSubstituteFixture();
 
-                fixture
-                    .Behaviors
-                    .OfType<ThrowingRecursionBehavior>()
-                    .ToList()
-                    .ForEach(b => fixture.Behaviors.Remove(b));
-
-                fixture
-                    .Behaviors
-                    .Add(new OmitOnRecursionBehavior());
-
-                var loggerFactory = fixture
-                    .Freeze<ILoggerFactory>();
+                var loggerFactory =
+                    fixture
+                        .Freeze<ILoggerFactory>();
 
                 _sut = new RocketExceptionWrapper(loggerFactory);
             }
@@ -77,17 +69,17 @@ namespace Rocket.Tests.Unit
 
             public void ArrangeExplicitRocketException()
             {
-                _exception = 
+                _exception =
                     new RocketException(
-                        "I spill my drink", 
-                        ApiStatusCodeEnum.NoAttachmentsFound, 
+                        "I spill my drink",
+                        ApiStatusCodeEnum.NoAttachmentsFound,
                         401
-                        );
+                    );
             }
 
             public void ArrangeImpliedRocketStatusCodeException()
             {
-                _exception = 
+                _exception =
                     new RocketException(
                         apiStatusCode: 2000
                     );
@@ -102,28 +94,52 @@ namespace Rocket.Tests.Unit
 
             public void AssertHttp500CodeWithUnknownApiError()
             {
-                Assert.Equal(500, _result.StatusCode);
+                Assert.Equal(
+                    500,
+                    _result.StatusCode
+                );
                 var apiResponse = _result.Value as ApiResponse;
                 Assert.NotNull(apiResponse);
-                Assert.Equal(1000, apiResponse.ErrorCode);
+                Assert.Equal(
+                    1000,
+                    apiResponse.ErrorCode
+                );
             }
 
             public void AssertImpliedRocketStatusCodeIsWrapped()
             {
-                Assert.Equal(500, _result.StatusCode);
+                Assert.Equal(
+                    500,
+                    _result.StatusCode
+                );
                 var apiResponse = _result.Value as ApiResponse;
                 Assert.NotNull(apiResponse);
-                Assert.Equal(2000, apiResponse.ErrorCode);
-                Assert.Equal("There was an error.", apiResponse.ErrorMessage);
+                Assert.Equal(
+                    2000,
+                    apiResponse.ErrorCode
+                );
+                Assert.Equal(
+                    "There was an error.",
+                    apiResponse.ErrorMessage
+                );
             }
 
             public void AssertExplicitRocketExceptionIsWrapped()
             {
-                Assert.Equal(401, _result.StatusCode);
+                Assert.Equal(
+                    401,
+                    _result.StatusCode
+                );
                 var apiResponse = _result.Value as ApiResponse;
                 Assert.NotNull(apiResponse);
-                Assert.Equal(1001, apiResponse.ErrorCode);
-                Assert.Equal("I spill my drink", apiResponse.ErrorMessage);
+                Assert.Equal(
+                    1001,
+                    apiResponse.ErrorCode
+                );
+                Assert.Equal(
+                    "I spill my drink",
+                    apiResponse.ErrorMessage
+                );
             }
         }
     }
