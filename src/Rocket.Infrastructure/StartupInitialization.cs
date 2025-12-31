@@ -39,13 +39,13 @@ namespace Rocket.Infrastructure
             logger
                 .LogInformation("Creating initial admin account...");
 
-            var randomPassword = 
+            var password = 
                 passwordGenerator
-                    .GenerateRandomPassword();
+                    .GeneratePassword();
             
             var passwordHash = 
                 passwordHasher
-                    .HashPassword(randomPassword);
+                    .HashPassword(password);
 
             var adminUser =
                 new User
@@ -73,7 +73,7 @@ namespace Rocket.Infrastructure
             );
             logger.LogWarning(
                 "Password: {Password}",
-                randomPassword
+                password
             );
             logger.LogWarning("================================================================================");
             logger.LogWarning("SAVE THESE CREDENTIALS - They will not be shown again!");

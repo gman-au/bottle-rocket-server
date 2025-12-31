@@ -1,5 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Rocket.Api.Host.Exceptions;
 using Rocket.Infrastructure;
 using Rocket.Infrastructure.Blob.Local;
@@ -13,7 +16,10 @@ namespace Rocket.Api.Host.Injection
 {
     public static class ServiceCollectionExtension
     {
-        public static IServiceCollection AddBottleRocketApiServices(this IServiceCollection services)
+        public static IServiceCollection AddBottleRocketApiServices(
+            this IServiceCollection services,
+            IWebHostEnvironment environment
+        )
         {
             services
                 .AddTransient<IRocketExceptionWrapper, RocketExceptionWrapper>()
@@ -21,9 +27,15 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IAuthenticator, Authenticator>()
                 .AddTransient<ISha256Calculator, Sha256Calculator>()
                 .AddTransient<IStartupInitialization, StartupInitialization>()
-                .AddTransient<IPasswordGenerator, PasswordGenerator>()
                 .AddTransient<IPasswordHasher, PasswordHasher>()
                 .AddTransient<IUserManager, UserManager>();
+
+            if (environment.IsDevelopment())
+                services
+                    .AddTransient<IPasswordGenerator, StaticInsecurePasswordGenerator>();
+            else
+                services
+                    .AddTransient<IPasswordGenerator, RandomPasswordGenerator>();
 
             return services;
         }

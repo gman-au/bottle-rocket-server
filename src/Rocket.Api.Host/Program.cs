@@ -30,7 +30,7 @@ services
 services
     .AddMongoDbServices(configuration)
     .AddLocalFileBlobStore(configuration)
-    .AddBottleRocketApiServices();
+    .AddBottleRocketApiServices(builder.Environment);
 
 services
     .AddEndpointsApiExplorer();

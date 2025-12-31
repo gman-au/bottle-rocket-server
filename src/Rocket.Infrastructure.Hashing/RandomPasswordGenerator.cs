@@ -4,9 +4,9 @@ using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Hashing
 {
-    public class PasswordGenerator : IPasswordGenerator
+    public class RandomPasswordGenerator : IPasswordGenerator
     {
-        public string GenerateRandomPassword(int passwordLength = 16)
+        public string GeneratePassword(int passwordLength = 16)
         {
             const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
 
