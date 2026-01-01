@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using AutoFixture;
-using AutoFixture.AutoNSubstitute;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;

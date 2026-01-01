@@ -82,7 +82,14 @@
 
                 if (success)
                 {
-                    NavigationManager.NavigateTo("/");
+                    await
+                        Task.Delay(100);
+
+                    NavigationManager
+                        .NavigateTo(
+                            "/",
+                            forceLoad: true
+                        );
                 }
                 else
                 {

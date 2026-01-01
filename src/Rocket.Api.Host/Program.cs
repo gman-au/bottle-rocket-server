@@ -5,9 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Rocket.Api.Host.Filters;
 using Rocket.Api.Host.Handlers;
 using Rocket.Api.Host.Injection;
+using Rocket.Domain.Utils;
 using Rocket.Interfaces;
-
-const string basicAuth = "BasicAuthentication";
 
 var builder =
     WebApplication
@@ -36,9 +35,9 @@ services
     .AddEndpointsApiExplorer();
 
 services
-    .AddAuthentication(basicAuth)
+    .AddAuthentication(DomainConstants.BasicAuthentication)
     .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(
-        basicAuth,
+        DomainConstants.BasicAuthentication,
         null
     );
 

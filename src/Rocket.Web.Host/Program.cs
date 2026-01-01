@@ -49,6 +49,10 @@ services
 services
     .AddServerSideBlazor();
 
+services
+    .AddAuthorizationCore()
+    .AddAuthenticationServices();
+
 var app = 
     builder
         .Build();

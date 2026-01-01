@@ -1,5 +1,4 @@
-﻿using System;
-using System.Configuration;
+﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,14 +24,10 @@ namespace Rocket.Web.Host.Injection
                     configuration
                         .GetSection(nameof(ApiConfigurationOptions))
                 );
-            
-            services
-                .AddTransient<IAuthenticationManager, BasicAuthenticationManager>()
-                .AddTransient<IAuthenticatedApiClient, AuthenticatedApiClient>();
-            
+
             return services;
         }
-        
+
         public static IServiceCollection AddMudBlazorServices(
             this IServiceCollection services,
             IConfigurationRoot configuration
@@ -51,6 +46,24 @@ namespace Rocket.Web.Host.Injection
                         config.SnackbarConfiguration.HideTransitionDuration = 500;
                         config.SnackbarConfiguration.ShowTransitionDuration = 500;
                     }
+                );
+
+            return services;
+        }
+
+        public static IServiceCollection AddAuthenticationServices(this IServiceCollection services)
+        {
+            services
+                .AddScoped<IAuthenticationManager, BasicAuthenticationManager>()
+                .AddScoped<IAuthenticatedApiClient, AuthenticatedApiClient>();
+            
+            services
+                .AddScoped<ApiAuthenticationStateProvider>();
+
+            services
+                .AddScoped<AuthenticationStateProvider>(
+                    sp =>
+                        sp.GetRequiredService<ApiAuthenticationStateProvider>()
                 );
 
             return services;
