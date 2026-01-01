@@ -1,0 +1,36 @@
+﻿@using Rocket.Web.Host.Components.Mud
+@inherits LayoutComponentBase
+
+<PageTitle>Bottle Rocket</PageTitle>
+
+<RocketMudThemeProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+    @@import url('https://fonts.googleapis.com/css2?family=Rubik');
+    @@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro');
+</style>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu/>
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>

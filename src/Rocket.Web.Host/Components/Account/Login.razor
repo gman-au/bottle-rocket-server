@@ -1,0 +1,74 @@
+﻿@page "/login"
+@using Rocket.Interfaces
+@inject IAuthenticationManager AuthenticationManager
+@inject NavigationManager NavigationManager
+
+<div style="max-width: 400px; margin: 100px auto;">
+    <h3>Login</h3>
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div style="color: red; margin-bottom: 20px;">
+            @_errorMessage
+        </div>
+    }
+
+    <div style="margin-bottom: 15px;">
+        <label>Username:</label>
+        <input type="text" @bind="_username" style="width: 100%; padding: 8px;" />
+    </div>
+
+    <div style="margin-bottom: 15px;">
+        <label>Password:</label>
+        <input type="password" @bind="_password" style="width: 100%; padding: 8px;" />
+    </div>
+
+    <button @onclick="HandleLogin" disabled="@_isLoading" style="width: 100%; padding: 10px;">
+        @if (_isLoading)
+        {
+            <span>Logging in...</span>
+        }
+        else
+        {
+            <span>Login</span>
+        }
+    </button>
+</div>
+
+@code {
+    private string _username = "";
+    private string _password = "";
+    private string _errorMessage = "";
+    private bool _isLoading = false;
+
+    private async Task HandleLogin()
+    {
+        _errorMessage = "";
+        _isLoading = true;
+
+        try
+        {
+            var success = 
+                await 
+                    AuthenticationManager
+                        .LoginAsync(_username, _password);
+
+            if (success)
+            {
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                _errorMessage = "Invalid username or password";
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Login failed: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

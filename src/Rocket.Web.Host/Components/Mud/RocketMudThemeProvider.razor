@@ -1,0 +1,66 @@
+﻿<MudThemeProvider IsDarkMode="@IsDarkMode" Theme="MyTheme"/>
+
+@code {
+
+    private const string DefaultLetterSpacing = "0.14994px";
+    private const int DefaultFontWeight = 500;
+
+    private static readonly string[] DefaultFontFamily = { "Rubik" };
+
+    [Parameter]
+    public bool IsDarkMode { get; set; }
+
+    public static MudTheme MyTheme => new()
+    {
+        Typography = new Typography
+        {
+            Default = new Default
+            {
+                FontFamily = DefaultFontFamily,
+                FontWeight = DefaultFontWeight,
+                LineHeight = 1.6,
+                LetterSpacing = DefaultLetterSpacing
+            },
+            Body1 = new Body1 { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing },
+            Body2 = new Body2 { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing },
+            H1 = new H1 { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing },
+            H2 = new H2 { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing },
+            H3 = new H3 { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing },
+            H4 = new H4 { FontWeight = 600, LetterSpacing = DefaultLetterSpacing },
+            H5 = new H5 { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing }
+        },
+        LayoutProperties = new LayoutProperties
+        {
+            DefaultBorderRadius = "8px"
+        },
+        Palette = new PaletteLight
+        {
+            Primary = "#3a881b",
+            Secondary = "#1f6600",
+            Tertiary = "#216957",
+            Info = "#107394",
+            Success = "#239543",
+            Warning = "#d58001",
+            Error = "#fe3f60",
+            AppbarBackground = "#192d22",
+            Background = "#f7f7f9",
+            Surface = "#fff",
+            DrawerIcon = "#ffffff7f"
+        },
+        PaletteDark = new PaletteDark
+        {
+            Primary = "#6FDA44",
+            Secondary = "#e2f5db",
+            Tertiary = "#418171",
+            Info = "#18afe1",
+            Success = "#3ecb6b",
+            Warning = "#feb546",
+            Error = "#fe3f60",
+            AppbarBackground = "#192d22",
+            Background = "#1a1e1c",
+            Surface = "#1c221e",
+            DrawerIcon = "#ffffff7f"
+        }
+    };
+
+}

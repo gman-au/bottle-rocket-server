@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Blob.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Hashing", "Rocket.Infrastructure.Hashing\Rocket.Infrastructure.Hashing.csproj", "{316997CF-2A8B-4FAA-BB35-8AF5928AEA5B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Web.Host", "Rocket.Web.Host\Rocket.Web.Host.csproj", "{E51AD1B4-4C8E-48A0-9158-B9146DAF4F47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,5 +66,9 @@ Global
 		{316997CF-2A8B-4FAA-BB35-8AF5928AEA5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{316997CF-2A8B-4FAA-BB35-8AF5928AEA5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{316997CF-2A8B-4FAA-BB35-8AF5928AEA5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E51AD1B4-4C8E-48A0-9158-B9146DAF4F47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E51AD1B4-4C8E-48A0-9158-B9146DAF4F47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E51AD1B4-4C8E-48A0-9158-B9146DAF4F47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E51AD1B4-4C8E-48A0-9158-B9146DAF4F47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
