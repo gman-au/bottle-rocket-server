@@ -1,74 +1,108 @@
 ﻿@page "/login"
+@using Rocket.Api.Contracts
 @using Rocket.Interfaces
 @inject IAuthenticationManager AuthenticationManager
 @inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
 
-<div style="max-width: 400px; margin: 100px auto;">
-    <h3>Login</h3>
-
-    @if (!string.IsNullOrEmpty(_errorMessage))
-    {
-        <div style="color: red; margin-bottom: 20px;">
-            @_errorMessage
-        </div>
-    }
-
-    <div style="margin-bottom: 15px;">
-        <label>Username:</label>
-        <input type="text" @bind="_username" style="width: 100%; padding: 8px;" />
-    </div>
-
-    <div style="margin-bottom: 15px;">
-        <label>Password:</label>
-        <input type="password" @bind="_password" style="width: 100%; padding: 8px;" />
-    </div>
-
-    <button @onclick="HandleLogin" disabled="@_isLoading" style="width: 100%; padding: 10px;">
-        @if (_isLoading)
-        {
-            <span>Logging in...</span>
-        }
-        else
-        {
-            <span>Login</span>
-        }
-    </button>
-</div>
+<MudPaper Class="p-4" elevation="2">
+    <MudText Typo="Typo.h4">Login</MudText>
+    <MudForm
+        Model="@_accountLoginRequest"
+        @ref="_form"
+    >
+        <MudGrid>
+            <MudItem xs="12">
+                <MudTextField
+                    T="string"
+                    Label="Username"
+                    Required="true"
+                    RequiredError="Please enter a user name"
+                    Disabled="@(_isLoading)"
+                    @bind-Value="_accountLoginRequest.Username"
+                    For="@(() => _accountLoginRequest.Username)"
+                    OnlyValidateIfDirty
+                />
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField
+                    T="string"
+                    InputType="InputType.Password"
+                    Label="Password"
+                    Required="true"
+                    RequiredError="Password is required!"
+                    Disabled="@(_isLoading)"
+                    @bind-Value="_accountLoginRequest.Password"
+                    For="@(() => _accountLoginRequest.Password)"
+                    OnlyValidateIfDirty
+                />
+            </MudItem>
+        </MudGrid>
+        <MudGrid Justify="Justify.FlexEnd">
+            <MudButton
+                Variant="Variant.Filled"
+                Color="Color.Primary"
+                Disabled="@(_isLoading)"
+                Class="mt-4 mr"
+                OnClick="@HandleLoginAsync">
+                Login
+            </MudButton>
+        </MudGrid>
+    </MudForm>
+</MudPaper>
 
 @code {
-    private string _username = "";
-    private string _password = "";
-    private string _errorMessage = "";
-    private bool _isLoading = false;
 
-    private async Task HandleLogin()
+    MudForm _form;
+
+    private bool _isLoading;
+
+    private readonly AccountLoginRequest _accountLoginRequest = new();
+
+    private async Task HandleLoginAsync()
     {
-        _errorMessage = "";
-        _isLoading = true;
+        await
+            _form
+                .Validate();
 
-        try
+        if (_form.IsValid)
         {
-            var success = 
-                await 
-                    AuthenticationManager
-                        .LoginAsync(_username, _password);
+            _isLoading = true;
+            StateHasChanged();
 
-            if (success)
+            try
             {
-                NavigationManager.NavigateTo("/");
+                var success =
+                    await
+                        AuthenticationManager
+                            .LoginAsync(
+                                _accountLoginRequest.Username,
+                                _accountLoginRequest.Password
+                            );
+
+                if (success)
+                {
+                    NavigationManager.NavigateTo("/");
+                }
+                else
+                {
+                    throw new Exception("Invalid username or password");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _errorMessage = "Invalid username or password";
+                Snackbar
+                    .Add(
+                        ex.Message,
+                        Severity.Error
+                    );
             }
-        }
-        catch (Exception ex)
-        {
-            _errorMessage = $"Login failed: {ex.Message}";
-        }
-        finally
-        {
-            _isLoading = false;
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
         }
     }
+
 }

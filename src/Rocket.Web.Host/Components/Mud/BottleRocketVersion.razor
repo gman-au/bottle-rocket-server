@@ -1,0 +1,13 @@
+﻿<MudText
+    Class="version-number"
+    Align="Align.Center"
+    Typo="Typo.subtitle2">
+    @_currentVersion
+</MudText>
+
+@code {
+
+    private readonly string _currentVersion =
+        $"{Environment.GetEnvironmentVariable("RELEASE_VERSION")}:{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}";
+
+}

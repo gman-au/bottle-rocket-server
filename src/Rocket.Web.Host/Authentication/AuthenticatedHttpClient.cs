@@ -1,22 +1,44 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Configuration;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Rocket.Interfaces;
+using Rocket.Web.Host.Options;
 
 namespace Rocket.Web.Host.Authentication
 {
-    public class AuthenticatedApiClient(
-        HttpClient httpClient,
-        IAuthenticationManager authenticationManager
-    ) : IAuthenticatedApiClient
+    public class AuthenticatedApiClient : IAuthenticatedApiClient
     {
+        private readonly IAuthenticationManager _authenticationManager;
+        private readonly HttpClient _httpClient;
+
+        public AuthenticatedApiClient(
+            IOptions<ApiConfigurationOptions> apiConfigurationOptionsAccessor,
+            IAuthenticationManager authenticationManager
+        )
+        {
+            _authenticationManager = authenticationManager;
+            
+            var options = apiConfigurationOptionsAccessor.Value;
+            _httpClient = new HttpClient();
+            _httpClient.BaseAddress =
+                new Uri(
+                    options?.BaseUrl ??
+                    throw new ConfigurationErrorsException(
+                        nameof(options.BaseUrl)
+                    )
+                );
+        }
+
         public Task<HttpResponseMessage> GetAsync(string requestUri, CancellationToken cancellationToken)
         {
             SetAuthHeader();
 
             return
-                httpClient
+                _httpClient
                     .GetAsync(
                         requestUri,
                         cancellationToken
@@ -28,7 +50,7 @@ namespace Rocket.Web.Host.Authentication
             SetAuthHeader();
 
             return
-                httpClient
+                _httpClient
                     .PostAsync(
                         requestUri,
                         content,
@@ -41,7 +63,7 @@ namespace Rocket.Web.Host.Authentication
             SetAuthHeader();
 
             return
-                httpClient
+                _httpClient
                     .PutAsync(
                         requestUri,
                         content,
@@ -54,7 +76,7 @@ namespace Rocket.Web.Host.Authentication
             SetAuthHeader();
 
             return
-                httpClient
+                _httpClient
                     .DeleteAsync(
                         requestUri,
                         cancellationToken
@@ -64,12 +86,12 @@ namespace Rocket.Web.Host.Authentication
         private void SetAuthHeader()
         {
             var authHeader =
-                authenticationManager
+                _authenticationManager
                     .GetAuthorizationHeader();
 
             if (!string.IsNullOrEmpty(authHeader))
             {
-                httpClient.DefaultRequestHeaders.Authorization =
+                _httpClient.DefaultRequestHeaders.Authorization =
                     AuthenticationHeaderValue
                         .Parse(authHeader);
             }

@@ -7,6 +7,7 @@ using MudBlazor;
 using MudBlazor.Services;
 using Rocket.Interfaces;
 using Rocket.Web.Host.Authentication;
+using Rocket.Web.Host.Options;
 using ConfigurationManager = Microsoft.Extensions.Configuration.ConfigurationManager;
 
 namespace Rocket.Web.Host.Injection
@@ -19,19 +20,11 @@ namespace Rocket.Web.Host.Injection
             IWebHostEnvironment environment
         )
         {
-            var apiBaseUrl = configuration["ApiSettings:BaseUrl"] ?? throw new ConfigurationErrorsException();
-            
             services
-                .AddHttpClient<IAuthenticationManager, BasicAuthenticationManager>(client =>
-            {
-                client.BaseAddress = new Uri(apiBaseUrl);
-            });
-            
-            services
-                .AddHttpClient<IAuthenticatedApiClient, AuthenticatedApiClient>(client =>
-            {
-                client.BaseAddress = new Uri(apiBaseUrl);
-            });
+                .Configure<ApiConfigurationOptions>(
+                    configuration
+                        .GetSection(nameof(ApiConfigurationOptions))
+                );
             
             services
                 .AddTransient<IAuthenticationManager, BasicAuthenticationManager>()

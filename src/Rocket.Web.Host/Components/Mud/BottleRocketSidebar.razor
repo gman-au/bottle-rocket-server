@@ -1,0 +1,59 @@
+﻿@inject NavigationManager NavigationManager
+
+
+<MudAppBar Elevation="1">
+    <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@ToggleDrawer"/>
+    <MudSpacer/>
+    <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Href="https://github.com/MudBlazor/MudBlazor" Target="_blank"/>
+</MudAppBar>
+<MudDrawer @bind-Open="@_open" Elevation="1">
+    <MudDrawerHeader>
+        <MudGrid>
+            <MudItem xs="12">
+                <MudContainer Class="logo-circle">
+                    <MudLink Color="Color.Inherit" Href="/">
+                        <MudImage Class="logo-circle-svg" Src="@Assets["img/bottle-rocket-logo.svg"]"/>
+                    </MudLink>
+                </MudContainer>
+            </MudItem>
+            <MudItem xs="12">
+                <MudText Align="Align.Center" Typo="Typo.h5">Bottle Rocket</MudText>
+            </MudItem>
+        </MudGrid>
+    </MudDrawerHeader>
+    <MudNavMenu Bordered="true" Color="Color.Primary">
+        <AuthorizeView Context="primary">
+            <Authorized>
+                <MudNavLink Match="NavLinkMatch.All" Href="/App" Icon="@StandardIcons.DashboardIcon">Home</MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" Href="/MyAccount" Icon="@StandardIcons.AccountIcon">Account</MudNavLink>
+            </Authorized>
+            <NotAuthorized>
+                <MudNavLink Match="NavLinkMatch.All" Href="/Login" Icon="@StandardIcons.LoginIcon">Login</MudNavLink>
+            </NotAuthorized>
+        </AuthorizeView>
+        <MudNavLink Icon="@(DarkMode ? Icons.Material.Filled.WbSunny : Icons.Material.Filled.ModeNight)" OnClick="@OnDarkModeToggle">
+            @(DarkMode ? "Switch to light mode" : "Switch to dark mode")
+        </MudNavLink>
+    </MudNavMenu>
+    <MudSpacer/>
+    <BottleRocketVersion/>
+</MudDrawer>
+
+@code {
+    
+    private bool _open = true;
+
+    private void ToggleDrawer()
+    {
+        _open = !_open;
+    }
+
+    private readonly MudTheme _theme = BottleRocketMudThemeProvider.MyTheme;
+
+    [Parameter]
+    public bool DarkMode { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnDarkModeToggle { get; set; }
+
+}

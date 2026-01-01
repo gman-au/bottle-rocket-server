@@ -1,19 +1,39 @@
 ﻿using System;
+using System.Configuration;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Rocket.Interfaces;
+using Rocket.Web.Host.Options;
 
 namespace Rocket.Web.Host.Authentication
 {
-    public class BasicAuthenticationManager(
-        HttpClient httpClient,
-        ILogger<BasicAuthenticationManager> logger
-    ) : IAuthenticationManager
+    public class BasicAuthenticationManager : IAuthenticationManager
     {
+        private readonly ILogger<BasicAuthenticationManager> _logger;
+        private readonly HttpClient _httpClient;
         private string _cachedAuthHeader;
+
+        public BasicAuthenticationManager(
+            IOptions<ApiConfigurationOptions> apiConfigurationOptionsAccessor,
+            ILogger<BasicAuthenticationManager> logger
+        )
+        {
+            _logger = logger;
+
+            var options = apiConfigurationOptionsAccessor.Value;
+            _httpClient = new HttpClient();
+            _httpClient.BaseAddress =
+                new Uri(
+                    options?.BaseUrl ??
+                    throw new ConfigurationErrorsException(
+                        nameof(options.BaseUrl)
+                    )
+                );
+        }
 
         public bool IsAuthenticated() => !string.IsNullOrEmpty(_cachedAuthHeader);
 
@@ -44,14 +64,14 @@ namespace Rocket.Web.Host.Authentication
 
                 var response =
                     await
-                        httpClient
+                        _httpClient
                             .SendAsync(request);
 
                 if (response.IsSuccessStatusCode)
                 {
                     _cachedAuthHeader = authHeader;
-                    
-                    logger
+
+                    _logger
                         .LogInformation(
                             "User {username} logged in successfully",
                             username
@@ -60,7 +80,7 @@ namespace Rocket.Web.Host.Authentication
                     return true;
                 }
 
-                logger
+                _logger
                     .LogWarning(
                         "Login failed for user {username}: {statusCode}",
                         username,
@@ -71,25 +91,25 @@ namespace Rocket.Web.Host.Authentication
             }
             catch (Exception ex)
             {
-                logger
+                _logger
                     .LogError(
                         ex,
                         "Error during login for user {username}",
                         username
                     );
 
-                return false;
+                throw;
             }
         }
 
         public Task LogoutAsync()
         {
             _cachedAuthHeader = null;
-            
-            logger
+
+            _logger
                 .LogInformation("User logged out");
-            
-            return 
+
+            return
                 Task
                     .CompletedTask;
         }

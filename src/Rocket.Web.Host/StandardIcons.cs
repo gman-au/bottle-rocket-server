@@ -1,0 +1,11 @@
+﻿using MudBlazor;
+
+namespace Rocket.Web.Host
+{
+    internal static class StandardIcons
+    {
+        public const string DashboardIcon = Icons.Material.Filled.Home;
+        public const string LoginIcon = Icons.Material.Filled.Login;
+        public const string AccountIcon = @Icons.Material.Filled.Person;
+    }
+}

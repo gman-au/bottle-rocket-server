@@ -58,3 +58,26 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+.logo-circle {
+    border-radius: 50%;
+    width: 100px !important;
+    height: 100px !important;
+    background-color: #093624;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.logo-circle-svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+}
+
+.version-number {
+    font-family: 'JetBrains Mono', Helvetica, Arial, sans-serif !important;
+    font-size: 10px !important;
+}
