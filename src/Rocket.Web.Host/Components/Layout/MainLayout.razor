@@ -3,7 +3,7 @@
 
 <PageTitle>Bottle Rocket</PageTitle>
 
-<RocketMudThemeProvider/>
+<BottleRocketMudThemeProvider IsDarkMode="@IsDarkMode"/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
 
@@ -13,24 +13,34 @@
     @@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro');
 </style>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu/>
-    </div>
+<MudLayout>
+    <BottleRocketSidebar
+        OnDarkModeToggle="@(_ => DarkToggle())"
+        DarkMode="@IsDarkMode"/>
+    <MudMainContent Class="pt-16 px-16">
+        <MudContainer Class="mt-6">
+            <ErrorBoundary>
+                <ChildContent>
+                    <CascadingValue Name="IsDarkMode" Value="@IsDarkMode">
+                        @Body
+                    </CascadingValue>
+                </ChildContent>
+                <ErrorContent Context="exception">
+                    <NotFound Exception="exception"/>
+                </ErrorContent>
+            </ErrorBoundary>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+@code {
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+    private bool IsDarkMode { get; set; } = true;
+    
+    void DarkToggle()
+    {
+        IsDarkMode = !IsDarkMode;
+        StateHasChanged();
+    }
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>
+}
