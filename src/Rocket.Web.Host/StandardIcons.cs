@@ -6,6 +6,7 @@ namespace Rocket.Web.Host
     {
         public const string DashboardIcon = Icons.Material.Filled.Home;
         public const string LoginIcon = Icons.Material.Filled.Login;
+        public const string LogoutIcon = Icons.Material.Filled.Logout;
         public const string AccountIcon = @Icons.Material.Filled.Person;
     }
 }

@@ -57,6 +57,10 @@ var app =
     builder
         .Build();
 
+
+app
+    .UseStatusCodePagesWithReExecute("/NotFound");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
