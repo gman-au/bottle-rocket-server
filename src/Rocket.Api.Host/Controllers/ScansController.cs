@@ -46,13 +46,13 @@ namespace Rocket.Api.Host.Controllers
                 );
 
 
-            var results =
+            var (records, totalRecordCount) =
                 await
                     scannedImageRepository
                         .SearchScansAsync(
                             userId,
-                            request.Page,
-                            request.RecordsPerPage,
+                            request.StartIndex,
+                            request.RecordCount,
                             cancellationToken
                         );
 
@@ -60,7 +60,7 @@ namespace Rocket.Api.Host.Controllers
                 new MyScansResponse
                 {
                     Scans =
-                        results
+                        records
                             .Select(
                                 o =>
                                     new Scan
@@ -70,7 +70,8 @@ namespace Rocket.Api.Host.Controllers
                                         ThumbnailBase64 = o.ThumbnailBase64,
                                         ContentType = o.ContentType
                                     }
-                            )
+                            ),
+                    TotalRecords = (int)totalRecordCount
                 };
 
             return

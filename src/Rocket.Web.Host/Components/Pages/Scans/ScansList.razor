@@ -119,8 +119,8 @@
         var request =
             new MyScansRequest
             {
-                Page = 1,
-                RecordsPerPage = 5
+                StartIndex = 0,
+                RecordCount = 5
             };
 
         var response =
@@ -128,7 +128,7 @@
                 ApiRequestManager
                     .GetMyScansAsync(
                         request,
-                        CancellationToken
+                        BaseCancellationToken
                     );
 
         _scans =

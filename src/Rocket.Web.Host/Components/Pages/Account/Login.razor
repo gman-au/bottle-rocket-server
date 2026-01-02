@@ -78,7 +78,7 @@
                             .LoginAsync(
                                 _accountLoginRequest.Username,
                                 _accountLoginRequest.Password,
-                                CancellationToken
+                                BaseCancellationToken
                             );
 
                 if (success)

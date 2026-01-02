@@ -8,9 +8,15 @@ namespace Rocket.Web.Host.Infrastructure
     {
         private CancellationTokenSource _cancellationTokenSource;
 
-        protected CancellationToken CancellationToken =>
+        protected CancellationToken BaseCancellationToken =>
             (_cancellationTokenSource ??= new CancellationTokenSource())
             .Token;
+
+        protected void BaseCancel()
+        {
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource = null;
+        }
 
         public virtual void Dispose()
         {

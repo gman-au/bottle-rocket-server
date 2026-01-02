@@ -48,10 +48,10 @@ namespace Rocket.Infrastructure.Db.Mongo
             }
         }
 
-        public async Task<IEnumerable<ScannedImage>> SearchScansAsync(
+        public async Task<(IEnumerable<ScannedImage> records, long totalRecordCount)> SearchScansAsync(
             string userId,
-            int currentPage,
-            int pageSize,
+            int startIndex,
+            int recordCount,
             CancellationToken cancellationToken
         )
         {
@@ -73,21 +73,22 @@ namespace Rocket.Infrastructure.Db.Mongo
                             userId
                         );
 
-                var skipAmount = (currentPage - 1) * pageSize;
-
-                var findFluent =
+                var totalRecordCount =
+                    await
                     scannedImageCollection
                         .Find(filter)
-                        .SortBy(x => x.CaptureDate)
-                        .Skip(skipAmount)
-                        .Limit(pageSize);
+                        .CountDocumentsAsync(cancellationToken:cancellationToken);
 
-                var pagedResults =
+                var records =
                     await
-                        findFluent
+                        scannedImageCollection
+                            .Find(filter)
+                            .SortByDescending(x => x.CaptureDate)
+                            .Skip(startIndex)
+                            .Limit(recordCount)
                             .ToListAsync(cancellationToken: cancellationToken);
 
-                return pagedResults;
+                return (records, totalRecordCount);
             }
             catch (Exception ex)
             {

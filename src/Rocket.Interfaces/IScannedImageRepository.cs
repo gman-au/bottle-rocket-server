@@ -12,10 +12,10 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
-        Task<IEnumerable<ScannedImage>> SearchScansAsync(
+        Task<(IEnumerable<ScannedImage> records, long totalRecordCount)> SearchScansAsync(
             string userId,
-            int currentPage,
-            int pageSize,
+            int startIndex,
+            int recordCount,
             CancellationToken cancellationToken
         );
     }

@@ -2,8 +2,8 @@
 {
     public class MyScansRequest
     {
-        public int Page { get; set; }
+        public int StartIndex { get; set; }
         
-        public int RecordsPerPage { get; set; }
+        public int RecordCount { get; set; }
     }
 }
