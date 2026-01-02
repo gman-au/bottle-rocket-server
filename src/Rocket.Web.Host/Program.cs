@@ -53,6 +53,9 @@ services
     .AddAuthorizationCore()
     .AddAuthenticationServices();
 
+services
+    .AddSignalRClientServices();
+
 var app = 
     builder
         .Build();

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Api.Host.Filters;
 using Rocket.Api.Host.Handlers;
+using Rocket.Api.Host.Hubs;
 using Rocket.Api.Host.Injection;
 using Rocket.Domain.Utils;
 using Rocket.Interfaces;
@@ -44,9 +45,15 @@ services
 services
     .AddAuthorization();
 
+services
+    .AddSignalRServerServices(configuration);
+
 var app =
     builder
         .Build();
+
+app
+    .UseCors(DomainConstants.BlazorAppCorsPolicy);
 
 // Run startup initialization
 using (var scope = app.Services.CreateScope())
@@ -71,5 +78,8 @@ app
 
 app
     .MapControllers();
+
+app
+    .MapHub<CaptureHub>("/hubs/capture");
 
 app.Run();

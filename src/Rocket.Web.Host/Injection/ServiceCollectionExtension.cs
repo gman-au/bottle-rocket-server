@@ -7,6 +7,7 @@ using MudBlazor.Services;
 using Rocket.Interfaces;
 using Rocket.Web.Host.Api;
 using Rocket.Web.Host.Authentication;
+using Rocket.Web.Host.HubClients;
 using Rocket.Web.Host.Options;
 using ConfigurationManager = Microsoft.Extensions.Configuration.ConfigurationManager;
 
@@ -14,6 +15,14 @@ namespace Rocket.Web.Host.Injection
 {
     public static class ServiceCollectionExtension
     {
+        public static IServiceCollection AddSignalRClientServices(this IServiceCollection services)
+        {
+            services
+                .AddScoped<ICaptureHubClient, CaptureHubClient>();
+            
+            return services;
+        }
+
         public static IServiceCollection AddBottleRocketWebServices(
             this IServiceCollection services,
             ConfigurationManager configuration,
@@ -28,7 +37,7 @@ namespace Rocket.Web.Host.Injection
 
             services
                 .AddTransient<IApiRequestManager, ApiRequestManager>();
-            
+
             return services;
         }
 
@@ -60,7 +69,7 @@ namespace Rocket.Web.Host.Injection
             services
                 .AddScoped<IAuthenticationManager, BasicAuthenticationManager>()
                 .AddScoped<IAuthenticatedApiClient, AuthenticatedApiClient>();
-            
+
             services
                 .AddScoped<ApiAuthenticationStateProvider>();
 

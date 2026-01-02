@@ -1,12 +1,24 @@
 ﻿@page "/MyScans"
 @using Rocket.Api.Contracts
 @using Rocket.Web.Host.Api
+@using Rocket.Web.Host.HubClients
+@implements IAsyncDisposable
 @inject IApiRequestManager ApiRequestManager
 @inject ISnackbar Snackbar
+@inject ICaptureHubClient CaptureHubClient
 @inherits Rocket.Web.Host.Infrastructure.CancellableComponentBase
 
 <MudPaper Class="p-4" elevation="2">
-    <MudText Typo="Typo.h4">My Scans</MudText>
+    <MudText Typo="Typo.h4">
+        My Scans
+        @if (_isConnected)
+        {
+            <MudChip Color="Color.Success" Size="Size.Small" Class="ml-2">
+                <MudIcon Icon="@Icons.Material.Filled.Wifi" Size="Size.Small"/>
+                Connected
+            </MudChip>
+        }
+    </MudText>
     <BottleRocketLoadingOverlay IsLoading="@_isLoading">
         <MudGrid Class="pa-4">
             @foreach (var scan in _scans)
@@ -26,9 +38,8 @@
 </MudPaper>
 
 @code {
-
     private bool _isLoading;
-
+    private bool _isConnected;
     private IEnumerable<Scan> _scans = [];
 
     protected override async Task OnInitializedAsync()
@@ -36,24 +47,21 @@
         try
         {
             _isLoading = true;
-            StateHasChanged();
 
-            var request =
-                new MyScansRequest
-                {
-                    Page = 1,
-                    RecordsPerPage = 5
-                };
+            // Set up SignalR listener
+            CaptureHubClient.OnNewCaptureReceived += HandleNewCapture;
 
-            var response =
-                await
-                    ApiRequestManager
-                        .GetMyScansAsync(
-                            request,
-                            CancellationToken
-                        );
+            // Connect to hub
+            await
+                CaptureHubClient
+                    .StartAsync();
 
-            _scans = response.Scans ?? [];
+            _isConnected =
+                CaptureHubClient
+                    .IsConnected;
+
+            await 
+                LoadScansAsync();
         }
         catch (Exception ex)
         {
@@ -67,6 +75,75 @@
         {
             _isLoading = false;
         }
+    }
+
+    private async Task HandleNewCapture()
+    {
+        await
+            InvokeAsync(
+                async () =>
+                {
+                    try
+                    {
+                        _isLoading = true;
+                        StateHasChanged();
+
+                        await
+                            LoadScansAsync();
+
+                        Snackbar
+                            .Add(
+                                "New scan received!",
+                                Severity.Success
+                            );
+                    }
+                    catch (Exception ex)
+                    {
+                        Snackbar
+                            .Add(
+                                ex.Message,
+                                Severity.Error
+                            );
+                    }
+                    finally
+                    {
+                        _isLoading = false;
+                        StateHasChanged(); // Force UI update after loading
+                    }
+                }
+            );
+    }
+
+    private async Task LoadScansAsync()
+    {
+        var request =
+            new MyScansRequest
+            {
+                Page = 1,
+                RecordsPerPage = 5
+            };
+
+        var response =
+            await
+                ApiRequestManager
+                    .GetMyScansAsync(
+                        request,
+                        CancellationToken
+                    );
+
+        _scans =
+            response
+                .Scans ?? [];
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        // Clean up SignalR subscription
+        CaptureHubClient.OnNewCaptureReceived -= HandleNewCapture;
+
+        await
+            CaptureHubClient
+                .DisposeAsync();
     }
 
 }

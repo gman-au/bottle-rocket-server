@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Rocket.Api.Host.Exceptions;
+using Rocket.Api.Host.Notifiers;
+using Rocket.Domain.Utils;
 using Rocket.Infrastructure;
 using Rocket.Infrastructure.Blob.Local;
 using Rocket.Infrastructure.Blob.Local.Options;
@@ -16,6 +19,44 @@ namespace Rocket.Api.Host.Injection
 {
     public static class ServiceCollectionExtension
     {
+        public static IServiceCollection AddSignalRServerServices(
+            this IServiceCollection services,
+            IConfigurationRoot configuration
+        )
+        {
+            services
+                .AddSignalR();
+
+            var allowedOrigins =
+                configuration
+                    .GetSection("CorsSettings:AllowedOrigins")
+                    .Get<string[]>() ?? [];
+
+            services
+                .AddCors(
+                    options =>
+                    {
+                        options
+                            .AddPolicy(
+                                DomainConstants.BlazorAppCorsPolicy,
+                                policy =>
+                                {
+                                    policy
+                                        .WithOrigins(allowedOrigins) // Your Blazor app URL
+                                        .AllowAnyHeader()
+                                        .AllowAnyMethod()
+                                        .AllowCredentials();
+                                }
+                            );
+                    }
+                );
+
+            services
+                .AddSingleton<ICaptureNotifier, CaptureNotifier>();
+
+            return services;
+        }
+
         public static IServiceCollection AddBottleRocketApiServices(
             this IServiceCollection services,
             IWebHostEnvironment environment

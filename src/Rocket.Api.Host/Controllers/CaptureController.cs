@@ -17,6 +17,7 @@ namespace Rocket.Api.Host.Controllers
     [Route("/api/capture")]
     public class CaptureController(
         IScannedImageHandler scannedImageHandler,
+        ICaptureNotifier captureNotifier,
         ILogger<CaptureController> logger
     ) : ControllerBase
     {
@@ -88,8 +89,15 @@ namespace Rocket.Api.Host.Controllers
                             userId,
                             cancellationToken
                         );
-            }
 
+                await
+                    captureNotifier
+                        .NotifyNewCaptureAsync(
+                            userId,
+                            cancellationToken
+                        );
+            }
+            
             return
                 new ProcessCaptureResponse()
                     .AsApiSuccess();
