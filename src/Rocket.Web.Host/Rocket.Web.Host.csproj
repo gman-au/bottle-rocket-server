@@ -14,4 +14,8 @@
         <PackageReference Include="MudBlazor" Version="6.11.1"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <AdditionalFiles Include="Components\Pages\Account\Login.razor" />
+    </ItemGroup>
+
 </Project>

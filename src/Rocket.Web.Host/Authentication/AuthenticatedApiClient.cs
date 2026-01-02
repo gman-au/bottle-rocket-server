@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
@@ -56,6 +57,21 @@ namespace Rocket.Web.Host.Authentication
                 await
                     _httpClient
                         .PostAsync(
+                            requestUri,
+                            content,
+                            cancellationToken
+                        );
+        }
+
+        public async Task<HttpResponseMessage> PostAsJsonAsync<T>(string requestUri, T content, CancellationToken cancellationToken)
+        {
+            await
+                SetAuthHeaderAsync();
+
+            return
+                await
+                    _httpClient
+                        .PostAsJsonAsync(
                             requestUri,
                             content,
                             cancellationToken

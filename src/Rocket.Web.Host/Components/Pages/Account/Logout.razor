@@ -18,7 +18,9 @@
                 .LogoutAsync();
         
         // Small delay to ensure state propagates
-        await Task.Delay(100);
+        await 
+            Task
+                .Delay(100);
         
         // Redirect to login page
         NavigationManager

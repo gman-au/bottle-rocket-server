@@ -21,5 +21,7 @@ namespace Rocket.Domain
         public string FileExtension { get; set; }
         
         public string Sha256 { get; set; }
+        
+        public string ThumbnailBase64 { get; set; }
     }
 }

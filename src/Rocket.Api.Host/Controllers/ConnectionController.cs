@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
@@ -12,11 +13,15 @@ namespace Rocket.Api.Host.Controllers
     {
         [HttpPost]
         [Authorize]
-        public IActionResult GetConnectionTest()
+        public async Task<IActionResult> GetConnectionTest()
         {
             logger
                 .LogInformation("Received connection test request");
 
+            await
+                Task
+                    .Delay(2000);
+            
             return
                 new ConnectionTestResponse()
                     .AsApiSuccess();

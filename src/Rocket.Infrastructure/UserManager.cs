@@ -88,11 +88,12 @@ namespace Rocket.Infrastructure
             }
             catch (Exception ex)
             {
-                logger.LogError(
-                    ex,
-                    "Error creating user account for {username}",
-                    username
-                );
+                logger
+                    .LogError(
+                        ex,
+                        "Error creating user account for {username}",
+                        username
+                    );
                 throw;
             }
         }

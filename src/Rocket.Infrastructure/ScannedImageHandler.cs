@@ -11,7 +11,8 @@ namespace Rocket.Infrastructure
         ILogger<ScannedImageHandler> logger,
         IBlobStore blobStore,
         ISha256Calculator sha256Calculator,
-        IScannedImageRepository scannedImageRepository
+        IScannedImageRepository scannedImageRepository,
+        IThumbnailer thumbnailer
     ) : IScannedImageHandler
     {
         public async Task HandleAsync(
@@ -33,6 +34,14 @@ namespace Rocket.Infrastructure
                     sha256Calculator
                         .CalculateSha256HashAndFormat(imageData);
 
+                var thumbnail =
+                    await
+                        thumbnailer
+                            .GenerateBase64ThumbnailAsync(
+                                imageData,
+                                cancellationToken
+                            );
+                
                 var blobId =
                     await
                         blobStore
@@ -48,6 +57,7 @@ namespace Rocket.Infrastructure
                 scannedImage.ContentType = contentType;
                 scannedImage.FileExtension = fileExtension;
                 scannedImage.Sha256 = hashString;
+                scannedImage.ThumbnailBase64 = thumbnail;
 
                 await
                     scannedImageRepository

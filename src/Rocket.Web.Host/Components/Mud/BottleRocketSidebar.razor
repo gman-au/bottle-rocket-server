@@ -3,7 +3,7 @@
 <MudAppBar Elevation="1">
     <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@ToggleDrawer"/>
     <MudSpacer/>
-    <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Href="https://github.com/MudBlazor/MudBlazor" Target="_blank"/>
+    <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Href="https://github.com/gman-au/bottle-rocket-server" Target="_blank"/>
 </MudAppBar>
 <MudDrawer @bind-Open="@_open" Elevation="1">
     <MudDrawerHeader>
@@ -25,6 +25,7 @@
             <Authorized>
                 <MudNavLink Match="NavLinkMatch.All" Href="/App" Icon="@StandardIcons.DashboardIcon">Home</MudNavLink>
                 <MudNavLink Match="NavLinkMatch.All" Href="/MyAccount" Icon="@StandardIcons.AccountIcon">Account</MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" Href="/MyScans" Icon="@StandardIcons.ScansIcon">My Scans</MudNavLink>
                 <MudNavLink Match="NavLinkMatch.All" Href="/Logout" Icon="@StandardIcons.LogoutIcon">Logout</MudNavLink>
             </Authorized>
             <NotAuthorized>

@@ -15,6 +15,7 @@
         <ProjectReference Include="..\Rocket.Infrastructure.Blob.Local\Rocket.Infrastructure.Blob.Local.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Db.Mongo\Rocket.Infrastructure.Db.Mongo.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Hashing\Rocket.Infrastructure.Hashing.csproj" />
+        <ProjectReference Include="..\Rocket.Infrastructure.Thumbnails\Rocket.Infrastructure.Thumbnails.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure\Rocket.Infrastructure.csproj" />
     </ItemGroup>
 

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 using MudBlazor.Services;
 using Rocket.Interfaces;
+using Rocket.Web.Host.Api;
 using Rocket.Web.Host.Authentication;
 using Rocket.Web.Host.Options;
 using ConfigurationManager = Microsoft.Extensions.Configuration.ConfigurationManager;
@@ -25,6 +26,9 @@ namespace Rocket.Web.Host.Injection
                         .GetSection(nameof(ApiConfigurationOptions))
                 );
 
+            services
+                .AddTransient<IApiRequestManager, ApiRequestManager>();
+            
             return services;
         }
 

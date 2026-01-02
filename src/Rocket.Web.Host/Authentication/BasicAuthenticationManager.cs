@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.Extensions.Logging;
@@ -44,7 +45,7 @@ namespace Rocket.Web.Host.Authentication
 
         public event Action OnAuthenticationStateChanged;
 
-        public async Task<bool> LoginAsync(string username, string password)
+        public async Task<bool> LoginAsync(string username, string password, CancellationToken cancellationToken)
         {
             try
             {
@@ -72,7 +73,10 @@ namespace Rocket.Web.Host.Authentication
                 var response =
                     await
                         _httpClient
-                            .SendAsync(request);
+                            .SendAsync(
+                                request,
+                                cancellationToken
+                            );
 
                 if (response.IsSuccessStatusCode)
                 {

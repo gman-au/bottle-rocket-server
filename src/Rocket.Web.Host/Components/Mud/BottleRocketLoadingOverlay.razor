@@ -1,0 +1,23 @@
+﻿<MudContainer>
+    <MudOverlay
+        Visible="@IsLoading"
+        Style="height: 100vh;"
+        LightBackground="@(!IsDarkMode)"
+        DarkBackground="@(IsDarkMode)"
+        Absolute="true">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+    </MudOverlay>
+    @ChildContent
+</MudContainer>
+
+@code {
+
+    [CascadingParameter(Name = "IsDarkMode")]
+    bool IsDarkMode { get; set; }
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Hashi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Web.Host", "Rocket.Web.Host\Rocket.Web.Host.csproj", "{E51AD1B4-4C8E-48A0-9158-B9146DAF4F47}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Thumbnails", "Rocket.Infrastructure.Thumbnails\Rocket.Infrastructure.Thumbnails.csproj", "{4902F824-F94E-4DC3-BDAA-4457073BCA2C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,5 +72,9 @@ Global
 		{E51AD1B4-4C8E-48A0-9158-B9146DAF4F47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E51AD1B4-4C8E-48A0-9158-B9146DAF4F47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E51AD1B4-4C8E-48A0-9158-B9146DAF4F47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4902F824-F94E-4DC3-BDAA-4457073BCA2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4902F824-F94E-4DC3-BDAA-4457073BCA2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4902F824-F94E-4DC3-BDAA-4457073BCA2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4902F824-F94E-4DC3-BDAA-4457073BCA2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

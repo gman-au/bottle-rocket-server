@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -11,7 +12,7 @@ namespace Rocket.Infrastructure.Db.Mongo
     public class MongoDbScannedImageRepository(
         ILogger<MongoDbScannedImageRepository> logger,
         IMongoDbClient mongoDbClient
-        ) : IScannedImageRepository
+    ) : IScannedImageRepository
     {
         public async Task<ScannedImage> SaveCaptureAsync(ScannedImage scannedImage, CancellationToken cancellationToken)
         {
@@ -34,6 +35,59 @@ namespace Rocket.Infrastructure.Db.Mongo
                         );
 
                 return scannedImage;
+            }
+            catch (Exception ex)
+            {
+                logger
+                    .LogError(
+                        "There was an error saving the scanned image: {error}",
+                        ex.Message
+                    );
+
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<ScannedImage>> SearchScansAsync(
+            string userId,
+            int currentPage,
+            int pageSize,
+            CancellationToken cancellationToken
+        )
+        {
+            try
+            {
+                var mongoDatabase =
+                    mongoDbClient
+                        .GetDatabase();
+
+                var scannedImageCollection =
+                    mongoDatabase
+                        .GetCollection<ScannedImage>(MongoConstants.ScannedImageCollection);
+
+                var filter =
+                    Builders<ScannedImage>
+                        .Filter
+                        .Eq(
+                            u => u.UserId,
+                            userId
+                        );
+
+                var skipAmount = (currentPage - 1) * pageSize;
+
+                var findFluent =
+                    scannedImageCollection
+                        .Find(filter)
+                        .SortBy(x => x.CaptureDate)
+                        .Skip(skipAmount)
+                        .Limit(pageSize);
+
+                var pagedResults =
+                    await
+                        findFluent
+                            .ToListAsync(cancellationToken: cancellationToken);
+
+                return pagedResults;
             }
             catch (Exception ex)
             {
