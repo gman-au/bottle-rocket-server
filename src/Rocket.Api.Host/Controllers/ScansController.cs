@@ -22,8 +22,8 @@ namespace Rocket.Api.Host.Controllers
         IScannedImageRepository scannedImageRepository
     ) : ControllerBase
     {
-        [HttpPost]
-        public async Task<IActionResult> RetrieveMyScansAsync(
+        [HttpPost("fetch")]
+        public async Task<IActionResult> FetchMyScansAsync(
             [FromBody] MyScansRequest request,
             CancellationToken cancellationToken
         )
@@ -41,7 +41,7 @@ namespace Rocket.Api.Host.Controllers
 
             logger
                 .LogInformation(
-                    "Received user creation request for username: {userId}",
+                    "Received fetch scans request for username: {userId}",
                     userId
                 );
 
@@ -66,7 +66,7 @@ namespace Rocket.Api.Host.Controllers
                                     new Scan
                                     {
                                         Id = o.Id,
-                                        DateScanned = o.CaptureDate,
+                                        DateScanned = o.CaptureDate.ToLocalTime(),
                                         ThumbnailBase64 = o.ThumbnailBase64,
                                         ContentType = o.ContentType
                                     }

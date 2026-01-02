@@ -24,7 +24,7 @@ namespace Rocket.Web.Host.Api
                 await
                     authenticatedApiClient
                         .PostAsJsonAsync(
-                            "/api/scans",
+                            "/api/scans/fetch",
                             request,
                             cancellationToken
                         );

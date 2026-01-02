@@ -34,12 +34,24 @@
                 </MudItem>
             }
         </MudGrid>
+        <MudGrid Justify="Justify.Center">
+            <MudButton
+                Variant="Variant.Outlined"
+                Color="Color.Primary"
+                Disabled="@_noMoreRecords"
+                @onclick="@(async () => await LoadScansAsync(_currentIndex, DefaultPageSize))">
+                Load More
+            </MudButton>
+        </MudGrid>
     </BottleRocketLoadingOverlay>
 </MudPaper>
 
 @code {
+    private const int DefaultPageSize = 12;
     private bool _isLoading;
     private bool _isConnected;
+    private bool _noMoreRecords = false;
+    private int _currentIndex = 0;
     private IEnumerable<Scan> _scans = [];
 
     protected override async Task OnInitializedAsync()
@@ -60,8 +72,8 @@
                 CaptureHubClient
                     .IsConnected;
 
-            await 
-                LoadScansAsync();
+            await
+                LoadScansAsync(_currentIndex, DefaultPageSize);
         }
         catch (Exception ex)
         {
@@ -88,8 +100,9 @@
                         _isLoading = true;
                         StateHasChanged();
 
+                        // new capture would be the most recent; get the latest record
                         await
-                            LoadScansAsync();
+                            LoadScansAsync(0, 1);
 
                         Snackbar
                             .Add(
@@ -114,13 +127,13 @@
             );
     }
 
-    private async Task LoadScansAsync()
+    private async Task LoadScansAsync(int index, int count)
     {
         var request =
             new MyScansRequest
             {
-                StartIndex = 0,
-                RecordCount = 5
+                StartIndex = index,
+                RecordCount = count
             };
 
         var response =
@@ -131,9 +144,22 @@
                         BaseCancellationToken
                     );
 
+        _currentIndex +=
+            (response?.Scans ?? [])
+            .Count();
+
+        _noMoreRecords = _currentIndex == (response?.TotalRecords ?? 0);
+
+        var existingScans = new List<Scan>(_scans);
+        var newScans = new List<Scan>(response?.Scans ?? []);
+
         _scans =
-            response
-                .Scans ?? [];
+            existingScans
+                .UnionBy(
+                    newScans,
+                    o => o.Id
+                )
+                .OrderByDescending(o => o.DateScanned);
     }
 
     public async ValueTask DisposeAsync()
