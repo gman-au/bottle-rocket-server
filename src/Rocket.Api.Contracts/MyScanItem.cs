@@ -2,7 +2,7 @@
 
 namespace Rocket.Api.Contracts
 {
-    public class Scan
+    public class MyScanItem
     {
         public string Id { get; set; }
         

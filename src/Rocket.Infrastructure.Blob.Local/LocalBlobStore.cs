@@ -65,9 +65,57 @@ namespace Rocket.Infrastructure.Blob.Local
             return filePath;
         }
 
-        public Task<byte[]> GetImageAsync(string id, CancellationToken cancellationToken)
+        public async Task<byte[]> LoadImageAsync(
+            string filePath,
+            string fileExtension,
+            CancellationToken cancellationToken
+        )
         {
-            throw new NotImplementedException();
+            var folderPath =
+                Path
+                    .Combine(
+                        _options.LocalBasePath,
+                        _options.LocalSubfolder,
+                        Path.GetDirectoryName(filePath)
+                    );
+
+            var fullFilePath = $"{Path.GetFileName(filePath)}{fileExtension}";
+
+            var sourcePath =
+                Path
+                    .Combine(
+                        folderPath,
+                        fullFilePath
+                    );
+            
+            logger
+                .LogInformation(
+                    "Using Local File storage path {path}",
+                    sourcePath
+                );
+
+            try
+            {
+                var imageData =
+                    await
+                        File
+                            .ReadAllBytesAsync(
+                                sourcePath,
+                                cancellationToken
+                            );
+
+                return imageData;
+            }
+            catch (FileNotFoundException)
+            {
+                logger
+                    .LogError(
+                        "File not found at path {path}",
+                        sourcePath
+                    );
+                
+                return [];
+            }
         }
 
         private static void EnsureFolderExists(string path)

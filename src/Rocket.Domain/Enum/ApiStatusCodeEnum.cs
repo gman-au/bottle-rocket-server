@@ -8,6 +8,7 @@
         UserAlreadyExists = 2000,
         UnknownUser,
         InvalidUsername,
-        InvalidPassword
+        InvalidPassword,
+        FileDataCorrupted
     }
 }

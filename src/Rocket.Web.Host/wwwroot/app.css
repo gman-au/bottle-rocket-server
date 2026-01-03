@@ -81,3 +81,7 @@ h1:focus {
     font-family: 'JetBrains Mono', Helvetica, Arial, sans-serif !important;
     font-size: 10px !important;
 }
+
+.code-text {
+    font-family: "Source Code Pro" !important;
+}

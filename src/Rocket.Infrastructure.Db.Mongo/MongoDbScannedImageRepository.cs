@@ -48,7 +48,7 @@ namespace Rocket.Infrastructure.Db.Mongo
             }
         }
 
-        public async Task<(IEnumerable<ScannedImage> records, long totalRecordCount)> SearchScansAsync(
+        public async Task<(IEnumerable<ScannedImage> records, long totalRecordCount)> FetchScansAsync(
             string userId,
             int startIndex,
             int recordCount,
@@ -75,9 +75,9 @@ namespace Rocket.Infrastructure.Db.Mongo
 
                 var totalRecordCount =
                     await
-                    scannedImageCollection
-                        .Find(filter)
-                        .CountDocumentsAsync(cancellationToken:cancellationToken);
+                        scannedImageCollection
+                            .Find(filter)
+                            .CountDocumentsAsync(cancellationToken: cancellationToken);
 
                 var records =
                     await
@@ -94,7 +94,59 @@ namespace Rocket.Infrastructure.Db.Mongo
             {
                 logger
                     .LogError(
-                        "There was an error saving the scanned image: {error}",
+                        "There was an fetching scanned images: {error}",
+                        ex.Message
+                    );
+
+                throw;
+            }
+        }
+
+        public async Task<ScannedImage> FetchScanAsync(
+            string userId,
+            string id,
+            CancellationToken cancellationToken
+        )
+        {
+            try
+            {
+                var mongoDatabase =
+                    mongoDbClient
+                        .GetDatabase();
+
+                var scannedImageCollection =
+                    mongoDatabase
+                        .GetCollection<ScannedImage>(MongoConstants.ScannedImageCollection);
+
+                var filter =
+                    Builders<ScannedImage>
+                        .Filter
+                        .Eq(
+                            o => o.UserId,
+                            userId
+                        );
+
+                filter &=
+                    Builders<ScannedImage>
+                        .Filter
+                        .Eq(
+                            o => o.Id,
+                            id
+                        );
+
+                var record =
+                    await
+                        scannedImageCollection
+                            .Find(filter)
+                            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
+
+                return record;
+            }
+            catch (Exception ex)
+            {
+                logger
+                    .LogError(
+                        "There was an fetching scanned image: {error}",
                         ex.Message
                     );
 

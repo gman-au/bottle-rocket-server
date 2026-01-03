@@ -62,7 +62,7 @@ var app =
 
 
 app
-    .UseStatusCodePagesWithReExecute("/NotFound");
+    .UseStatusCodePagesWithReExecute("/Error");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

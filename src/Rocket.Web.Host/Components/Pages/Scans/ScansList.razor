@@ -4,6 +4,7 @@
 @using Rocket.Web.Host.HubClients
 @implements IAsyncDisposable
 @inject IApiRequestManager ApiRequestManager
+@inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 @inject ICaptureHubClient CaptureHubClient
 @inherits Rocket.Web.Host.Infrastructure.CancellableComponentBase
@@ -11,13 +12,13 @@
 <MudPaper Class="p-4" elevation="2">
     <MudText Typo="Typo.h4">
         My Scans
-        @if (_isConnected)
-        {
-            <MudChip Color="Color.Success" Size="Size.Small" Class="ml-2">
-                <MudIcon Icon="@Icons.Material.Filled.Wifi" Size="Size.Small"/>
-                Connected
-            </MudChip>
-        }
+        @* @if (_isConnected) *@
+        @* { *@
+        @*     <MudChip Color="Color.Success" Size="Size.Small" Class="ml-2"> *@
+        @*         <MudIcon Icon="@Icons.Material.Filled.Wifi" Size="Size.Small"/> *@
+        @*         Connected *@
+        @*     </MudChip> *@
+        @* } *@
     </MudText>
     <BottleRocketLoadingOverlay IsLoading="@_isLoading">
         <MudGrid Class="pa-4">
@@ -30,6 +31,14 @@
                         <MudCardContent>
                             <MudText Typo="Typo.body1">@(scan.DateScanned.ToString("g"))</MudText>
                         </MudCardContent>
+                        <MudCardActions>
+                            <MudButton
+                                Variant="Variant.Text"
+                                Color="Color.Primary"
+                                @onclick="@(() => NavigationManager.NavigateTo($"/MyScans/{scan.Id}"))">
+                                Details
+                            </MudButton>
+                        </MudCardActions>
                     </MudCard>
                 </MudItem>
             }
@@ -39,7 +48,10 @@
                 Variant="Variant.Outlined"
                 Color="Color.Primary"
                 Disabled="@_noMoreRecords"
-                @onclick="@(async () => await LoadScansAsync(_currentIndex, DefaultPageSize))">
+                @onclick="@(async () => await LoadScansAsync(
+                              _currentIndex,
+                              DefaultPageSize
+                          ))">
                 Load More
             </MudButton>
         </MudGrid>
@@ -52,7 +64,7 @@
     private bool _isConnected;
     private bool _noMoreRecords = false;
     private int _currentIndex = 0;
-    private IEnumerable<Scan> _scans = [];
+    private IEnumerable<MyScanItem> _scans = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -73,7 +85,10 @@
                     .IsConnected;
 
             await
-                LoadScansAsync(_currentIndex, DefaultPageSize);
+                LoadScansAsync(
+                    _currentIndex,
+                    DefaultPageSize
+                );
         }
         catch (Exception ex)
         {
@@ -102,7 +117,10 @@
 
                         // new capture would be the most recent; get the latest record
                         await
-                            LoadScansAsync(0, 1);
+                            LoadScansAsync(
+                                0,
+                                1
+                            );
 
                         Snackbar
                             .Add(
@@ -150,8 +168,8 @@
 
         _noMoreRecords = _currentIndex == (response?.TotalRecords ?? 0);
 
-        var existingScans = new List<Scan>(_scans);
-        var newScans = new List<Scan>(response?.Scans ?? []);
+        var existingScans = new List<MyScanItem>(_scans);
+        var newScans = new List<MyScanItem>(response?.Scans ?? []);
 
         _scans =
             existingScans

@@ -18,16 +18,16 @@
         DarkMode="@IsDarkMode"/>
     <MudMainContent Class="pt-16 px-16">
         <MudContainer Class="mt-6">
-            <ErrorBoundary>
-                <ChildContent>
-                    <CascadingValue Name="IsDarkMode" Value="@IsDarkMode">
+            <CascadingValue Name="IsDarkMode" Value="@IsDarkMode">
+                <ErrorBoundary @ref="_errorBoundary">
+                    <ChildContent>
                         @Body
-                    </CascadingValue>
-                </ChildContent>
-                <ErrorContent Context="exception">
-                    <NotFound Exception="exception"/>
-                </ErrorContent>
-            </ErrorBoundary>
+                    </ChildContent>
+                    <ErrorContent Context="exception">
+                        <Error ErrorBoundary="@_errorBoundary" Exception="@exception"/>
+                    </ErrorContent>
+                </ErrorBoundary>
+            </CascadingValue>
         </MudContainer>
     </MudMainContent>
 </MudLayout>
@@ -35,7 +35,9 @@
 @code {
 
     private bool IsDarkMode { get; set; } = true;
-    
+
+    private ErrorBoundary _errorBoundary;
+
     void DarkToggle()
     {
         IsDarkMode = !IsDarkMode;

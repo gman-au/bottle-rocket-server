@@ -8,6 +8,7 @@ using Rocket.Interfaces;
 using Rocket.Web.Host.Api;
 using Rocket.Web.Host.Authentication;
 using Rocket.Web.Host.HubClients;
+using Rocket.Web.Host.Infrastructure;
 using Rocket.Web.Host.Options;
 using ConfigurationManager = Microsoft.Extensions.Configuration.ConfigurationManager;
 
@@ -36,7 +37,8 @@ namespace Rocket.Web.Host.Injection
                 );
 
             services
-                .AddTransient<IApiRequestManager, ApiRequestManager>();
+                .AddTransient<IApiRequestManager, ApiRequestManager>()
+                .AddTransient<IWebHostErrorHandler, WebHostErrorHandler>();
 
             return services;
         }

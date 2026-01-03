@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading;
@@ -19,6 +20,7 @@ namespace Rocket.Api.Host.Controllers
     [Authorize]
     public class ScansController(
         ILogger<ScansController> logger,
+        IScannedImageHandler scannedImageHandler,
         IScannedImageRepository scannedImageRepository
     ) : ControllerBase
     {
@@ -49,7 +51,7 @@ namespace Rocket.Api.Host.Controllers
             var (records, totalRecordCount) =
                 await
                     scannedImageRepository
-                        .SearchScansAsync(
+                        .FetchScansAsync(
                             userId,
                             request.StartIndex,
                             request.RecordCount,
@@ -63,7 +65,7 @@ namespace Rocket.Api.Host.Controllers
                         records
                             .Select(
                                 o =>
-                                    new Scan
+                                    new MyScanItem
                                     {
                                         Id = o.Id,
                                         DateScanned = o.CaptureDate.ToLocalTime(),
@@ -72,6 +74,58 @@ namespace Rocket.Api.Host.Controllers
                                     }
                             ),
                     TotalRecords = (int)totalRecordCount
+                };
+
+            return
+                response
+                    .AsApiSuccess();
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> FetchMyScanAsync(
+            string id,
+            CancellationToken cancellationToken
+        )
+        {
+            var userId =
+                User
+                    .FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+                throw new RocketException(
+                    "User ID not found in claims",
+                    ApiStatusCodeEnum.UnknownUser,
+                    (int)HttpStatusCode.Unauthorized
+                );
+
+            logger
+                .LogInformation(
+                    "Received fetch scan request for username: {userId}, id: {id}",
+                    userId,
+                    id
+                );
+
+
+            var (record, imageData) =
+                await
+                    scannedImageHandler
+                        .ReadAsync(
+                            userId,
+                            id,
+                            cancellationToken
+                        );
+
+            var response =
+                new MyScanItemDetail
+                {
+                    Id = record.Id,
+                    UserId = record.UserId,
+                    CaptureDate = record.CaptureDate.ToLocalTime(),
+                    BlobId = record.BlobId,
+                    ContentType = record.ContentType,
+                    FileExtension = record.FileExtension,
+                    Sha256 = record.Sha256,
+                    ImageBase64 = Convert.ToBase64String(imageData)
                 };
 
             return

@@ -82,7 +82,7 @@ namespace Rocket.Api.Host.Controllers
 
                 await
                     scannedImageHandler
-                        .HandleAsync(
+                        .WriteAsync(
                             ms.ToArray(),
                             contentType,
                             fileExtension,

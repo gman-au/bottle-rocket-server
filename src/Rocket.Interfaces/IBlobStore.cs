@@ -10,7 +10,11 @@ namespace Rocket.Interfaces
             string fileExtension,
             CancellationToken cancellationToken
         );
-        
-        Task<byte[]> GetImageAsync(string id, CancellationToken cancellationToken);
+
+        Task<byte[]> LoadImageAsync(
+            string filePath,
+            string fileExtension,
+            CancellationToken cancellationToken
+        );
     }
 }
