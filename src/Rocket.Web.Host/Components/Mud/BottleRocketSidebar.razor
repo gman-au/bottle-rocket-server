@@ -26,10 +26,10 @@
                 <MudNavLink Match="NavLinkMatch.All" Href="/" Icon="@StandardIcons.DashboardIcon">Home</MudNavLink>
                 <MudNavLink Match="NavLinkMatch.All" Href="/MyAccount" Icon="@StandardIcons.AccountIcon">Account</MudNavLink>
                 <MudNavLink Match="NavLinkMatch.Prefix" Href="/MyScans" Icon="@StandardIcons.ScansIcon">My Scans</MudNavLink>
-                <MudNavLink Match="NavLinkMatch.All" Href="/Logout" Icon="@StandardIcons.LogoutIcon">Logout</MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" Href="/Account/Logout" Icon="@StandardIcons.LogoutIcon">Logout</MudNavLink>
             </Authorized>
             <NotAuthorized>
-                <MudNavLink Match="NavLinkMatch.All" Href="/Login" Icon="@StandardIcons.LoginIcon">Login</MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" Href="/Account/Login" Icon="@StandardIcons.LoginIcon">Login</MudNavLink>
             </NotAuthorized>
         </AuthorizeView>
         <MudNavLink Icon="@(DarkMode ? Icons.Material.Filled.WbSunny : Icons.Material.Filled.ModeNight)" OnClick="@OnDarkModeToggle">

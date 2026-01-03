@@ -9,6 +9,7 @@
         UnknownUser,
         InvalidUsername,
         InvalidPassword,
-        FileDataCorrupted
+        FileDataCorrupted,
+        UnknownOrInaccessibleRecord
     }
 }

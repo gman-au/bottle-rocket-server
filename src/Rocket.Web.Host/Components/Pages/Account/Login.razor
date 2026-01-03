@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/account/login"
 @using Rocket.Api.Contracts
 @using Rocket.Interfaces
 @inject IAuthenticationManager AuthenticationManager
@@ -60,6 +60,9 @@
     private bool _isLoading;
 
     private readonly AccountLoginRequest _accountLoginRequest = new();
+    
+    [SupplyParameterFromQuery]
+    public string ReturnUrl { get; set; }
 
     private async Task HandleLoginAsync()
     {
@@ -90,7 +93,7 @@
 
                     NavigationManager
                         .NavigateTo(
-                            "/",
+                            !string.IsNullOrEmpty(ReturnUrl) ? ReturnUrl : "/",
                             forceLoad: true
                         );
                 }

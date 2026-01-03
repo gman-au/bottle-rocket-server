@@ -106,6 +106,12 @@ namespace Rocket.Infrastructure
                                 cancellationToken
                             );
 
+                if (record == null)
+                    throw new RocketException(
+                        "The record was not found or you do not have access.",
+                        ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                    );
+
                 var imageData =
                     await
                         blobStore
