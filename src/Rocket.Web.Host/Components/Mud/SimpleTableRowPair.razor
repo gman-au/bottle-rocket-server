@@ -1,0 +1,30 @@
+﻿<tr>
+    <td>
+        <MudText
+            Class="code-text"
+            Typo="Typo.body1"
+            Align="Align.Left"
+            GutterBottom="true"
+            Color="Color.Secondary">
+            @Title
+        </MudText>
+    </td>
+    <td>
+        <MudText
+            Class="code-text"
+            Typo="Typo.body1"
+            Align="Align.Left"
+            GutterBottom="true"
+            Color="Color.Secondary">
+            @Value
+        </MudText>
+    </td>
+</tr>
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+    
+    [Parameter]
+    public string Value { get; set; }
+}

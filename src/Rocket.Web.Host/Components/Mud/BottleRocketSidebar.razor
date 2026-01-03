@@ -23,9 +23,9 @@
     <MudNavMenu Bordered="true" Color="Color.Primary">
         <AuthorizeView Context="primary">
             <Authorized>
-                <MudNavLink Match="NavLinkMatch.All" Href="/App" Icon="@StandardIcons.DashboardIcon">Home</MudNavLink>
+                <MudNavLink Match="NavLinkMatch.All" Href="/" Icon="@StandardIcons.DashboardIcon">Home</MudNavLink>
                 <MudNavLink Match="NavLinkMatch.All" Href="/MyAccount" Icon="@StandardIcons.AccountIcon">Account</MudNavLink>
-                <MudNavLink Match="NavLinkMatch.All" Href="/MyScans" Icon="@StandardIcons.ScansIcon">My Scans</MudNavLink>
+                <MudNavLink Match="NavLinkMatch.Prefix" Href="/MyScans" Icon="@StandardIcons.ScansIcon">My Scans</MudNavLink>
                 <MudNavLink Match="NavLinkMatch.All" Href="/Logout" Icon="@StandardIcons.LogoutIcon">Logout</MudNavLink>
             </Authorized>
             <NotAuthorized>

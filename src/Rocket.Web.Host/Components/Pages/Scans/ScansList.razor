@@ -2,48 +2,51 @@
 @using Rocket.Api.Contracts
 @using Rocket.Web.Host.Api
 @using Rocket.Web.Host.HubClients
+@using Rocket.Web.Host.Infrastructure
 @implements IAsyncDisposable
 @inject IApiRequestManager ApiRequestManager
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 @inject ICaptureHubClient CaptureHubClient
+@inject IWebHostErrorHandler WebHostErrorHandler
 @inherits Rocket.Web.Host.Infrastructure.CancellableComponentBase
 
-<MudPaper Class="p-4" elevation="2">
-    <MudText Typo="Typo.h4">
-        My Scans
-        @* @if (_isConnected) *@
-        @* { *@
-        @*     <MudChip Color="Color.Success" Size="Size.Small" Class="ml-2"> *@
-        @*         <MudIcon Icon="@Icons.Material.Filled.Wifi" Size="Size.Small"/> *@
-        @*         Connected *@
-        @*     </MudChip> *@
-        @* } *@
-    </MudText>
-    <BottleRocketLoadingOverlay IsLoading="@_isLoading">
-        <MudGrid Class="pa-4">
-            @foreach (var scan in _scans)
-            {
-                <MudItem xs="12" sm="6" md="4" lg="3" xl="2">
-                    <MudCard Outlined>
-                        <MudCardMedia
-                            Image=@($"data:{scan.ContentType};base64,{scan.ThumbnailBase64}") Width="200" Height="200"/>
-                        <MudCardContent>
-                            <MudText Typo="Typo.body1">@(scan.DateScanned.ToString("g"))</MudText>
-                        </MudCardContent>
-                        <MudCardActions>
-                            <MudButton
-                                Variant="Variant.Text"
-                                Color="Color.Primary"
-                                @onclick="@(() => NavigationManager.NavigateTo($"/MyScans/{scan.Id}"))">
-                                Details
-                            </MudButton>
-                        </MudCardActions>
-                    </MudCard>
-                </MudItem>
-            }
-        </MudGrid>
-        <MudGrid Justify="Justify.Center">
+<MudText Align="Align.Center" Typo="Typo.h4">
+    My Scans
+    @* @if (_isConnected) *@
+    @* { *@
+    @*     <MudChip Color="Color.Success" Size="Size.Small" Class="ml-2"> *@
+    @*         <MudIcon Icon="@Icons.Material.Filled.Wifi" Size="Size.Small"/> *@
+    @*         Connected *@
+    @*     </MudChip> *@
+    @* } *@
+</MudText>
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    <MudGrid Justify="Justify.FlexStart" Class="pa-4">
+        @foreach (var scan in _scans)
+        {
+            <MudItem xs="12" sm="6" md="4" lg="3" xl="2">
+                <MudCard Outlined>
+                    <MudCardMedia
+                        Image=@($"data:{scan.ContentType};base64,{scan.ThumbnailBase64}") Width="200" Height="200"/>
+                    <MudCardContent>
+                        <MudText Typo="Typo.body1">@(scan.DateScanned.ToString("g"))</MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton
+                            Variant="Variant.Text"
+                            Color="Color.Primary"
+                            @onclick="@(() => NavigationManager.NavigateTo($"/MyScans/{scan.Id}"))">
+                            Details
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+    <MudDivider Class="my-4"/>
+    <MudGrid Justify="Justify.Center">
+        <MudItem>
             <MudButton
                 Variant="Variant.Outlined"
                 Color="Color.Primary"
@@ -54,9 +57,9 @@
                           ))">
                 Load More
             </MudButton>
-        </MudGrid>
-    </BottleRocketLoadingOverlay>
-</MudPaper>
+        </MudItem>
+    </MudGrid>
+</BottleRocketLoadingOverlay>
 
 @code {
     private const int DefaultPageSize = 12;
@@ -92,11 +95,8 @@
         }
         catch (Exception ex)
         {
-            Snackbar
-                .Add(
-                    ex.Message,
-                    Severity.Error
-                );
+            WebHostErrorHandler
+                .HandleException(ex);
         }
         finally
         {
@@ -130,11 +130,8 @@
                     }
                     catch (Exception ex)
                     {
-                        Snackbar
-                            .Add(
-                                ex.Message,
-                                Severity.Error
-                            );
+                        WebHostErrorHandler
+                            .HandleException(ex);
                     }
                     finally
                     {

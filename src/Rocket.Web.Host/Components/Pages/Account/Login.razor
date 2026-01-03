@@ -38,14 +38,16 @@
                 </MudItem>
             </MudGrid>
             <MudGrid Justify="Justify.FlexEnd">
-                <MudButton
-                    Variant="Variant.Outlined"
-                    Color="Color.Primary"
-                    Disabled="@(_isLoading)"
-                    Class="mt-4 mr"
-                    OnClick="@HandleLoginAsync">
-                    Login
-                </MudButton>
+                <MudItem>
+                    <MudButton
+                        Variant="Variant.Outlined"
+                        Color="Color.Primary"
+                        Disabled="@(_isLoading)"
+                        Class="mt-4 mr"
+                        OnClick="@HandleLoginAsync">
+                        Login
+                    </MudButton>
+                </MudItem>
             </MudGrid>
         </MudForm>
     </BottleRocketLoadingOverlay>

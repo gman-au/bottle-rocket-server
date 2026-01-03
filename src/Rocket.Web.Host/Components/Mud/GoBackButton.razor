@@ -1,0 +1,22 @@
+﻿@inject IJSRuntime JsRuntime
+
+<MudButton
+    Variant="Variant.Outlined"
+    Color="Color.Primary"
+    @onclick="@(async () => await GoBack())">
+    Go Back
+</MudButton>
+
+@code {
+
+    private async Task GoBack()
+    {
+        await
+            JsRuntime
+                .InvokeVoidAsync(
+                    "history.go",
+                    -1
+                );
+    }
+
+}

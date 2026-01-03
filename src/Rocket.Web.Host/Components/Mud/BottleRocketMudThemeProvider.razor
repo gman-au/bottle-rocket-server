@@ -3,7 +3,8 @@
 @code {
 
     private const string DefaultLetterSpacing = "0.14994px";
-    private const int DefaultFontWeight = 500;
+    private const string DefaultFontWeight = "500";
+    private const string DefaultLineHeight = "1.6";
 
     private static readonly string[] DefaultFontFamily = { "Rubik" };
 
@@ -14,26 +15,26 @@
     {
         Typography = new Typography
         {
-            Default = new Default
+            Default = new DefaultTypography
             {
                 FontFamily = DefaultFontFamily,
                 FontWeight = DefaultFontWeight,
-                LineHeight = 1.6,
+                LineHeight = DefaultLineHeight,
                 LetterSpacing = DefaultLetterSpacing
             },
-            Body1 = new Body1 { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing },
-            Body2 = new Body2 { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing },
-            H1 = new H1 { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing },
-            H2 = new H2 { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing },
-            H3 = new H3 { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing },
-            H4 = new H4 { FontWeight = 600, LetterSpacing = DefaultLetterSpacing },
-            H5 = new H5 { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing }
+            Body1 = new Body1Typography { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing },
+            Body2 = new Body2Typography { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing },
+            H1 = new H1Typography { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing },
+            H2 = new H2Typography { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing },
+            H3 = new H3Typography { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing },
+            H4 = new H4Typography { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing },
+            H5 = new H5Typography { FontWeight = DefaultFontWeight, LetterSpacing = DefaultLetterSpacing }
         },
         LayoutProperties = new LayoutProperties
         {
             DefaultBorderRadius = "8px"
         },
-        Palette = new PaletteLight
+        PaletteLight = new PaletteLight
         {
             Primary = "#3a881b",
             Secondary = "#1f6600",

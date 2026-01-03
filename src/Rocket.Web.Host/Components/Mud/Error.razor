@@ -56,50 +56,8 @@
                 <MudDivider Class="mt-4"/>
                 <MudSimpleTable Dense size="Size.Small" Class="mt-4">
                     <tbody>
-                    <tr>
-                        <td>
-                            <MudText
-                                Class="code-text"
-                                Typo="Typo.body1"
-                                Align="Align.Left"
-                                GutterBottom="true"
-                                Color="Color.Secondary">
-                                API Status code
-                            </MudText>
-                        </td>
-                        <td>
-                            <MudText
-                                Class="code-text"
-                                Typo="Typo.body1"
-                                Align="Align.Left"
-                                GutterBottom="true"
-                                Color="Color.Secondary">
-                                @rex.ApiStatusCode
-                            </MudText>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <MudText
-                                Class="code-text"
-                                Typo="Typo.body1"
-                                Align="Align.Left"
-                                GutterBottom="true"
-                                Color="Color.Secondary">
-                                API Message
-                            </MudText>
-                        </td>
-                        <td>
-                            <MudText
-                                Class="code-text"
-                                Typo="Typo.body1"
-                                Align="Align.Left"
-                                GutterBottom="true"
-                                Color="Color.Secondary">
-                                @rex.Message
-                            </MudText>
-                        </td>
-                    </tr>
+                    <SimpleTableRowPair Title="API Status code" Value=@rex.ApiStatusCode.ToString()/>
+                    <SimpleTableRowPair Title="API Message" Value=@rex.Message/>
                     </tbody>
                 </MudSimpleTable>
             }

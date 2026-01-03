@@ -4,21 +4,46 @@
 @using Rocket.Web.Host.Infrastructure
 @inject IApiRequestManager ApiRequestManager
 @inject IWebHostErrorHandler WebHostErrorHandler
-@inject ISnackbar Snackbar
 @inherits Rocket.Web.Host.Infrastructure.CancellableComponentBase
 
-<MudPaper Class="p-4" elevation="2">
-    <MudText Typo="Typo.h4">
-        My Scan
-    </MudText>
-    <BottleRocketLoadingOverlay IsLoading="@_isLoading">
-        <MudGrid Class="pa-4">
-            <div>
-                @_scanItemDetail?.ContentType
-            </div>
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_scanItemDetail != null)
+    {
+        <MudGrid Class="pa-8" Justify="Justify.SpaceEvenly">
+            <MudItem xs="12" sm="6">
+                <MudImage
+                    Class="mud-paper mud-paper-outlined"
+                    src=@($"data:{_scanItemDetail.ContentType};base64,{_scanItemDetail.ImageBase64}")
+                    Fluid
+                />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudStack
+                    Style="height:100%;"
+                    Justify="Justify.SpaceBetween"
+                    StretchItems="StretchItems.Middle"
+                    AlignItems="AlignItems.Start"
+                >
+                    <MudText Class="mb-4" Typo="Typo.h4">
+                        Details
+                    </MudText>
+                    <div style="width:100%;">
+                        <MudSimpleTable
+                            Bordered
+                            Dense
+                        >
+                            <tbody>
+                            <SimpleTableRowPair Title="Capture Date" Value=@_scanItemDetail.CaptureDate.ToString("yyyy-MM-dd HH:mm:ss")/>
+                            <SimpleTableRowPair Title="Content Type" Value=@_scanItemDetail.ContentType/>
+                            </tbody>
+                        </MudSimpleTable>
+                    </div>
+                    <GoBackButton/>
+                </MudStack>
+            </MudItem>
         </MudGrid>
-    </BottleRocketLoadingOverlay>
-</MudPaper>
+    }
+</BottleRocketLoadingOverlay>
 
 @code {
     private bool _isLoading;
