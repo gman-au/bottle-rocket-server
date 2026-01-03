@@ -1,12 +1,10 @@
 ﻿@page "/MyScans/{id}"
-@using Microsoft.AspNetCore.Authorization
 @using Rocket.Api.Contracts
 @using Rocket.Web.Host.Api
 @using Rocket.Web.Host.Infrastructure
 @inject IApiRequestManager ApiRequestManager
 @inject IWebHostErrorHandler WebHostErrorHandler
-@inherits Rocket.Web.Host.Infrastructure.CancellableComponentBase
-@attribute [Authorize]
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
     @if (_scanItemDetail != null)
@@ -40,7 +38,7 @@
                             </tbody>
                         </MudSimpleTable>
                     </div>
-                    <GoBackButton/>
+                    <GoBackButton BackPath="/MyScans"/>
                 </MudStack>
             </MudItem>
         </MudGrid>
@@ -58,6 +56,10 @@
     {
         try
         {
+            await
+                base
+                    .OnInitializedAsync();
+            
             _isLoading = true;
             StateHasChanged();
 

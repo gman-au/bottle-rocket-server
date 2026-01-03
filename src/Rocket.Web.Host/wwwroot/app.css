@@ -85,3 +85,7 @@ h1:focus {
 .code-text {
     font-family: "Source Code Pro" !important;
 }
+
+.dialog-blur-backdrop {
+    backdrop-filter: blur(10px);
+}

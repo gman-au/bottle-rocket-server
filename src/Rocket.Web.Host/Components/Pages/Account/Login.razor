@@ -4,7 +4,7 @@
 @inject IAuthenticationManager AuthenticationManager
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
-@inherits Rocket.Web.Host.Infrastructure.CancellableComponentBase
+@inherits Rocket.Web.Host.Infrastructure.BaseCancellableComponent
 
 <MudPaper Class="p-4" elevation="2">
     <MudText Typo="Typo.h4">Login</MudText>
@@ -94,7 +94,8 @@
                     NavigationManager
                         .NavigateTo(
                             !string.IsNullOrEmpty(ReturnUrl) ? ReturnUrl : "/",
-                            forceLoad: true
+                            replace: true
+                            //forceLoad: true
                         );
                 }
                 else

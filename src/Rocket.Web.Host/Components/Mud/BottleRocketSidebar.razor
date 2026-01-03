@@ -1,4 +1,8 @@
-﻿@inject NavigationManager NavigationManager
+﻿@using Rocket.Interfaces
+@using Rocket.Web.Host.Components.Dialog
+@inject NavigationManager NavigationManager
+@inject IAuthenticationManager AuthenticationManager
+@inject IDialogService DialogService
 
 <MudAppBar Elevation="1">
     <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@ToggleDrawer"/>
@@ -21,28 +25,53 @@
         </MudGrid>
     </MudDrawerHeader>
     <MudNavMenu Bordered="true" Color="Color.Primary">
-        <AuthorizeView Context="primary">
-            <Authorized>
-                <MudNavLink Match="NavLinkMatch.All" Href="/" Icon="@StandardIcons.DashboardIcon">Home</MudNavLink>
-                <MudNavLink Match="NavLinkMatch.All" Href="/MyAccount" Icon="@StandardIcons.AccountIcon">Account</MudNavLink>
-                <MudNavLink Match="NavLinkMatch.Prefix" Href="/MyScans" Icon="@StandardIcons.ScansIcon">My Scans</MudNavLink>
-                <MudNavLink Match="NavLinkMatch.All" Href="/Account/Logout" Icon="@StandardIcons.LogoutIcon">Logout</MudNavLink>
-            </Authorized>
-            <NotAuthorized>
-                <MudNavLink Match="NavLinkMatch.All" Href="/Account/Login" Icon="@StandardIcons.LoginIcon">Login</MudNavLink>
-            </NotAuthorized>
-        </AuthorizeView>
-        <MudNavLink Icon="@(DarkMode ? Icons.Material.Filled.WbSunny : Icons.Material.Filled.ModeNight)" OnClick="@OnDarkModeToggle">
-            @(DarkMode ? "Switch to light mode" : "Switch to dark mode")
-        </MudNavLink>
+        @if (_isInitialized)
+        {
+            <AuthorizeView Context="primary">
+                <Authorized>
+                    <MudNavLink Match="NavLinkMatch.All" Href="/" Icon="@StandardIcons.DashboardIcon">Home</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" Href="/MyAccount" Icon="@StandardIcons.AccountIcon">Account</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.Prefix" Href="/MyScans" Icon="@StandardIcons.ScansIcon">My Scans</MudNavLink>
+                    <MudNavLink Match="NavLinkMatch.All" OnClick="ConfirmLogoutAsync" Icon="@StandardIcons.LogoutIcon">Logout</MudNavLink>
+                </Authorized>
+                <NotAuthorized>
+                    <MudNavLink Match="NavLinkMatch.All" Href="/Account/Login" Icon="@StandardIcons.LoginIcon">Login</MudNavLink>
+                </NotAuthorized>
+            </AuthorizeView>
+            <MudNavLink Icon="@(DarkMode ? Icons.Material.Filled.WbSunny : Icons.Material.Filled.ModeNight)" OnClick="@OnDarkModeToggle">
+                @(DarkMode ? "Switch to light mode" : "Switch to dark mode")
+            </MudNavLink>
+        }
     </MudNavMenu>
     <MudSpacer/>
     <BottleRocketVersion/>
 </MudDrawer>
 
 @code {
-    
+
     private bool _open = true;
+
+    private bool _isInitialized = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Subscribe to auth changes
+        AuthenticationManager.OnAuthenticationStateChanged += HandleAuthStateChanged;
+        
+        // Wait for auth check to complete (this triggers EnsureInitializedAsync)
+        await 
+            AuthenticationManager
+                .IsAuthenticatedAsync();
+        
+        // Now we know auth state is determined
+        _isInitialized = true;
+    }
+
+    private async void HandleAuthStateChanged()
+    {
+        await 
+            InvokeAsync(StateHasChanged);
+    }
 
     private void ToggleDrawer()
     {
@@ -56,5 +85,32 @@
 
     [Parameter]
     public EventCallback<MouseEventArgs> OnDarkModeToggle { get; set; }
+
+    private async Task ConfirmLogoutAsync()
+    {
+        var dialog =
+            await
+                DialogService
+                    .ShowAsync<ConfirmLogoutDialog>();
+
+        var result =
+            await
+                dialog
+                    .Result;
+
+        if (!(result?.Canceled ?? true))
+        {
+            NavigationManager
+                .NavigateTo(
+                    "/Account/Logout",
+                    forceLoad: true
+                );
+        }
+    }
+
+    public void Dispose()
+    {
+        AuthenticationManager.OnAuthenticationStateChanged -= HandleAuthStateChanged;
+    }
 
 }

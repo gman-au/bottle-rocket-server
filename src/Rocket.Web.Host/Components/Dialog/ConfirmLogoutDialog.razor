@@ -1,0 +1,50 @@
+﻿<MudDialog Class="p-2">
+    <TitleContent>
+        <MudText Typo="Typo.h4">
+            Logout
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Typo="Typo.body1">
+            Do you wish to logout?
+        </MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton
+            Variant="Variant.Outlined"
+            OnClick="Cancel">
+            Cancel
+        </MudButton>
+        <MudButton
+            Variant="Variant.Outlined"
+            Color="Color.Warning"
+            OnClick="Submit">
+            Log out
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await
+            MudDialog
+                .SetOptionsAsync(
+                    new DialogOptions
+                    {
+                        FullWidth = true,
+                        MaxWidth = MaxWidth.Small,
+                        BackgroundClass = "dialog-blur-backdrop"
+                    }
+                );
+    }
+
+}

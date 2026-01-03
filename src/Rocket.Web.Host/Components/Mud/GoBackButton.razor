@@ -1,22 +1,34 @@
 ﻿@inject IJSRuntime JsRuntime
+@inject NavigationManager NavigationManager
 
 <MudButton
     Variant="Variant.Outlined"
     Color="Color.Primary"
-    @onclick="@(async () => await GoBack())">
+    @onclick="@(async () => await GoBackAsync())">
     Go Back
 </MudButton>
 
 @code {
 
-    private async Task GoBack()
+    [Parameter]
+    public string BackPath { get; set; } = null;
+    
+    private async Task GoBackAsync()
     {
-        await
-            JsRuntime
-                .InvokeVoidAsync(
-                    "history.go",
-                    -1
-                );
+        if (!string.IsNullOrEmpty(BackPath))
+        {
+            NavigationManager
+                .NavigateTo(BackPath);
+        }
+        else
+        {
+            await
+                JsRuntime
+                    .InvokeVoidAsync(
+                        "history.go",
+                        -1
+                    );
+        }
     }
 
 }

@@ -21,7 +21,7 @@ namespace Rocket.Web.Host.Authentication
         private readonly ProtectedSessionStorage _sessionStorage;
         private string _cachedAuthHeader;
         private Task _initializationTask;
-        private bool _initialized = false;
+        private bool _initialized;
 
         public BasicAuthenticationManager(
             IOptions<ApiConfigurationOptions> apiConfigurationOptionsAccessor,

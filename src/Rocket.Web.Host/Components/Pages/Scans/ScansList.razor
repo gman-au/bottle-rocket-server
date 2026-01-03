@@ -1,17 +1,14 @@
 ﻿@page "/MyScans"
-@using Microsoft.AspNetCore.Authorization
 @using Rocket.Api.Contracts
 @using Rocket.Web.Host.Api
 @using Rocket.Web.Host.HubClients
 @using Rocket.Web.Host.Infrastructure
 @implements IAsyncDisposable
 @inject IApiRequestManager ApiRequestManager
-@inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 @inject ICaptureHubClient CaptureHubClient
 @inject IWebHostErrorHandler WebHostErrorHandler
-@inherits Rocket.Web.Host.Infrastructure.CancellableComponentBase
-@attribute [Authorize]
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <MudText Align="Align.Center" Typo="Typo.h4">
     My Scans
@@ -32,7 +29,7 @@
                     <MudCardMedia
                         Image=@($"data:{scan.ContentType};base64,{scan.ThumbnailBase64}") Width="200" Height="200"/>
                     <MudCardContent>
-                        <MudText Typo="Typo.body1">@(scan.DateScanned.ToString("g"))</MudText>
+                        <MudText Typo="Typo.subtitle2">@(scan.DateScanned.ToString("g"))</MudText>
                     </MudCardContent>
                     <MudCardActions>
                         <MudButton

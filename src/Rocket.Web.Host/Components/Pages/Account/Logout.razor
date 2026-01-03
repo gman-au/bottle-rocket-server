@@ -3,27 +3,38 @@
 @inject IAuthenticationManager AuthenticationManager
 @inject NavigationManager NavigationManager
 
-<MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
-    <MudPaper Elevation="4" Class="pa-8" Style="text-align: center;">
-        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+<MudPaper Elevation="4" Class="pa-8" Style="text-align: center;">
+    <BottleRocketLoadingOverlay IsLoading="true">
         <MudText Typo="Typo.h6" Class="mt-4">Logging out...</MudText>
-    </MudPaper>
-</MudContainer>
+    </BottleRocketLoadingOverlay>
+</MudPaper>
 
 @code {
-    protected override async Task OnInitializedAsync()
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            await
+                AuthenticationManager
+                    .LogoutAsync();
+
+            // Small delay to ensure storage operation completes
+            await
+                Task
+                    .Delay(1000);
+
+            // Redirect to login page
+            NavigationManager
+                .NavigateTo(
+                    "/",
+                    forceLoad: true
+                );
+        }
+
         await 
-            AuthenticationManager
-                .LogoutAsync();
-        
-        // Small delay to ensure state propagates
-        await 
-            Task
-                .Delay(100);
-        
-        // Redirect to login page
-        NavigationManager
-            .NavigateTo("/", forceLoad: true);
+            base
+                .OnAfterRenderAsync(firstRender);
     }
+
 }
