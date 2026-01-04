@@ -1,3 +1,58 @@
 ﻿@page "/"
 
-Welcome to your new app.
+<MudPaper Class="p-4" elevation="2">
+    <MudText Align="Align.Center" Typo="Typo.h3" Class="mb-4">
+        Welcome to Bottle Rocket
+    </MudText>
+
+    <MudCarousel
+        Class="mud-width-full rounded-2"
+        Style="height:400px;"
+        ShowArrows
+        ShowBullets
+        EnableSwipeGesture
+        AutoCycleTime="@TimeSpan.FromSeconds(1000)"
+        TData="object"
+    >
+        <MudCarouselItem
+            Class="px-4 carousel-help-container"
+            Transition="Transition.Slide"
+            Color="@Color.Tertiary">
+            <MudGrid Justify="Justify.Center" Container="true">
+                <MudItem xs="12">
+                    <MudImage Class="carousel-help-image" Fluid Src="@Assets["/img/my_scans.png"]"/>
+                    <MudText Class="carousel-help-text pa-6" Typo="Typo.body1">
+                        Use the
+                        <MudLink Href="/MyScans">My Scans</MudLink>
+                        link to view the scanned images you have uploaded.
+                    </MudText>
+                </MudItem>
+            </MudGrid>
+        </MudCarouselItem>
+        <MudCarouselItem
+            Class="px-4 carousel-help-container"
+            Transition="Transition.Slide"
+            Color="@Color.Tertiary"
+        >
+            <MudGrid Justify="Justify.SpaceEvenly" Container="true">
+                <MudItem xs="12">
+                    <MudImage Class="carousel-help-image" Fluid Src="@Assets["/img/play_store.png"]"/>
+                    
+                </MudItem>
+                <MudFlexBreak/>
+                <MudItem xs="12" md="6" Style="position:absolute;">
+                    <MudText Class="pa-6" Align="Align.Center" Typo="Typo.body1">
+                        Download the Bottle Rocket app from the Google Play Store and connect it to this server.
+                    </MudText>
+                    <div style="width:100%;">
+                        <MudLink
+                            Target="_blank"
+                            Href="https://play.google.com/store/apps/details?id=au.com.gman.bottlerocket">
+                            <MudImage Class="carousel-badge" Src="@Assets["/img/google-play-badge.png"]"/>
+                        </MudLink>
+                    </div>
+                </MudItem>
+            </MudGrid>
+        </MudCarouselItem>
+    </MudCarousel>
+</MudPaper>

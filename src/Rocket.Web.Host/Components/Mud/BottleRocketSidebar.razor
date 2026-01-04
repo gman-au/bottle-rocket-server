@@ -1,8 +1,11 @@
-﻿@using Rocket.Interfaces
+﻿@using Microsoft.Extensions.Options
+@using Rocket.Interfaces
 @using Rocket.Web.Host.Components.Dialog
+@using Rocket.Web.Host.Options
 @inject NavigationManager NavigationManager
 @inject IAuthenticationManager AuthenticationManager
 @inject IDialogService DialogService
+@inject IOptions<SiteConfigurationOptions> SiteConfigurationOptions
 
 <MudAppBar Elevation="1">
     <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@ToggleDrawer"/>
@@ -41,6 +44,12 @@
             <MudNavLink Icon="@(DarkMode ? Icons.Material.Filled.WbSunny : Icons.Material.Filled.ModeNight)" OnClick="@OnDarkModeToggle">
                 @(DarkMode ? "Switch to light mode" : "Switch to dark mode")
             </MudNavLink>
+            if (!string.IsNullOrEmpty(SiteConfigurationOptions?.Value?.DocumentationUrl))
+            {
+                <MudNavLink Href="@SiteConfigurationOptions?.Value?.DocumentationUrl" Icon="@StandardIcons.HelpIcon" ForceLoad="true" Target="_blank">
+                    Help
+                </MudNavLink>
+            }
         }
     </MudNavMenu>
     <MudSpacer/>

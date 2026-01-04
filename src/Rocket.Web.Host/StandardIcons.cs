@@ -9,5 +9,6 @@ namespace Rocket.Web.Host
         public const string LogoutIcon = Icons.Material.Filled.Logout;
         public const string ScansIcon = Icons.Material.Filled.DocumentScanner;
         public const string AccountIcon = Icons.Material.Filled.Person;
+        public const string HelpIcon = Icons.Material.Filled.Help;
     }
 }

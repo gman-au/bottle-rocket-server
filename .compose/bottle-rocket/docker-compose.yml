@@ -1,0 +1,65 @@
+services:
+    mongodb:
+        container_name: Bottle.Rocket.MongoDb
+        image: mongo:latest
+        ports:
+            - "27017:27017"      
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USER}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
+        healthcheck:
+            test: ["CMD-SHELL", "mongosh --eval 'db.runCommand({ ping: 1 }).ok' --quiet || exit 1"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 30s
+        volumes:
+            - mongo-data:/data/db
+        
+    bottle-rocket-api:
+        container_name: Bottle.Rocket.Api
+        image: ghcr.io/gman-au/bottle-rocket-server/bottle-rocket-server-api:latest
+        ports:
+            - "3001:8080"
+        depends_on:
+            mongodb:
+                condition: service_healthy    
+        environment:
+            MongoDbConfigurationOptions__ConnectionString: "mongodb://${MONGODB_ROOT_USER}:${MONGODB_ROOT_PASSWORD}@Bottle.Rocket.MongoDb:27017"
+            MongoDbConfigurationOptions__DatabaseName: "BottleRocket"
+            LocalBlobConfigurationOptions__LocalBasePath: "/bottle-rocket"
+            LocalBlobConfigurationOptions__LocalSubfolder: "scans"
+            CorsSettings__AllowedOrigins: "http://Bottle.Rocket.Web:8080"
+            ASPNETCORE_URLS: "http://+:8080"
+            ASPNETCORE_ENVIRONMENT: "Production"
+        healthcheck:
+            test: ["CMD-SHELL", "curl -f http://localhost:8080/api/health | grep -q 'Status OK' || exit 1"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 30s        
+        volumes:
+            - api-scans:/bottle-rocket/scans
+        
+    bottle-rocket-web:
+        container_name: Bottle.Rocket.Web
+        image: ghcr.io/gman-au/bottle-rocket-server/bottle-rocket-server-web:latest
+        ports:
+            - "8080:8080"    
+        depends_on:
+            bottle-rocket-api:
+                condition: service_healthy    
+        environment:
+            ApiConfigurationOptions__BaseUrl: "http://Bottle.Rocket.Api:8080"
+            ASPNETCORE_URLS: "http://+:8080"
+            ASPNETCORE_ENVIRONMENT: "Production"
+
+volumes:
+    mongo-data:
+        name: mongo-data
+    api-scans:
+        name: api-scans
+        
+networks:
+    default:
+        name: ${RUNTIME_NETWORK}

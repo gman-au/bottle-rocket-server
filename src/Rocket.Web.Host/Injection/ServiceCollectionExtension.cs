@@ -35,6 +35,12 @@ namespace Rocket.Web.Host.Injection
                     configuration
                         .GetSection(nameof(ApiConfigurationOptions))
                 );
+            
+            services
+                .Configure<SiteConfigurationOptions>(
+                    configuration
+                        .GetSection(nameof(SiteConfigurationOptions))
+                );
 
             services
                 .AddTransient<IApiRequestManager, ApiRequestManager>()
