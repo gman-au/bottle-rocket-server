@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Handlers
@@ -38,7 +39,7 @@ namespace Rocket.Api.Host.Handlers
                     AuthenticationHeaderValue
                         .Parse(Request.Headers.Authorization);
                 
-                if (authHeader.Scheme != "Basic")
+                if (authHeader.Scheme != DomainConstants.Basic)
                 {
                     return 
                         AuthenticateResult

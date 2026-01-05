@@ -29,6 +29,11 @@ namespace Rocket.Web.Host.Authentication
                     _authenticationManager
                         .IsAuthenticatedAsync();
 
+            var username =
+                await
+                    _authenticationManager
+                        .GetUserNameAsync();
+            
             _logger
                 .LogInformation(
                     "GetAuthenticationStateAsync: IsAuthenticated = {isAuth}",
@@ -41,7 +46,7 @@ namespace Rocket.Web.Host.Authentication
                         [
                             new Claim(
                                 ClaimTypes.Name,
-                                "User"
+                                username ?? "User"
                             )
                         ],
                         DomainConstants

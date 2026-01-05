@@ -14,6 +14,8 @@ namespace Rocket.Interfaces
         
         Task<string> GetAuthorizationHeaderAsync();
         
+        Task<string> GetUserNameAsync();
+        
         event Action OnAuthenticationStateChanged;
     }
 }

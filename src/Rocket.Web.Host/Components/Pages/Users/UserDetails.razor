@@ -7,6 +7,7 @@
 @inject IApiRequestManager ApiRequestManager
 @inject IEmailAddressValidator EmailAddressValidator
 @inject IWebHostErrorHandler WebHostErrorHandler
+@inject ISnackbar Snackbar
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
@@ -205,6 +206,12 @@
                     CreatedAt = _currentModel.CreatedAt,
                     NewPassword = null
                 };
+                
+                Snackbar
+                    .Add(
+                        "The user has been updated.",
+                        Severity.Success
+                    );
             }
             catch (Exception ex)
             {

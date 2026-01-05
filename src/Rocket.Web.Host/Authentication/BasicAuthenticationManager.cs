@@ -20,6 +20,7 @@ namespace Rocket.Web.Host.Authentication
         private readonly ILogger<BasicAuthenticationManager> _logger;
         private readonly ProtectedSessionStorage _sessionStorage;
         private string _cachedAuthHeader;
+        private string _cachedUsername;
         private Task _initializationTask;
         private bool _initialized;
 
@@ -58,7 +59,7 @@ namespace Rocket.Web.Host.Authentication
                                 .GetBytes($"{username}:{password}")
                         );
 
-                var authHeader = $"Basic {credentials}";
+                var authHeader = $"{DomainConstants.Basic} {credentials}";
 
                 var request =
                     new HttpRequestMessage(
@@ -81,6 +82,7 @@ namespace Rocket.Web.Host.Authentication
                 if (response.IsSuccessStatusCode)
                 {
                     _cachedAuthHeader = authHeader;
+                    _cachedUsername = username;
 
                     try
                     {
@@ -135,6 +137,7 @@ namespace Rocket.Web.Host.Authentication
         public async Task LogoutAsync()
         {
             _cachedAuthHeader = null;
+            _cachedUsername = null;
 
             try
             {
@@ -162,6 +165,42 @@ namespace Rocket.Web.Host.Authentication
 
             return 
                 _cachedAuthHeader;
+        }
+
+        public async Task<string> GetUserNameAsync()
+        {
+            await 
+                EnsureInitializedAsync();
+            
+            if (string.IsNullOrEmpty(_cachedAuthHeader))
+                return null;
+    
+            try
+            {
+                // Auth header format: "Basic base64(username:password)"
+                var base64 = 
+                    _cachedAuthHeader
+                        .Replace($"{DomainConstants.Basic} ", "");
+                
+                var decoded = 
+                    Encoding
+                        .UTF8
+                        .GetString(Convert.FromBase64String(base64)
+                        );
+                
+                var username =
+                    decoded
+                        .Split(':')[0];
+                
+                return username;
+            }
+            catch (Exception ex)
+            {
+                _logger
+                    .LogWarning(ex, "Failed to extract username from auth header");
+                
+                return null;
+            }
         }
 
         public async Task<bool> IsAuthenticatedAsync()
