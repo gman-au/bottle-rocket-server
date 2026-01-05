@@ -12,51 +12,26 @@ namespace Rocket.Infrastructure
     public class UserManager(
         ILogger<UserManager> logger,
         IUserRepository userRepository,
-        IPasswordHasher passwordHasher
+        IPasswordHasher passwordHasher,
+        IEmailAddressValidator emailAddressValidator
     ) : IUserManager
     {
         public async Task<User> CreateUserAccountAsync(
-            string username,
+            string userName,
             string password,
+            bool isTheNewAdmin,
             CancellationToken cancellationToken
         )
         {
             try
             {
-                // Check if username already exists
-                var existingUser =
-                    await
-                        userRepository
-                            .GetUserByUsernameAsync(
-                                username,
-                                cancellationToken
-                            );
-
-                if (existingUser != null)
-                {
-                    throw new RocketException(
-                        "Username already exists",
-                        ApiStatusCodeEnum.UserAlreadyExists
+                await
+                    ThrowIfUserNameExistsOrInvalidAsync(
+                        userName,
+                        cancellationToken
                     );
-                }
 
-                // Validate username
-                if (string.IsNullOrWhiteSpace(username) || username.Length < 3)
-                {
-                    throw new RocketException(
-                        "Username must be at least 3 characters",
-                        ApiStatusCodeEnum.InvalidUsername
-                    );
-                }
-
-                // Validate password
-                if (string.IsNullOrWhiteSpace(password) || password.Length < 8)
-                {
-                    throw new RocketException(
-                        "Password must be at least 8 characters",
-                        ApiStatusCodeEnum.InvalidPassword
-                    );
-                }
+                ThrowIfPasswordInvalid(password);
 
                 var passwordHash =
                     passwordHasher
@@ -65,9 +40,10 @@ namespace Rocket.Infrastructure
                 var newUser =
                     new User
                     {
-                        Username = username,
+                        Username = userName,
                         PasswordHash = passwordHash,
                         CreatedAt = DateTime.UtcNow,
+                        IsAdmin = isTheNewAdmin,
                         IsActive = true
                     };
 
@@ -81,7 +57,7 @@ namespace Rocket.Infrastructure
                 logger
                     .LogInformation(
                         "User account created: {username}",
-                        username
+                        userName
                     );
 
                 return newUser;
@@ -92,7 +68,7 @@ namespace Rocket.Infrastructure
                     .LogError(
                         ex,
                         "Error creating user account for {username}",
-                        username
+                        userName
                     );
                 throw;
             }
@@ -102,5 +78,149 @@ namespace Rocket.Infrastructure
             await
                 userRepository
                     .DeactivateAdminUserAsync(cancellationToken);
+
+
+        public async Task UpdateAccountIsAdminAsync(
+            string userId,
+            bool value,
+            CancellationToken cancellationToken
+        ) =>
+            await
+                userRepository
+                    .UpdateUserFieldAsync(
+                        userId,
+                        o => o.IsAdmin,
+                        value,
+                        cancellationToken
+                    );
+
+        public async Task<User> GetUserByUserIdAsync(string userId, CancellationToken cancellationToken) =>
+            await
+                userRepository
+                    .GetUserByUserIdAsync(
+                        userId,
+                        cancellationToken
+                    );
+
+        public async Task UpdateAccountAsync(
+            string userId,
+            string userName,
+            bool? isActive,
+            bool? isAdmin,
+            string newPassword,
+            CancellationToken cancellationToken
+        )
+        {
+            if (isActive.HasValue)
+            {
+                await
+                    userRepository
+                        .UpdateUserFieldAsync(
+                            userId,
+                            o => o.IsActive,
+                            isActive.Value,
+                            cancellationToken
+                        );
+            }
+
+            if (isAdmin.HasValue)
+            {
+                await
+                    userRepository
+                        .UpdateUserFieldAsync(
+                            userId,
+                            o => o.IsAdmin,
+                            isAdmin.Value,
+                            cancellationToken
+                        );
+            }
+
+            if (!string.IsNullOrEmpty(userName))
+            {
+                await
+                    ThrowIfUserNameExistsOrInvalidAsync(
+                        userName,
+                        cancellationToken
+                    );
+                
+                await
+                    userRepository
+                        .UpdateUserFieldAsync(
+                            userId,
+                            o => o.Username,
+                            userName,
+                            cancellationToken
+                        );
+            }
+
+            if (!string.IsNullOrEmpty(newPassword))
+            {
+                ThrowIfPasswordInvalid(newPassword);
+                
+                var passwordHash =
+                    passwordHasher
+                        .HashPassword(newPassword);
+                
+                await
+                    userRepository
+                        .UpdateUserFieldAsync(
+                            userId,
+                            o => o.PasswordHash,
+                            passwordHash,
+                            cancellationToken
+                        );
+            }
+        }
+
+        private async Task ThrowIfUserNameExistsOrInvalidAsync(
+            string userName,
+            CancellationToken cancellationToken
+        )
+        {
+            if (!emailAddressValidator.IsValid(userName))
+            {
+                throw
+                    new RocketException(
+                        "Invalid user name - please use an email address",
+                        ApiStatusCodeEnum.InvalidUsername
+                    );
+            }
+
+            var existingUser =
+                await
+                    userRepository
+                        .GetUserByUsernameAsync(
+                            userName,
+                            cancellationToken
+                        );
+
+            if (existingUser != null)
+            {
+                throw new RocketException(
+                    "Username already exists",
+                    ApiStatusCodeEnum.UserAlreadyExists
+                );
+            }
+
+            if (string.IsNullOrWhiteSpace(userName) || userName.Length < 3)
+            {
+                throw new RocketException(
+                    "Username must be at least 3 characters",
+                    ApiStatusCodeEnum.InvalidUsername
+                );
+            }
+        }
+
+        private void ThrowIfPasswordInvalid(string password)
+        {
+            // Validate password
+            if (string.IsNullOrWhiteSpace(password) || password.Length < 8)
+            {
+                throw new RocketException(
+                    "Password must be at least 8 characters",
+                    ApiStatusCodeEnum.InvalidPassword
+                );
+            }
+        }
     }
 }

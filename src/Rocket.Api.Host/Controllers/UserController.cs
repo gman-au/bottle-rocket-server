@@ -3,16 +3,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 using Rocket.Api.Contracts;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers
 {
     [ApiController]
-    [Route("/api/user")]
+    [Route("/api/users")]
     [Authorize]
     public class UserController(
         ILogger<UserController> logger,
@@ -20,6 +22,64 @@ namespace Rocket.Api.Host.Controllers
         IStartupInitialization startupInitialization
     ) : ControllerBase
     {
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserAsync(
+            string id,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation(
+                    "Received user request for id: {id}",
+                    id
+                );
+
+            if (!ObjectId
+                    .TryParse(
+                        id,
+                        out _
+                    )
+               )
+            {
+                // invalid id = assume user would not exist
+                throw new RocketException(
+                    $"User id: {id} not found",
+                    ApiStatusCodeEnum.UnknownUser
+                );
+            }
+
+            var user =
+                await
+                    userManager
+                        .GetUserByUserIdAsync(
+                            id,
+                            cancellationToken
+                        );
+
+            if (user == null)
+            {
+                throw new RocketException(
+                    $"User id: {id} not found",
+                    ApiStatusCodeEnum.UnknownUser
+                );
+            }
+
+            var response =
+                new UserDetail
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    CreatedAt = user.CreatedAt.ToLocalTime(),
+                    LastLoginAt = user.LastLoginAt?.ToLocalTime(),
+                    IsActive = user.IsActive,
+                    IsAdmin = user.IsAdmin
+                };
+
+            return
+                response
+                    .AsApiSuccess();
+        }
+
         [HttpPost("create")]
         public async Task<IActionResult> CreateUserAsync(
             [FromBody] CreateUserRequest request,
@@ -32,6 +92,16 @@ namespace Rocket.Api.Host.Controllers
                     request.Username
                 );
 
+            // Check if this is first start (admin is creating first user)
+            var currentUsername =
+                User
+                    .Identity?
+                    .Name;
+
+            var newUserIsAdmin =
+                currentUsername == DomainConstants.AdminUserName ||
+                request.IsTheNewAdmin;
+
             // Create the new user account
             var newUser =
                 await
@@ -39,14 +109,9 @@ namespace Rocket.Api.Host.Controllers
                         .CreateUserAccountAsync(
                             request.Username,
                             request.Password,
+                            newUserIsAdmin,
                             cancellationToken
                         );
-
-            // Check if this is first start (admin is creating first user)
-            var currentUsername =
-                User
-                    .Identity?
-                    .Name;
 
             if (currentUsername == DomainConstants.AdminUserName)
             {
@@ -65,6 +130,25 @@ namespace Rocket.Api.Host.Controllers
                             .DeactivateAdminAccountAsync(cancellationToken);
                 }
             }
+            else
+            {
+                if (newUserIsAdmin)
+                {
+                    var userId =
+                        User
+                            .FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?
+                            .Value;
+
+                    // set this user = not admin
+                    await
+                        userManager
+                            .UpdateAccountIsAdminAsync(
+                                userId,
+                                false,
+                                cancellationToken
+                            );
+                }
+            }
 
             var response =
                 new CreateUserResponse
@@ -72,6 +156,59 @@ namespace Rocket.Api.Host.Controllers
                     Username = newUser.Username,
                     CreatedAt = newUser.CreatedAt
                 };
+
+            return
+                response
+                    .AsApiSuccess();
+        }
+
+        [HttpPost("update")]
+        public async Task<IActionResult> UpdateUserAsync(
+            [FromBody] UserDetail request,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation(
+                    "Received user update request for username: {id}",
+                    request.Id
+                );
+
+            var newUserIsAdmin =
+                request
+                    .IsAdmin;
+
+            // Update the user account
+            await
+                userManager
+                    .UpdateAccountAsync(
+                        request.Id,
+                        request.Username,
+                        request.IsActive,
+                        request.IsAdmin,
+                        request.NewPassword,
+                        cancellationToken
+                    );
+
+            if (newUserIsAdmin.GetValueOrDefault())
+            {
+                var userId =
+                    User
+                        .FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?
+                        .Value;
+
+                // set this user => not admin
+                await
+                    userManager
+                        .UpdateAccountIsAdminAsync(
+                            userId,
+                            false,
+                            cancellationToken
+                        );
+            }
+
+            var response =
+                new UpdateUserResponse();
 
             return
                 response

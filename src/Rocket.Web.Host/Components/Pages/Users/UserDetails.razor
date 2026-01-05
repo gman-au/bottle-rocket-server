@@ -1,0 +1,256 @@
+﻿@page "/Users/{id}"
+@using System.Text.RegularExpressions
+@using Rocket.Api.Contracts
+@using Rocket.Interfaces
+@using Rocket.Web.Host.Api
+@using Rocket.Web.Host.Infrastructure
+@inject IApiRequestManager ApiRequestManager
+@inject IEmailAddressValidator EmailAddressValidator
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_newModel != null)
+    {
+        <MudForm
+            Model="@_newModel"
+            @ref="_form">
+            <MudPaper Class="p-4" elevation="2">
+                <MudText Class="mb-4" Typo="Typo.h4">
+                    Details
+                </MudText>
+
+                <MudGrid>
+                    <MudItem sm="12" lg="6" xl="4">
+                        <MudTextField
+                            T="string"
+                            Label="Date Created"
+                            ReadOnly
+                            Disabled
+                            Text="@(_newModel.CreatedAt?.ToString("g"))"
+                            OnlyValidateIfDirty/>
+                    </MudItem>
+                    <MudItem sm="12" lg="6" xl="4">
+                        <MudTextField
+                            T="string"
+                            Label="Last Login"
+                            ReadOnly
+                            Disabled
+                            Text="@(_newModel.LastLoginAt?.ToString("g"))"
+                            OnlyValidateIfDirty/>
+                    </MudItem>
+                    <MudFlexBreak/>
+                    <MudItem sm="12" lg="6" xl="4">
+                        <MudTextField
+                            T="string"
+                            Label="Username"
+                            Required="true"
+                            Validation="@(new Func<string, bool>(EmailAddressValidator.IsValid))"
+                            RequiredError="Please enter a valid email address"
+                            Disabled="@(_isLoading)"
+                            @bind-Value="_newModel.Username"
+                            For="@(() => _newModel.Username)"
+                            OnlyValidateIfDirty/>
+                    </MudItem>
+                    <MudItem sm="12" lg="6" xl="4">
+                        <MudTextField
+                            T="string"
+                            Label="Password"
+                            HelperText="Choose a strong password"
+                            @ref="_pwField1"
+                            InputType="InputType.Password"
+                            @bind-Value="_newModel.NewPassword"
+                            For="@(() => _newModel.NewPassword)"
+                            Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))"
+                            RequiredError="Password is required!"/>
+                    </MudItem>
+                    <MudItem sm="12" lg="6" xl="4">
+                        <MudTextField
+                            T="string"
+                            Label="Password"
+                            HelperText="Repeat the password"
+                            InputType="InputType.Password"
+                            Validation="@(new Func<string, string>(PasswordMatch))"/>
+                    </MudItem>
+                    <MudFlexBreak/>
+                    <MudItem sm="12" lg="6" xl="4">
+                        <MudCheckBox
+                            TriState
+                            Disabled="@(_isLoading)"
+                            @bind-Value="@_newModel.IsActive">
+                            User is active
+                        </MudCheckBox>
+                    </MudItem>
+                    <MudItem sm="12" lg="6" xl="4">
+                        <MudCheckBox
+                            TriState
+                            Disabled="@(_isLoading)"
+                            @bind-Value="@_newModel.IsAdmin">
+                            Check this box to make this user the administrator.
+                        </MudCheckBox>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="align-start" Justify="Justify.FlexEnd">
+                    <MudItem>
+                        <GoBackButton BackPath="/Users"/>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton
+                            Variant="Variant.Outlined"
+                            Color="Color.Success"
+                            Disabled="@(_isLoading)"
+                            OnClick="@SubmitAsync">
+                            Submit
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudForm>
+    }
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    MudForm _form;
+
+    private bool _isLoading;
+    private UserDetail _currentModel = null;
+    private UserDetail _newModel = null;
+    private MudTextField<string> _pwField1;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+
+            _currentModel =
+                await
+                    ApiRequestManager
+                        .GetUserByIdAsync(
+                            Id,
+                            BaseCancellationToken
+                        );
+
+            _newModel = new UserDetail
+            {
+                Id = _currentModel.Id,
+                Username = _currentModel.Username,
+                IsActive = _currentModel.IsActive,
+                IsAdmin = _currentModel.IsAdmin,
+                LastLoginAt = _currentModel.LastLoginAt,
+                CreatedAt = _currentModel.CreatedAt,
+                NewPassword = null
+            };
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SubmitAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                var userNameValue = _currentModel.Username != _newModel.Username ? _newModel.Username : null;
+                var isActiveValue = _currentModel.IsActive != _newModel.IsActive ? _newModel.IsActive : null;
+                var isAdminValue = _currentModel.IsAdmin != _newModel.IsAdmin ? _newModel.IsAdmin : null;
+                var newPasswordValue = _currentModel.NewPassword != _newModel.NewPassword ? _newModel.NewPassword : null;
+
+                await
+                    ApiRequestManager
+                        .UpdateUserAsync(
+                            new UserDetail
+                            {
+                                Id = _newModel.Id,
+                                Username = _currentModel.Username != _newModel.Username ? _newModel.Username : null,
+                                IsActive = _currentModel.IsActive != _newModel.IsActive ? _newModel.IsActive : null,
+                                IsAdmin = _currentModel.IsAdmin != _newModel.IsAdmin ? _newModel.IsAdmin : null,
+                                NewPassword = _currentModel.NewPassword != _newModel.NewPassword ? _newModel.NewPassword : null
+                            },
+                            BaseCancellationToken
+                        );
+
+                _currentModel = new UserDetail
+                {
+                    Id = _currentModel.Id,
+                    Username = userNameValue ?? _currentModel.Username,
+                    IsActive = isActiveValue ?? _currentModel.IsActive,
+                    IsAdmin = isAdminValue ?? _currentModel.IsAdmin,
+                    LastLoginAt = _currentModel.LastLoginAt,
+                    CreatedAt = _currentModel.CreatedAt,
+                    NewPassword = null
+                };
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private static IEnumerable<string> PasswordStrength(string pw)
+    {
+        if (string.IsNullOrWhiteSpace(pw))
+        {
+            // empty -> won't update
+            yield break;
+        }
+
+        if (pw.Length < 8)
+            yield return "Password must be at least of length 8";
+        if (!Regex.IsMatch(
+                pw,
+                @"[A-Z]"
+            ))
+            yield return "Password must contain at least one capital letter";
+        if (!Regex.IsMatch(
+                pw,
+                @"[a-z]"
+            ))
+            yield return "Password must contain at least one lowercase letter";
+        if (!Regex.IsMatch(
+                pw,
+                @"[0-9]"
+            ))
+            yield return "Password must contain at least one digit";
+    }
+
+    private string PasswordMatch(string arg)
+    {
+        if (_pwField1.Value != arg)
+            return "Passwords don't match";
+        return null;
+    }
+
+}

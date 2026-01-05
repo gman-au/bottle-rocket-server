@@ -64,8 +64,10 @@ namespace Rocket.Infrastructure
                 // Update last login
                 await
                     userRepository
-                        .UpdateLastLoginAsync(
+                        .UpdateUserFieldAsync(
                             user.Id,
+                            o => o.LastLoginAt,
+                            DateTime.UtcNow,
                             cancellationToken
                         );
 
