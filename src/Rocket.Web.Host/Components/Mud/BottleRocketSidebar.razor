@@ -1,11 +1,15 @@
 ﻿@using System.Security.Claims
+@using System.Threading
 @using Microsoft.Extensions.Options
+@using Rocket.Domain.Enum
 @using Rocket.Interfaces
+@using Rocket.Web.Host.Api
 @using Rocket.Web.Host.Components.Dialog
 @using Rocket.Web.Host.Options
 @inject NavigationManager NavigationManager
 @inject IAuthenticationManager AuthenticationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IApiRequestManager ApiRequestManager
 @inject IDialogService DialogService
 @inject IOptions<SiteConfigurationOptions> SiteConfigurationOptions
 
@@ -46,10 +50,19 @@
         {
             <AuthorizeView Context="primary">
                 <Authorized>
-                    <MudNavLink Match="NavLinkMatch.All" Href="/" Icon="@StandardIcons.DashboardIcon">Home</MudNavLink>
-                    @* <MudNavLink Match="NavLinkMatch.All" Href="/MyAccount" Icon="@StandardIcons.AccountIcon">Account</MudNavLink> *@
-                    <MudNavLink Match="NavLinkMatch.Prefix" Href="/MyScans" Icon="@StandardIcons.ScansIcon">My Scans</MudNavLink>
-                    <MudNavLink Match="NavLinkMatch.All" OnClick="ConfirmLogoutAsync" Icon="@StandardIcons.LogoutIcon">Logout</MudNavLink>
+                    @if (_isAdmin && _isSetupPending)
+                    {
+                        <MudNavLink Match="NavLinkMatch.All" Href="/CompleteSetup" Icon="@StandardIcons.CompleteSetupIcon">
+                            Complete setup
+                        </MudNavLink>
+                    }
+                    else
+                    {
+                        <MudNavLink Match="NavLinkMatch.All" Href="/" Icon="@StandardIcons.DashboardIcon">Home</MudNavLink>
+                        @* <MudNavLink Match="NavLinkMatch.All" Href="/MyAccount" Icon="@StandardIcons.AccountIcon">Account</MudNavLink> *@
+                        <MudNavLink Match="NavLinkMatch.Prefix" Href="/MyScans" Icon="@StandardIcons.ScansIcon">My Scans</MudNavLink>
+                        <MudNavLink Match="NavLinkMatch.All" OnClick="ConfirmLogoutAsync" Icon="@StandardIcons.LogoutIcon">Logout</MudNavLink>
+                    }
                 </Authorized>
                 <NotAuthorized>
                     <MudNavLink Match="NavLinkMatch.All" Href="/Account/Login" Icon="@StandardIcons.LoginIcon">Login</MudNavLink>
@@ -73,6 +86,10 @@
 
 @code {
 
+    private bool _isAdmin;
+    
+    private bool _isSetupPending;
+    
     private bool _open = true;
 
     private bool _isInitialized = false;
@@ -91,6 +108,9 @@
 
         await
             LoadUserName();
+        
+        await 
+            CheckAdminSetupStatus();
 
         // Now we know auth state is determined
         _isInitialized = true;
@@ -103,10 +123,35 @@
             {
                 await
                     LoadUserName();
+        
+                await 
+                    CheckAdminSetupStatus();
 
                 StateHasChanged();
             }
         );
+    }
+    
+    private async Task CheckAdminSetupStatus()
+    {
+        _isAdmin = 
+            await 
+                AuthenticationManager
+                    .IsAdminAsync();
+        
+        if (_isAdmin)
+        {
+            var phaseResponse = 
+                await 
+                    ApiRequestManager
+                        .GetStartupPhaseAsync(CancellationToken.None);
+            
+            _isSetupPending = phaseResponse.Phase == (int)StartupPhaseEnum.AdminPendingDeactivation;
+        }
+        else
+        {
+            _isSetupPending = false;
+        }
     }
 
     private async Task LoadUserName()

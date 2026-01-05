@@ -10,5 +10,6 @@ namespace Rocket.Web.Host
         public const string ScansIcon = Icons.Material.Filled.DocumentScanner;
         public const string AccountIcon = Icons.Material.Filled.Person;
         public const string HelpIcon = Icons.Material.Filled.Help;
+        public const string CompleteSetupIcon = @Icons.Material.Filled.RocketLaunch;
     }
 }

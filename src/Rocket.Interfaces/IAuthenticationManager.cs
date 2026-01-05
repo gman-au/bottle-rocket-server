@@ -15,6 +15,8 @@ namespace Rocket.Interfaces
         Task<string> GetAuthorizationHeaderAsync();
         
         Task<string> GetUserNameAsync();
+
+        Task<bool> IsAdminAsync();
         
         event Action OnAuthenticationStateChanged;
     }

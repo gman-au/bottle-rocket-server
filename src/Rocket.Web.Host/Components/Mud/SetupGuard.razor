@@ -1,0 +1,103 @@
+﻿@using System.Threading
+@using Rocket.Domain.Enum
+@using Rocket.Web.Host.Api
+@using Rocket.Interfaces
+@implements IDisposable
+@inject IAuthenticationManager AuthenticationManager
+@inject IApiRequestManager ApiRequestManager
+@inject NavigationManager NavigationManager
+
+@if (_isChecking)
+{
+    <BottleRocketLoadingOverlay IsLoading="true">
+        <MudText>Checking system status...</MudText>
+    </BottleRocketLoadingOverlay>
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    private bool _isChecking = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Subscribe to navigation events
+        NavigationManager.LocationChanged += OnLocationChanged;
+        
+        await CheckAndRedirect();
+    }
+
+    private async void OnLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        await InvokeAsync(async () =>
+        {
+            _isChecking = true;
+            StateHasChanged();
+            
+            await 
+                CheckAndRedirect();
+        });
+    }
+
+    private async Task CheckAndRedirect()
+    {
+        try
+        {
+            // Check if admin needs to complete setup
+            if (await AuthenticationManager.IsAdminAsync())
+            {
+                var phaseResponse = 
+                    await 
+                        ApiRequestManager
+                            .GetStartupPhaseAsync(CancellationToken.None);
+
+                var currentPath = 
+                    NavigationManager
+                        .ToBaseRelativePath(NavigationManager.Uri);
+                
+                if (phaseResponse.Phase == (int)StartupPhaseEnum.AdminPendingDeactivation)
+                {
+                    // If not already on setup page, redirect
+                    if (!currentPath.StartsWith("CompleteSetup", StringComparison.OrdinalIgnoreCase))
+                    {
+                        NavigationManager
+                            .NavigateTo("/CompleteSetup", replace: true);
+                        
+                        return;
+                    }
+                }
+
+                if (phaseResponse.Phase == (int)StartupPhaseEnum.AdminDeactivated)
+                {
+                    // If not already on setup page, redirect
+                    if (!currentPath.StartsWith("Account/Logout", StringComparison.OrdinalIgnoreCase))
+                    {
+                        NavigationManager
+                            .NavigateTo("/Account/Logout", replace: true);
+                        
+                        return;
+                    }
+                }
+            }
+
+            _isChecking = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            // Log error but don't block
+            _isChecking = false;
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}

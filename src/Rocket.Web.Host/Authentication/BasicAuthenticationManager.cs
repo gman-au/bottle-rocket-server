@@ -141,7 +141,7 @@ namespace Rocket.Web.Host.Authentication
 
             try
             {
-                await 
+                await
                     _sessionStorage
                         .DeleteAsync(DomainConstants.AuthHeaderKey);
             }
@@ -150,7 +150,7 @@ namespace Rocket.Web.Host.Authentication
                 _logger
                     .LogDebug("Cannot delete from session storage during prerendering");
             }
-            
+
             _logger
                 .LogInformation("User logged out");
 
@@ -163,44 +163,66 @@ namespace Rocket.Web.Host.Authentication
             await
                 EnsureInitializedAsync();
 
-            return 
+            return
                 _cachedAuthHeader;
         }
 
         public async Task<string> GetUserNameAsync()
         {
-            await 
+            await
                 EnsureInitializedAsync();
-            
+
             if (string.IsNullOrEmpty(_cachedAuthHeader))
                 return null;
-    
+
             try
             {
                 // Auth header format: "Basic base64(username:password)"
-                var base64 = 
+                var base64 =
                     _cachedAuthHeader
-                        .Replace($"{DomainConstants.Basic} ", "");
-                
-                var decoded = 
+                        .Replace(
+                            $"{DomainConstants.Basic} ",
+                            ""
+                        );
+
+                var decoded =
                     Encoding
                         .UTF8
-                        .GetString(Convert.FromBase64String(base64)
+                        .GetString(
+                            Convert.FromBase64String(base64)
                         );
-                
+
                 var username =
                     decoded
                         .Split(':')[0];
-                
+
                 return username;
             }
             catch (Exception ex)
             {
                 _logger
-                    .LogWarning(ex, "Failed to extract username from auth header");
-                
+                    .LogWarning(
+                        ex,
+                        "Failed to extract username from auth header"
+                    );
+
                 return null;
             }
+        }
+
+        public async Task<bool> IsAdminAsync()
+        {
+            var username =
+                await
+                    GetUserNameAsync();
+
+            return
+                username?
+                    .Equals(
+                        DomainConstants.AdminUserName,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                ?? false;
         }
 
         public async Task<bool> IsAuthenticatedAsync()

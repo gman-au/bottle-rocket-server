@@ -25,5 +25,7 @@ namespace Rocket.Web.Host.Api
             UserDetail user,
             CancellationToken cancellationToken
         );
+        
+        Task<StartupPhaseResponse> GetStartupPhaseAsync(CancellationToken cancellationToken);
     }
 }
