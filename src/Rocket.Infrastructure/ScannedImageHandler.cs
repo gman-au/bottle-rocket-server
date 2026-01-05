@@ -30,6 +30,12 @@ namespace Rocket.Infrastructure
 
             try
             {
+                if ((imageData ?? []).Length == 0)
+                    throw new RocketException(
+                        "No file data provided.",
+                        ApiStatusCodeEnum.NoAttachmentsFound
+                    );
+
                 var scannedImage = new ScannedImage();
 
                 var hashString =
