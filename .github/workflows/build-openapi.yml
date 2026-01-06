@@ -5,7 +5,7 @@ on:
     branches: [ master ] 
     
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     env:
       MAJOR_VERSION: 9
@@ -30,6 +30,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: OPENAPI-JSON
-          path: ./Rocket.Api.Host/openapi/Rocket.Api.Host.json
+          path: ./src/Rocket.Api.Host/openapi/Rocket.Api.Host.json
           if-no-files-found: error
           include-hidden-files: true
