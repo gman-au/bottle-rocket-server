@@ -1,13 +1,12 @@
-using System.Threading;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Rocket.Api.Host;
 using Rocket.Api.Host.Filters;
 using Rocket.Api.Host.Handlers;
 using Rocket.Api.Host.Hubs;
 using Rocket.Api.Host.Injection;
 using Rocket.Domain.Utils;
-using Rocket.Interfaces;
 
 var builder =
     WebApplication
@@ -48,25 +47,18 @@ services
 services
     .AddSignalRServerServices(configuration);
 
+services
+    .AddOpenApi();
+
+services
+    .AddHostedService<StartupInitializationHostedService>();
+
 var app =
     builder
         .Build();
 
 app
     .UseCors(DomainConstants.BlazorAppCorsPolicy);
-
-// Run startup initialization
-using (var scope = app.Services.CreateScope())
-{
-    var initService =
-        scope
-            .ServiceProvider
-            .GetRequiredService<IStartupInitialization>();
-
-    await
-        initService
-            .InitializeAsync(CancellationToken.None);
-}
 
 // Add authentication middleware
 app
@@ -75,6 +67,9 @@ app
 
 app
     .UseHttpsRedirection();
+
+app
+    .MapOpenApi(); // Available at /openapi/v1.json by default
 
 app
     .MapControllers();
