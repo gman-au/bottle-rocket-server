@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
@@ -16,6 +17,16 @@ namespace Rocket.Api.Host.Controllers
         : ControllerBase
     {
         [HttpGet("phase")]
+        [EndpointSummary("Get the startup phase")]
+        [EndpointDescription(
+            """
+            Gets the current startup phase of the system.
+            After a new server installation, it can be one of three phases:
+            0 = NoUserAccounts - unlikely, but possible if an operation to insert the admin account was aborted.
+            1 = AdminPendingDeactivation - the first operating state of the server. A new admin account must be added to replace the temporary admin account.
+            2 = AdminDeactivated - the phase after setup completion - a non-admin user account is managing the server and the admin account have been deactivated.
+            """
+        )]
         public async Task<IActionResult> GetPhaseAsync(CancellationToken cancellationToken)
         {
             logger

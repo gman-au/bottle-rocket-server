@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -23,6 +24,8 @@ namespace Rocket.Api.Host.Controllers
     ) : ControllerBase
     {
         [HttpGet("{id}")]
+        [EndpointSummary("Get user by ID")]
+        [EndpointDescription("Returns a user by their unique identifier.")]
         public async Task<IActionResult> GetUserAsync(
             string id,
             CancellationToken cancellationToken
@@ -81,6 +84,13 @@ namespace Rocket.Api.Host.Controllers
         }
 
         [HttpPost("create")]
+        [EndpointSummary("Add a new user")]
+        [EndpointDescription(
+            """
+            Creates a new system user. If this is the first user created by the `admin` account, 
+            then on success, the administrator account will be made inactive.
+            """
+        )]
         public async Task<IActionResult> CreateUserAsync(
             [FromBody] CreateUserRequest request,
             CancellationToken cancellationToken
@@ -163,6 +173,13 @@ namespace Rocket.Api.Host.Controllers
         }
 
         [HttpPost("update")]
+        [EndpointSummary("Update an existing user")]
+        [EndpointDescription(
+            """
+            Updates one or more details of an existing system user. A value not supplied will not be updated.
+            If the update sets the `IsAdmin` flag to true, then the user calling the API will have their administrator status removed.
+            """
+        )]
         public async Task<IActionResult> UpdateUserAsync(
             [FromBody] UserDetail request,
             CancellationToken cancellationToken
