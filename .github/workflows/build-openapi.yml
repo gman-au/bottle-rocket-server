@@ -3,6 +3,7 @@ name: build-openapi
 on:
   push:
     branches: [ master ] 
+    
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -10,13 +11,17 @@ jobs:
       MAJOR_VERSION: 9
       MINOR_VERSION: 0
       SOLUTION_PATH: ./src/
-    - name: Checkout repository
-      uses: actions/checkout@v4   
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x    
-    - name: Restore dependencies
-      run: dotnet restore $SOLUTION_PATH
-    - name: Build
-      run: dotnet build $SOLUTION_PATH --no-restore --ignore-failed-sources -c Release
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4   
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+        dotnet-version: 9.0.x    
+        
+      - name: Restore dependencies
+        run: dotnet restore $SOLUTION_PATH
+      
+      - name: Build
+        run: dotnet build $SOLUTION_PATH --no-restore --ignore-failed-sources -c Release
