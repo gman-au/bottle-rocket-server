@@ -53,6 +53,7 @@ namespace Rocket.Infrastructure
                     Username = DomainConstants.AdminUserName,
                     PasswordHash = passwordHash,
                     CreatedAt = DateTime.UtcNow,
+                    IsAdmin = true,
                     IsActive = true
                 };
 

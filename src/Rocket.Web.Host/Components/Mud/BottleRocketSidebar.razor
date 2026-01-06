@@ -1,9 +1,15 @@
-﻿@using Microsoft.Extensions.Options
+﻿@using System.Security.Claims
+@using System.Threading
+@using Microsoft.Extensions.Options
+@using Rocket.Domain.Enum
 @using Rocket.Interfaces
+@using Rocket.Web.Host.Api
 @using Rocket.Web.Host.Components.Dialog
 @using Rocket.Web.Host.Options
 @inject NavigationManager NavigationManager
 @inject IAuthenticationManager AuthenticationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IApiRequestManager ApiRequestManager
 @inject IDialogService DialogService
 @inject IOptions<SiteConfigurationOptions> SiteConfigurationOptions
 
@@ -25,6 +31,18 @@
             <MudItem xs="12">
                 <MudText Align="Align.Center" Typo="Typo.h5">Bottle Rocket</MudText>
             </MudItem>
+            @if (_isInitialized && !string.IsNullOrEmpty(_userName))
+            {
+                <MudItem Class="py-2" xs="12">
+                    <MudText
+                        Align="Align.Center"
+                        Typo="Typo.body2"
+                        Color="Color.Secondary"
+                    >
+                        @_userName
+                    </MudText>
+                </MudItem>
+            }
         </MudGrid>
     </MudDrawerHeader>
     <MudNavMenu Bordered="true" Color="Color.Primary">
@@ -32,10 +50,19 @@
         {
             <AuthorizeView Context="primary">
                 <Authorized>
-                    <MudNavLink Match="NavLinkMatch.All" Href="/" Icon="@StandardIcons.DashboardIcon">Home</MudNavLink>
-                    @* <MudNavLink Match="NavLinkMatch.All" Href="/MyAccount" Icon="@StandardIcons.AccountIcon">Account</MudNavLink> *@
-                    <MudNavLink Match="NavLinkMatch.Prefix" Href="/MyScans" Icon="@StandardIcons.ScansIcon">My Scans</MudNavLink>
-                    <MudNavLink Match="NavLinkMatch.All" OnClick="ConfirmLogoutAsync" Icon="@StandardIcons.LogoutIcon">Logout</MudNavLink>
+                    @if (_isAdmin && _isSetupPending)
+                    {
+                        <MudNavLink Match="NavLinkMatch.All" Href="/CompleteSetup" Icon="@StandardIcons.CompleteSetupIcon">
+                            Complete setup
+                        </MudNavLink>
+                    }
+                    else
+                    {
+                        <MudNavLink Match="NavLinkMatch.All" Href="/" Icon="@StandardIcons.DashboardIcon">Home</MudNavLink>
+                        @* <MudNavLink Match="NavLinkMatch.All" Href="/MyAccount" Icon="@StandardIcons.AccountIcon">Account</MudNavLink> *@
+                        <MudNavLink Match="NavLinkMatch.Prefix" Href="/MyScans" Icon="@StandardIcons.ScansIcon">My Scans</MudNavLink>
+                        <MudNavLink Match="NavLinkMatch.All" OnClick="ConfirmLogoutAsync" Icon="@StandardIcons.LogoutIcon">Logout</MudNavLink>
+                    }
                 </Authorized>
                 <NotAuthorized>
                     <MudNavLink Match="NavLinkMatch.All" Href="/Account/Login" Icon="@StandardIcons.LoginIcon">Login</MudNavLink>
@@ -46,7 +73,8 @@
             </MudNavLink>
             if (!string.IsNullOrEmpty(SiteConfigurationOptions?.Value?.DocumentationUrl))
             {
-                <MudNavLink Href="@SiteConfigurationOptions?.Value?.DocumentationUrl" Icon="@StandardIcons.HelpIcon" ForceLoad="true" Target="_blank">
+                <MudNavLink Href="@SiteConfigurationOptions?.Value?.DocumentationUrl" Icon="@StandardIcons.HelpIcon" ForceLoad="true"
+                            Target="_blank">
                     Help
                 </MudNavLink>
             }
@@ -58,28 +86,95 @@
 
 @code {
 
+    private bool _isAdmin;
+    
+    private bool _isSetupPending;
+    
     private bool _open = true;
 
     private bool _isInitialized = false;
+
+    private string _userName = null;
 
     protected override async Task OnInitializedAsync()
     {
         // Subscribe to auth changes
         AuthenticationManager.OnAuthenticationStateChanged += HandleAuthStateChanged;
-        
+
         // Wait for auth check to complete (this triggers EnsureInitializedAsync)
-        await 
+        await
             AuthenticationManager
                 .IsAuthenticatedAsync();
+
+        await
+            LoadUserName();
         
+        await 
+            CheckAdminSetupStatus();
+
         // Now we know auth state is determined
         _isInitialized = true;
     }
 
     private async void HandleAuthStateChanged()
     {
-        await 
-            InvokeAsync(StateHasChanged);
+        await InvokeAsync(
+            async () =>
+            {
+                await
+                    LoadUserName();
+        
+                await 
+                    CheckAdminSetupStatus();
+
+                StateHasChanged();
+            }
+        );
+    }
+    
+    private async Task CheckAdminSetupStatus()
+    {
+        _isAdmin = 
+            await 
+                AuthenticationManager
+                    .IsAdminAsync();
+        
+        if (_isAdmin)
+        {
+            var phaseResponse = 
+                await 
+                    ApiRequestManager
+                        .GetStartupPhaseAsync(CancellationToken.None);
+            
+            _isSetupPending = phaseResponse.Phase == (int)StartupPhaseEnum.AdminPendingDeactivation;
+        }
+        else
+        {
+            _isSetupPending = false;
+        }
+    }
+
+    private async Task LoadUserName()
+    {
+        var authState =
+            await
+                AuthenticationStateProvider
+                    .GetAuthenticationStateAsync();
+
+        var user =
+            authState
+                .User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            _userName =
+                user
+                    .FindFirst(ClaimTypes.Name)?.Value ?? "User";
+        }
+        else
+        {
+            _userName = null;
+        }
     }
 
     private void ToggleDrawer()

@@ -72,6 +72,10 @@
     {
         try
         {
+            await
+                base
+                    .OnInitializedAsync();
+            
             _isLoading = true;
 
             // Set up SignalR listener

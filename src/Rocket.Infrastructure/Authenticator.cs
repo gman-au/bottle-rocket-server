@@ -54,18 +54,21 @@ namespace Rocket.Infrastructure
                         user.PasswordHash
                     ))
                 {
-                    logger.LogWarning(
-                        "Authentication failed: Invalid password for user {username}",
-                        username
-                    );
+                    logger
+                        .LogWarning(
+                            "Authentication failed: Invalid password for user {username}",
+                            username
+                        );
                     return null;
                 }
 
                 // Update last login
                 await
                     userRepository
-                        .UpdateLastLoginAsync(
+                        .UpdateUserFieldAsync(
                             user.Id,
+                            o => o.LastLoginAt,
+                            DateTime.UtcNow,
                             cancellationToken
                         );
 

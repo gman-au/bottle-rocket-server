@@ -11,18 +11,20 @@ namespace Rocket.Infrastructure.Hashing
             const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
 
             var randomBytes = new byte[passwordLength];
-            
+
             using (var rng = RandomNumberGenerator.Create())
             {
-                rng.GetBytes(randomBytes);
+                rng
+                    .GetBytes(randomBytes);
             }
 
-            var chars = 
+            var chars =
                 randomBytes
                     .Select(b => validChars[b % validChars.Length])
                     .ToArray();
-            
-            return new string(chars);
-        } 
+
+            return
+                new string(chars);
+        }
     }
 }

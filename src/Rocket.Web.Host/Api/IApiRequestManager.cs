@@ -10,10 +10,22 @@ namespace Rocket.Web.Host.Api
             MyScansRequest request,
             CancellationToken cancellationToken
         );
-        
+
         Task<MyScanItemDetail> GetMyScanAsync(
             string id,
             CancellationToken cancellationToken
         );
+
+        Task<UserDetail> GetUserByIdAsync(
+            string id,
+            CancellationToken cancellationToken
+        );
+
+        Task<UpdateUserResponse> UpdateUserAsync(
+            UserDetail user,
+            CancellationToken cancellationToken
+        );
+        
+        Task<StartupPhaseResponse> GetStartupPhaseAsync(CancellationToken cancellationToken);
     }
 }

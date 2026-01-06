@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Host.Extensions;
@@ -22,6 +23,9 @@ namespace Rocket.Api.Host.Controllers
     ) : ControllerBase
     {
         [HttpPost("process")]
+        [EndpointSummary("Process captured image(s)")]
+        [EndpointGroupName("Manage captures / scans")]
+        [EndpointDescription("Process uploaded images via this endpoint. Use the url-encoded multipart form schema to POST the image data.")]
         public async Task<IActionResult> ProcessCaptureAsync(
             [FromForm] ImageUploadModel model,
             CancellationToken cancellationToken

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 using MudBlazor.Services;
+using Rocket.Infrastructure;
 using Rocket.Interfaces;
 using Rocket.Web.Host.Api;
 using Rocket.Web.Host.Authentication;
@@ -44,6 +45,7 @@ namespace Rocket.Web.Host.Injection
 
             services
                 .AddTransient<IApiRequestManager, ApiRequestManager>()
+                .AddTransient<IEmailAddressValidator, EmailAddressValidator>()
                 .AddTransient<IWebHostErrorHandler, WebHostErrorHandler>();
 
             return services;

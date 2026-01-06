@@ -72,6 +72,84 @@ namespace Rocket.Web.Host.Api
             return result;
         }
 
+        public async Task<UserDetail> GetUserByIdAsync(string id, CancellationToken cancellationToken)
+        {
+            logger
+                .LogInformation("Received Get User request");
+         
+            var response =
+                await
+                    authenticatedApiClient
+                        .GetAsync(
+                            $"/api/users/{id}",
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    ParseJsonOrNullAsync<UserDetail>(
+                        response,
+                        cancellationToken
+                    );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
+
+        public async Task<UpdateUserResponse> UpdateUserAsync(UserDetail user, CancellationToken cancellationToken)
+        {
+            logger
+                .LogInformation("Received Update User request");
+         
+            var response =
+                await
+                    authenticatedApiClient
+                        .PostAsJsonAsync(
+                            $"/api/users/update",
+                            user,
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    ParseJsonOrNullAsync<UpdateUserResponse>(
+                        response,
+                        cancellationToken
+                    );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
+
+        public async Task<StartupPhaseResponse> GetStartupPhaseAsync(CancellationToken cancellationToken)
+        {
+            logger
+                .LogInformation("Checking startup phase");
+
+            var response = 
+                await 
+                    authenticatedApiClient
+                        .GetAsync(
+                            "/api/startup/phase",
+                            cancellationToken
+                            );
+    
+            response
+                .EnsureSuccessStatusCode();
+
+            var result =
+                await
+                    response
+                        .Content
+                        .ReadFromJsonAsync<StartupPhaseResponse>(cancellationToken);
+
+            return result;
+        }
+
         private static void EnsureApiSuccessStatusCode(ApiResponse response)
         {
             if (response == null) return;
