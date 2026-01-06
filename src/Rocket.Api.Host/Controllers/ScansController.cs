@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Host.Extensions;
@@ -27,10 +28,11 @@ namespace Rocket.Api.Host.Controllers
     {
         [HttpPost("fetch")]
         [EndpointSummary("Fetch the users scans")]
+        [EndpointGroupName("Manage captures / scans")]
         [EndpointDescription(
             """
-            Retrieves a subset of scans belonging to the authenticated user.
-            Provide a zero-based start index and record count to retrieve paged results and minimise server load. 
+            Retrieves a subset of scans belonging to the authenticated user.\n
+            Provide a zero-based start index and record count to retrieve paged results and minimise server load.\n 
             A base64 thumbnail image string is also provided instead of the full image data in a multi-record payload.
             """
         )]
@@ -92,9 +94,10 @@ namespace Rocket.Api.Host.Controllers
 
         [HttpGet("{id}")]
         [EndpointSummary("Fetch the user scan details")]
+        [EndpointGroupName("Manage captures / scans")]
         [EndpointDescription(
             """
-            Retrieves the full details of a users scan by its unique ID.
+            Retrieves the full details of a users scan by its unique ID.\n
             The full image data is provided as well as other capture and processing details. 
             """
         )]

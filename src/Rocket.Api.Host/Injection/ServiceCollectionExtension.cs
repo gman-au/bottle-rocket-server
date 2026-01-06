@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using Rocket.Api.Host.Exceptions;
 using Rocket.Api.Host.Notifiers;
 using Rocket.Domain.Utils;
@@ -116,6 +120,77 @@ namespace Rocket.Api.Host.Injection
             services
                 .AddTransient<IScannedImageRepository, MongoDbScannedImageRepository>()
                 .AddTransient<IUserRepository, MongoDbUserRepository>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddOpenApiServices(this IServiceCollection services)
+        {
+            services
+                .AddOpenApi(
+                    options =>
+                    {
+                        options.ShouldInclude = _ => true;
+
+                        // Use an Operation Transformer to copy the GroupName into the Tags list
+                        options
+                            .AddOperationTransformer(
+                                (operation, context, _) =>
+                                {
+                                    // Search for the EndpointGroupNameAttribute in the endpoint metadata
+                                    var groupNameMetadata =
+                                        context
+                                            .Description
+                                            .ActionDescriptor
+                                            .EndpointMetadata
+                                            .OfType<EndpointGroupNameAttribute>()
+                                            .FirstOrDefault();
+
+                                    if (groupNameMetadata != null)
+                                    {
+                                        operation
+                                            .Tags
+                                            .Clear();
+
+                                        operation
+                                            .Tags
+                                            .Add(
+                                                new OpenApiTag
+                                                {
+                                                    Name = groupNameMetadata.EndpointGroupName
+                                                }
+                                            );
+                                    }
+
+                                    if (!string.IsNullOrEmpty(operation.Description))
+                                    {
+                                        operation.Description =
+                                            operation
+                                                .Description
+                                                .Replace(
+                                                    "\\n",
+                                                    "\n"
+                                                );
+                                    }
+
+                                    return
+                                        Task
+                                            .CompletedTask;
+                                }
+                            );
+
+                        options.AddDocumentTransformer(
+                            (document, context, cancellationToken) =>
+                            {
+                                document.Info.Title = "Bottle Rocket API";
+                                document.Info.Version = " ##{VERSION_TAG}##";
+                                document.Tags = null;
+
+                                return Task.CompletedTask;
+                            }
+                        );
+                    }
+                );
 
             return services;
         }
