@@ -25,3 +25,11 @@ jobs:
       
       - name: Build
         run: dotnet build $SOLUTION_PATH --no-restore --ignore-failed-sources -c Release
+            
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: OPENAPI-JSON
+          path: ./Rocket.Api.Host/openapi/Rocket.Api.Host.json
+          if-no-files-found: error
+          include-hidden-files: true
