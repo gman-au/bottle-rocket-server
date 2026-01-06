@@ -8,6 +8,9 @@ namespace Rocket.Infrastructure
     {
         public bool IsValid(string emailAddress)
         {
+            if (string.IsNullOrEmpty(emailAddress))
+                return false;
+
             try
             {
                 var email = 

@@ -54,10 +54,11 @@ namespace Rocket.Infrastructure
                         user.PasswordHash
                     ))
                 {
-                    logger.LogWarning(
-                        "Authentication failed: Invalid password for user {username}",
-                        username
-                    );
+                    logger
+                        .LogWarning(
+                            "Authentication failed: Invalid password for user {username}",
+                            username
+                        );
                     return null;
                 }
 

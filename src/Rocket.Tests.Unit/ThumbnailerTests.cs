@@ -16,7 +16,7 @@ namespace Rocket.Tests.Unit
         public async Task Test_Build_Valid_Thumbnail()
         {
             _context.ArrangeValidDataToGenerate();
-            await _context.ActBuildThumbnail();
+            await _context.ActBuildThumbnailAsync();
             _context.AssertNonEmptyValue();
         }
 
@@ -24,7 +24,7 @@ namespace Rocket.Tests.Unit
         public async Task Test_Build_Empty_Thumbnail()
         {
             _context.ArrangeEmptyDataToGenerate();
-            await _context.ActBuildThumbnail();
+            await _context.ActBuildThumbnailAsync();
             _context.AssertEmptyValue();
         }
 
@@ -32,7 +32,7 @@ namespace Rocket.Tests.Unit
         public async Task Test_Build_Unknown_Thumbnail()
         {
             _context.ArrangeUnknownDataToGenerate();
-            await _context.ActBuildThumbnail();
+            await _context.ActBuildThumbnailAsync();
             _context.AssertEmptyValue();
         }
 
@@ -84,7 +84,7 @@ namespace Rocket.Tests.Unit
                 _imageData = [];
             }
 
-            public async Task ActBuildThumbnail()
+            public async Task ActBuildThumbnailAsync()
             {
                 _result =
                     await
