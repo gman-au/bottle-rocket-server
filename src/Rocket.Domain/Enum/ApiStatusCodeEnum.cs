@@ -7,9 +7,11 @@
         NoAttachmentsFound,
         UserAlreadyExists = 2000,
         UnknownUser,
+        InactiveUser,
         InvalidUsername,
         InvalidPassword,
         FileDataCorrupted,
-        UnknownOrInaccessibleRecord
+        UnknownOrInaccessibleRecord,
+        RequiresAdministratorAccess
     }
 }

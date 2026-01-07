@@ -22,7 +22,7 @@ namespace Rocket.Api.Host.Controllers
         ILogger<UserController> logger,
         IUserManager userManager,
         IStartupInitialization startupInitialization
-    ) : ControllerBase
+    ) : RocketControllerBase(userManager)
     {
         [HttpGet("{id}")]
         [EndpointSummary("Get user by ID")]
@@ -38,6 +38,9 @@ namespace Rocket.Api.Host.Controllers
                     "Received user request for id: {id}",
                     id
                 );
+
+            await
+                ThrowIfNotAdminAsync(cancellationToken);
 
             if (!ObjectId
                     .TryParse(
@@ -55,7 +58,7 @@ namespace Rocket.Api.Host.Controllers
 
             var user =
                 await
-                    userManager
+                    UserManager
                         .GetUserByUserIdAsync(
                             id,
                             cancellationToken
@@ -105,6 +108,9 @@ namespace Rocket.Api.Host.Controllers
                     request.Username
                 );
 
+            await
+                ThrowIfNotAdminAsync(cancellationToken);
+
             // Check if this is first start (admin is creating first user)
             var currentUsername =
                 User
@@ -118,7 +124,7 @@ namespace Rocket.Api.Host.Controllers
             // Create the new user account
             var newUser =
                 await
-                    userManager
+                    UserManager
                         .CreateUserAccountAsync(
                             request.Username,
                             request.Password,
@@ -139,7 +145,7 @@ namespace Rocket.Api.Host.Controllers
                         .LogInformation("First user created by admin. Deactivating admin account.");
 
                     await
-                        userManager
+                        UserManager
                             .DeactivateAdminAccountAsync(cancellationToken);
                 }
             }
@@ -154,7 +160,7 @@ namespace Rocket.Api.Host.Controllers
 
                     // set this user = not admin
                     await
-                        userManager
+                        UserManager
                             .UpdateAccountIsAdminAsync(
                                 userId,
                                 false,
@@ -195,13 +201,16 @@ namespace Rocket.Api.Host.Controllers
                     request.Id
                 );
 
+            await
+                ThrowIfNotAdminAsync(cancellationToken);
+
             var newUserIsAdmin =
                 request
                     .IsAdmin;
 
             // Update the user account
             await
-                userManager
+                UserManager
                     .UpdateAccountAsync(
                         request.Id,
                         request.Username,
@@ -220,7 +229,7 @@ namespace Rocket.Api.Host.Controllers
 
                 // set this user => not admin
                 await
-                    userManager
+                    UserManager
                         .UpdateAccountIsAdminAsync(
                             userId,
                             false,
