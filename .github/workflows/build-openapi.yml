@@ -66,10 +66,10 @@ jobs:
           git checkout -b "$BRANCH_NAME"
           
           # Ensure target directory exists
-          mkdir -p ./api-static/src/openapi/
+          mkdir -p ./src/openapi/
           
           # Copy the updated JSON file
-          cp ../artifact/Rocket.Api.Host.json ./api-static/src/openapi/Rocket.Api.Host.json
+          cp ../artifact/Rocket.Api.Host.json ./src/openapi/Rocket.Api.Host.json
           
           git add .
           
