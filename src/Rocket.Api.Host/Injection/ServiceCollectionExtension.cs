@@ -183,7 +183,7 @@ namespace Rocket.Api.Host.Injection
                             (document, context, cancellationToken) =>
                             {
                                 document.Info.Title = "Bottle Rocket API";
-                                document.Info.Version = " ##{VERSION_TAG}##";
+                                document.Info.Version = "##{VERSION_TAG}##";
                                 document.Tags = null;
 
                                 return Task.CompletedTask;

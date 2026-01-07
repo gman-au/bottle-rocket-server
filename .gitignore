@@ -8,6 +8,8 @@
 # Code-coverage
 [Cc]overage/
 
+openapi/
+
 # User-specific files
 *.rsuser
 *.suo

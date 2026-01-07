@@ -1,11 +1,10 @@
 name: build-openapi
 
 on:
-  push:
-    branches: [ master ] 
+  workflow_dispatch:
     
 jobs:
-  build:
+  build-openapi-doc:
     runs-on: ubuntu-latest
     env:
       MAJOR_VERSION: 9
@@ -33,3 +32,54 @@ jobs:
           path: ./src/Rocket.Api.Host/openapi/Rocket.Api.Host.json
           if-no-files-found: error
           include-hidden-files: true
+          
+  update-openapi-doc:
+    name: Commit API spec to document repo
+    needs: build-openapi-doc
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: OPENAPI-JSON
+          path: /home/runner/work/api-static/
+          
+      - name: Update version tag
+        run: |
+          cd /home/runner/work/api-static/
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          echo "Version: $VERSION"
+          sed -i "s/##{VERSION_TAG}##/$VERSION/g" Rocket.Api.Host.json
+          
+      - name: Set up Git Credentials
+        run: git config --global url."https://x-access-token:${{ secrets.BOTTLE_ROCKET_REPO_PAT }}@github.com/".insteadOf "https://github.com/"              
+          
+      - name: Clone code, apply change, and push
+        run : |
+          cd /home/runner/work/          
+          git clone https://github.com/gman-au/bottle-rocket-documentation.git api-docs
+          cd api-docs
+          git config user.name "Rocket-Bot"
+          git config user.email "info@gman.com.au"
+          git checkout -b api-version-${{ github.sha }}
+          mv ../api-static/Rocket.Api.Host.json ./api-static/src/openapi/Rocket.Api.Host.json
+          git add .          
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "Changes detected. Preparing to commit and push."
+            git commit -m "doc: Updated API document"
+            git push --set-upstream origin api-version-${{ github.sha }}
+          else
+            echo "No changes to commit."
+          fi          
+          
+      - name: Create Pull Request
+        run: |
+          cd api-docs
+          gh pr create \
+            --title "Update API documentation to ${{ github.ref_name }}" \
+            --body "Automated update of OpenAPI specification" \
+            --base main \
+            --head "api-version-${{ github.sha }}"
+        env:
+          GH_TOKEN: ${{ secrets.BOTTLE_ROCKET_REPO_PAT }}          
