@@ -81,14 +81,3 @@ jobs:
           else
             echo "No changes to commit."
           fi
-          
-      - name: Create Pull Request
-        run: |
-          cd api-docs
-          gh pr create \
-            --title "Update API documentation to ${{ github.ref_name }}" \
-            --body "Automated update of OpenAPI specification" \
-            --base main \
-            --head "api-version-${{ github.sha }}"
-        env:
-          GH_TOKEN: ${{ secrets.BOTTLE_ROCKET_REPO_PAT }}          
