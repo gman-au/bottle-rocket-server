@@ -34,7 +34,7 @@ jobs:
           include-hidden-files: true
           
   update-openapi-doc:
-    name: Commit API spec to document repo
+    name: Update OpenAPI Documentation
     needs: build-openapi-doc
     runs-on: ubuntu-latest
     
@@ -43,35 +43,44 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: OPENAPI-JSON
-          path: /home/runner/work/api-static/
+          path: ./artifact
           
       - name: Update version tag
         run: |
-          cd /home/runner/work/api-static/
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           echo "Version: $VERSION"
-          sed -i "s/##{VERSION_TAG}##/$VERSION/g" Rocket.Api.Host.json
+          sed -i "s/##{VERSION_TAG}##/$VERSION/g" ./artifact/Rocket.Api.Host.json
+          cat ./artifact/Rocket.Api.Host.json | grep -A2 -B2 "version"
           
-      - name: Set up Git Credentials
-        run: git config --global url."https://x-access-token:${{ secrets.BOTTLE_ROCKET_REPO_PAT }}@github.com/".insteadOf "https://github.com/"              
+      - name: Clone documentation repository
+        run: |
+          git clone https://x-access-token:${{ secrets.BOTTLE_ROCKET_REPO_PAT }}@github.com/gman-au/bottle-rocket-documentation.git api-docs
           
-      - name: Clone code, apply change, and push
-        run : |
-          cd /home/runner/work/          
-          git clone https://github.com/gman-au/bottle-rocket-documentation.git api-docs
+      - name: Update documentation and push
+        run: |
           cd api-docs
           git config user.name "Rocket-Bot"
           git config user.email "info@gman.com.au"
-          git checkout -b api-version-${{ github.sha }}
-          mv ../api-static/Rocket.Api.Host.json ./api-static/src/openapi/Rocket.Api.Host.json
-          git add .          
+          
+          BRANCH_NAME="api-version-${{ github.sha }}"
+          git checkout -b "$BRANCH_NAME"
+          
+          # Ensure target directory exists
+          mkdir -p ./api-static/src/openapi/
+          
+          # Copy the updated JSON file
+          cp ../artifact/Rocket.Api.Host.json ./api-static/src/openapi/Rocket.Api.Host.json
+          
+          git add .
+          
           if [[ -n $(git status --porcelain) ]]; then
-            echo "Changes detected. Preparing to commit and push."
-            git commit -m "doc: Updated API document"
-            git push --set-upstream origin api-version-${{ github.sha }}
+            echo "Changes detected. Committing and pushing."
+            git commit -m "doc: Updated API document to version ${{ github.ref_name }}"
+            git push --set-upstream origin "$BRANCH_NAME"
+            echo "Branch $BRANCH_NAME pushed successfully"
           else
             echo "No changes to commit."
-          fi          
+          fi
           
       - name: Create Pull Request
         run: |
