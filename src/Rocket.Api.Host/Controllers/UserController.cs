@@ -28,6 +28,9 @@ namespace Rocket.Api.Host.Controllers
         [EndpointSummary("Get user by ID")]
         [EndpointGroupName("Manage users")]
         [EndpointDescription("Returns a user by their unique identifier.")]
+        [ProducesResponseType(typeof(UserDetail), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetUserAsync(
             string id,
             CancellationToken cancellationToken
@@ -97,6 +100,9 @@ namespace Rocket.Api.Host.Controllers
             then on success, the administrator account will be made inactive.
             """
         )]
+        [ProducesResponseType(typeof(CreateUserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateUserAsync(
             [FromBody] CreateUserRequest request,
             CancellationToken cancellationToken
@@ -195,6 +201,9 @@ namespace Rocket.Api.Host.Controllers
             If the update sets the `IsAdmin` flag to true, then the user calling the API will have their administrator status removed.
             """
         )]
+        [ProducesResponseType(typeof(UpdateUserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdateUserAsync(
             [FromBody] UserDetail request,
             CancellationToken cancellationToken

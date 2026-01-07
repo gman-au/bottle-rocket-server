@@ -36,6 +36,9 @@ namespace Rocket.Api.Host.Controllers
             A base64 thumbnail image string is also provided instead of the full image data in a multi-record payload.
             """
         )]
+        [ProducesResponseType(typeof(MyScansResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> FetchMyScansAsync(
             [FromBody] MyScansRequest request,
             CancellationToken cancellationToken
@@ -101,6 +104,9 @@ namespace Rocket.Api.Host.Controllers
             The full image data is provided as well as other capture and processing details. 
             """
         )]
+        [ProducesResponseType(typeof(MyScanItemDetail), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> FetchMyScanAsync(
             string id,
             CancellationToken cancellationToken

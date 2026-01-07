@@ -26,6 +26,9 @@ namespace Rocket.Api.Host.Controllers
         [EndpointSummary("Process captured image(s)")]
         [EndpointGroupName("Manage captures / scans")]
         [EndpointDescription("Process uploaded images via this endpoint. Use the url-encoded multipart form schema to POST the image data.")]
+        [ProducesResponseType(typeof(ProcessCaptureResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> ProcessCaptureAsync(
             [FromForm] ImageUploadModel model,
             CancellationToken cancellationToken

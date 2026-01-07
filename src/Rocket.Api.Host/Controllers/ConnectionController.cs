@@ -14,10 +14,18 @@ namespace Rocket.Api.Host.Controllers
     public class ConnectionController(ILogger<ConnectionController> logger) : ControllerBase
     {
         [HttpPost]
+        [Authorize]
         [EndpointSummary("Connection health check (authenticated)")]
         [EndpointGroupName("Status")]
-        [EndpointDescription("This endpoint will provide a status of the authenticated connection. Unauthorised or inactive accounts will return an error response.")]
-        [Authorize]
+        [EndpointDescription(
+            """
+            This endpoint will provide a status of the authenticated connection.\n
+            Unauthorised or inactive accounts will return an error response.
+            """
+        )]
+        [ProducesResponseType(typeof(ConnectionTestResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetConnectionTest()
         {
             logger
