@@ -108,14 +108,18 @@ namespace Rocket.Api.Host.Controllers
                     request.Username
                 );
 
-            await
-                ThrowIfNotAdminAsync(cancellationToken);
+            var currentUser =
+                await
+                    ThrowIfNotAdminAsync(cancellationToken);
+
+            var currentUserId =
+                currentUser
+                    .Id;
 
             // Check if this is first start (admin is creating first user)
             var currentUsername =
-                User
-                    .Identity?
-                    .Name;
+                currentUser
+                    .Username;
 
             var newUserIsAdmin =
                 currentUsername == DomainConstants.AdminUserName ||
@@ -131,6 +135,12 @@ namespace Rocket.Api.Host.Controllers
                             newUserIsAdmin,
                             cancellationToken
                         );
+
+            if (newUser == null)
+                throw new RocketException(
+                    "There was an error writing the user record",
+                    ApiStatusCodeEnum.ServerError
+                );
 
             if (currentUsername == DomainConstants.AdminUserName)
             {
@@ -153,16 +163,11 @@ namespace Rocket.Api.Host.Controllers
             {
                 if (newUserIsAdmin)
                 {
-                    var userId =
-                        User
-                            .FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?
-                            .Value;
-
                     // set this user = not admin
                     await
                         UserManager
                             .UpdateAccountIsAdminAsync(
-                                userId,
+                                currentUserId,
                                 false,
                                 cancellationToken
                             );

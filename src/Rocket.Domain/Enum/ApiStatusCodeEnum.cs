@@ -12,6 +12,7 @@
         InvalidPassword,
         FileDataCorrupted,
         UnknownOrInaccessibleRecord,
-        RequiresAdministratorAccess
+        RequiresAdministratorAccess,
+        ServerError = 5000
     }
 }

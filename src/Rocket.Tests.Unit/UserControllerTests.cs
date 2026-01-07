@@ -1,34 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using System.Security.Claims;
+﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using Rocket.Api.Contracts;
 using Rocket.Api.Host.Controllers;
-using Rocket.Domain;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
-using Rocket.Domain.Utils;
 using Rocket.Interfaces;
-using Rocket.Tests.Unit.Extensions;
+using Rocket.Tests.Unit.Utility;
 using Xunit;
 
 namespace Rocket.Tests.Unit
 {
     public class UserControllerTests
     {
-        private const string AdminUserId = "ffffffffffffffffffffffff";
-        private const string AdminUserName = "john.the.admin@test.com";     
-        
-        private const string NonAdminUserId = "aaaaaaaaaaaaaaaaaaaaaaaa";
-        private const string NonAdminUserName = "grant.the.normie@test.com";
-        
-        private const string ValidUserIdToGet = "495df512ec7ac1581b3ee319";
-        
         private readonly TestContext _context = new();
 
         [Fact]
@@ -59,6 +47,15 @@ namespace Rocket.Tests.Unit
         }
 
         [Fact]
+        public async Task Test_Phase_2_Get_Valid_User_As_Inactive_Admin()
+        {
+            _context.ArrangeLoggedInInactiveAdminUser();
+            _context.ArrangeValidUserReturnedFromSearch();
+            await _context.ActGetUserWithExceptionAsync();
+            _context.AssertExceptionCode(ApiStatusCodeEnum.InactiveUser);
+        }
+
+        [Fact]
         public async Task Test_Phase_2_Get_No_User_As_Non_Admin()
         {
             _context.ArrangeLoggedInNonAdminUser();
@@ -67,174 +64,124 @@ namespace Rocket.Tests.Unit
             _context.AssertExceptionCode(ApiStatusCodeEnum.RequiresAdministratorAccess);
         }
 
-        private class TestContext
+        [Fact]
+        public async Task Test_Phase_1_Create_Non_New_Admin_User_As_Root_Admin()
+        {
+            _context.ArrangeStartupPhaseAdminPendingDeactivation();
+            _context.ArrangeLoggedInRootAdminUser();
+            _context.ArrangeValidCreateUserAsNotNewAdminRequest();
+            await _context.ActCreateUserAsync();
+            _context.AssertCreateAccountIsAdminWasCalledWithTrue();
+            _context.AssertDeactivationAdminWasCalled();
+            _context.AssertUpdateAccountIsAdminWasNotCalled();
+        }
+
+        [Fact]
+        public async Task Test_Phase_1_Create_Non_New_Admin_User_As_Admin()
+        {
+            _context.ArrangeStartupPhaseAdminDeactivated();
+            _context.ArrangeLoggedInAdminUser();
+            _context.ArrangeValidCreateUserAsNotNewAdminRequest();
+            await _context.ActCreateUserAsync();
+            _context.AssertCreateAccountIsAdminWasCalledWithFalse();
+            _context.AssertDeactivationAdminWasNotCalled();
+            _context.AssertUpdateAccountIsAdminWasNotCalled();
+        }
+
+        [Fact]
+        public async Task Test_Phase_1_Create_New_Admin_User_As_Admin()
+        {
+            _context.ArrangeStartupPhaseAdminPendingDeactivation();
+            _context.ArrangeLoggedInAdminUser();
+            _context.ArrangeValidCreateUserAsNewAdminRequest();
+            await _context.ActCreateUserAsync();
+            _context.AssertCreateAccountIsAdminWasCalledWithTrue();
+            _context.AssertDeactivationAdminWasNotCalled();
+            _context.AssertUpdateAccountIsAdminWasCalledWithFalse();
+        }
+
+        [Fact]
+        public async Task Test_Phase_1_Create_New_Admin_User_As_Inactive_Admin()
+        {
+            _context.ArrangeStartupPhaseAdminPendingDeactivation();
+            _context.ArrangeLoggedInInactiveAdminUser();
+            _context.ArrangeNoUserReturnedFromSearch();
+            await _context.ActGetUserWithExceptionAsync();
+            _context.AssertExceptionCode(ApiStatusCodeEnum.InactiveUser);
+        }
+
+        [Fact]
+        public async Task Test_Phase_1_Create_New_Admin_User_As_Non_Admin()
+        {
+            _context.ArrangeStartupPhaseAdminPendingDeactivation();
+            _context.ArrangeLoggedInNonAdminUser();
+            _context.ArrangeNoUserReturnedFromSearch();
+            await _context.ActGetUserWithExceptionAsync();
+            _context.AssertExceptionCode(ApiStatusCodeEnum.RequiresAdministratorAccess);
+        }
+
+        private class TestContext : BaseControllerTestContext
         {
             private readonly UserController _sut;
-            private readonly IFixture _fixture;
-            private readonly IUserManager _userManager;
-            private string _userIdToSearch;
-            private IActionResult _result;
-            private IStartupInitialization _startupInitialization;
-            private ControllerContext _loggedInAdminUserContext;
-            private ControllerContext _loggedInNonAdminUserContext;
+            private readonly IStartupInitialization _startupInitialization;
             private RocketException _exception;
+            private IActionResult _result;
+            private CreateUserRequest _userToCreate;
+            private string _userIdToSearch;
 
             public TestContext()
             {
-                _fixture =
-                    FixtureEx
-                        .CreateNSubstituteFixture();
-
-                _userManager = _fixture.Freeze<IUserManager>();
-                _startupInitialization = _fixture.Freeze<IStartupInitialization>();
+                _startupInitialization = Fixture.Freeze<IStartupInitialization>();
 
                 _sut =
                     new UserController(
-                        _fixture.Freeze<ILogger<UserController>>(),
-                        _userManager,
+                        Fixture.Freeze<ILogger<UserController>>(),
+                        UserManager,
                         _startupInitialization
                     );
 
-                SetupUsersAndClaims();
-                SetupAdminControllerContexts();
-                SetupNonAdminControllerContexts();
+                SetupGetUserReturns();
+                SetupCreateUserAccountReturns();
+                SetupControllerContexts();
             }
 
-            private void SetupUsersAndClaims()
-            {
-                var adminActiveUser =
-                    _fixture
-                        .Build<User>()
-                        .With(
-                            o => o.Username,
-                            AdminUserName
-                        )
-                        .With(
-                            o => o.IsActive,
-                            true
-                        )
-                        .With(
-                            o => o.IsAdmin,
-                            true
-                        )
-                        .Create();
-                
-                var nonAdminActiveUser =
-                    _fixture
-                        .Build<User>()
-                        .With(
-                            o => o.Username,
-                            AdminUserName
-                        )
-                        .With(
-                            o => o.IsActive,
-                            true
-                        )
-                        .With(
-                            o => o.IsAdmin,
-                            false
-                        )
-                        .Create();
+            public void ArrangeStartupPhaseAdminDeactivated() =>
+                _startupInitialization
+                    .GetStartupPhaseAsync(CancellationToken.None)
+                    .ReturnsForAnyArgs(StartupPhaseEnum.AdminDeactivated);
 
-                var someOtherUser =
-                    _fixture
-                        .Create<User>();
+            public void ArrangeStartupPhaseAdminPendingDeactivation() =>
+                _startupInitialization
+                    .GetStartupPhaseAsync(CancellationToken.None)
+                    .ReturnsForAnyArgs(StartupPhaseEnum.AdminPendingDeactivation);
 
-                _userManager
-                    .GetUserByUserIdAsync(
-                        AdminUserId,
-                        CancellationToken.None
-                    )
-                    .Returns(adminActiveUser);
+            public void ArrangeLoggedInRootAdminUser() => _sut.ControllerContext = RootAdminUserContext;
 
-                _userManager
-                    .GetUserByUserIdAsync(
-                        NonAdminUserId,
-                        CancellationToken.None
-                    )
-                    .Returns(nonAdminActiveUser);
+            public void ArrangeLoggedInAdminUser() => _sut.ControllerContext = AdminUserContext;
 
-                _userManager
-                    .GetUserByUserIdAsync(
-                        ValidUserIdToGet,
-                        CancellationToken.None
-                    )
-                    .Returns(someOtherUser);
-            }
+            public void ArrangeLoggedInInactiveAdminUser() => _sut.ControllerContext = InactiveAdminUserContext;
 
-            private void SetupAdminControllerContexts()
-            {
-                var claims = new List<Claim>
-                {
-                    new(
-                        ClaimTypes.Name,
-                        AdminUserName
-                    ),
-                    new(
-                        ClaimTypes.NameIdentifier,
-                        AdminUserId
-                    )
-                };
-
-                var identity =
-                    new ClaimsIdentity(
-                        claims,
-                        DomainConstants.BasicAuthentication
-                    );
-
-                _loggedInAdminUserContext =
-                    new ControllerContext
-                    {
-                        HttpContext = new DefaultHttpContext
-                        {
-                            User = new ClaimsPrincipal(identity)
-                        }
-                    };
-            }
-            
-            private void SetupNonAdminControllerContexts()
-            {
-                var claims = new List<Claim>
-                {
-                    new(
-                        ClaimTypes.Name,
-                        NonAdminUserName
-                    ),
-                    new(
-                        ClaimTypes.NameIdentifier,
-                        NonAdminUserId
-                    )
-                };
-
-                var identity =
-                    new ClaimsIdentity(
-                        claims,
-                        DomainConstants.BasicAuthentication
-                    );
-
-                _loggedInNonAdminUserContext =
-                    new ControllerContext
-                    {
-                        HttpContext = new DefaultHttpContext
-                        {
-                            User = new ClaimsPrincipal(identity)
-                        }
-                    };
-            }
-
-            public void ArrangeLoggedInAdminUser()
-            {
-                _sut.ControllerContext = _loggedInAdminUserContext;
-            }
-
-            public void ArrangeLoggedInNonAdminUser()
-            {
-                _sut.ControllerContext = _loggedInNonAdminUserContext;
-            }
+            public void ArrangeLoggedInNonAdminUser() => _sut.ControllerContext = NonAdminUserContext;
 
             public void ArrangeValidUserReturnedFromSearch() => _userIdToSearch = ValidUserIdToGet;
-            
+
             public void ArrangeNoUserReturnedFromSearch() => _userIdToSearch = "17592812e239877900dc092d";
+
+            public void ArrangeValidCreateUserAsNotNewAdminRequest() =>
+                _userToCreate = new CreateUserRequest
+                {
+                    Username = "user",
+                    Password = "password",
+                    IsTheNewAdmin = false
+                };
+
+            public void ArrangeValidCreateUserAsNewAdminRequest() =>
+                _userToCreate = new CreateUserRequest
+                {
+                    Username = "user",
+                    Password = "password",
+                    IsTheNewAdmin = true
+                };
 
             public async Task ActGetUserAsync()
             {
@@ -246,26 +193,90 @@ namespace Rocket.Tests.Unit
                                 CancellationToken.None
                             );
             }
-            
+
+            public async Task ActCreateUserAsync()
+            {
+                await
+                    _sut
+                        .CreateUserAsync(
+                            _userToCreate,
+                            CancellationToken.None
+                        );
+            }
+
             public async Task ActGetUserWithExceptionAsync() =>
-                _exception = 
+                _exception =
                     await
                         Assert
                             .ThrowsAsync<RocketException>(ActGetUserAsync);
-            
+
             public void AssertOkResult()
             {
                 Assert.NotNull(_result);
                 var okResult = Assert.IsType<OkObjectResult>(_result);
-                Assert.Equal((int)HttpStatusCode.OK, okResult.StatusCode);
+                Assert.Equal(
+                    (int)HttpStatusCode.OK,
+                    okResult.StatusCode
+                );
             }
 
             public void AssertExceptionCode(ApiStatusCodeEnum expected)
             {
                 Assert.Null(_result);
                 Assert.NotNull(_exception);
-                Assert.Equal((int)expected, _exception.ApiStatusCode);
+                Assert.Equal(
+                    (int)expected,
+                    _exception.ApiStatusCode
+                );
             }
+
+            public void AssertDeactivationAdminWasNotCalled() =>
+                UserManager
+                    .ReceivedWithAnyArgs(0)
+                    .DeactivateAdminAccountAsync(CancellationToken.None);
+
+            public void AssertDeactivationAdminWasCalled() =>
+                UserManager
+                    .ReceivedWithAnyArgs(1)
+                    .DeactivateAdminAccountAsync(CancellationToken.None);
+
+            public void AssertUpdateAccountIsAdminWasNotCalled() =>
+                UserManager
+                    .ReceivedWithAnyArgs(0)
+                    .UpdateAccountIsAdminAsync(
+                        null,
+                        false,
+                        CancellationToken.None
+                    );
+
+            public void AssertUpdateAccountIsAdminWasCalledWithFalse() =>
+                UserManager
+                    .Received(1)
+                    .UpdateAccountIsAdminAsync(
+                        AdminUserId,
+                        false,
+                        CancellationToken.None
+                    );
+
+            public void AssertCreateAccountIsAdminWasCalledWithTrue() =>
+                UserManager
+                    .Received(1)
+                    .CreateUserAccountAsync(
+                        "user",
+                        "password",
+                        true,
+                        CancellationToken.None
+                    );
+
+            public void AssertCreateAccountIsAdminWasCalledWithFalse()=>
+                UserManager
+                    .Received(1)
+                    .CreateUserAccountAsync(
+                        "user",
+                        "password",
+                        false,
+                        CancellationToken.None
+                    );
         }
     }
 }
