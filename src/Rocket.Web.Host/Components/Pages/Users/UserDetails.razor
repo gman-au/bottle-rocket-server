@@ -2,11 +2,13 @@
 @using Rocket.Api.Contracts
 @using Rocket.Interfaces
 @using Rocket.Web.Host.Api
+@using Rocket.Web.Host.Components.Dialog
 @using Rocket.Web.Host.Infrastructure
 @inject IApiRequestManager ApiRequestManager
 @inject IEmailAddressValidator EmailAddressValidator
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
@@ -82,7 +84,7 @@
                             TriState
                             Disabled="@(_isLoading)"
                             @bind-Value="@_newModel.IsActive">
-                            User is active
+                            This user is active
                         </MudCheckBox>
                     </MudItem>
                     <MudItem sm="12" lg="6" xl="4">
@@ -90,7 +92,7 @@
                             TriState
                             Disabled="@(_isLoading)"
                             @bind-Value="@_newModel.IsAdmin">
-                            Check this box to make this user the administrator.
+                            This user is the administrator
                         </MudCheckBox>
                     </MudItem>
                 </MudGrid>
@@ -122,7 +124,8 @@
     private UserDetail _newModel = null;
     private MudTextField<string> _pwField1;
 
-    [Parameter] public string Id { get; set; }
+    [Parameter]
+    public string Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -166,6 +169,25 @@
         }
     }
 
+    private async Task ConfirmAdminRevocationAsync()
+    {
+        var dialog =
+            await
+                DialogService
+                    .ShowAsync<ConfirmRevokeAdminDialog>();
+
+        var result =
+            await
+                dialog
+                    .Result;
+
+        if (!(result?.Canceled ?? true))
+        {
+            await
+                SubmitAsync();
+        }
+    }
+
     private async Task SubmitAsync()
     {
         await
@@ -174,6 +196,24 @@
 
         if (_form.IsValid)
         {
+            var revokingAdmin = _currentModel.IsAdmin != true && _newModel.IsAdmin == true;
+
+            if (revokingAdmin)
+            {
+                var dialog =
+                    await
+                        DialogService
+                            .ShowAsync<ConfirmRevokeAdminDialog>();
+
+                var result =
+                    await
+                        dialog
+                            .Result;
+
+                if (result?.Canceled == true)
+                    return;
+            }
+
             _isLoading = true;
             StateHasChanged();
 
@@ -214,6 +254,12 @@
                         "The user has been updated.",
                         Severity.Success
                     );
+
+                if (revokingAdmin)
+                {
+                    NavigationManager
+                        .NavigateTo("Account/Logout");
+                }
             }
             catch (Exception ex)
             {

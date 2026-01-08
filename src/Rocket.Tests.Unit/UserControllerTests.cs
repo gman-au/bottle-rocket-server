@@ -126,6 +126,7 @@ namespace Rocket.Tests.Unit
         [Fact]
         public async Task Test_Phase_1_Update_Non_New_Admin_User_As_Admin()
         {
+            _context.ArrangeApprovedByAdminChecker();
             _context.ArrangeStartupPhaseAdminDeactivated();
             _context.ArrangeLoggedInAdminUser();
             _context.ArrangeValidMinimalUpdateUserAsNotNewAdminRequest();
@@ -138,6 +139,7 @@ namespace Rocket.Tests.Unit
         [Fact]
         public async Task Test_Phase_1_Update_Non_New_Admin_User_As_Non_Admin()
         {
+            _context.ArrangeApprovedByAdminChecker();
             _context.ArrangeStartupPhaseAdminDeactivated();
             _context.ArrangeLoggedInNonAdminUser();
             _context.ArrangeValidMinimalUpdateUserAsNotNewAdminRequest();
@@ -150,6 +152,7 @@ namespace Rocket.Tests.Unit
         [Fact]
         public async Task Test_Phase_1_Update_Non_New_Admin_User_As_Inactive_Admin()
         {
+            _context.ArrangeApprovedByAdminChecker();
             _context.ArrangeStartupPhaseAdminDeactivated();
             _context.ArrangeLoggedInInactiveAdminUser();
             _context.ArrangeValidMinimalUpdateUserAsNotNewAdminRequest();
@@ -162,6 +165,7 @@ namespace Rocket.Tests.Unit
         [Fact]
         public async Task Test_Phase_1_Update_New_Admin_User_As_Admin()
         {
+            _context.ArrangeApprovedByAdminChecker();
             _context.ArrangeStartupPhaseAdminDeactivated();
             _context.ArrangeLoggedInAdminUser();
             _context.ArrangeValidUpdateUserAsNewAdminRequest();
@@ -171,10 +175,24 @@ namespace Rocket.Tests.Unit
             _context.AssertUpdateAccountWasCalledWithAdminTrue();
         }
 
+        [Fact]
+        public async Task Test_Phase_1_Update_New_Admin_User_As_Admin_Not_Approved()
+        {
+            _context.ArrangeNotApprovedByAdminChecker();
+            _context.ArrangeStartupPhaseAdminDeactivated();
+            _context.ArrangeLoggedInAdminUser();
+            _context.ArrangeValidUpdateUserAsNewAdminRequest();
+            await _context.ActUpdateUserWithExceptionAsync();
+            _context.AssertUpdateAccountIsAdminWasNotCalled();
+            _context.AssertUpdateAccountWasNotCalled();
+            _context.AssertExceptionCode(ApiStatusCodeEnum.PotentiallyIrrecoverableOperation);
+        }
+
         private class TestContext : BaseControllerTestContext
         {
             private readonly UserController _sut;
             private readonly IStartupInitialization _startupInitialization;
+            private readonly IActiveAdminChecker _activeAdminChecker;
             private RocketException _exception;
             private IActionResult _result;
             private CreateUserRequest _userToCreate;
@@ -184,19 +202,41 @@ namespace Rocket.Tests.Unit
             public TestContext()
             {
                 _startupInitialization = Fixture.Freeze<IStartupInitialization>();
+                _activeAdminChecker = Fixture.Freeze<IActiveAdminChecker>();
 
                 _sut =
                     new UserController(
                         Fixture.Freeze<ILogger<UserController>>(),
                         UserManager,
                         Fixture.Freeze<IUserRepository>(),
-                        _startupInitialization
+                        _startupInitialization,
+                        _activeAdminChecker
                     );
 
                 SetupGetUserReturns();
                 SetupCreateUserAccountReturns();
                 SetupControllerContexts();
             }
+
+            public void ArrangeApprovedByAdminChecker() =>
+                _activeAdminChecker
+                    .PerformAsync(
+                        null,
+                        null,
+                        null,
+                        CancellationToken.None
+                    )
+                    .ReturnsForAnyArgs(true);
+
+            public void ArrangeNotApprovedByAdminChecker() =>
+                _activeAdminChecker
+                    .PerformAsync(
+                        null,
+                        null,
+                        null,
+                        CancellationToken.None
+                    )
+                    .ReturnsForAnyArgs(false);
 
             public void ArrangeStartupPhaseAdminDeactivated() =>
                 _startupInitialization

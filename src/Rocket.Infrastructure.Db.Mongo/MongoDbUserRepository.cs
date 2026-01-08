@@ -128,7 +128,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                         .Filter
                         .Eq(
                             u => u.Username,
-                            DomainConstants.AdminUserName
+                            DomainConstants.RootAdminUserName
                         );
 
                 var update =
@@ -211,46 +211,66 @@ namespace Rocket.Infrastructure.Db.Mongo
             }
         }
 
-        public async Task UpdateUserIsAdminAsync(
-            string userId,
-            bool value,
-            CancellationToken cancellationToken
-        )
+        public async Task<(IEnumerable<User> records, long totalRecordCount)> GetActiveAdminsAsync(CancellationToken cancellationToken)
         {
             try
             {
+                var mongoDatabase =
+                    mongoDbClient
+                        .GetDatabase();
+
+                var userCollection =
+                    mongoDatabase
+                        .GetCollection<User>(MongoConstants.UserCollection);
+
                 var filter =
                     Builders<User>
                         .Filter
                         .Eq(
-                            u => u.Id,
-                            userId
+                            u => u.IsActive,
+                            true
                         );
-
-                var update =
+                
+                filter &=
                     Builders<User>
-                        .Update
-                        .Set(
-                            u => u.IsAdmin,
-                            value
+                        .Filter
+                        .Eq(
+                            o => o.IsAdmin,
+                            true
                         );
+                
+                // do not count the root admin account
+                filter &=
+                    Builders<User>
+                        .Filter
+                        .Ne(
+                            o => o.Username,
+                            DomainConstants.RootAdminUserName
+                        );                
 
-                await
-                    UpdateUserAsync
-                    (
-                        filter,
-                        update,
-                        cancellationToken
-                    );
+                var totalRecordCount =
+                    await
+                        userCollection
+                            .Find(filter)
+                            .CountDocumentsAsync(cancellationToken: cancellationToken);
+
+                var records =
+                    await
+                        userCollection
+                            .Find(filter)
+                            .SortByDescending(x => x.CreatedAt)
+                            .ToListAsync(cancellationToken: cancellationToken);
+
+                return (records, totalRecordCount);
             }
             catch (Exception ex)
             {
                 logger
                     .LogError(
-                        "Error updating admin status for user {userId}: {error}",
-                        userId,
+                        "There was an fetching users: {error}",
                         ex.Message
                     );
+
                 throw;
             }
         }

@@ -13,6 +13,7 @@
         FileDataCorrupted,
         UnknownOrInaccessibleRecord,
         RequiresAdministratorAccess,
+        PotentiallyIrrecoverableOperation,
         ServerError = 5000
     }
 }

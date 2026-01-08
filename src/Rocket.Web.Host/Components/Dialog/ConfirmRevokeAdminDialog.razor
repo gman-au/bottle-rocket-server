@@ -1,0 +1,58 @@
+﻿<MudDialog Class="p-2">
+    <TitleContent>
+        <MudText
+            Color="Color.Warning"
+            GutterBottom
+            Typo="Typo.h5">
+            Assign a new administrator
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Typo="Typo.body1">
+            <p>
+                Do you wish to change the administrator?
+            </p>
+            <p>
+                If you proceed, <u>this account will no longer have administrator access</u>, and will be logged out immediately.
+            </p>
+        </MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton
+            Variant="Variant.Outlined"
+            OnClick="Cancel">
+            Cancel
+        </MudButton>
+        <MudButton
+            Variant="Variant.Outlined"
+            Color="Color.Error"
+            OnClick="Submit">
+            I understand, confirm
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await
+            MudDialog
+                .SetOptionsAsync(
+                    new DialogOptions
+                    {
+                        FullWidth = true,
+                        MaxWidth = MaxWidth.Small,
+                        BackgroundClass = "dialog-blur-backdrop"
+                    }
+                );
+    }
+
+}

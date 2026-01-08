@@ -29,5 +29,9 @@ namespace Rocket.Interfaces
             int recordCount,
             CancellationToken cancellationToken
         );
+        
+        Task<(IEnumerable<User> records, long totalRecordCount)> GetActiveAdminsAsync(
+            CancellationToken cancellationToken
+        );
     }
 }

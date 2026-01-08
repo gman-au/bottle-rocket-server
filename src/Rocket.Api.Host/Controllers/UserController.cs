@@ -23,7 +23,8 @@ namespace Rocket.Api.Host.Controllers
         ILogger<UserController> logger,
         IUserManager userManager,
         IUserRepository userRepository,
-        IStartupInitialization startupInitialization
+        IStartupInitialization startupInitialization,
+        IActiveAdminChecker activeAdminChecker
     ) : RocketControllerBase(userManager)
     {
         [HttpPost("fetch")]
@@ -31,13 +32,14 @@ namespace Rocket.Api.Host.Controllers
         [EndpointGroupName("Manage users")]
         [EndpointDescription(
             """
-            
+            Retrieves a subset of users belonging to the system.\n
+            Provide a zero-based start index and record count to retrieve paged results and minimise server load. 
             """
         )]
         [ProducesResponseType(typeof(FetchUsersResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> FetchMyScansAsync(
+        public async Task<IActionResult> FetchUsersAsync(
             [FromBody] FetchUsersRequest request,
             CancellationToken cancellationToken
         )
@@ -63,7 +65,7 @@ namespace Rocket.Api.Host.Controllers
                                 o =>
                                     new UserItem
                                     {
-                                        Id = o.Username == DomainConstants.AdminUserName ? null : o.Id,
+                                        Id = o.Username == DomainConstants.RootAdminUserName ? null : o.Id,
                                         Username = o.Username,
                                         CreatedAt = o.CreatedAt.ToLocalTime(),
 
@@ -181,7 +183,7 @@ namespace Rocket.Api.Host.Controllers
                     .Username;
 
             var newUserIsAdmin =
-                currentUsername == DomainConstants.AdminUserName ||
+                currentUsername == DomainConstants.RootAdminUserName ||
                 request.IsTheNewAdmin;
 
             // Create the new user account
@@ -201,7 +203,7 @@ namespace Rocket.Api.Host.Controllers
                     ApiStatusCodeEnum.ServerError
                 );
 
-            if (currentUsername == DomainConstants.AdminUserName)
+            if (currentUsername == DomainConstants.RootAdminUserName)
             {
                 var startupPhase =
                     await
@@ -275,6 +277,22 @@ namespace Rocket.Api.Host.Controllers
                 request
                     .IsAdmin;
 
+            var isPermissibleOperation =
+                await
+                    activeAdminChecker
+                        .PerformAsync(
+                            request.Id,
+                            request.IsActive,
+                            request.IsAdmin,
+                            cancellationToken
+                        );
+
+            if (!isPermissibleOperation)
+                throw new RocketException(
+                    "There must be at least one active admin user in the system.",
+                    ApiStatusCodeEnum.PotentiallyIrrecoverableOperation
+                );
+            
             // Update the user account
             await
                 UserManager

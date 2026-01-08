@@ -50,7 +50,7 @@ namespace Rocket.Infrastructure
             var adminUser =
                 new User
                 {
-                    Username = DomainConstants.AdminUserName,
+                    Username = DomainConstants.RootAdminUserName,
                     PasswordHash = passwordHash,
                     CreatedAt = DateTime.UtcNow,
                     IsAdmin = true,
@@ -70,7 +70,7 @@ namespace Rocket.Infrastructure
             logger.LogWarning("================================================================================");
             logger.LogWarning(
                 "Username: {Username}",
-                DomainConstants.AdminUserName
+                DomainConstants.RootAdminUserName
             );
             logger.LogWarning(
                 "Password: {Password}",
@@ -91,7 +91,7 @@ namespace Rocket.Infrastructure
                     await
                         userRepository
                             .GetUserByUsernameAsync(
-                                DomainConstants.AdminUserName,
+                                DomainConstants.RootAdminUserName,
                                 cancellationToken
                             );
 

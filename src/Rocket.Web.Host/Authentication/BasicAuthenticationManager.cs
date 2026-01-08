@@ -204,7 +204,7 @@ namespace Rocket.Web.Host.Authentication
             return
                 username?
                     .Equals(
-                        DomainConstants.AdminUserName,
+                        DomainConstants.RootAdminUserName,
                         StringComparison.OrdinalIgnoreCase
                     )
                 ?? false;
