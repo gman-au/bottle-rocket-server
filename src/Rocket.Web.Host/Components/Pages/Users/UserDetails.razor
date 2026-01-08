@@ -119,8 +119,7 @@
     private UserDetail _newModel = null;
     private MudTextField<string> _pwField1;
 
-    [Parameter]
-    public string Id { get; set; }
+    [Parameter] public string Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -206,7 +205,7 @@
                     CreatedAt = _currentModel.CreatedAt,
                     NewPassword = null
                 };
-                
+
                 Snackbar
                     .Add(
                         "The user has been updated.",

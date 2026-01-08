@@ -71,6 +71,7 @@ namespace Rocket.Tests.Unit
             _context.ArrangeLoggedInRootAdminUser();
             _context.ArrangeValidCreateUserAsNotNewAdminRequest();
             await _context.ActCreateUserAsync();
+            _context.AssertOkResult();
             _context.AssertCreateAccountIsAdminWasCalledWithTrue();
             _context.AssertDeactivationAdminWasCalled();
             _context.AssertUpdateAccountIsAdminWasNotCalled();
@@ -83,6 +84,7 @@ namespace Rocket.Tests.Unit
             _context.ArrangeLoggedInAdminUser();
             _context.ArrangeValidCreateUserAsNotNewAdminRequest();
             await _context.ActCreateUserAsync();
+            _context.AssertOkResult();
             _context.AssertCreateAccountIsAdminWasCalledWithFalse();
             _context.AssertDeactivationAdminWasNotCalled();
             _context.AssertUpdateAccountIsAdminWasNotCalled();
@@ -95,6 +97,7 @@ namespace Rocket.Tests.Unit
             _context.ArrangeLoggedInAdminUser();
             _context.ArrangeValidCreateUserAsNewAdminRequest();
             await _context.ActCreateUserAsync();
+            _context.AssertOkResult();
             _context.AssertCreateAccountIsAdminWasCalledWithTrue();
             _context.AssertDeactivationAdminWasNotCalled();
             _context.AssertUpdateAccountIsAdminWasCalledWithFalse();
@@ -120,6 +123,54 @@ namespace Rocket.Tests.Unit
             _context.AssertExceptionCode(ApiStatusCodeEnum.RequiresAdministratorAccess);
         }
 
+        [Fact]
+        public async Task Test_Phase_1_Update_Non_New_Admin_User_As_Admin()
+        {
+            _context.ArrangeStartupPhaseAdminDeactivated();
+            _context.ArrangeLoggedInAdminUser();
+            _context.ArrangeValidMinimalUpdateUserAsNotNewAdminRequest();
+            await _context.ActUpdateUserAsync();
+            _context.AssertOkResult();
+            _context.AssertUpdateAccountIsAdminWasNotCalled();
+            _context.AssertUpdateAccountWasCalledWithMinimalFalse();
+        }
+
+        [Fact]
+        public async Task Test_Phase_1_Update_Non_New_Admin_User_As_Non_Admin()
+        {
+            _context.ArrangeStartupPhaseAdminDeactivated();
+            _context.ArrangeLoggedInNonAdminUser();
+            _context.ArrangeValidMinimalUpdateUserAsNotNewAdminRequest();
+            await _context.ActUpdateUserWithExceptionAsync();
+            _context.AssertUpdateAccountIsAdminWasNotCalled();
+            _context.AssertUpdateAccountWasNotCalled();
+            _context.AssertExceptionCode(ApiStatusCodeEnum.RequiresAdministratorAccess);
+        }
+
+        [Fact]
+        public async Task Test_Phase_1_Update_Non_New_Admin_User_As_Inactive_Admin()
+        {
+            _context.ArrangeStartupPhaseAdminDeactivated();
+            _context.ArrangeLoggedInInactiveAdminUser();
+            _context.ArrangeValidMinimalUpdateUserAsNotNewAdminRequest();
+            await _context.ActUpdateUserWithExceptionAsync();
+            _context.AssertUpdateAccountIsAdminWasNotCalled();
+            _context.AssertUpdateAccountWasNotCalled();
+            _context.AssertExceptionCode(ApiStatusCodeEnum.InactiveUser);
+        }
+
+        [Fact]
+        public async Task Test_Phase_1_Update_New_Admin_User_As_Admin()
+        {
+            _context.ArrangeStartupPhaseAdminDeactivated();
+            _context.ArrangeLoggedInAdminUser();
+            _context.ArrangeValidUpdateUserAsNewAdminRequest();
+            await _context.ActUpdateUserAsync();
+            _context.AssertOkResult();
+            _context.AssertUpdateAccountIsAdminWasCalledWithFalse();
+            _context.AssertUpdateAccountWasCalledWithAdminTrue();
+        }
+
         private class TestContext : BaseControllerTestContext
         {
             private readonly UserController _sut;
@@ -128,6 +179,7 @@ namespace Rocket.Tests.Unit
             private IActionResult _result;
             private CreateUserRequest _userToCreate;
             private string _userIdToSearch;
+            private UserDetail _userToUpdate;
 
             public TestContext()
             {
@@ -163,9 +215,29 @@ namespace Rocket.Tests.Unit
 
             public void ArrangeLoggedInNonAdminUser() => _sut.ControllerContext = NonAdminUserContext;
 
-            public void ArrangeValidUserReturnedFromSearch() => _userIdToSearch = ValidUserIdToGet;
+            public void ArrangeValidUserReturnedFromSearch() => _userIdToSearch = ValidUserIdToModify;
 
             public void ArrangeNoUserReturnedFromSearch() => _userIdToSearch = "17592812e239877900dc092d";
+
+            public void ArrangeValidMinimalUpdateUserAsNotNewAdminRequest() =>
+                _userToUpdate = new UserDetail
+                {
+                    Id = ValidUserIdToModify,
+                    Username = "user",
+                    IsActive = null,
+                    IsAdmin = null,
+                    NewPassword = null
+                };
+
+            public void ArrangeValidUpdateUserAsNewAdminRequest() =>
+                _userToUpdate = new UserDetail
+                {
+                    Id = ValidUserIdToModify,
+                    Username = null,
+                    IsActive = null,
+                    IsAdmin = true,
+                    NewPassword = null
+                };
 
             public void ArrangeValidCreateUserAsNotNewAdminRequest() =>
                 _userToCreate = new CreateUserRequest
@@ -194,14 +266,26 @@ namespace Rocket.Tests.Unit
                             );
             }
 
+            public async Task ActUpdateUserAsync()
+            {
+                _result =
+                    await
+                        _sut
+                            .UpdateUserAsync(
+                                _userToUpdate,
+                                CancellationToken.None
+                            );
+            }
+
             public async Task ActCreateUserAsync()
             {
-                await
-                    _sut
-                        .CreateUserAsync(
-                            _userToCreate,
-                            CancellationToken.None
-                        );
+                _result =
+                    await
+                        _sut
+                            .CreateUserAsync(
+                                _userToCreate,
+                                CancellationToken.None
+                            );
             }
 
             public async Task ActGetUserWithExceptionAsync() =>
@@ -209,6 +293,12 @@ namespace Rocket.Tests.Unit
                     await
                         Assert
                             .ThrowsAsync<RocketException>(ActGetUserAsync);
+
+            public async Task ActUpdateUserWithExceptionAsync() =>
+                _exception =
+                    await
+                        Assert
+                            .ThrowsAsync<RocketException>(ActUpdateUserAsync);
 
             public void AssertOkResult()
             {
@@ -268,13 +358,61 @@ namespace Rocket.Tests.Unit
                         CancellationToken.None
                     );
 
-            public void AssertCreateAccountIsAdminWasCalledWithFalse()=>
+            public void AssertCreateAccountIsAdminWasCalledWithFalse() =>
                 UserManager
                     .Received(1)
                     .CreateUserAccountAsync(
                         "user",
                         "password",
                         false,
+                        CancellationToken.None
+                    );
+
+            public void AssertUpdateAccountWasNotCalled() =>
+                UserManager
+                    .ReceivedWithAnyArgs(0)
+                    .UpdateAccountAsync(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        CancellationToken.None
+                    );
+
+            public void AssertUpdateAccountWasCalled() =>
+                UserManager
+                    .ReceivedWithAnyArgs(1)
+                    .UpdateAccountAsync(
+                        null,
+                        null,
+                        true,
+                        null,
+                        null,
+                        CancellationToken.None
+                    );
+
+            public void AssertUpdateAccountWasCalledWithMinimalFalse() =>
+                UserManager
+                    .Received(1)
+                    .UpdateAccountAsync(
+                        ValidUserIdToModify,
+                        "user",
+                        null,
+                        null,
+                        null,
+                        CancellationToken.None
+                    );
+
+            public void AssertUpdateAccountWasCalledWithAdminTrue() =>
+                UserManager
+                    .Received(1)
+                    .UpdateAccountAsync(
+                        ValidUserIdToModify,
+                        null,
+                        null,
+                        true,
+                        null,
                         CancellationToken.None
                     );
         }

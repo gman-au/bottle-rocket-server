@@ -1,6 +1,4 @@
 ﻿using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -8,6 +6,7 @@ using Rocket.Api.Contracts;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Web.Host.Authentication;
+using Rocket.Web.Host.Extensions;
 
 namespace Rocket.Web.Host.Api
 {
@@ -35,18 +34,21 @@ namespace Rocket.Web.Host.Api
 
             var result =
                 await
-                    ParseJsonOrNullAsync<MyScansResponse>(
-                        response,
-                        cancellationToken
-                    );
-            
+                    response
+                        .TryParseResponse<MyScansResponse>(
+                            logger,
+                            cancellationToken
+                        );
+
             EnsureApiSuccessStatusCode(result);
             EnsureHttpSuccessStatusCode(response);
 
             return result;
         }
 
-        public async Task<MyScanItemDetail> GetMyScanAsync(string id, CancellationToken cancellationToken)
+        public async Task<MyScanItemDetail> GetMyScanAsync(
+            string id,
+            CancellationToken cancellationToken)
         {
             logger
                 .LogInformation("Received My Scan request");
@@ -61,10 +63,11 @@ namespace Rocket.Web.Host.Api
 
             var result =
                 await
-                    ParseJsonOrNullAsync<MyScanItemDetail>(
-                        response,
-                        cancellationToken
-                    );
+                    response
+                        .TryParseResponse<MyScanItemDetail>(
+                            logger,
+                            cancellationToken
+                        );
 
             EnsureApiSuccessStatusCode(result);
             EnsureHttpSuccessStatusCode(response);
@@ -72,11 +75,13 @@ namespace Rocket.Web.Host.Api
             return result;
         }
 
-        public async Task<UserDetail> GetUserByIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<UserDetail> GetUserByIdAsync(
+            string id,
+            CancellationToken cancellationToken)
         {
             logger
                 .LogInformation("Received Get User request");
-         
+
             var response =
                 await
                     authenticatedApiClient
@@ -87,10 +92,11 @@ namespace Rocket.Web.Host.Api
 
             var result =
                 await
-                    ParseJsonOrNullAsync<UserDetail>(
-                        response,
-                        cancellationToken
-                    );
+                    response
+                        .TryParseResponse<UserDetail>(
+                            logger,
+                            cancellationToken
+                        );
 
             EnsureApiSuccessStatusCode(result);
             EnsureHttpSuccessStatusCode(response);
@@ -98,26 +104,29 @@ namespace Rocket.Web.Host.Api
             return result;
         }
 
-        public async Task<UpdateUserResponse> UpdateUserAsync(UserDetail user, CancellationToken cancellationToken)
+        public async Task<UpdateUserResponse> UpdateUserAsync(
+            UserDetail user,
+            CancellationToken cancellationToken)
         {
             logger
                 .LogInformation("Received Update User request");
-         
+
             var response =
                 await
                     authenticatedApiClient
                         .PostAsJsonAsync(
-                            $"/api/users/update",
+                            "/api/users/update",
                             user,
                             cancellationToken
                         );
 
             var result =
                 await
-                    ParseJsonOrNullAsync<UpdateUserResponse>(
-                        response,
-                        cancellationToken
-                    );
+                    response
+                        .TryParseResponse<UpdateUserResponse>(
+                            logger,
+                            cancellationToken
+                        );
 
             EnsureApiSuccessStatusCode(result);
             EnsureHttpSuccessStatusCode(response);
@@ -130,22 +139,24 @@ namespace Rocket.Web.Host.Api
             logger
                 .LogInformation("Checking startup phase");
 
-            var response = 
-                await 
+            var response =
+                await
                     authenticatedApiClient
                         .GetAsync(
                             "/api/startup/phase",
                             cancellationToken
-                            );
-    
+                        );
+
             response
                 .EnsureSuccessStatusCode();
 
             var result =
                 await
                     response
-                        .Content
-                        .ReadFromJsonAsync<StartupPhaseResponse>(cancellationToken);
+                        .TryParseResponse<StartupPhaseResponse>(
+                            logger,
+                            cancellationToken
+                        );
 
             return result;
         }
@@ -155,38 +166,29 @@ namespace Rocket.Web.Host.Api
             if (response == null) return;
 
             if (response.ErrorCode != (int)ApiStatusCodeEnum.Ok)
-            {
                 throw new RocketException(
                     response.ErrorMessage,
                     response.ErrorCode
                 );
-            }
         }
 
         private static void EnsureHttpSuccessStatusCode(HttpResponseMessage response)
         {
-            response
-                .EnsureSuccessStatusCode();
-        }
-
-        private static async Task<T> ParseJsonOrNullAsync<T>(
-            HttpResponseMessage response,
-            CancellationToken cancellationToken
-        )
-        {
             try
             {
-                var result =
-                    await
-                        response
-                            .Content
-                            .ReadFromJsonAsync<T>(cancellationToken: cancellationToken);
-
-                return result;
+                response
+                    .EnsureSuccessStatusCode();
             }
-            catch (JsonException)
+            catch (HttpRequestException ex)
             {
-                return default;
+                var statusCode = (int)response.StatusCode;
+
+                if (ex.StatusCode != null)
+                    throw new RocketException(
+                        "The server returned a bad response",
+                        ApiStatusCodeEnum.ServerError,
+                        statusCode
+                    );
             }
         }
     }

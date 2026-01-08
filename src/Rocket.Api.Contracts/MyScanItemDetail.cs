@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace Rocket.Api.Contracts
 {
     public class MyScanItemDetail : ApiResponse
     {
         public string Id { get; set; }
-        
         public string UserId { get; set; }
-        
-        public DateTime CaptureDate { get; set; }
+
+        //[JsonPropertyName("capture_date")]
+        public DateTime? CaptureDate { get; set; }
         
         public string BlobId { get; set; }
         

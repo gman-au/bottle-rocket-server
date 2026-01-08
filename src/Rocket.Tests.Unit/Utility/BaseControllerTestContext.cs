@@ -26,7 +26,7 @@ namespace Rocket.Tests.Unit.Utility
         private const string InactiveAdminUserId = "999999999999999999999999";
         private const string InactiveAdminUserName = "roget.the.inactive@test.com";
 
-        protected const string ValidUserIdToGet = "495df512ec7ac1581b3ee319";
+        protected const string ValidUserIdToModify = "495df512ec7ac1581b3ee319";
 
         protected readonly IFixture Fixture;
         protected readonly IUserManager UserManager;
@@ -88,7 +88,7 @@ namespace Rocket.Tests.Unit.Utility
 
             UserManager
                 .GetUserByUserIdAsync(
-                    ValidUserIdToGet,
+                    ValidUserIdToModify,
                     CancellationToken.None
                 )
                 .Returns(someOtherUser);
