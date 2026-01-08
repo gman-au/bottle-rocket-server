@@ -46,7 +46,7 @@ namespace Rocket.Api.Host.Controllers
             await
                 Task
                     .Delay(
-                        1000,
+                        100,
                         cancellationToken
                     );
 

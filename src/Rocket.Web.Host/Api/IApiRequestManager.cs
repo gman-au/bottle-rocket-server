@@ -30,7 +30,12 @@ namespace Rocket.Web.Host.Api
             CreateUserRequest user,
             CancellationToken cancellationToken
         );
-        
+
         Task<StartupPhaseResponse> GetStartupPhaseAsync(CancellationToken cancellationToken);
+
+        Task<FetchUsersResponse> GetUsersAsync(
+            FetchUsersRequest request,
+            CancellationToken cancellationToken
+        );
     }
 }

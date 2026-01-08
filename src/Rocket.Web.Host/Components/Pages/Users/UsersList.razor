@@ -1,0 +1,141 @@
+﻿@page "/Users"
+@using Rocket.Api.Contracts
+@using Rocket.Web.Host.Api
+@using Rocket.Web.Host.Infrastructure
+@implements IAsyncDisposable
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<MudText
+    Align="Align.Center"
+    Typo="Typo.h4"
+    Color="Color.Primary"
+    Class="mb-4">
+    Users
+</MudText>
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    <MudSimpleTable Dense>
+        <thead>
+        <tr>
+            <th>User Name</th>
+            <th>Date Created</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var user in _users)
+        {
+            <tr>
+                <td>
+                    @if (!string.IsNullOrEmpty(user.Id))
+                    {
+                        <MudNavLink Href="@($"/User/{user.Id}")">
+                            <MudText Color="Color.Primary">
+                                @user.Username
+                            </MudText>
+                        </MudNavLink>
+                    }
+                    else
+                    {
+                        <MudNavLink Disabled Href="#">
+                            @user.Username
+                        </MudNavLink>
+                    }
+                </td>
+                <td>@user.CreatedAt?.ToString("g")</td>
+            </tr>
+        }
+        </tbody>
+    </MudSimpleTable>
+    <MudDivider Class="my-4"/>
+    <MudGrid Justify="Justify.Center">
+        <MudItem>
+            <MudButton
+                Variant="Variant.Outlined"
+                Color="Color.Primary"
+                Disabled="@_noMoreRecords"
+                @onclick="@(async () => await LoadUsers(
+                              _currentIndex,
+                              DefaultPageSize
+                          ))">
+                Load More
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+</BottleRocketLoadingOverlay>
+
+@code {
+    private const int DefaultPageSize = 12;
+    private bool _isLoading;
+    private bool _noMoreRecords = false;
+    private int _currentIndex = 0;
+    private IEnumerable<UserItem> _users = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+
+            await
+                LoadUsers(
+                    _currentIndex,
+                    DefaultPageSize
+                );
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task LoadUsers(int index, int count)
+    {
+        var request =
+            new FetchUsersRequest
+            {
+                StartIndex = index,
+                RecordCount = count
+            };
+
+        var response =
+            await
+                ApiRequestManager
+                    .GetUsersAsync(
+                        request,
+                        BaseCancellationToken
+                    );
+
+        _currentIndex +=
+            (response?.Users ?? [])
+            .Count();
+
+        _noMoreRecords = _currentIndex == (response?.TotalRecords ?? 0);
+
+        var existingUsers = new List<UserItem>(_users);
+        var newUsers = new List<UserItem>(response?.Users ?? []);
+
+        _users =
+            existingUsers
+                .UnionBy(
+                    newUsers,
+                    o => o.Id
+                )
+                .OrderByDescending(o => o.CreatedAt);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+    }
+
+}

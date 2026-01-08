@@ -86,7 +86,7 @@ namespace Rocket.Web.Host.Api
                 await
                     authenticatedApiClient
                         .GetAsync(
-                            $"/api/users/{id}",
+                            $"/api/users/get/{id}",
                             cancellationToken
                         );
 
@@ -188,6 +188,37 @@ namespace Rocket.Web.Host.Api
                             logger,
                             cancellationToken
                         );
+
+            return result;
+        }
+
+        public async Task<FetchUsersResponse> GetUsersAsync(
+            FetchUsersRequest request, 
+            CancellationToken cancellationToken
+            )
+        {
+            logger
+                .LogInformation("Received get users request");
+
+            var response =
+                await
+                    authenticatedApiClient
+                        .PostAsJsonAsync(
+                            $"/api/users/fetch",
+                            request,
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<FetchUsersResponse>(
+                            logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
 
             return result;
         }

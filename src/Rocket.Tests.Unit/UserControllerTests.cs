@@ -189,6 +189,7 @@ namespace Rocket.Tests.Unit
                     new UserController(
                         Fixture.Freeze<ILogger<UserController>>(),
                         UserManager,
+                        Fixture.Freeze<IUserRepository>(),
                         _startupInitialization
                     );
 

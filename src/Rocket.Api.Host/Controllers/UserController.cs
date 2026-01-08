@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -21,10 +22,62 @@ namespace Rocket.Api.Host.Controllers
     public class UserController(
         ILogger<UserController> logger,
         IUserManager userManager,
+        IUserRepository userRepository,
         IStartupInitialization startupInitialization
     ) : RocketControllerBase(userManager)
     {
-        [HttpGet("{id}")]
+        [HttpPost("fetch")]
+        [EndpointSummary("Fetch the system users")]
+        [EndpointGroupName("Manage users")]
+        [EndpointDescription(
+            """
+            
+            """
+        )]
+        [ProducesResponseType(typeof(FetchUsersResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> FetchMyScansAsync(
+            [FromBody] FetchUsersRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            await
+                ThrowIfNotAdminAsync(cancellationToken);
+
+            var (records, totalRecordCount) =
+                await
+                    userRepository
+                        .FetchUsersAsync(
+                            request.StartIndex,
+                            request.RecordCount,
+                            cancellationToken
+                        );
+
+            var response =
+                new FetchUsersResponse
+                {
+                    Users =
+                        records
+                            .Select(
+                                o =>
+                                    new UserItem
+                                    {
+                                        Id = o.Username == DomainConstants.AdminUserName ? null : o.Id,
+                                        Username = o.Username,
+                                        CreatedAt = o.CreatedAt.ToLocalTime(),
+
+                                    }
+                            ),
+                    TotalRecords = (int)totalRecordCount
+                };
+
+            return
+                response
+                    .AsApiSuccess();
+        }
+        
+        [HttpGet("get/{id}")]
         [EndpointSummary("Get user by ID")]
         [EndpointGroupName("Manage users")]
         [EndpointDescription("Returns a user by their unique identifier.")]

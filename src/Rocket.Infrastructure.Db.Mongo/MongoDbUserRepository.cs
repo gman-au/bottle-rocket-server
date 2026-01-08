@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -156,6 +157,56 @@ namespace Rocket.Infrastructure.Db.Mongo
                         ex,
                         "Error deactivating admin account"
                     );
+                throw;
+            }
+        }
+
+        public async Task<(IEnumerable<User> records, long totalRecordCount)> FetchUsersAsync(
+            int startIndex,
+            int recordCount,
+            CancellationToken cancellationToken
+        )
+        {
+            try
+            {
+                var mongoDatabase =
+                    mongoDbClient
+                        .GetDatabase();
+
+                var userCollection =
+                    mongoDatabase
+                        .GetCollection<User>(MongoConstants.UserCollection);
+
+                var filter = 
+                    Builders<User>
+                        .Filter
+                        .Empty;
+
+                var totalRecordCount =
+                    await
+                        userCollection
+                            .Find(filter)
+                            .CountDocumentsAsync(cancellationToken: cancellationToken);
+
+                var records =
+                    await
+                        userCollection
+                            .Find(filter)
+                            .SortByDescending(x => x.CreatedAt)
+                            .Skip(startIndex)
+                            .Limit(recordCount)
+                            .ToListAsync(cancellationToken: cancellationToken);
+
+                return (records, totalRecordCount);
+            }
+            catch (Exception ex)
+            {
+                logger
+                    .LogError(
+                        "There was an fetching users: {error}",
+                        ex.Message
+                    );
+
                 throw;
             }
         }
