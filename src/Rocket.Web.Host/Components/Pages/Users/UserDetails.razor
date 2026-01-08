@@ -1,5 +1,4 @@
 ﻿@page "/Users/{id}"
-@using System.Text.RegularExpressions
 @using Rocket.Api.Contracts
 @using Rocket.Interfaces
 @using Rocket.Web.Host.Api
@@ -17,8 +16,12 @@
             Model="@_newModel"
             @ref="_form">
             <MudPaper Class="p-4" elevation="2">
-                <MudText Class="mb-4" Typo="Typo.h4">
-                    Details
+                <MudText
+                    Align="Align.Center"
+                    Typo="Typo.h4"
+                    Color="Color.Primary"
+                    Class="mb-4">
+                    User Details
                 </MudText>
 
                 <MudGrid>
@@ -62,7 +65,7 @@
                             InputType="InputType.Password"
                             @bind-Value="_newModel.NewPassword"
                             For="@(() => _newModel.NewPassword)"
-                            Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))"
+                            Validation="@(new Func<string, IEnumerable<string>>(PasswordValidation.PasswordStrength))"
                             RequiredError="Password is required!"/>
                     </MudItem>
                     <MudItem sm="12" lg="6" xl="4">
@@ -223,33 +226,6 @@
                 StateHasChanged();
             }
         }
-    }
-
-    private static IEnumerable<string> PasswordStrength(string pw)
-    {
-        if (string.IsNullOrWhiteSpace(pw))
-        {
-            // empty -> won't update
-            yield break;
-        }
-
-        if (pw.Length < 8)
-            yield return "Password must be at least of length 8";
-        if (!Regex.IsMatch(
-                pw,
-                @"[A-Z]"
-            ))
-            yield return "Password must contain at least one capital letter";
-        if (!Regex.IsMatch(
-                pw,
-                @"[a-z]"
-            ))
-            yield return "Password must contain at least one lowercase letter";
-        if (!Regex.IsMatch(
-                pw,
-                @"[0-9]"
-            ))
-            yield return "Password must contain at least one digit";
     }
 
     private string PasswordMatch(string arg)

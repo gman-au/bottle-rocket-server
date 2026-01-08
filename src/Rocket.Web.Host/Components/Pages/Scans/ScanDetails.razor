@@ -24,8 +24,12 @@
                     StretchItems="StretchItems.Middle"
                     AlignItems="AlignItems.Start"
                 >
-                    <MudText Class="mb-4" Typo="Typo.h4">
-                        Details
+                    <MudText
+                        Align="Align.Center"
+                        Typo="Typo.h4"
+                        Color="Color.Primary"
+                        Class="mb-4">
+                        Scan Details
                     </MudText>
                     <div style="width:100%;">
                         <MudSimpleTable
@@ -33,7 +37,7 @@
                             Dense
                         >
                             <tbody>
-                            <SimpleTableRowPair Title="Capture Date" Value=@_scanItemDetail.CaptureDate.ToString("yyyy-MM-dd HH:mm:ss")/>
+                            <SimpleTableRowPair Title="Capture Date" Value=@_scanItemDetail.CaptureDate?.ToString("yyyy-MM-dd HH:mm:ss")/>
                             <SimpleTableRowPair Title="Content Type" Value=@_scanItemDetail.ContentType/>
                             </tbody>
                         </MudSimpleTable>

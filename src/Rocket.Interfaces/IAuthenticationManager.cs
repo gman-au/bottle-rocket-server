@@ -13,10 +13,12 @@ namespace Rocket.Interfaces
         Task<bool> IsAuthenticatedAsync();
 
         Task<string> GetAuthorizationHeaderAsync();
+        
+        Task<string> GetUsernameAsync();
+        
+        Task<string> GetRoleAsync();
 
-        Task<string> GetUserNameAsync();
-
-        Task<bool> IsAdminAsync();
+        Task<bool> IsRootAdminAsync();
 
         event Action OnAuthenticationStateChanged;
     }

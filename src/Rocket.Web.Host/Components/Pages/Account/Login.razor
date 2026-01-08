@@ -7,7 +7,12 @@
 @inherits Rocket.Web.Host.Infrastructure.BaseCancellableComponent
 
 <MudPaper Class="p-4" elevation="2">
-    <MudText Typo="Typo.h4">Login</MudText>
+    <MudText
+        Color="Color.Primary"
+        GutterBottom
+        Typo="Typo.h5">
+        Login
+    </MudText>
     <BottleRocketLoadingOverlay IsLoading="@_isLoading">
         <MudForm
             Model="@_accountLoginRequest"

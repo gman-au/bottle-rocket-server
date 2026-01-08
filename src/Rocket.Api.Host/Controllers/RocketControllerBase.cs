@@ -56,7 +56,7 @@ namespace Rocket.Api.Host.Controllers
             return user;
         }
 
-        private async Task<User> GetLoggedInUserAsync(CancellationToken cancellationToken)
+        protected async Task<User> GetLoggedInUserAsync(CancellationToken cancellationToken)
         {
             var userId =
                 User

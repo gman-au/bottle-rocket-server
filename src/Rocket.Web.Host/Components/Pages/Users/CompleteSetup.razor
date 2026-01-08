@@ -1,7 +1,191 @@
 ﻿@page "/CompleteSetup"
+@using Rocket.Api.Contracts
+@using Rocket.Domain.Enum
+@using Rocket.Domain.Exceptions
+@using Rocket.Interfaces
+@using Rocket.Web.Host.Api
+@using Rocket.Web.Host.Infrastructure
+@inject IApiRequestManager ApiRequestManager
+@inject IEmailAddressValidator EmailAddressValidator
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject ISnackbar Snackbar
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
-<h3>You will need to complete setup.</h3>
+@if (_newModel != null)
+{
+    <MudPaper Class="p-4" elevation="2">
+        <MudText
+            Color="Color.Primary"
+            GutterBottom
+            Typo="Typo.h5">
+            Please complete your Bottle Rocket server setup
+        </MudText>
+        <MudText
+            GutterBottom
+            Typo="Typo.body1">
+            You are currently logged in as the administrator account.<br/>
+            Please create a new user account with administrator privileges.<br/>
+            Once this has been performed, the current administrator account
+            will be deactivated and you will be prompted to login again.
+        </MudText>
+        <BottleRocketLoadingOverlay IsLoading="@_isLoading">
+            <MudForm
+                Model="@_newModel"
+                @ref="_form">
+                <MudGrid>
+                    <MudItem sm="12" lg="6" xl="4">
+                        <MudTextField
+                            T="string"
+                            Label="Username"
+                            HelperText="Enter an email address"
+                            Required="true"
+                            Validation="@(new Func<string, bool>(EmailAddressValidator.IsValid))"
+                            RequiredError="Please enter a valid email address"
+                            Disabled="@(_isLoading)"
+                            @bind-Value="_newModel.Username"
+                            For="@(() => _newModel.Username)"
+                            OnlyValidateIfDirty/>
+                    </MudItem>
+                    <MudItem sm="12" lg="6" xl="4">
+                        <MudTextField
+                            T="string"
+                            Label="Password"
+                            HelperText="Choose a strong password"
+                            @ref="_pwField1"
+                            InputType="InputType.Password"
+                            @bind-Value="_newModel.NewPassword"
+                            For="@(() => _newModel.NewPassword)"
+                            Validation="@(new Func<string, IEnumerable<string>>(PasswordValidation.PasswordStrength))"
+                            RequiredError="Password is required!"/>
+                    </MudItem>
+                    <MudItem sm="12" lg="6" xl="4">
+                        <MudTextField
+                            T="string"
+                            Label="Password"
+                            HelperText="Repeat the password"
+                            InputType="InputType.Password"
+                            Validation="@(new Func<string, string>(PasswordMatch))"/>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="align-start" Justify="Justify.FlexEnd">
+                    <MudItem>
+                        <MudButton
+                            Variant="Variant.Outlined"
+                            Color="Color.Success"
+                            Disabled="@(_isLoading)"
+                            OnClick="@SubmitAsync">
+                            Submit
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </BottleRocketLoadingOverlay>
+    </MudPaper>
+}
 
 @code {
-    
+
+    MudForm _form;
+
+    private bool _isLoading;
+    private UserDetail _newModel = null;
+    private MudTextField<string> _pwField1;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            var startup =
+                await
+                    ApiRequestManager
+                        .GetStartupPhaseAsync(BaseCancellationToken);
+
+            if (startup.Phase != (int)StartupPhaseEnum.AdminPendingDeactivation)
+                throw new RocketException(
+                    "This page is disabled.",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
+            _newModel = new UserDetail();
+
+            _isLoading = true;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SubmitAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                await
+                    ApiRequestManager
+                        .CreateUserAsync(
+                            new CreateUserRequest
+                            {
+                                Username = _newModel.Username,
+                                Password = _newModel.NewPassword,
+                                IsTheNewAdmin = true
+                            },
+                            BaseCancellationToken
+                        );
+
+                Snackbar
+                    .Add(
+                        "The user has been updated.",
+                        Severity.Success
+                    );
+
+                NavigationManager
+                    .NavigateTo(
+                        "Account/Logout",
+                        forceLoad: true,
+                        replace: true
+                    );
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private string PasswordMatch(string arg)
+    {
+        if (_pwField1.Value != arg)
+            return "Passwords don't match";
+        return null;
+    }
+
 }

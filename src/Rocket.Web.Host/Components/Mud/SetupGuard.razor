@@ -19,6 +19,7 @@ else
 }
 
 @code {
+
     [Parameter]
     public RenderFragment ChildContent { get; set; }
 
@@ -28,46 +29,69 @@ else
     {
         // Subscribe to navigation events
         NavigationManager.LocationChanged += OnLocationChanged;
-        
+
         await CheckAndRedirect();
     }
 
     private async void OnLocationChanged(object sender, LocationChangedEventArgs e)
     {
-        await InvokeAsync(async () =>
-        {
-            _isChecking = true;
-            StateHasChanged();
-            
-            await 
-                CheckAndRedirect();
-        });
+        await InvokeAsync(
+            async () =>
+            {
+                _isChecking = true;
+                StateHasChanged();
+
+                await
+                    CheckAndRedirect();
+            }
+        );
     }
 
     private async Task CheckAndRedirect()
     {
         try
         {
-            // Check if admin needs to complete setup
-            if (await AuthenticationManager.IsAdminAsync())
+            var currentPath =
+                NavigationManager
+                    .ToBaseRelativePath(NavigationManager.Uri);
+            
+            // Allow logout and login pages always
+            if (currentPath.StartsWith(
+                    "Account/Logout",
+                    StringComparison.OrdinalIgnoreCase
+                ) ||
+                currentPath.StartsWith(
+                    "Account/Login",
+                    StringComparison.OrdinalIgnoreCase
+                ))
             {
-                var phaseResponse = 
-                    await 
+                _isChecking = false;
+                StateHasChanged();
+                return;
+            }
+
+            // Check if admin needs to complete setup
+            if (await AuthenticationManager.IsRootAdminAsync())
+            {
+                var phaseResponse =
+                    await
                         ApiRequestManager
                             .GetStartupPhaseAsync(CancellationToken.None);
 
-                var currentPath = 
-                    NavigationManager
-                        .ToBaseRelativePath(NavigationManager.Uri);
-                
                 if (phaseResponse.Phase == (int)StartupPhaseEnum.AdminPendingDeactivation)
                 {
                     // If not already on setup page, redirect
-                    if (!currentPath.StartsWith("CompleteSetup", StringComparison.OrdinalIgnoreCase))
+                    if (!currentPath.StartsWith(
+                            "CompleteSetup",
+                            StringComparison.OrdinalIgnoreCase
+                        ))
                     {
                         NavigationManager
-                            .NavigateTo("/CompleteSetup", replace: true);
-                        
+                            .NavigateTo(
+                                "/CompleteSetup",
+                                replace: true
+                            );
+
                         return;
                     }
                 }
@@ -75,11 +99,17 @@ else
                 if (phaseResponse.Phase == (int)StartupPhaseEnum.AdminDeactivated)
                 {
                     // If not already on setup page, redirect
-                    if (!currentPath.StartsWith("Account/Logout", StringComparison.OrdinalIgnoreCase))
+                    if (!currentPath.StartsWith(
+                            "Account/Logout",
+                            StringComparison.OrdinalIgnoreCase
+                        ))
                     {
                         NavigationManager
-                            .NavigateTo("/Account/Logout", replace: true);
-                        
+                            .NavigateTo(
+                                "/Account/Logout",
+                                replace: true
+                            );
+
                         return;
                     }
                 }
@@ -100,4 +130,5 @@ else
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
     }
+
 }

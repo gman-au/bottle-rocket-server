@@ -134,6 +134,37 @@ namespace Rocket.Web.Host.Api
             return result;
         }
 
+        public async Task<CreateUserResponse> CreateUserAsync(
+            CreateUserRequest user, 
+            CancellationToken cancellationToken
+            )
+        {
+            logger
+                .LogInformation("Received Create User request");
+
+            var response =
+                await
+                    authenticatedApiClient
+                        .PostAsJsonAsync(
+                            "/api/users/create",
+                            user,
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<CreateUserResponse>(
+                            logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
+
         public async Task<StartupPhaseResponse> GetStartupPhaseAsync(CancellationToken cancellationToken)
         {
             logger
