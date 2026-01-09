@@ -123,12 +123,12 @@ namespace Rocket.Tests.Unit
                                                   "id": "abcdef",
                                                   "error_code": "0", 
                                                   "error_message": "no error",
-                                                  "CaptureDate": "1909-01-01T00:00:00Z",
-                                                  "BlobId": "923874ab3",
-                                                  "ContentType": "image/jpeg",
-                                                  "FileExtension": ".jpg",
-                                                  "Sha256": "238736df872a",
-                                                  "ImageBase64": "yyy==m"
+                                                  "capture_date": "1909-01-01T00:00:00Z",
+                                                  "blob_id": "923874ab3",
+                                                  "content_type": "image/jpeg",
+                                                  "file_extension": ".jpg",
+                                                  "sha_256": "238736df872a",
+                                                  "image_base64": "yyy==m"
                                                   }
                                                   """;
                 SetupApiResponseWithHttpCode(HttpStatusCode.OK);
