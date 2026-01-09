@@ -10,8 +10,13 @@
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
-<MudText Align="Align.Center" Typo="Typo.h4">
+<MudText
+    Align="Align.Center"
+    Typo="Typo.h4"
+    Color="Color.Primary"
+    Class="mb-4">
     My Scans
+</MudText>
     @* @if (_isConnected) *@
     @* { *@
     @*     <MudChip Color="Color.Success" Size="Size.Small" Class="ml-2"> *@
@@ -19,7 +24,6 @@
     @*         Connected *@
     @*     </MudChip> *@
     @* } *@
-</MudText>
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
     <MudGrid Justify="Justify.FlexStart" Class="pa-4">
         @foreach (var scan in _scans)

@@ -79,7 +79,8 @@ namespace Rocket.Api.Host.Handlers
                 var claims = new[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.Id),
-                    new Claim(ClaimTypes.Name, user.Username)
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.Role, user.IsAdmin ? DomainConstants.AdminRole : DomainConstants.UserRole)
                 };
 
                 var identity = new ClaimsIdentity(claims, Scheme.Name);

@@ -2,6 +2,7 @@
 @using System.Threading
 @using Microsoft.Extensions.Options
 @using Rocket.Domain.Enum
+@using Rocket.Domain.Utils
 @using Rocket.Interfaces
 @using Rocket.Web.Host.Api
 @using Rocket.Web.Host.Components.Dialog
@@ -50,7 +51,8 @@
         {
             <AuthorizeView Context="primary">
                 <Authorized>
-                    @if (_isAdmin && _isSetupPending)
+                    <MudNavLink Match="NavLinkMatch.All" Href="/" Icon="@StandardIcons.DashboardIcon">Home</MudNavLink>
+                    @if (_isRootAdmin && _isSetupPending)
                     {
                         <MudNavLink Match="NavLinkMatch.All" Href="/CompleteSetup" Icon="@StandardIcons.CompleteSetupIcon">
                             Complete setup
@@ -58,10 +60,20 @@
                     }
                     else
                     {
-                        <MudNavLink Match="NavLinkMatch.All" Href="/" Icon="@StandardIcons.DashboardIcon">Home</MudNavLink>
+                        if (_isAdmin)
+                        {
+                            <MudNavGroup Title="Users" Icon="@StandardIcons.UsersIcon" Expanded="true">
+                                <MudNavLink Match="NavLinkMatch.Prefix" Href="/Users" Icon="@StandardIcons.SearchUserIcon">Manage users
+                                </MudNavLink>
+                                <MudNavLink Match="NavLinkMatch.Prefix" Href="/Users/Add" Icon="@StandardIcons.AddUserIcon">Add user
+                                </MudNavLink>
+                            </MudNavGroup>
+                        }
+
                         @* <MudNavLink Match="NavLinkMatch.All" Href="/MyAccount" Icon="@StandardIcons.AccountIcon">Account</MudNavLink> *@
                         <MudNavLink Match="NavLinkMatch.Prefix" Href="/MyScans" Icon="@StandardIcons.ScansIcon">My Scans</MudNavLink>
-                        <MudNavLink Match="NavLinkMatch.All" OnClick="ConfirmLogoutAsync" Icon="@StandardIcons.LogoutIcon">Logout</MudNavLink>
+                        <MudNavLink Match="NavLinkMatch.All" OnClick="ConfirmLogoutAsync" Icon="@StandardIcons.LogoutIcon">Logout
+                        </MudNavLink>
                     }
                 </Authorized>
                 <NotAuthorized>
@@ -86,15 +98,19 @@
 
 @code {
 
-    private bool _isAdmin;
-    
+    private bool _isRootAdmin;
+
+    private bool _isAdmin = false;
+
     private bool _isSetupPending;
-    
+
     private bool _open = true;
 
     private bool _isInitialized = false;
 
     private string _userName = null;
+
+    private string _userRole = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -107,9 +123,9 @@
                 .IsAuthenticatedAsync();
 
         await
-            LoadUserName();
-        
-        await 
+            LoadUserNameAndRole();
+
+        await
             CheckAdminSetupStatus();
 
         // Now we know auth state is determined
@@ -122,30 +138,30 @@
             async () =>
             {
                 await
-                    LoadUserName();
-        
-                await 
+                    LoadUserNameAndRole();
+
+                await
                     CheckAdminSetupStatus();
 
                 StateHasChanged();
             }
         );
     }
-    
+
     private async Task CheckAdminSetupStatus()
     {
-        _isAdmin = 
-            await 
+        _isRootAdmin =
+            await
                 AuthenticationManager
-                    .IsAdminAsync();
-        
-        if (_isAdmin)
+                    .IsRootAdminAsync();
+
+        if (_isRootAdmin)
         {
-            var phaseResponse = 
-                await 
+            var phaseResponse =
+                await
                     ApiRequestManager
                         .GetStartupPhaseAsync(CancellationToken.None);
-            
+
             _isSetupPending = phaseResponse.Phase == (int)StartupPhaseEnum.AdminPendingDeactivation;
         }
         else
@@ -154,7 +170,7 @@
         }
     }
 
-    private async Task LoadUserName()
+    private async Task LoadUserNameAndRole()
     {
         var authState =
             await
@@ -170,11 +186,18 @@
             _userName =
                 user
                     .FindFirst(ClaimTypes.Name)?.Value ?? "User";
+
+            _userRole =
+                user
+                    .FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
         }
         else
         {
             _userName = null;
+            _userRole = null;
         }
+
+        _isAdmin = _userRole == DomainConstants.AdminRole;
     }
 
     private void ToggleDrawer()

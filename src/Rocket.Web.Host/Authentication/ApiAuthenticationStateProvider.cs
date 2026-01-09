@@ -24,15 +24,9 @@ namespace Rocket.Web.Host.Authentication
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var isAuthenticated =
-                await
-                    _authenticationManager
-                        .IsAuthenticatedAsync();
-
-            var username =
-                await
-                    _authenticationManager
-                        .GetUserNameAsync();
+            var isAuthenticated = await _authenticationManager.IsAuthenticatedAsync();
+            var username = await _authenticationManager.GetUsernameAsync();
+            var role = await _authenticationManager.GetRoleAsync();
             
             _logger
                 .LogInformation(
@@ -44,10 +38,8 @@ namespace Rocket.Web.Host.Authentication
                 isAuthenticated
                     ? new ClaimsIdentity(
                         [
-                            new Claim(
-                                ClaimTypes.Name,
-                                username ?? "User"
-                            )
+                            new Claim(ClaimTypes.Name, username ?? "User"),
+                            new Claim(ClaimTypes.Role, role ?? "") 
                         ],
                         DomainConstants
                             .BasicAuthentication

@@ -13,6 +13,7 @@ namespace Rocket.Api.Host.Controllers
         [EndpointSummary("Health check")]
         [EndpointGroupName("Status")]
         [EndpointDescription("Returns the current health of the server. Returns 'Status OK' via a HTTP 200 response, if healthy.")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public IActionResult GetHealthCheck()
         {
             logger

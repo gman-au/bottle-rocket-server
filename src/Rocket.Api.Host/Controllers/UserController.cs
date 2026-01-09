@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -21,13 +22,70 @@ namespace Rocket.Api.Host.Controllers
     public class UserController(
         ILogger<UserController> logger,
         IUserManager userManager,
-        IStartupInitialization startupInitialization
-    ) : ControllerBase
+        IUserRepository userRepository,
+        IStartupInitialization startupInitialization,
+        IActiveAdminChecker activeAdminChecker
+    ) : RocketControllerBase(userManager)
     {
-        [HttpGet("{id}")]
+        [HttpPost("fetch")]
+        [EndpointSummary("Fetch the system users")]
+        [EndpointGroupName("Manage users")]
+        [EndpointDescription(
+            """
+            Retrieves a subset of users belonging to the system.\n
+            Provide a zero-based start index and record count to retrieve paged results and minimise server load. 
+            """
+        )]
+        [ProducesResponseType(typeof(FetchUsersResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> FetchUsersAsync(
+            [FromBody] FetchUsersRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            await
+                ThrowIfNotAdminAsync(cancellationToken);
+
+            var (records, totalRecordCount) =
+                await
+                    userRepository
+                        .FetchUsersAsync(
+                            request.StartIndex,
+                            request.RecordCount,
+                            cancellationToken
+                        );
+
+            var response =
+                new FetchUsersResponse
+                {
+                    Users =
+                        records
+                            .Select(
+                                o =>
+                                    new UserItem
+                                    {
+                                        Id = o.Username == DomainConstants.RootAdminUserName ? null : o.Id,
+                                        Username = o.Username,
+                                        CreatedAt = o.CreatedAt.ToLocalTime(),
+
+                                    }
+                            ),
+                    TotalRecords = (int)totalRecordCount
+                };
+
+            return
+                response
+                    .AsApiSuccess();
+        }
+        
+        [HttpGet("get/{id}")]
         [EndpointSummary("Get user by ID")]
         [EndpointGroupName("Manage users")]
         [EndpointDescription("Returns a user by their unique identifier.")]
+        [ProducesResponseType(typeof(UserDetail), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetUserAsync(
             string id,
             CancellationToken cancellationToken
@@ -38,6 +96,9 @@ namespace Rocket.Api.Host.Controllers
                     "Received user request for id: {id}",
                     id
                 );
+
+            await
+                ThrowIfNotAdminAsync(cancellationToken);
 
             if (!ObjectId
                     .TryParse(
@@ -55,7 +116,7 @@ namespace Rocket.Api.Host.Controllers
 
             var user =
                 await
-                    userManager
+                    UserManager
                         .GetUserByUserIdAsync(
                             id,
                             cancellationToken
@@ -94,6 +155,9 @@ namespace Rocket.Api.Host.Controllers
             then on success, the administrator account will be made inactive.
             """
         )]
+        [ProducesResponseType(typeof(CreateUserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateUserAsync(
             [FromBody] CreateUserRequest request,
             CancellationToken cancellationToken
@@ -105,20 +169,27 @@ namespace Rocket.Api.Host.Controllers
                     request.Username
                 );
 
+            var currentUser =
+                await
+                    ThrowIfNotAdminAsync(cancellationToken);
+
+            var currentUserId =
+                currentUser
+                    .Id;
+
             // Check if this is first start (admin is creating first user)
             var currentUsername =
-                User
-                    .Identity?
-                    .Name;
+                currentUser
+                    .Username;
 
             var newUserIsAdmin =
-                currentUsername == DomainConstants.AdminUserName ||
+                currentUsername == DomainConstants.RootAdminUserName ||
                 request.IsTheNewAdmin;
 
             // Create the new user account
             var newUser =
                 await
-                    userManager
+                    UserManager
                         .CreateUserAccountAsync(
                             request.Username,
                             request.Password,
@@ -126,7 +197,13 @@ namespace Rocket.Api.Host.Controllers
                             cancellationToken
                         );
 
-            if (currentUsername == DomainConstants.AdminUserName)
+            if (newUser == null)
+                throw new RocketException(
+                    "There was an error writing the user record",
+                    ApiStatusCodeEnum.ServerError
+                );
+
+            if (currentUsername == DomainConstants.RootAdminUserName)
             {
                 var startupPhase =
                     await
@@ -139,7 +216,7 @@ namespace Rocket.Api.Host.Controllers
                         .LogInformation("First user created by admin. Deactivating admin account.");
 
                     await
-                        userManager
+                        UserManager
                             .DeactivateAdminAccountAsync(cancellationToken);
                 }
             }
@@ -147,16 +224,11 @@ namespace Rocket.Api.Host.Controllers
             {
                 if (newUserIsAdmin)
                 {
-                    var userId =
-                        User
-                            .FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?
-                            .Value;
-
                     // set this user = not admin
                     await
-                        userManager
+                        UserManager
                             .UpdateAccountIsAdminAsync(
-                                userId,
+                                currentUserId,
                                 false,
                                 cancellationToken
                             );
@@ -184,6 +256,9 @@ namespace Rocket.Api.Host.Controllers
             If the update sets the `IsAdmin` flag to true, then the user calling the API will have their administrator status removed.
             """
         )]
+        [ProducesResponseType(typeof(UpdateUserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdateUserAsync(
             [FromBody] UserDetail request,
             CancellationToken cancellationToken
@@ -195,13 +270,32 @@ namespace Rocket.Api.Host.Controllers
                     request.Id
                 );
 
+            await
+                ThrowIfNotAdminAsync(cancellationToken);
+
             var newUserIsAdmin =
                 request
                     .IsAdmin;
 
+            var isPermissibleOperation =
+                await
+                    activeAdminChecker
+                        .PerformAsync(
+                            request.Id,
+                            request.IsActive,
+                            request.IsAdmin,
+                            cancellationToken
+                        );
+
+            if (!isPermissibleOperation)
+                throw new RocketException(
+                    "There must be at least one active admin user in the system.",
+                    ApiStatusCodeEnum.PotentiallyIrrecoverableOperation
+                );
+            
             // Update the user account
             await
-                userManager
+                UserManager
                     .UpdateAccountAsync(
                         request.Id,
                         request.Username,
@@ -220,7 +314,7 @@ namespace Rocket.Api.Host.Controllers
 
                 // set this user => not admin
                 await
-                    userManager
+                    UserManager
                         .UpdateAccountIsAdminAsync(
                             userId,
                             false,

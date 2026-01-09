@@ -73,6 +73,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IStartupInitialization, StartupInitialization>()
                 .AddTransient<IEmailAddressValidator, EmailAddressValidator>()
                 .AddTransient<IPasswordHasher, PasswordHasher>()
+                .AddTransient<IActiveAdminChecker, ActiveAdminChecker>()
                 .AddTransient<IThumbnailer, Thumbnailer>()
                 .AddTransient<IUserManager, UserManager>();
 

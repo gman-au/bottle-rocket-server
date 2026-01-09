@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Rocket.Api.Contracts;
 using Rocket.Domain.Utils;
 using Rocket.Interfaces;
+using Rocket.Web.Host.Extensions;
 using Rocket.Web.Host.Options;
 
 namespace Rocket.Web.Host.Authentication
@@ -20,6 +22,7 @@ namespace Rocket.Web.Host.Authentication
         private readonly ILogger<BasicAuthenticationManager> _logger;
         private readonly ProtectedSessionStorage _sessionStorage;
         private string _cachedAuthHeader;
+        private string _cachedRole;
         private string _cachedUsername;
         private Task _initializationTask;
         private bool _initialized;
@@ -81,18 +84,23 @@ namespace Rocket.Web.Host.Authentication
 
                 if (response.IsSuccessStatusCode)
                 {
+                    var connectionTestResponse =
+                        await
+                            response
+                                .TryParseResponse<ConnectionTestResponse>(
+                                    _logger,
+                                    cancellationToken
+                                );
+
                     _cachedAuthHeader = authHeader;
-                    _cachedUsername = username;
+                    _cachedUsername = connectionTestResponse.UserName;
+                    _cachedRole = connectionTestResponse.Role;
 
                     try
                     {
-                        await
-                            _sessionStorage
-                                .SetAsync(
-                                    DomainConstants
-                                        .AuthHeaderKey,
-                                    authHeader
-                                );
+                        await _sessionStorage.SetAsync(DomainConstants.AuthHeaderKey, authHeader);
+                        await _sessionStorage.SetAsync(DomainConstants.UsernameKey, connectionTestResponse.UserName);
+                        await _sessionStorage.SetAsync(DomainConstants.RoleKey, connectionTestResponse.Role);
                     }
                     catch (InvalidOperationException ex) when (ex.Message.Contains("prerendering"))
                     {
@@ -102,8 +110,9 @@ namespace Rocket.Web.Host.Authentication
 
                     _logger
                         .LogInformation(
-                            "User {username} logged in successfully",
-                            username
+                            "User {username} logged in successfully with role {role}",
+                            connectionTestResponse.UserName,
+                            connectionTestResponse.Role
                         );
 
                     OnAuthenticationStateChanged?
@@ -138,12 +147,13 @@ namespace Rocket.Web.Host.Authentication
         {
             _cachedAuthHeader = null;
             _cachedUsername = null;
+            _cachedRole = null;
 
             try
             {
-                await
-                    _sessionStorage
-                        .DeleteAsync(DomainConstants.AuthHeaderKey);
+                await _sessionStorage.DeleteAsync(DomainConstants.AuthHeaderKey);
+                await _sessionStorage.DeleteAsync(DomainConstants.UsernameKey);
+                await _sessionStorage.DeleteAsync(DomainConstants.RoleKey);
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("prerendering"))
             {
@@ -167,59 +177,34 @@ namespace Rocket.Web.Host.Authentication
                 _cachedAuthHeader;
         }
 
-        public async Task<string> GetUserNameAsync()
+        public async Task<string> GetUsernameAsync()
         {
             await
                 EnsureInitializedAsync();
 
-            if (string.IsNullOrEmpty(_cachedAuthHeader))
-                return null;
-
-            try
-            {
-                // Auth header format: "Basic base64(username:password)"
-                var base64 =
-                    _cachedAuthHeader
-                        .Replace(
-                            $"{DomainConstants.Basic} ",
-                            ""
-                        );
-
-                var decoded =
-                    Encoding
-                        .UTF8
-                        .GetString(
-                            Convert.FromBase64String(base64)
-                        );
-
-                var username =
-                    decoded
-                        .Split(':')[0];
-
-                return username;
-            }
-            catch (Exception ex)
-            {
-                _logger
-                    .LogWarning(
-                        ex,
-                        "Failed to extract username from auth header"
-                    );
-
-                return null;
-            }
+            return 
+                _cachedUsername;
         }
 
-        public async Task<bool> IsAdminAsync()
+        public async Task<string> GetRoleAsync()
+        {
+            await 
+                EnsureInitializedAsync();
+            
+            return 
+                _cachedRole;
+        }
+
+        public async Task<bool> IsRootAdminAsync()
         {
             var username =
                 await
-                    GetUserNameAsync();
+                    GetUsernameAsync();
 
             return
                 username?
                     .Equals(
-                        DomainConstants.AdminUserName,
+                        DomainConstants.RootAdminUserName,
                         StringComparison.OrdinalIgnoreCase
                     )
                 ?? false;
@@ -258,19 +243,26 @@ namespace Rocket.Web.Host.Authentication
         {
             try
             {
-                var result =
-                    await
-                        _sessionStorage
-                            .GetAsync<string>(DomainConstants.AuthHeaderKey);
+                var authResult = await _sessionStorage.GetAsync<string>(DomainConstants.AuthHeaderKey);
+                var usernameResult = await _sessionStorage.GetAsync<string>(DomainConstants.UsernameKey);
+                var roleResult = await _sessionStorage.GetAsync<string>(DomainConstants.RoleKey);
 
-                if (result.Success && !string.IsNullOrEmpty(result.Value))
+                if (authResult.Success && !string.IsNullOrEmpty(authResult.Value))
                 {
-                    _cachedAuthHeader =
-                        result
-                            .Value;
+                    _cachedAuthHeader = authResult.Value;
+                    _logger.LogInformation("Auth header restored from session storage");
+                }
 
-                    _logger
-                        .LogInformation("Auth header restored from session storage");
+                if (usernameResult.Success && !string.IsNullOrEmpty(usernameResult.Value))
+                {
+                    _cachedUsername = usernameResult.Value;
+                    _logger.LogInformation("Username restored from session storage");
+                }
+
+                if (roleResult.Success && !string.IsNullOrEmpty(roleResult.Value))
+                {
+                    _cachedRole = roleResult.Value;
+                    _logger.LogInformation("Role restored from session storage");
                 }
 
                 _initialized = true;

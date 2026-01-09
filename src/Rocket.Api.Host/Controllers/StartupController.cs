@@ -29,6 +29,9 @@ namespace Rocket.Api.Host.Controllers
             2 = AdminDeactivated - the phase after setup completion - a non-admin user account is managing the server and the admin account have been deactivated.
             """
         )]
+        [ProducesResponseType(typeof(StartupPhaseResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetPhaseAsync(CancellationToken cancellationToken)
         {
             logger

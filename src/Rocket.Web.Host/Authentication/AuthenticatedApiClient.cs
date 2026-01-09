@@ -6,6 +6,8 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Interfaces;
 using Rocket.Web.Host.Options;
 
@@ -36,75 +38,110 @@ namespace Rocket.Web.Host.Authentication
 
         public async Task<HttpResponseMessage> GetAsync(string requestUri, CancellationToken cancellationToken)
         {
-            await
-                SetAuthHeaderAsync();
-
-            return
+            try
+            {
                 await
-                    _httpClient
-                        .GetAsync(
-                            requestUri,
-                            cancellationToken
-                        );
+                    SetAuthHeaderAsync();
+
+                return
+                    await
+                        _httpClient
+                            .GetAsync(
+                                requestUri,
+                                cancellationToken
+                            );
+            }
+            catch (Exception ex)
+            {
+                throw ThrowForConnectivity(ex);
+            }
         }
 
         public async Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent content, CancellationToken cancellationToken)
         {
-            await
-                SetAuthHeaderAsync();
-
-            return
+            try
+            {
                 await
-                    _httpClient
-                        .PostAsync(
-                            requestUri,
-                            content,
-                            cancellationToken
-                        );
+                    SetAuthHeaderAsync();
+
+                return
+                    await
+                        _httpClient
+                            .PostAsync(
+                                requestUri,
+                                content,
+                                cancellationToken
+                            );
+            }
+            catch (Exception ex)
+            {
+                throw ThrowForConnectivity(ex);
+            }
         }
 
         public async Task<HttpResponseMessage> PostAsJsonAsync<T>(string requestUri, T content, CancellationToken cancellationToken)
         {
-            await
-                SetAuthHeaderAsync();
-
-            return
+            try
+            {
                 await
-                    _httpClient
-                        .PostAsJsonAsync(
-                            requestUri,
-                            content,
-                            cancellationToken
-                        );
+                    SetAuthHeaderAsync();
+
+                return
+                    await
+                        _httpClient
+                            .PostAsJsonAsync(
+                                requestUri,
+                                content,
+                                cancellationToken
+                            );
+            }
+            catch (Exception ex)
+            {
+                throw ThrowForConnectivity(ex);
+            }
         }
 
         public async Task<HttpResponseMessage> PutAsync(string requestUri, HttpContent content, CancellationToken cancellationToken)
         {
-            await
-                SetAuthHeaderAsync();
-
-            return
+            try
+            {
                 await
-                    _httpClient
-                        .PutAsync(
-                            requestUri,
-                            content,
-                            cancellationToken
-                        );
+                    SetAuthHeaderAsync();
+
+                return
+                    await
+                        _httpClient
+                            .PutAsync(
+                                requestUri,
+                                content,
+                                cancellationToken
+                            );
+            }
+            catch (Exception ex)
+            {
+                throw ThrowForConnectivity(ex);
+            }
         }
 
         public async Task<HttpResponseMessage> DeleteAsync(string requestUri, CancellationToken cancellationToken)
         {
-            await
-                SetAuthHeaderAsync();
-
-            return
+            try
+            {
                 await
-                    _httpClient
-                        .DeleteAsync(
-                            requestUri,
-                            cancellationToken
-                        );
+                    SetAuthHeaderAsync();
+
+                return
+                    await
+                        _httpClient
+                            .DeleteAsync(
+                                requestUri,
+                                cancellationToken
+                            );
+            }
+            catch (Exception ex)
+            {
+                throw ThrowForConnectivity(ex);
+            }
         }
 
         private async Task SetAuthHeaderAsync()
@@ -120,6 +157,21 @@ namespace Rocket.Web.Host.Authentication
                     AuthenticationHeaderValue
                         .Parse(authHeader);
             }
+        }
+
+        private static Exception ThrowForConnectivity(Exception ex)
+        {
+            if (ex is not HttpRequestException hex) return ex;
+
+            if (hex.Message.Contains("No connection could be made"))
+            {
+                return new RocketException(
+                    "Could not connect to server.",
+                    ApiStatusCodeEnum.ServerConnectionError
+                );
+            }
+
+            return ex;
         }
     }
 }

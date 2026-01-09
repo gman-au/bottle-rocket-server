@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,5 +23,15 @@ namespace Rocket.Interfaces
         );
 
         Task DeactivateAdminUserAsync(CancellationToken cancellationToken);
+        
+        Task<(IEnumerable<User> records, long totalRecordCount)> FetchUsersAsync(
+            int startIndex,
+            int recordCount,
+            CancellationToken cancellationToken
+        );
+        
+        Task<(IEnumerable<User> records, long totalRecordCount)> GetActiveAdminsAsync(
+            CancellationToken cancellationToken
+        );
     }
 }
