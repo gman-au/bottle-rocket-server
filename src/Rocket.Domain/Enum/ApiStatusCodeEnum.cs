@@ -5,6 +5,7 @@
         Ok = 0,
         UnknownError = 1000,
         NoAttachmentsFound,
+        ServerConnectionError,
         UserAlreadyExists = 2000,
         UnknownUser,
         InactiveUser,
