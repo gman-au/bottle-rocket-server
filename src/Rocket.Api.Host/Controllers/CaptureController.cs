@@ -94,6 +94,8 @@ namespace Rocket.Api.Host.Controllers
                             contentType,
                             fileExtension,
                             userId,
+                            model.QrCode,
+                            model.QrBoundingBox,
                             cancellationToken
                         );
 
@@ -113,6 +115,12 @@ namespace Rocket.Api.Host.Controllers
         public class ImageUploadModel
         {
             public IFormCollection Form { get; set; }
+            
+            [FromForm(Name = "qr_code")]
+            public string QrCode { get; set; }
+            
+            [FromForm(Name = "qr_bounding_box")]
+            public string QrBoundingBox { get; set; }
         }
     }
 }

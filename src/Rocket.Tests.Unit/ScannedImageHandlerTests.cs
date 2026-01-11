@@ -84,6 +84,8 @@ namespace Rocket.Tests.Unit
             private readonly IScannedImageRepository _scannedImageRepository;
             private readonly IThumbnailer _thumbnailer;
             private readonly IFixture _fixture;
+            private string _qrCode;
+            private string _qrBoundingBox;
 
             public TestContext()
             {
@@ -110,6 +112,9 @@ namespace Rocket.Tests.Unit
                 _imageData = [0x12];
                 _userId = Guid.NewGuid().ToString();
                 _contentType = "image/jpeg";
+                _fileExtension = ".jpg";
+                _qrCode = "1234";
+                _qrBoundingBox = "1234";
                 _fileExtension = ".jpg";
             }
 
@@ -165,6 +170,8 @@ namespace Rocket.Tests.Unit
                             _contentType,
                             _fileExtension,
                             _userId,
+                            _qrCode,
+                            _qrBoundingBox,
                             CancellationToken.None
                         );
             }
