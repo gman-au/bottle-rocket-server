@@ -22,6 +22,8 @@ namespace Rocket.Infrastructure
             string contentType,
             string fileExtension,
             string userId,
+            string qrCode,
+            string qrBoundingBox,
             CancellationToken cancellationToken
         )
         {
@@ -66,6 +68,8 @@ namespace Rocket.Infrastructure
                 scannedImage.FileExtension = fileExtension;
                 scannedImage.Sha256 = hashString;
                 scannedImage.ThumbnailBase64 = thumbnail;
+                scannedImage.QrCode = qrCode;
+                scannedImage.QrBoundingBox = qrBoundingBox;
 
                 await
                     scannedImageRepository

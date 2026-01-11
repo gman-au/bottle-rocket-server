@@ -22,6 +22,10 @@ namespace Rocket.Domain
         
         public string Sha256 { get; set; }
         
+        public string QrCode { get; set; }
+        
+        public string QrBoundingBox { get; set; }
+        
         public string ThumbnailBase64 { get; set; }
     }
 }
