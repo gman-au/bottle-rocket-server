@@ -4,5 +4,6 @@
     {
         public const string ScannedImageCollection = "ScannedImages";
         public const string UserCollection = "Users";
+        public const string ConnectorsCollection = "Connectors";
     }
 }
