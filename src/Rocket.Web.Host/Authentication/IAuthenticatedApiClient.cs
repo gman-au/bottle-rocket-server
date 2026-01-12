@@ -15,5 +15,9 @@ namespace Rocket.Web.Host.Authentication
         Task<HttpResponseMessage> PutAsync(string requestUri, HttpContent content, CancellationToken cancellationToken);
         
         Task<HttpResponseMessage> DeleteAsync(string requestUri, CancellationToken cancellationToken);
+        
+        Task<HttpResponseMessage> PatchAsync(string requestUri, HttpContent content, CancellationToken cancellationToken);
+        
+        Task<HttpResponseMessage> PatchAsJsonAsync<T>(string requestUri, T content, CancellationToken cancellationToken);
     }
 }

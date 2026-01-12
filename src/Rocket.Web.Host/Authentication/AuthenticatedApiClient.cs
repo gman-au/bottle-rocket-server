@@ -144,6 +144,50 @@ namespace Rocket.Web.Host.Authentication
             }
         }
 
+        public async Task<HttpResponseMessage> PatchAsync(string requestUri, HttpContent content, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await
+                    SetAuthHeaderAsync();
+
+                return
+                    await
+                        _httpClient
+                            .PatchAsync(
+                                requestUri,
+                                content,
+                                cancellationToken
+                            );
+            }
+            catch (Exception ex)
+            {
+                throw ThrowForConnectivity(ex);
+            }
+        }
+
+        public async Task<HttpResponseMessage> PatchAsJsonAsync<T>(string requestUri, T content, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await
+                    SetAuthHeaderAsync();
+
+                return
+                    await
+                        _httpClient
+                            .PatchAsJsonAsync(
+                                requestUri,
+                                content,
+                                cancellationToken
+                            );
+            }
+            catch (Exception ex)
+            {
+                throw ThrowForConnectivity(ex);
+            }
+        }
+
         private async Task SetAuthHeaderAsync()
         {
             var authHeader =

@@ -95,5 +95,85 @@ namespace Rocket.Api.Host.Controllers.Vendors
                 response
                     .AsApiSuccess();
         }
+        
+        [HttpPatch("update")]
+        [EndpointSummary("Update a Dropbox connector")]
+        [EndpointGroupName("Manage connectors")]
+        [EndpointDescription(
+            """
+            TODO
+            """
+        )]
+        [ProducesResponseType(
+            typeof(DropboxConnectorDetail),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> UpdateConnectorAsync(
+            [FromBody] DropboxConnectorDetail request,
+            CancellationToken cancellationToken
+        )
+        {
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
+
+            logger
+                .LogInformation(
+                    "Received (Dropbox) connector update request for username: {username}",
+                    user.Username
+                );
+
+            var userId =
+                user
+                    .Id;
+
+            if (string.IsNullOrEmpty(request.AccessToken))
+                throw new RocketException(
+                    "No API token was provided.",
+                    ApiStatusCodeEnum.ValidationError
+                );
+            
+            var connectorId = request.Id;
+
+            await
+                connectorRepository
+                    .UpdateConnectorFieldAsync<DropboxConnector, string>(
+                        connectorId,
+                        userId,
+                        o =>
+                            o.AccessToken,
+                        request.AccessToken,
+                        cancellationToken
+                    );
+
+            var lastUpdatedAt = DateTime.UtcNow;
+            
+            await
+                connectorRepository
+                    .UpdateConnectorFieldAsync<DropboxConnector, DateTime?>(
+                        connectorId,
+                        userId,
+                        o =>
+                            o.LastUpdatedAt,
+                        lastUpdatedAt,
+                        cancellationToken
+                    );
+
+            var response =
+                new UpdateConnectorResponse
+                {
+                    Id = connectorId,
+                    LastUpdatedAt = lastUpdatedAt
+                };
+
+            return
+                response
+                    .AsApiSuccess();
+        }
     }
 }

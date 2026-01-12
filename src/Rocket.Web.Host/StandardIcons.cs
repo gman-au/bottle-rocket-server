@@ -8,11 +8,13 @@ namespace Rocket.Web.Host
         public const string LoginIcon = Icons.Material.Filled.Login;
         public const string LogoutIcon = Icons.Material.Filled.Logout;
         public const string ScansIcon = Icons.Material.Filled.DocumentScanner;
-        public const string AccountIcon = Icons.Material.Filled.Person;
         public const string HelpIcon = Icons.Material.Filled.Help;
         public const string CompleteSetupIcon = Icons.Material.Filled.RocketLaunch;
         public const string UsersIcon = Icons.Material.Filled.People;
         public const string SearchUserIcon = Icons.Material.Filled.PersonSearch;
         public const string AddUserIcon = Icons.Material.Filled.PersonAdd;
+        public const string ConnectorsIcon = Icons.Material.Filled.Cable;
+        public const string SearchConnectorIcon = Icons.Material.Filled.Search;
+        public const string AddConnectorIcon = Icons.Material.Filled.AddCircleOutline;
     }
 }

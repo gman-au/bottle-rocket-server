@@ -62,7 +62,7 @@
                     {
                         if (_isAdmin)
                         {
-                            <MudNavGroup Title="Users" Icon="@StandardIcons.UsersIcon" Expanded="true">
+                            <MudNavGroup Title="Users" Icon="@StandardIcons.UsersIcon" Expanded="false">
                                 <MudNavLink Match="NavLinkMatch.Prefix" Href="/Users" Icon="@StandardIcons.SearchUserIcon">Manage users
                                 </MudNavLink>
                                 <MudNavLink Match="NavLinkMatch.Prefix" Href="/Users/Add" Icon="@StandardIcons.AddUserIcon">Add user
@@ -70,8 +70,13 @@
                             </MudNavGroup>
                         }
 
-                        @* <MudNavLink Match="NavLinkMatch.All" Href="/MyAccount" Icon="@StandardIcons.AccountIcon">Account</MudNavLink> *@
-                        <MudNavLink Match="NavLinkMatch.Prefix" Href="/MyScans" Icon="@StandardIcons.ScansIcon">My Scans</MudNavLink>
+                        <MudNavLink Match="NavLinkMatch.Prefix" Href="/MyScans" Icon="@StandardIcons.ScansIcon">My scans</MudNavLink>
+                        <MudNavGroup Title="My connectors" Icon="@StandardIcons.ConnectorsIcon" Expanded="false">
+                            <MudNavLink Match="NavLinkMatch.Prefix" Href="/MyConnectors" Icon="@StandardIcons.SearchConnectorIcon">Manage my connectors
+                            </MudNavLink>
+                            <MudNavLink Match="NavLinkMatch.Prefix" Href="/MyConnectors/Add" Icon="@StandardIcons.AddConnectorIcon">Add connector
+                            </MudNavLink>
+                        </MudNavGroup>
                         <MudNavLink Match="NavLinkMatch.All" OnClick="ConfirmLogoutAsync" Icon="@StandardIcons.LogoutIcon">Logout
                         </MudNavLink>
                     }

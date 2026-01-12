@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain.Connectors;
@@ -30,5 +32,13 @@ namespace Rocket.Interfaces
             string id,
             CancellationToken cancellationToken
         );
+
+        Task UpdateConnectorFieldAsync<TConnector, TField>(
+            string connectorId,
+            string userId,
+            Expression<Func<TConnector, TField>> setter,
+            TField value,
+            CancellationToken cancellationToken
+        ) where TConnector : BaseConnector;
     }
 }
