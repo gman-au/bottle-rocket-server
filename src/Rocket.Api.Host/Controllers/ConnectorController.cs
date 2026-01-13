@@ -33,7 +33,8 @@ namespace Rocket.Api.Host.Controllers
         [EndpointGroupName("Manage connectors")]
         [EndpointDescription(
             """
-            TODO
+            Retrieves a subset of connectors belonging to the authenticated user.\n
+            Provide a zero-based start index and record count to retrieve paged results and minimise server load. 
             """
         )]
         [ProducesResponseType(
@@ -101,7 +102,9 @@ namespace Rocket.Api.Host.Controllers
         [EndpointGroupName("Manage connectors")]
         [EndpointDescription(
             """
-            TODO
+            Retrieves the full details of a users connector by its unique ID.\n
+            The full connector details are typecast to include any extra details associated
+            with particular connectors, e.g. access tokens, app secrets, etc. 
             """
         )]
         [ProducesResponseType(
@@ -165,7 +168,7 @@ namespace Rocket.Api.Host.Controllers
         [EndpointGroupName("Manage connectors")]
         [EndpointDescription(
             """
-            TODO
+            Deletes a user's connector by its unique ID.\n
             """
         )]
         [ProducesResponseType(

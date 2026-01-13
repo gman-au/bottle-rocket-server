@@ -31,7 +31,8 @@ namespace Rocket.Api.Host.Controllers.Vendors
         [EndpointGroupName("Manage connectors")]
         [EndpointDescription(
             """
-            TODO
+            Creates a new Dropbox connector for the given user. Will return an error if the same named
+            connector already exists for the given user.
             """
         )]
         [ProducesResponseType(
@@ -111,7 +112,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
         [EndpointGroupName("Manage connectors")]
         [EndpointDescription(
             """
-            TODO
+            Updates an (already existing) Dropbox connector for the given user.
             """
         )]
         [ProducesResponseType(
