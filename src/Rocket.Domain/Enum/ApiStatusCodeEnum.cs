@@ -16,6 +16,7 @@
         UnknownOrInaccessibleRecord,
         RequiresAdministratorAccess,
         PotentiallyIrrecoverableOperation,
-        ServerError = 5000
+        ServerError = 5000,
+        ServerConfigurationError
     }
 }
