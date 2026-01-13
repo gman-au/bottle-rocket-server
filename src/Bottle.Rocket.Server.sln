@@ -22,6 +22,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Web.Host", "Rocket.W
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Thumbnails", "Rocket.Infrastructure.Thumbnails\Rocket.Infrastructure.Thumbnails.csproj", "{4902F824-F94E-4DC3-BDAA-4457073BCA2C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integrations", "Integrations", "{365B0452-4BCB-4E07-B1AC-4D2760A4C710}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Integrations.Dropbox", "Integrations\Rocket.Integrations.Dropbox\Rocket.Integrations.Dropbox.csproj", "{121393B8-1E90-4620-A200-444315FFB75D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,5 +80,12 @@ Global
 		{4902F824-F94E-4DC3-BDAA-4457073BCA2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4902F824-F94E-4DC3-BDAA-4457073BCA2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4902F824-F94E-4DC3-BDAA-4457073BCA2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{121393B8-1E90-4620-A200-444315FFB75D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{121393B8-1E90-4620-A200-444315FFB75D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{121393B8-1E90-4620-A200-444315FFB75D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{121393B8-1E90-4620-A200-444315FFB75D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{121393B8-1E90-4620-A200-444315FFB75D} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
 	EndGlobalSection
 EndGlobal

@@ -3,32 +3,65 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Connectors;
+using Rocket.Integrations.Dropbox.Contracts;
 using Rocket.Web.Host.Extensions;
 
 namespace Rocket.Web.Host.Api
 {
     public partial class ApiRequestManager
     {
-        public async Task<DropboxConnectorDetail> GetDropboxConnectorByIdAsync(
-            string id,
+        public async Task<CreateDropboxConnectorResponse> CreateDropboxConnectorAsync(
+            CreateDropboxConnectorRequest connector,
             CancellationToken cancellationToken
         )
         {
             logger
-                .LogInformation("Received Get (Dropbox) Connector request");
+                .LogInformation("Received Create (Dropbox) Connector request");
 
             var response =
                 await
                     authenticatedApiClient
-                        .GetAsync(
-                            $"/api/connectors/{id}",
+                        .PostAsJsonAsync(
+                            $"/api/connectors/dropbox/create",
+                            connector,
                             cancellationToken
                         );
 
             var result =
                 await
                     response
-                        .TryParseResponse<DropboxConnectorDetail>(
+                        .TryParseResponse<CreateDropboxConnectorResponse>(
+                            logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
+
+        public async Task<ApiResponse> UpdateDropboxConnectorAsync(
+            FinalizeDropboxConnectorRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation("Received Patch (Dropbox) Connector request");
+
+            var response =
+                await
+                    authenticatedApiClient
+                        .PatchAsJsonAsync(
+                            $"/api/connectors/dropbox/finalize",
+                            request,
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<ApiResponse>(
                             logger,
                             cancellationToken
                         );
@@ -59,37 +92,6 @@ namespace Rocket.Web.Host.Api
                 await
                     response
                         .TryParseResponse<ApiResponse>(
-                            logger,
-                            cancellationToken
-                        );
-
-            EnsureApiSuccessStatusCode(result);
-            EnsureHttpSuccessStatusCode(response);
-
-            return result;
-        }
-
-        public async Task<UpdateConnectorResponse> UpdateDropboxConnectorAsync(
-            DropboxConnectorDetail connector,
-            CancellationToken cancellationToken
-        )
-        {
-            logger
-                .LogInformation("Received Patch (Dropbox) Connector request");
-
-            var response =
-                await
-                    authenticatedApiClient
-                        .PatchAsJsonAsync(
-                            $"/api/connectors/dropbox/update",
-                            connector,
-                            cancellationToken
-                        );
-
-            var result =
-                await
-                    response
-                        .TryParseResponse<UpdateConnectorResponse>(
                             logger,
                             cancellationToken
                         );

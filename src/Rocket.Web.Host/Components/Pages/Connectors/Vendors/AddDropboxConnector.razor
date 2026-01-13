@@ -1,0 +1,228 @@
+﻿@page "/MyConnector/Dropbox/Add"
+@using Rocket.Integrations.Dropbox.Contracts
+@using Rocket.Web.Host.Api
+@using Rocket.Web.Host.Infrastructure
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject ISnackbar Snackbar
+@inject IJSRuntime JsRuntime
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_createRequest != null)
+    {
+        <MudForm
+            Model="@_createRequest"
+            @ref="_form">
+            <MudPaper Class="p-4" elevation="2">
+                <MudText
+                    Align="Align.Center"
+                    Typo="Typo.h4"
+                    Color="Color.Primary"
+                    Class="mb-4">
+                    Add Dropbox Connector
+                </MudText>
+
+                <MudGrid>
+                    <MudItem sm="12" lg="6" xl="4">
+                        <MudTextField
+                            T="string"
+                            Required="true"
+                            Label="App Key"
+                            HelperText="Enter the Dropbox app key"
+                            @bind-Value="_createRequest.AppKey"
+                            For="@(() => _createRequest.AppKey)"
+                            RequiredError="App key is required"/>
+                    </MudItem>
+                    <MudItem sm="12" lg="6" xl="4">
+                        <MudTextField
+                            T="string"
+                            Required="true"
+                            Label="App Secret"
+                            HelperText="Enter the Dropbox app secret"
+                            @bind-Value="_createRequest.AppSecret"
+                            For="@(() => _createRequest.AppSecret)"
+                            RequiredError="App secret is required"/>
+                    </MudItem>
+                    <MudItem sm="12" lg="6" xl="4">
+                        <MudButton
+                            OnClick="@BeginAuthorizeAsync">
+                            Authorize in Dropbox
+                        </MudButton>
+                    </MudItem>
+                    <MudItem sm="12" lg="6" xl="4">
+                        <MudTextField
+                            T="string"
+                            Required="@_isAuthorizing"
+                            Label="Access Code"
+                            HelperText="Enter the Access Code here"
+                            @bind-Value="_accessCode"
+                            For="@(() => _accessCode)"
+                            RequiredError="Access Code is required"/>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="align-start" Justify="Justify.FlexEnd">
+                    <MudItem>
+                        <GoBackButton BackPath="/MyConnectors"/>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton
+                            Variant="Variant.Outlined"
+                            Color="Color.Success"
+                            Disabled="@(_isLoading || !_form.IsTouched)"
+                            OnClick="@CompleteAuthorizeAsync">
+                            Submit
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudForm>
+    }
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    MudForm _form;
+
+    private bool _isLoading;
+    private bool _isAuthorizing = false;
+    private CreateDropboxConnectorRequest _createRequest;
+
+    private string _accessCode = null;
+    private string _connectorId = null;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+
+            _createRequest = new CreateDropboxConnectorRequest();
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task BeginAuthorizeAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                var appKey = _createRequest.AppKey;
+                var appSecret = _createRequest.AppSecret;
+
+                var response =
+                    await
+                        ApiRequestManager
+                            .CreateDropboxConnectorAsync(
+                                new CreateDropboxConnectorRequest
+                                {
+                                    AppKey = appKey,
+                                    AppSecret = appSecret
+                                },
+                                BaseCancellationToken
+                            );
+
+                var authorizeUrl = response.AuthorizeUri;
+
+                _connectorId = response.Id;
+
+                if (string.IsNullOrEmpty(authorizeUrl))
+                    throw new Exception("There was a connection error.");
+
+                await
+                    JsRuntime
+                        .InvokeVoidAsync(
+                            "eval",
+                            $"window.open('{authorizeUrl}', '_blank')"
+                        );
+
+                _isAuthorizing = true;
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task CompleteAuthorizeAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                var accessCode = _accessCode;
+
+                var response =
+                    await
+                        ApiRequestManager
+                            .UpdateDropboxConnectorAsync(
+                                new FinalizeDropboxConnectorRequest
+                                {
+                                    Id = _connectorId,
+                                    AccessCode = accessCode
+                                },
+                                BaseCancellationToken
+                            );
+
+                Snackbar
+                    .Add(
+                        "The connection has been added.",
+                        Severity.Success
+                    );
+
+                NavigationManager
+                    .NavigateTo("/MyConnectors");
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+}

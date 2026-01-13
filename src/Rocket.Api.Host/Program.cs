@@ -51,6 +51,9 @@ services
     .AddOpenApiServices();
 
 services
+    .AddDropboxIntegration();
+
+services
     .AddHostedService<StartupInitializationHostedService>();
 
 var app =

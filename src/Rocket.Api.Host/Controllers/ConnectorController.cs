@@ -10,11 +10,7 @@ using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Connectors;
 using Rocket.Api.Host.Extensions;
-using Rocket.Domain.Connectors;
-using Rocket.Domain.Enum;
-using Rocket.Domain.Exceptions;
 using Rocket.Domain.Utils;
-using Rocket.Infrastructure.Extensions;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers
@@ -95,72 +91,6 @@ namespace Rocket.Api.Host.Controllers
             return
                 response
                     .AsApiSuccess();
-        }
-
-        [HttpGet("{id}")]
-        [EndpointSummary("Fetch the connector details")]
-        [EndpointGroupName("Manage connectors")]
-        [EndpointDescription(
-            """
-            Retrieves the full details of a users connector by its unique ID.\n
-            The full connector details are typecast to include any extra details associated
-            with particular connectors, e.g. access tokens, app secrets, etc. 
-            """
-        )]
-        [ProducesResponseType(
-            typeof(ConnectorDetail),
-            StatusCodes.Status200OK
-        )]
-        [ProducesResponseType(
-            typeof(ApiResponse),
-            StatusCodes.Status500InternalServerError
-        )]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> FetchConnectorAsync(
-            string id,
-            CancellationToken cancellationToken
-        )
-        {
-            var user =
-                await
-                    ThrowIfNotActiveUserAsync(cancellationToken);
-
-            var userId =
-                user
-                    .Id;
-
-            logger
-                .LogInformation(
-                    "Received fetch connection request for username: {userId}, id: {id}",
-                    userId,
-                    id
-                );
-
-            var record =
-                await
-                    connectorRepository
-                        .FetchConnectorAsync(
-                            userId,
-                            id,
-                            cancellationToken
-                        );
-
-            return record switch
-            {
-                DropboxConnector dbc => new DropboxConnectorDetail
-                {
-                    Id = dbc.Id,
-                    ConnectorType = DomainConstants.ConnectorTypes[dbc.ConnectorType],
-                    ConnectorName = dbc.ConnectorName,
-                    CreatedAt = dbc.CreatedAt.ToLocalTime(),
-                    LastUpdatedAt = dbc.LastUpdatedAt?.ToLocalTime(),
-                    AccessToken = dbc.AccessToken.Obfuscate()
-                }.AsApiSuccess(),
-                _ => throw new RocketException(
-                    "Unknown connector type",
-                    ApiStatusCodeEnum.ServerError
-                )
-            };
         }
 
         [HttpDelete("{id}")]

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-using Rocket.Domain.Utils;
 
 namespace Rocket.Api.Contracts.Connectors
 {
-    [JsonDerivedType(typeof(DropboxConnectorDetail), typeDiscriminator: DomainConstants.VendorDropbox)]
     public abstract class ConnectorDetail : ApiResponse
     {
         [JsonPropertyName("id")]

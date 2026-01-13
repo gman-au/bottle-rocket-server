@@ -7,12 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
-using Rocket.Api.Contracts.Connectors;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Connectors;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Utils;
+using Rocket.Integrations.Dropbox;
+using Rocket.Integrations.Dropbox.Contracts;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers.Vendors
@@ -22,6 +23,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
     [Authorize]
     public class DropboxController(
         ILogger<DropboxController> logger,
+        IDropboxClientManager dropboxClientManager,
         IUserManager userManager,
         IConnectorRepository connectorRepository
     ) : RocketControllerBase(userManager)
@@ -36,7 +38,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
             """
         )]
         [ProducesResponseType(
-            typeof(DropboxConnectorDetail),
+            typeof(CreateDropboxConnectorResponse),
             StatusCodes.Status200OK
         )]
         [ProducesResponseType(
@@ -45,7 +47,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
         )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateConnectorAsync(
-            [FromBody] DropboxConnectorDetail request,
+            [FromBody] CreateDropboxConnectorRequest request,
             CancellationToken cancellationToken
         )
         {
@@ -68,13 +70,23 @@ namespace Rocket.Api.Host.Controllers.Vendors
                     .ConnectorExistsForUserAsync(
                         userId,
                         DomainConstants.VendorDropbox,
-                        cancellationToken)
+                        cancellationToken
+                    )
                )
-                throw new RocketException("Dropbox connector already exists", ApiStatusCodeEnum.ConnectorAlreadyExists);
-
-            if (string.IsNullOrEmpty(request.AccessToken))
                 throw new RocketException(
-                    "No API token was provided.",
+                    "Dropbox connector already exists",
+                    ApiStatusCodeEnum.ConnectorAlreadyExists
+                );
+
+            if (string.IsNullOrEmpty(request.AppKey))
+                throw new RocketException(
+                    "No app key was provided.",
+                    ApiStatusCodeEnum.ValidationError
+                );
+
+            if (string.IsNullOrEmpty(request.AppSecret))
+                throw new RocketException(
+                    "No app secret was provided.",
                     ApiStatusCodeEnum.ValidationError
                 );
 
@@ -84,7 +96,8 @@ namespace Rocket.Api.Host.Controllers.Vendors
                     UserId = userId,
                     CreatedAt = DateTime.UtcNow,
                     LastUpdatedAt = DateTime.UtcNow,
-                    AccessToken = request.AccessToken
+                    AppKey = request.AppKey,
+                    AppSecret = request.AppSecret
                 };
 
             var result =
@@ -95,11 +108,21 @@ namespace Rocket.Api.Host.Controllers.Vendors
                             cancellationToken
                         );
 
+            if (result == null)
+                throw new RocketException(
+                    "Failed to create Dropbox connector",
+                    ApiStatusCodeEnum.ServerError
+                );
+
+            var authorizeUri =
+                dropboxClientManager
+                    .GetAuthorizeUrl(request.AppKey);
+
             var response =
-                new CreateConnectorResponse
+                new CreateDropboxConnectorResponse
                 {
                     Id = result.Id,
-                    CreatedAt = result.CreatedAt.ToLocalTime()
+                    AuthorizeUri = authorizeUri
                 };
 
             return
@@ -107,16 +130,16 @@ namespace Rocket.Api.Host.Controllers.Vendors
                     .AsApiSuccess();
         }
 
-        [HttpPatch("update")]
-        [EndpointSummary("Update a Dropbox connector")]
+        [HttpPatch("finalize")]
+        [EndpointSummary("Finalize a Dropbox connector")]
         [EndpointGroupName("Manage connectors")]
         [EndpointDescription(
             """
-            Updates an (already existing) Dropbox connector for the given user.
+            Finalizes a Dropbox connector for the given user.
             """
         )]
         [ProducesResponseType(
-            typeof(DropboxConnectorDetail),
+            typeof(ApiResponse),
             StatusCodes.Status200OK
         )]
         [ProducesResponseType(
@@ -124,8 +147,8 @@ namespace Rocket.Api.Host.Controllers.Vendors
             StatusCodes.Status500InternalServerError
         )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> UpdateConnectorAsync(
-            [FromBody] DropboxConnectorDetail request,
+        public async Task<IActionResult> FinalizeConnectorAsync(
+            [FromBody] FinalizeDropboxConnectorRequest request,
             CancellationToken cancellationToken
         )
         {
@@ -143,31 +166,57 @@ namespace Rocket.Api.Host.Controllers.Vendors
                 user
                     .Id;
 
-            if (string.IsNullOrEmpty(request.AccessToken))
+            var id = request.Id;
+
+            var connector =
+                await
+                    connectorRepository
+                        .FetchConnectorAsync(
+                            userId,
+                            id,
+                            cancellationToken
+                        ) as DropboxConnector;
+
+            if (connector == null)
                 throw new RocketException(
-                    "No API token was provided.",
-                    ApiStatusCodeEnum.ValidationError
+                    "Connector entry not found",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                 );
 
-            var connectorId = request.Id;
+            var appKey = connector.AppKey;
+            var appSecret = connector.AppSecret;
+            var accessCode = request.AccessCode;
 
-            await
-                connectorRepository
-                    .UpdateConnectorFieldAsync<DropboxConnector, string>(
-                        connectorId,
-                        userId,
-                        o =>
-                            o.AccessToken,
-                        request.AccessToken,
-                        cancellationToken
-                    );
+            var refreshToken =
+                await
+                    dropboxClientManager
+                        .GetRefreshTokenAsync(
+                            appKey,
+                            appSecret,
+                            accessCode
+                        );
+
+            if (!string.IsNullOrEmpty(refreshToken))
+            {
+                // swap code for token
+                await
+                    connectorRepository
+                        .UpdateConnectorFieldAsync<DropboxConnector, string>(
+                            id,
+                            userId,
+                            o =>
+                                o.RefreshToken,
+                            refreshToken,
+                            cancellationToken
+                        );
+            }
 
             var lastUpdatedAt = DateTime.UtcNow;
 
             await
                 connectorRepository
                     .UpdateConnectorFieldAsync<DropboxConnector, DateTime?>(
-                        connectorId,
+                        id,
                         userId,
                         o =>
                             o.LastUpdatedAt,
@@ -175,15 +224,8 @@ namespace Rocket.Api.Host.Controllers.Vendors
                         cancellationToken
                     );
 
-            var response =
-                new UpdateConnectorResponse
-                {
-                    Id = connectorId,
-                    LastUpdatedAt = lastUpdatedAt
-                };
-
             return
-                response
+                new ApiResponse()
                     .AsApiSuccess();
         }
     }
