@@ -12,7 +12,7 @@ using Rocket.Tests.Unit.Extensions;
 
 namespace Rocket.Tests.Unit.Utility
 {
-    public abstract class BaseControllerTestContext
+    public abstract class BaseControllerTestContext<T> where T : ControllerBase
     {
         private const string RootAdminUserId = "555555555555555555555555";
         private const string RootAdminUserName = "admin";
@@ -35,6 +35,16 @@ namespace Rocket.Tests.Unit.Utility
         protected ControllerContext AdminUserContext;
         protected ControllerContext InactiveAdminUserContext;
         protected ControllerContext NonAdminUserContext;
+
+        protected T Sut;
+
+        public void ArrangeLoggedInRootAdminUser() => Sut.ControllerContext = RootAdminUserContext;
+
+        public void ArrangeLoggedInAdminUser() => Sut.ControllerContext = AdminUserContext;
+
+        public void ArrangeLoggedInInactiveAdminUser() => Sut.ControllerContext = InactiveAdminUserContext;
+
+        public void ArrangeLoggedInNonAdminUser() => Sut.ControllerContext = NonAdminUserContext;
 
         protected BaseControllerTestContext()
         {

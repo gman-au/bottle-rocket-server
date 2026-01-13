@@ -133,7 +133,6 @@ namespace Rocket.Api.Host.Controllers
                     id
                 );
 
-
             var record =
                 await
                     connectorRepository
