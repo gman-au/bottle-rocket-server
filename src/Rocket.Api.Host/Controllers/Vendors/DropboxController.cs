@@ -12,6 +12,7 @@ using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Connectors;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers.Vendors
@@ -61,6 +62,15 @@ namespace Rocket.Api.Host.Controllers.Vendors
                 user
                     .Id;
 
+            if (await
+                connectorRepository
+                    .ConnectorExistsForUserAsync(
+                        userId,
+                        DomainConstants.VendorDropbox,
+                        cancellationToken)
+               )
+                throw new RocketException("Dropbox connector already exists", ApiStatusCodeEnum.ConnectorAlreadyExists);
+
             if (string.IsNullOrEmpty(request.AccessToken))
                 throw new RocketException(
                     "No API token was provided.",
@@ -95,7 +105,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
                 response
                     .AsApiSuccess();
         }
-        
+
         [HttpPatch("update")]
         [EndpointSummary("Update a Dropbox connector")]
         [EndpointGroupName("Manage connectors")]
@@ -137,7 +147,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
                     "No API token was provided.",
                     ApiStatusCodeEnum.ValidationError
                 );
-            
+
             var connectorId = request.Id;
 
             await
@@ -152,7 +162,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
                     );
 
             var lastUpdatedAt = DateTime.UtcNow;
-            
+
             await
                 connectorRepository
                     .UpdateConnectorFieldAsync<DropboxConnector, DateTime?>(

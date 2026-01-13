@@ -1,4 +1,5 @@
 ﻿using Rocket.Domain.Enum;
+using Rocket.Domain.Utils;
 
 namespace Rocket.Domain.Connectors
 {
@@ -6,7 +7,7 @@ namespace Rocket.Domain.Connectors
     {
         public override int ConnectorType { get; set; } = (int)ConnectorTypeEnum.FileForwarding;
         
-        public override string ConnectorName { get; set; } = "Dropbox";
+        public override string ConnectorName { get; set; } = DomainConstants.VendorDropbox;
         
         public string AccessToken { get; set; }
     }

@@ -40,5 +40,11 @@ namespace Rocket.Interfaces
             TField value,
             CancellationToken cancellationToken
         ) where TConnector : BaseConnector;
+
+        Task<bool> ConnectorExistsForUserAsync(
+            string userId,
+            string connectorName,
+            CancellationToken cancellationToken
+        );
     }
 }

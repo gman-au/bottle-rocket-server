@@ -17,10 +17,13 @@ namespace Rocket.Domain.Utils
         public const string UsernameKey = "userName";
         public const string RoleKey = "userRole";
 
+        public const string VendorDropbox = "Dropbox";
+
         public static readonly Dictionary<int, string> ConnectorTypes = new()
         {
             { (int)ConnectorTypeEnum.FileForwarding, "File Forwarding" },
             { (int)ConnectorTypeEnum.OcrExtraction, "OCR Extraction" },
         };
+
     }
 }

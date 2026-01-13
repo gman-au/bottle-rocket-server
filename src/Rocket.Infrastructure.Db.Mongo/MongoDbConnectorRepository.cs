@@ -15,7 +15,9 @@ namespace Rocket.Infrastructure.Db.Mongo
         IMongoDbClient mongoDbClient
     ) : IConnectorRepository
     {
-        public async Task<BaseConnector> SaveConnectorAsync(BaseConnector baseConnector, CancellationToken cancellationToken)
+        public async Task<BaseConnector> SaveConnectorAsync(
+            BaseConnector baseConnector,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -155,7 +157,10 @@ namespace Rocket.Infrastructure.Db.Mongo
             }
         }
 
-        public async Task<bool> DeleteConnectorAsync(string userId, string id, CancellationToken cancellationToken)
+        public async Task<bool> DeleteConnectorAsync(
+            string userId,
+            string id,
+            CancellationToken cancellationToken)
         {
             var mongoDatabase =
                 mongoDbClient
@@ -193,7 +198,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                 record
                     .DeletedCount > 0;
         }
-        
+
         public async Task UpdateConnectorFieldAsync<TConnector, TField>(
             string connectorId,
             string userId,
@@ -211,7 +216,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                             u => u.UserId,
                             userId
                         );
-                
+
                 filter &=
                     Builders<TConnector>
                         .Filter
@@ -247,7 +252,46 @@ namespace Rocket.Infrastructure.Db.Mongo
                 throw;
             }
         }
-        
+
+        public async Task<bool> ConnectorExistsForUserAsync(
+            string userId,
+            string connectorName,
+            CancellationToken cancellationToken
+        )
+        {
+            var mongoDatabase =
+                mongoDbClient
+                    .GetDatabase();
+
+            var connectorCollection =
+                mongoDatabase
+                    .GetCollection<BaseConnector>(MongoConstants.ConnectorsCollection);
+
+            var filter =
+                Builders<BaseConnector>
+                    .Filter
+                    .Eq(
+                        u => u.UserId,
+                        userId
+                    );
+
+            filter &=
+                Builders<BaseConnector>
+                    .Filter
+                    .Eq(
+                        o => o.ConnectorName,
+                        connectorName
+                    );
+
+            var result =
+                await
+                    connectorCollection
+                        .Find(filter)
+                        .AnyAsync(cancellationToken: cancellationToken);
+
+            return result;
+        }
+
         private async Task UpdateConnectorAsync<T>(
             FilterDefinition<T> filter,
             UpdateDefinition<T> update,
