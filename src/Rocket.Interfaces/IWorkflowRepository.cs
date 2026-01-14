@@ -1,0 +1,56 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using Rocket.Domain.Workflows;
+
+namespace Rocket.Interfaces
+{
+    public interface IWorkflowRepository
+    {
+        Task<Workflow> SaveWorkflowAsync(
+            Workflow workflow,
+            CancellationToken cancellationToken
+        );
+
+        Task<(IEnumerable<Workflow> records, long totalRecordCount)> FetchWorkflowsAsync(
+            string userId,
+            int startIndex,
+            int recordCount,
+            CancellationToken cancellationToken
+        );
+
+        Task<Workflow> FetchWorkflowByIdAsync(
+            string userId,
+            string id,
+            CancellationToken cancellationToken
+        );
+
+        Task<Workflow> FetchWorkflowByNameAsync(
+            string userId,
+            string name,
+            CancellationToken cancellationToken
+        );
+
+        Task<bool> DeleteWorkflowAsync(
+            string userId,
+            string id,
+            CancellationToken cancellationToken
+        );
+
+        Task UpdateWorkflowFieldAsync<TField>(
+            string workflowId,
+            string userId,
+            Expression<Func<Workflow, TField>> setter,
+            TField value,
+            CancellationToken cancellationToken
+        );
+
+        Task<bool> WorkflowExistsForUserAsync(
+            string userId,
+            string workflowName,
+            CancellationToken cancellationToken
+        );
+    }
+}

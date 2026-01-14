@@ -39,6 +39,31 @@ namespace Rocket.Web.Host.Api
             CancellationToken cancellationToken
         );
 
+        Task<FetchWorkflowsResponse> GetWorkflowsAsync(
+            FetchWorkflowsRequest request,
+            CancellationToken cancellationToken
+        );
+
+        Task<MyWorkflowItemDetail> GetWorkflowByIdAsync(
+            string id,
+            CancellationToken cancellationToken
+        );
+
+        Task<UpdateWorkflowResponse> UpdateWorkflowAsync(
+            MyWorkflowItemDetail workflow,
+            CancellationToken cancellationToken
+        );
+
+        Task<ApiResponse> DeleteWorkflowByIdAsync(
+            string id,
+            CancellationToken cancellationToken
+        );
+
+        Task<CreateWorkflowResponse> CreateWorkflowAsync(
+            CreateWorkflowRequest workflow,
+            CancellationToken cancellationToken
+        );
+
         Task<FetchConnectorsResponse> GetMyConnectorsAsync(
             FetchConnectorsRequest request,
             CancellationToken baseCancellationToken

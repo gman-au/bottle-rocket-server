@@ -46,7 +46,7 @@
             }
         </MudGrid>
     </MudDrawerHeader>
-    <MudNavMenu Bordered="true" Color="Color.Primary">
+    <MudNavMenu Dense Bordered="true" Color="Color.Primary">
         @if (_isInitialized)
         {
             <AuthorizeView Context="primary">
@@ -107,7 +107,7 @@
                             Expanded="true"
                         >
                             <MudNavLink
-                                Match="NavLinkMatch.Prefix"
+                                Match="NavLinkMatch.All"
                                 Href="/MyConnectors"
                                 Icon="@StandardIcons.SearchConnectorIcon"
                             >
@@ -119,6 +119,26 @@
                                 Icon="@StandardIcons.AddConnectorIcon"
                             >
                                 Add connector
+                            </MudNavLink>
+                        </MudNavGroup>
+                        <MudNavGroup
+                            Title="My workflows"
+                            Icon="@StandardIcons.WorkflowsIcon"
+                            Expanded="true"
+                        >
+                            <MudNavLink
+                                Match="NavLinkMatch.All"
+                                Href="/MyWorkflows"
+                                Icon="@StandardIcons.SearchWorkflowIcon"
+                            >
+                                Manage my workflows
+                            </MudNavLink>
+                            <MudNavLink
+                                Match="NavLinkMatch.Prefix"
+                                Href="/MyWorkflows/Add"
+                                Icon="@StandardIcons.AddWorkflowIcon"
+                            >
+                                Add workflow
                             </MudNavLink>
                         </MudNavGroup>
                         <MudNavLink

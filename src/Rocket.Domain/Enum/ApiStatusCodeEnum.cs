@@ -16,7 +16,7 @@
         UnknownOrInaccessibleRecord,
         RequiresAdministratorAccess,
         PotentiallyIrrecoverableOperation,
-        ConnectorAlreadyExists,
+        RecordAlreadyExists,
         ServerError = 5000,
         ServerConfigurationError,
         ThirdPartyServiceError

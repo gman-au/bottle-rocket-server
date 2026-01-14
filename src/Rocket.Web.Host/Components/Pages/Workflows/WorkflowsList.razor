@@ -1,7 +1,5 @@
-﻿@page "/MyConnectors"
+﻿@page "/MyWorkflows"
 @using Rocket.Api.Contracts
-@using Rocket.Api.Contracts.Connectors
-@using Rocket.Domain.Enum
 @using Rocket.Web.Host.Api
 @using Rocket.Web.Host.Components.Dialog
 @using Rocket.Web.Host.Infrastructure
@@ -16,47 +14,35 @@
     Typo="Typo.h4"
     Color="Color.Primary"
     Class="mb-4">
-    My Connectors
+    My Workflows
 </MudText>
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
-    @if (_connectors.Any())
+    @if (_workflows.Any())
     {
         <MudSimpleTable Dense>
             <thead>
             <tr>
-                <th></th>
-                <th>Connector</th>
-                <th>Type</th>
-                <th>Created</th>
-                <th>Last Updated</th>
+                <th>Workflow Name</th>
+                <th>Date Created</th>
                 <th/>
             </tr>
             </thead>
             <tbody>
-            @foreach (var connector in _connectors)
+            @foreach (var workflow in _workflows)
             {
                 <tr>
                     <td>
-                        <MudIcon
-                            Icon="@MapStatusToIcon(connector.Status)"
-                            Color="@MapStatusToColor(connector.Status)"/>
+                        <MudNavLink Href="@($"/MyWorkflow/{workflow.Id}")">
+                            <MudText Color="Color.Primary">
+                                @workflow.Name
+                            </MudText>
+                        </MudNavLink>
                     </td>
-                    <td>
-                        <MudText Color="Color.Primary">
-                            @connector.ConnectorName
-                        </MudText>
-                    </td>
-                    <td>
-                        <MudText Color="Color.Secondary">
-                            @connector.ConnectorType
-                        </MudText>
-                    </td>
-                    <td>@connector.CreatedAt?.ToString("g")</td>
-                    <td>@connector.LastUpdatedAt?.ToString("g")</td>
+                    <td>@workflow.CreatedAt?.ToString("g")</td>
                     <td>
                         <MudIconButton
-                            OnClick="@(() => ConfirmDeleteAsync(connector))"
+                            OnClick="@(() => ConfirmDeleteAsync(workflow))"
                             Icon="@StandardIcons.DeleteIcon"/>
                     </td>
                 </tr>
@@ -70,7 +56,7 @@
                     Variant="Variant.Outlined"
                     Color="Color.Primary"
                     Disabled="@_noMoreRecords"
-                    @onclick="@(async () => await LoadMyConnectors(
+                    @onclick="@(async () => await LoadWorkflows(
                                   _currentIndex,
                                   DefaultPageSize
                               ))">
@@ -85,7 +71,7 @@
             Align="Align.Center"
             Typo="Typo.body2"
             Color="Color.Default">
-            No connectors found
+            No workflows found
         </MudText>
     }
 </BottleRocketLoadingOverlay>
@@ -95,7 +81,7 @@
     private bool _isLoading;
     private bool _noMoreRecords = false;
     private int _currentIndex = 0;
-    private IEnumerable<ConnectorItem> _connectors = [];
+    private IEnumerable<MyWorkflowItem> _workflows = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -108,7 +94,7 @@
             _isLoading = true;
 
             await
-                LoadMyConnectors(
+                LoadWorkflows(
                     _currentIndex,
                     DefaultPageSize
                 );
@@ -124,10 +110,10 @@
         }
     }
 
-    private async Task LoadMyConnectors(int index, int count)
+    private async Task LoadWorkflows(int index, int count)
     {
         var request =
-            new FetchConnectorsRequest
+            new FetchWorkflowsRequest
             {
                 StartIndex = index,
                 RecordCount = count
@@ -136,39 +122,39 @@
         var response =
             await
                 ApiRequestManager
-                    .GetMyConnectorsAsync(
+                    .GetWorkflowsAsync(
                         request,
                         BaseCancellationToken
                     );
 
         _currentIndex +=
-            (response?.Connectors ?? [])
+            (response?.Workflows ?? [])
             .Count();
 
         _noMoreRecords = _currentIndex == (response?.TotalRecords ?? 0);
 
-        var existingConnectors = new List<ConnectorItem>(_connectors);
-        var newConnectors = new List<ConnectorItem>(response?.Connectors ?? []);
+        var existingWorkflows = new List<MyWorkflowItem>(_workflows);
+        var newWorkflows = new List<MyWorkflowItem>(response?.Workflows ?? []);
 
-        _connectors =
-            existingConnectors
+        _workflows =
+            existingWorkflows
                 .UnionBy(
-                    newConnectors,
+                    newWorkflows,
                     o => o.Id
                 )
-                .OrderByDescending(o => o.LastUpdatedAt);
+                .OrderByDescending(o => o.CreatedAt);
     }
 
-    private async Task ConfirmDeleteAsync(ConnectorItem connector)
+    private async Task ConfirmDeleteAsync(MyWorkflowItem workflow)
     {
         var dialog =
             await
                 DialogService
-                    .ShowAsync<ConfirmDeleteConnectorDialog>(
+                    .ShowAsync<ConfirmDeleteWorkflowDialog>(
                         null,
                         new DialogParameters
                         {
-                            { "Connector", connector }
+                            { "Workflow", workflow }
                         }
                     );
 
@@ -186,14 +172,14 @@
 
                 await
                     ApiRequestManager
-                        .DeleteConnectorByIdAsync(
-                            connector.Id,
+                        .DeleteWorkflowByIdAsync(
+                            workflow.Id,
                             BaseCancellationToken
                         );
 
-                _connectors =
-                    _connectors
-                        .Where(o => o.Id != connector.Id);
+                _workflows =
+                    _workflows
+                        .Where(o => o.Id != workflow.Id);
             }
             catch (Exception ex)
             {
@@ -210,24 +196,6 @@
 
     public async ValueTask DisposeAsync()
     {
-    }
-
-    private static string MapStatusToIcon(int connectorStatus)
-    {
-        return connectorStatus switch
-        {
-            (int)ConnectorStatusEnum.Active => StandardIcons.SyncActive,
-            _ => StandardIcons.SyncPending
-        };
-    }
-
-    private static Color MapStatusToColor(int connectorStatus)
-    {
-        return connectorStatus switch
-        {
-            (int)ConnectorStatusEnum.Active => Color.Success,
-            _ => Color.Warning
-        };
     }
 
 }

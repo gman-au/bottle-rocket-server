@@ -75,7 +75,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
                )
                 throw new RocketException(
                     "Dropbox connector already exists",
-                    ApiStatusCodeEnum.ConnectorAlreadyExists
+                    ApiStatusCodeEnum.RecordAlreadyExists
                 );
 
             if (string.IsNullOrEmpty(request.AppKey))
@@ -198,7 +198,6 @@ namespace Rocket.Api.Host.Controllers.Vendors
 
             if (!string.IsNullOrEmpty(refreshToken))
             {
-                // swap code for token
                 await
                     connectorRepository
                         .UpdateConnectorFieldAsync<DropboxConnector, string>(

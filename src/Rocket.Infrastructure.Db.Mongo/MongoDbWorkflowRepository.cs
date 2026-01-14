@@ -5,18 +5,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using Rocket.Domain.Connectors;
+using Rocket.Domain.Workflows;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Db.Mongo
 {
-    public class MongoDbConnectorRepository(
-        ILogger<MongoDbConnectorRepository> logger,
+    public class MongoDbWorkflowRepository(
+        ILogger<MongoDbWorkflowRepository> logger,
         IMongoDbClient mongoDbClient
-    ) : IConnectorRepository
+    ) : IWorkflowRepository
     {
-        public async Task<BaseConnector> SaveConnectorAsync(
-            BaseConnector baseConnector,
+        public async Task<Workflow> SaveWorkflowAsync(
+            Workflow workflow,
             CancellationToken cancellationToken
         )
         {
@@ -26,25 +26,25 @@ namespace Rocket.Infrastructure.Db.Mongo
                     mongoDbClient
                         .GetDatabase();
 
-                var connectorCollection =
+                var workflowCollection =
                     mongoDatabase
-                        .GetCollection<BaseConnector>(MongoConstants.ConnectorsCollection);
+                        .GetCollection<Workflow>(MongoConstants.WorkflowsCollection);
 
                 await
-                    connectorCollection
+                    workflowCollection
                         .InsertOneAsync(
-                            baseConnector,
+                            workflow,
                             new InsertOneOptions(),
                             cancellationToken
                         );
 
-                return baseConnector;
+                return workflow;
             }
             catch (Exception ex)
             {
                 logger
                     .LogError(
-                        "There was an error saving the connector: {error}",
+                        "There was an error saving the workflow: {error}",
                         ex.Message
                     );
 
@@ -52,7 +52,7 @@ namespace Rocket.Infrastructure.Db.Mongo
             }
         }
 
-        public async Task<(IEnumerable<BaseConnector> records, long totalRecordCount)> FetchConnectorsAsync(
+        public async Task<(IEnumerable<Workflow> records, long totalRecordCount)> FetchWorkflowsAsync(
             string userId,
             int startIndex,
             int recordCount,
@@ -65,12 +65,12 @@ namespace Rocket.Infrastructure.Db.Mongo
                     mongoDbClient
                         .GetDatabase();
 
-                var connectorsCollection =
+                var workflowsCollection =
                     mongoDatabase
-                        .GetCollection<BaseConnector>(MongoConstants.ConnectorsCollection);
+                        .GetCollection<Workflow>(MongoConstants.WorkflowsCollection);
 
                 var filter =
-                    Builders<BaseConnector>
+                    Builders<Workflow>
                         .Filter
                         .Eq(
                             u => u.UserId,
@@ -79,13 +79,13 @@ namespace Rocket.Infrastructure.Db.Mongo
 
                 var totalRecordCount =
                     await
-                        connectorsCollection
+                        workflowsCollection
                             .Find(filter)
                             .CountDocumentsAsync(cancellationToken: cancellationToken);
 
                 var records =
                     await
-                        connectorsCollection
+                        workflowsCollection
                             .Find(filter)
                             .SortByDescending(x => x.CreatedAt)
                             .Skip(startIndex)
@@ -98,7 +98,7 @@ namespace Rocket.Infrastructure.Db.Mongo
             {
                 logger
                     .LogError(
-                        "There was an fetching connectors: {error}",
+                        "There was an fetching workflows: {error}",
                         ex.Message
                     );
 
@@ -106,14 +106,14 @@ namespace Rocket.Infrastructure.Db.Mongo
             }
         }
 
-        public async Task<T> FetchUserConnectorByIdAsync<T>(
+        public async Task<Workflow> FetchWorkflowByIdAsync(
             string userId,
             string id,
             CancellationToken cancellationToken
-        ) where T : BaseConnector
+        )
         {
             var filter =
-                Builders<BaseConnector>
+                Builders<Workflow>
                     .Filter
                     .Eq(
                         o => o.UserId,
@@ -121,7 +121,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                     );
 
             filter &=
-                Builders<BaseConnector>
+                Builders<Workflow>
                     .Filter
                     .Eq(
                         o => o.Id,
@@ -130,20 +130,20 @@ namespace Rocket.Infrastructure.Db.Mongo
 
             return
                 await
-                    FetchUserConnectorByFilterAsync<T>(
+                    FetchWorkflowByFilterAsync(
                         filter,
                         cancellationToken
                     );
         }
-        
-        public async Task<T> FetchUserConnectorByNameAsync<T>(
+
+        public async Task<Workflow> FetchWorkflowByNameAsync(
             string userId,
             string name,
             CancellationToken cancellationToken
-        ) where T : BaseConnector
+        )
         {
             var filter =
-                Builders<BaseConnector>
+                Builders<Workflow>
                     .Filter
                     .Eq(
                         o => o.UserId,
@@ -151,22 +151,22 @@ namespace Rocket.Infrastructure.Db.Mongo
                     );
 
             filter &=
-                Builders<BaseConnector>
+                Builders<Workflow>
                     .Filter
                     .Eq(
-                        o => o.ConnectorName,
+                        o => o.Name,
                         name
                     );
 
             return
                 await
-                    FetchUserConnectorByFilterAsync<T>(
+                    FetchWorkflowByFilterAsync(
                         filter,
                         cancellationToken
                     );
         }
 
-        public async Task<bool> DeleteConnectorAsync(
+        public async Task<bool> DeleteWorkflowAsync(
             string userId,
             string id,
             CancellationToken cancellationToken
@@ -176,12 +176,12 @@ namespace Rocket.Infrastructure.Db.Mongo
                 mongoDbClient
                     .GetDatabase();
 
-            var connectorCollection =
+            var workflowCollection =
                 mongoDatabase
-                    .GetCollection<BaseConnector>(MongoConstants.ConnectorsCollection);
+                    .GetCollection<Workflow>(MongoConstants.WorkflowsCollection);
 
             var filter =
-                Builders<BaseConnector>
+                Builders<Workflow>
                     .Filter
                     .Eq(
                         o => o.UserId,
@@ -189,7 +189,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                     );
 
             filter &=
-                Builders<BaseConnector>
+                Builders<Workflow>
                     .Filter
                     .Eq(
                         o => o.Id,
@@ -198,7 +198,7 @@ namespace Rocket.Infrastructure.Db.Mongo
 
             var record =
                 await
-                    connectorCollection
+                    workflowCollection
                         .DeleteOneAsync(
                             filter,
                             cancellationToken
@@ -209,18 +209,18 @@ namespace Rocket.Infrastructure.Db.Mongo
                     .DeletedCount > 0;
         }
 
-        public async Task UpdateConnectorFieldAsync<TConnector, TField>(
-            string connectorId,
+        public async Task UpdateWorkflowFieldAsync<TField>(
+            string workflowId,
             string userId,
-            Expression<Func<TConnector, TField>> setter,
+            Expression<Func<Workflow, TField>> setter,
             TField value,
             CancellationToken cancellationToken
-        ) where TConnector : BaseConnector
+        )
         {
             try
             {
                 var filter =
-                    Builders<TConnector>
+                    Builders<Workflow>
                         .Filter
                         .Eq(
                             u => u.UserId,
@@ -228,15 +228,15 @@ namespace Rocket.Infrastructure.Db.Mongo
                         );
 
                 filter &=
-                    Builders<TConnector>
+                    Builders<Workflow>
                         .Filter
                         .Eq(
                             o => o.Id,
-                            connectorId
+                            workflowId
                         );
 
                 var update =
-                    Builders<TConnector>
+                    Builders<Workflow>
                         .Update
                         .Set(
                             setter,
@@ -244,7 +244,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                         );
 
                 await
-                    UpdateConnectorAsync
+                    UpdateWorkflowAsync
                     (
                         filter,
                         update,
@@ -255,8 +255,7 @@ namespace Rocket.Infrastructure.Db.Mongo
             {
                 logger
                     .LogError(
-                        "Error updating updating the connection {id} for user {userId}: {error}",
-                        connectorId,
+                        "Error updating last login for user {userId}: {error}",
                         userId,
                         ex.Message
                     );
@@ -264,39 +263,39 @@ namespace Rocket.Infrastructure.Db.Mongo
             }
         }
 
-        public async Task<bool> ConnectorExistsForUserAsync(
+        public async Task<bool> WorkflowExistsForUserAsync(
             string userId,
-            string connectorName,
+            string workflowName,
             CancellationToken cancellationToken
         )
         {
             var result =
                 await
-                    FetchUserConnectorByNameAsync<BaseConnector>(
+                    FetchWorkflowByNameAsync(
                         userId,
-                        connectorName,
+                        workflowName,
                         cancellationToken
                     ) != null;
 
             return result;
         }
 
-        private async Task UpdateConnectorAsync<T>(
-            FilterDefinition<T> filter,
-            UpdateDefinition<T> update,
+        private async Task UpdateWorkflowAsync(
+            FilterDefinition<Workflow> filter,
+            UpdateDefinition<Workflow> update,
             CancellationToken cancellationToken
-        ) where T : BaseConnector
+        )
         {
             var mongoDatabase =
                 mongoDbClient
                     .GetDatabase();
 
-            var connectorCollection =
+            var workflowCollection =
                 mongoDatabase
-                    .GetCollection<T>(MongoConstants.ConnectorsCollection);
+                    .GetCollection<Workflow>(MongoConstants.WorkflowsCollection);
 
             await
-                connectorCollection
+                workflowCollection
                     .UpdateOneAsync(
                         filter,
                         update,
@@ -305,10 +304,10 @@ namespace Rocket.Infrastructure.Db.Mongo
                     );
         }
 
-        private async Task<T> FetchUserConnectorByFilterAsync<T>(
-            FilterDefinition<BaseConnector> filter,
+        private async Task<Workflow> FetchWorkflowByFilterAsync(
+            FilterDefinition<Workflow> filter,
             CancellationToken cancellationToken
-        ) where T : BaseConnector
+        )
         {
             try
             {
@@ -316,24 +315,24 @@ namespace Rocket.Infrastructure.Db.Mongo
                     mongoDbClient
                         .GetDatabase();
 
-                var connectorCollection =
+                var workflowCollection =
                     mongoDatabase
-                        .GetCollection<BaseConnector>(MongoConstants.ConnectorsCollection);
+                        .GetCollection<Workflow>(MongoConstants.WorkflowsCollection);
 
 
                 var record =
                     await
-                        connectorCollection
+                        workflowCollection
                             .Find(filter)
                             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
-                return record as T;
+                return record;
             }
             catch (Exception ex)
             {
                 logger
                     .LogError(
-                        "There was an fetching connector: {error}",
+                        "There was an fetching workflow: {error}",
                         ex.Message
                     );
 

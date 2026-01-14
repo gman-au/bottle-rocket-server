@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Rocket.Domain
+namespace Rocket.Domain.Workflows
 {
     public record Workflow
     {
@@ -12,6 +13,8 @@ namespace Rocket.Domain
         
         public string UserId { get; set; }
         
+        public int? MatchingPageSymbol { get; set; }
+        
         public DateTime CreatedAt { get; set; }
         
         public DateTime? LastUpdatedAt { get; set; }
@@ -19,5 +22,7 @@ namespace Rocket.Domain
         public string Name { get; set; }
         
         public bool IsActive { get; set; }
+        
+        public IEnumerable<BaseWorkflowStep> Steps { get; set; }
     }
 }

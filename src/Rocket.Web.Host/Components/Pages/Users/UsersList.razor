@@ -16,53 +16,65 @@
 </MudText>
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
-    <MudSimpleTable Dense>
-        <thead>
-        <tr>
-            <th>User Name</th>
-            <th>Date Created</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var user in _users)
-        {
+    @if (_users.Any())
+    {
+        <MudSimpleTable Dense>
+            <thead>
             <tr>
-                <td>
-                    @if (!string.IsNullOrEmpty(user.Id))
-                    {
-                        <MudNavLink Href="@($"/User/{user.Id}")">
-                            <MudText Color="Color.Primary">
-                                @user.Username
-                            </MudText>
-                        </MudNavLink>
-                    }
-                    else
-                    {
-                        <MudNavLink Disabled Href="#">
-                            @user.Username
-                        </MudNavLink>
-                    }
-                </td>
-                <td>@user.CreatedAt?.ToString("g")</td>
+                <th>User Name</th>
+                <th>Date Created</th>
             </tr>
-        }
-        </tbody>
-    </MudSimpleTable>
-    <MudDivider Class="my-4"/>
-    <MudGrid Justify="Justify.Center">
-        <MudItem>
-            <MudButton
-                Variant="Variant.Outlined"
-                Color="Color.Primary"
-                Disabled="@_noMoreRecords"
-                @onclick="@(async () => await LoadUsers(
-                              _currentIndex,
-                              DefaultPageSize
-                          ))">
-                Load More
-            </MudButton>
-        </MudItem>
-    </MudGrid>
+            </thead>
+            <tbody>
+            @foreach (var user in _users)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(user.Id))
+                        {
+                            <MudNavLink Href="@($"/User/{user.Id}")">
+                                <MudText Color="Color.Primary">
+                                    @user.Username
+                                </MudText>
+                            </MudNavLink>
+                        }
+                        else
+                        {
+                            <MudNavLink Disabled Href="#">
+                                @user.Username
+                            </MudNavLink>
+                        }
+                    </td>
+                    <td>@user.CreatedAt?.ToString("g")</td>
+                </tr>
+            }
+            </tbody>
+        </MudSimpleTable>
+        <MudDivider Class="my-4"/>
+        <MudGrid Justify="Justify.Center">
+            <MudItem>
+                <MudButton
+                    Variant="Variant.Outlined"
+                    Color="Color.Primary"
+                    Disabled="@_noMoreRecords"
+                    @onclick="@(async () => await LoadUsers(
+                                  _currentIndex,
+                                  DefaultPageSize
+                              ))">
+                    Load More
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    }
+    else
+    {
+        <MudText
+            Align="Align.Center"
+            Typo="Typo.body2"
+            Color="Color.Default">
+            No users found
+        </MudText>
+    }
 </BottleRocketLoadingOverlay>
 
 @code {

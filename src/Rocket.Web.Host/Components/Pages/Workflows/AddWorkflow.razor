@@ -1,0 +1,139 @@
+﻿@page "/MyWorkflows/Add"
+@using Rocket.Api.Contracts
+@using Rocket.Web.Host.Api
+@using Rocket.Web.Host.Infrastructure
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject ISnackbar Snackbar
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+@if (_newModel != null)
+{
+    <MudPaper Class="p-4" elevation="2">
+        <MudText
+            Color="Color.Primary"
+            GutterBottom
+            Typo="Typo.h5">
+            Add User
+        </MudText>
+        <BottleRocketLoadingOverlay IsLoading="@_isLoading">
+            <MudForm
+                Model="@_newModel"
+                @ref="_form">
+                <MudGrid>
+                    <MudItem sm="12" lg="6">
+                        <MudTextField
+                            T="string"
+                            Label="Workflow Name"
+                            HelperText="Enter a name for the workflow"
+                            Required="true"
+                            RequiredError="Please enter a workflow name"
+                            Disabled="@(_isLoading)"
+                            @bind-Value="_newModel.Name"
+                            For="@(() => _newModel.Name)"
+                            OnlyValidateIfDirty/>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="align-start" Justify="Justify.FlexEnd">
+                    <MudItem>
+                        <MudButton
+                            Variant="Variant.Outlined"
+                            Color="Color.Success"
+                            Disabled="@(_isLoading)"
+                            OnClick="@SubmitAsync">
+                            Submit
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </BottleRocketLoadingOverlay>
+    </MudPaper>
+}
+
+@code {
+
+    MudForm _form;
+
+    private bool _isLoading;
+    private MyWorkflowItemDetail _newModel = null;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _newModel = new MyWorkflowItemDetail();
+
+            _isLoading = true;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SubmitAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                var result =
+                    await
+                        ApiRequestManager
+                            .CreateWorkflowAsync(
+                                new CreateWorkflowRequest
+                                {
+                                    MatchingPageSymbol = null,
+                                    Name = _newModel.Name
+                                },
+                                BaseCancellationToken
+                            );
+
+                Snackbar
+                    .Add(
+                        "The workflow has been created.",
+                        Severity.Success
+                    );
+
+                var id = result?.Id;
+
+                NavigationManager
+                    .NavigateTo(
+                        $"/MyWorkflow/{id}",
+                        replace: true
+                    );
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+}

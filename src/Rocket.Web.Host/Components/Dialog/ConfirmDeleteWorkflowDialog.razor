@@ -1,11 +1,11 @@
-﻿@using Rocket.Api.Contracts.Connectors
+﻿@using Rocket.Api.Contracts
 <MudDialog Class="p-2">
     <TitleContent>
         <MudText
             Color="Color.Primary"
             GutterBottom
             Typo="Typo.h5">
-            Delete connector
+            Delete workflow
         </MudText>
     </TitleContent>
     <DialogContent>
@@ -13,13 +13,13 @@
             Typo="Typo.h6"
             Color="Color.Default"
         >
-            Do you wish to delete this <b>@Connector?.ConnectorName</b> connector?
+            Do you wish to delete the workflow <b>"@Workflow?.Name"</b>?
         </MudText>
         <MudText
             Typo="Typo.body1"
-            Color="Color.Warning"
+            Color="Color.Error"
         >
-            Any existing workflows using this connector will no longer function correctly.
+            You will not be able to recover this workflow after deletion.
         </MudText>
     </DialogContent>
     <DialogActions>
@@ -43,7 +43,7 @@
     private IMudDialogInstance MudDialog { get; set; }
     
     [Parameter]
-    public ConnectorItem Connector { get; set; }
+    public MyWorkflowItem Workflow { get; set; }
 
     private void Submit() => MudDialog.Close(DialogResult.Ok(true));
 
@@ -57,7 +57,7 @@
                     new DialogOptions
                     {
                         FullWidth = true,
-                        MaxWidth = MaxWidth.Small,
+                        MaxWidth = MaxWidth.Medium,
                         BackgroundClass = "dialog-blur-backdrop"
                     }
                 );
