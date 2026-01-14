@@ -112,3 +112,13 @@ h1:focus {
     max-height: 140px;
     margin: auto;
 }
+
+.connector-item-container {
+    width: 100%;
+    text-align: center;
+}
+
+.connector-item {
+    max-height: 100px;
+    border-radius: 10px;
+}

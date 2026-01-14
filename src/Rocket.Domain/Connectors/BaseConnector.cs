@@ -1,6 +1,7 @@
 ﻿using System;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Rocket.Domain.Enum;
 
 namespace Rocket.Domain.Connectors
 {
@@ -21,5 +22,7 @@ namespace Rocket.Domain.Connectors
         public DateTime CreatedAt { get; set; }
         
         public DateTime? LastUpdatedAt { get; set; }
+
+        public abstract ConnectorStatusEnum DetermineStatus();
     }
 }

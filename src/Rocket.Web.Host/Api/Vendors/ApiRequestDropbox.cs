@@ -71,35 +71,5 @@ namespace Rocket.Web.Host.Api
 
             return result;
         }
-        
-        public async Task<ApiResponse> DeleteDropboxConnectorByIdAsync(
-            string id,
-            CancellationToken cancellationToken
-        )
-        {
-            logger
-                .LogInformation("Received Delete (Dropbox) Connector request");
-
-            var response =
-                await
-                    authenticatedApiClient
-                        .DeleteAsync(
-                            $"/api/connectors/dropbox/{id}",
-                            cancellationToken
-                        );
-
-            var result =
-                await
-                    response
-                        .TryParseResponse<ApiResponse>(
-                            logger,
-                            cancellationToken
-                        );
-
-            EnsureApiSuccessStatusCode(result);
-            EnsureHttpSuccessStatusCode(response);
-
-            return result;
-        }
     }
 }

@@ -38,27 +38,27 @@ namespace Rocket.Web.Host.Api
 
             return result;
         }
-
-        /*public async Task<UpdateUserResponse> UpdateUserAsync(
-            UserDetail user,
-            CancellationToken cancellationToken)
+        
+        public async Task<ApiResponse> DeleteConnectorByIdAsync(
+            string id,
+            CancellationToken cancellationToken
+        )
         {
             logger
-                .LogInformation("Received Update User request");
+                .LogInformation("Received Delete Connector request");
 
             var response =
                 await
                     authenticatedApiClient
-                        .PostAsJsonAsync(
-                            "/api/users/update",
-                            user,
+                        .DeleteAsync(
+                            $"/api/connectors/{id}",
                             cancellationToken
                         );
 
             var result =
                 await
                     response
-                        .TryParseResponse<UpdateUserResponse>(
+                        .TryParseResponse<ApiResponse>(
                             logger,
                             cancellationToken
                         );
@@ -68,36 +68,5 @@ namespace Rocket.Web.Host.Api
 
             return result;
         }
-
-        public async Task<CreateUserResponse> CreateUserAsync(
-            CreateUserRequest user, 
-            CancellationToken cancellationToken
-            )
-        {
-            logger
-                .LogInformation("Received Create User request");
-
-            var response =
-                await
-                    authenticatedApiClient
-                        .PostAsJsonAsync(
-                            "/api/users/create",
-                            user,
-                            cancellationToken
-                        );
-
-            var result =
-                await
-                    response
-                        .TryParseResponse<CreateUserResponse>(
-                            logger,
-                            cancellationToken
-                        );
-
-            EnsureApiSuccessStatusCode(result);
-            EnsureHttpSuccessStatusCode(response);
-
-            return result;
-        }*/
     }
 }

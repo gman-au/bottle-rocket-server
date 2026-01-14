@@ -51,10 +51,20 @@
         {
             <AuthorizeView Context="primary">
                 <Authorized>
-                    <MudNavLink Match="NavLinkMatch.All" Href="/" Icon="@StandardIcons.DashboardIcon">Home</MudNavLink>
+                    <MudNavLink
+                        Match="NavLinkMatch.All"
+                        Href="/"
+                        Icon="@StandardIcons.DashboardIcon"
+                    >
+                        Home
+                    </MudNavLink>
                     @if (_isRootAdmin && _isSetupPending)
                     {
-                        <MudNavLink Match="NavLinkMatch.All" Href="/CompleteSetup" Icon="@StandardIcons.CompleteSetupIcon">
+                        <MudNavLink
+                            Match="NavLinkMatch.All"
+                            Href="/CompleteSetup"
+                            Icon="@StandardIcons.CompleteSetupIcon"
+                        >
                             Complete setup
                         </MudNavLink>
                     }
@@ -62,36 +72,88 @@
                     {
                         if (_isAdmin)
                         {
-                            <MudNavGroup Title="Users" Icon="@StandardIcons.UsersIcon" Expanded="false">
-                                <MudNavLink Match="NavLinkMatch.Prefix" Href="/Users" Icon="@StandardIcons.SearchUserIcon">Manage users
+                            <MudNavGroup
+                                Title="Users"
+                                Icon="@StandardIcons.UsersIcon"
+                                Expanded="true"
+                            >
+                                <MudNavLink
+                                    Match="NavLinkMatch.Prefix"
+                                    Href="/Users"
+                                    Icon="@StandardIcons.SearchUserIcon"
+                                >
+                                    Manage users
                                 </MudNavLink>
-                                <MudNavLink Match="NavLinkMatch.Prefix" Href="/Users/Add" Icon="@StandardIcons.AddUserIcon">Add user
+                                <MudNavLink
+                                    Match="NavLinkMatch.Prefix"
+                                    Href="/Users/Add"
+                                    Icon="@StandardIcons.AddUserIcon"
+                                >
+                                    Add user
                                 </MudNavLink>
                             </MudNavGroup>
                         }
 
-                        <MudNavLink Match="NavLinkMatch.Prefix" Href="/MyScans" Icon="@StandardIcons.ScansIcon">My scans</MudNavLink>
-                        <MudNavGroup Title="My connectors" Icon="@StandardIcons.ConnectorsIcon" Expanded="false">
-                            <MudNavLink Match="NavLinkMatch.Prefix" Href="/MyConnectors" Icon="@StandardIcons.SearchConnectorIcon">Manage my connectors
+                        <MudNavLink
+                            Match="NavLinkMatch.Prefix"
+                            Href="/MyScans"
+                            Icon="@StandardIcons.ScansIcon"
+                        >
+                            My scans
+                        </MudNavLink>
+                        <MudNavGroup
+                            Title="My connectors"
+                            Icon="@StandardIcons.ConnectorsIcon"
+                            Expanded="true"
+                        >
+                            <MudNavLink
+                                Match="NavLinkMatch.Prefix"
+                                Href="/MyConnectors"
+                                Icon="@StandardIcons.SearchConnectorIcon"
+                            >
+                                Manage my connectors
                             </MudNavLink>
-                            <MudNavLink Match="NavLinkMatch.Prefix" Href="/MyConnectors/Add" Icon="@StandardIcons.AddConnectorIcon">Add connector
+                            <MudNavLink
+                                Match="NavLinkMatch.Prefix"
+                                Href="/MyConnectors/Add"
+                                Icon="@StandardIcons.AddConnectorIcon"
+                            >
+                                Add connector
                             </MudNavLink>
                         </MudNavGroup>
-                        <MudNavLink Match="NavLinkMatch.All" OnClick="ConfirmLogoutAsync" Icon="@StandardIcons.LogoutIcon">Logout
+                        <MudNavLink
+                            Match="NavLinkMatch.All"
+                            OnClick="ConfirmLogoutAsync"
+                            Icon="@StandardIcons.LogoutIcon"
+                        >
+                            Logout
                         </MudNavLink>
                     }
                 </Authorized>
                 <NotAuthorized>
-                    <MudNavLink Match="NavLinkMatch.All" Href="/Account/Login" Icon="@StandardIcons.LoginIcon">Login</MudNavLink>
+                    <MudNavLink
+                        Match="NavLinkMatch.All"
+                        Href="/Account/Login"
+                        Icon="@StandardIcons.LoginIcon"
+                    >
+                        Login
+                    </MudNavLink>
                 </NotAuthorized>
             </AuthorizeView>
-            <MudNavLink Icon="@(DarkMode ? Icons.Material.Filled.WbSunny : Icons.Material.Filled.ModeNight)" OnClick="@OnDarkModeToggle">
+            <MudNavLink
+                Icon="@(DarkMode ? Icons.Material.Filled.WbSunny : Icons.Material.Filled.ModeNight)"
+                OnClick="@OnDarkModeToggle"
+            >
                 @(DarkMode ? "Switch to light mode" : "Switch to dark mode")
             </MudNavLink>
             if (!string.IsNullOrEmpty(SiteConfigurationOptions?.Value?.DocumentationUrl))
             {
-                <MudNavLink Href="@SiteConfigurationOptions?.Value?.DocumentationUrl" Icon="@StandardIcons.HelpIcon" ForceLoad="true"
-                            Target="_blank">
+                <MudNavLink
+                    Href="@SiteConfigurationOptions?.Value?.DocumentationUrl"
+                    Icon="@StandardIcons.HelpIcon"
+                    ForceLoad="true"
+                    Target="_blank"
+                >
                     Help
                 </MudNavLink>
             }

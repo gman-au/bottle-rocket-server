@@ -19,5 +19,8 @@ namespace Rocket.Api.Contracts.Connectors
         
         [JsonPropertyName("last_updated_at")]
         public DateTime? LastUpdatedAt { get; set; }
+        
+        [JsonPropertyName("status")]
+        public int Status { get; set; }
     }
 }

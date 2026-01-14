@@ -99,6 +99,7 @@ namespace Rocket.Tests.Unit
             {
                 public override int ConnectorType { get; set; } = (int)ConnectorTypeEnum.FileForwarding;
                 public override string ConnectorName { get; set; } = "UNKNOWN";
+                public override ConnectorStatusEnum DetermineStatus() => ConnectorStatusEnum.Pending;
             }
         }
     }

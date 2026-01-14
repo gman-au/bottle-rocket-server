@@ -82,7 +82,8 @@ namespace Rocket.Api.Host.Controllers
                                                 ),
                                         ConnectorName = o.ConnectorName,
                                         CreatedAt = o.CreatedAt.ToLocalTime(),
-                                        LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime()
+                                        LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
+                                        Status = (int)o.DetermineStatus()
                                     }
                             ),
                     TotalRecords = (int)totalRecordCount

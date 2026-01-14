@@ -36,28 +36,43 @@ namespace Rocket.Integrations.Dropbox
             string accessCode
         )
         {
-            var tokenResult =
-                await
-                    DropboxOAuth2Helper
-                        .ProcessCodeFlowAsync(
-                            accessCode,
-                            appKey,
-                            appSecret
-                        );
+            try
+            {
+                var tokenResult =
+                    await
+                        DropboxOAuth2Helper
+                            .ProcessCodeFlowAsync(
+                                accessCode,
+                                appKey,
+                                appSecret
+                            );
 
-            var refreshToken =
-                tokenResult?
-                    .RefreshToken;
+                var refreshToken =
+                    tokenResult?
+                        .RefreshToken;
 
-            if (string.IsNullOrEmpty(refreshToken))
+                if (string.IsNullOrEmpty(refreshToken))
+                    throw new RocketException(
+                        "A valid refresh token was not returned from Dropbox. Make sure you have configured the app correctly.",
+                        ApiStatusCodeEnum.ThirdPartyServiceError
+                    );
+
+                return
+                    tokenResult
+                        .RefreshToken;
+            }
+            catch (Exception ex)
+            {
+                logger
+                    .LogError("There was an error finalizing the Dropbox connection: {message}", ex.Message);
+
                 throw new RocketException(
-                    "A valid refresh token was not returned from Dropbox. Make sure you have configured the app correctly.",
-                    ApiStatusCodeEnum.ThirdPartyServiceError
+                    "There was an error finalizing the Dropbox connection.",
+                    ApiStatusCodeEnum.ThirdPartyServiceError,
+                    (int)HttpStatusCode.InternalServerError,
+                    ex
                 );
-
-            return
-                tokenResult
-                    .RefreshToken;
+            }
         }
 
         public async Task<bool> UploadFileAsync(

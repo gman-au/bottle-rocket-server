@@ -55,7 +55,7 @@ namespace Rocket.Web.Host.Api
             CancellationToken cancellationToken
         );
 
-        Task<ApiResponse> DeleteDropboxConnectorByIdAsync(
+        Task<ApiResponse> DeleteConnectorByIdAsync(
             string id,
             CancellationToken cancellationToken
         );

@@ -20,11 +20,26 @@
                     Typo="Typo.h4"
                     Color="Color.Primary"
                     Class="mb-4">
-                    Add Dropbox Connector
+                    Add a Dropbox connector
                 </MudText>
 
                 <MudGrid>
-                    <MudItem sm="12" lg="6" xl="4">
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5"
+                        >
+                            Step 1: Create a Dropbox App
+                        </MudText>
+                        <MudText>
+                            <ul>
+                                <li>Follow the instructions to set up a Dropbox App.</li>
+                                <li>Ensure that the correct permissions / scopes are set.</li>
+                                <li>When completed, you should receive an <b>App Key</b> and <b>App Secret</b>, which needs to be entered below.</li>
+                            </ul>
+                        </MudText>
+                    </MudItem>
+                    <MudItem sm="12" lg="6">
                         <MudTextField
                             T="string"
                             Required="true"
@@ -34,7 +49,7 @@
                             For="@(() => _createRequest.AppKey)"
                             RequiredError="App key is required"/>
                     </MudItem>
-                    <MudItem sm="12" lg="6" xl="4">
+                    <MudItem sm="12" lg="6">
                         <MudTextField
                             T="string"
                             Required="true"
@@ -44,13 +59,45 @@
                             For="@(() => _createRequest.AppSecret)"
                             RequiredError="App secret is required"/>
                     </MudItem>
-                    <MudItem sm="12" lg="6" xl="4">
+                    <MudDivider Class="my-2"/>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5"
+                        >
+                            Step 2: Authorize the app to receive an access code
+                        </MudText>
+                        <MudText>
+                            <ul>
+                                <li>Click on the <b>Authorize button</b> below to be redirected to Dropbox's app authorization page.</li>
+                                <li>Once you have consented to the permissions required by the app, you will receive an access code, which
+                                    needs to be entered below.
+                                </li>
+                            </ul>
+                        </MudText>
+                    </MudItem>
+                    <MudItem sm="12" lg="6">
                         <MudButton
+                            Variant="Variant.Outlined"
+                            Color="Color.Secondary"
+                            Disabled="!(_form.IsTouched || _form.IsValid)"
                             OnClick="@BeginAuthorizeAsync">
                             Authorize in Dropbox
                         </MudButton>
                     </MudItem>
-                    <MudItem sm="12" lg="6" xl="4">
+                    <MudDivider Class="my-2"/>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5"
+                        >
+                            Step 3: Enter the access code
+                        </MudText>
+                        <MudText>
+                            Enter the access code received in step 2 below.
+                        </MudText>
+                    </MudItem>
+                    <MudItem sm="12" lg="6">
                         <MudTextField
                             T="string"
                             Required="@_isAuthorizing"
@@ -61,9 +108,9 @@
                             RequiredError="Access Code is required"/>
                     </MudItem>
                 </MudGrid>
-                <MudGrid Class="align-start" Justify="Justify.FlexEnd">
+                <MudGrid Class="align-start mt-2" Justify="Justify.FlexEnd">
                     <MudItem>
-                        <GoBackButton BackPath="/MyConnectors"/>
+                        <GoBackButton/>
                     </MudItem>
                     <MudItem>
                         <MudButton
