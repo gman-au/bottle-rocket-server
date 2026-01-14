@@ -51,28 +51,28 @@ namespace Rocket.Tests.Unit
                         .Create();
 
                 _connectorRepository
-                    .FetchConnectorAsync(
+                    .FetchUserConnectorByIdAsync<DropboxConnector>(
                         null,
                         null,
                         CancellationToken.None
                     )
-                    .ReturnsForAnyArgs(Task.FromResult<BaseConnector>(connector));
+                    .ReturnsForAnyArgs(Task.FromResult(connector));
             }
 
             public void ArrangeUnknownConnectorReturned()
             {
                 var connector =
                     Fixture
-                        .Build<UnknownConnectorType>()
+                        .Build<UnknownConnector>()
                         .Create();
 
                 _connectorRepository
-                    .FetchConnectorAsync(
+                    .FetchUserConnectorByIdAsync<UnknownConnector>(
                         null,
                         null,
                         CancellationToken.None
                     )
-                    .ReturnsForAnyArgs(Task.FromResult<BaseConnector>(connector));
+                    .ReturnsForAnyArgs(Task.FromResult(connector));
             }
 
             public void AssertOkResult()
@@ -95,7 +95,7 @@ namespace Rocket.Tests.Unit
                 );
             }
 
-            private class UnknownConnectorType : BaseConnector
+            private class UnknownConnector : BaseConnector
             {
                 public override int ConnectorType { get; set; } = (int)ConnectorTypeEnum.FileForwarding;
                 public override string ConnectorName { get; set; } = "UNKNOWN";

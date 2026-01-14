@@ -1,17 +1,44 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Rocket.Domain.Connectors;
+using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 
 namespace Rocket.Integrations.Dropbox
 {
     public class DropboxHook(
-        IDropboxClientManager dropboxClientManager
-        ) : IIntegrationHook
+        IDropboxClientManager dropboxClientManager,
+        IConnectorRepository connectorRepository
+    ) : IIntegrationHook
     {
-        public async Task ProcessAsync(byte[] fileData)
+        public async Task ProcessAsync(
+            string userId,
+            byte[] fileData,
+            string fileExtension,
+            CancellationToken cancellationToken
+        )
         {
-            await 
+            var connector =
+                await
+                    connectorRepository
+                        .FetchUserConnectorByNameAsync<DropboxConnector>(
+                            userId,
+                            DomainConstants.VendorDropbox,
+                            cancellationToken
+                        );
+
+            if (connector == null) 
+                return;
+            
+            await
                 dropboxClientManager
-                    .UploadFileAsync(fileData);
+                    .UploadFileAsync(
+                        connector.AppKey,
+                        connector.AppSecret,
+                        connector.RefreshToken,
+                        fileExtension,
+                        fileData
+                    );
         }
     }
 }

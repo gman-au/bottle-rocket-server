@@ -17,7 +17,8 @@ namespace Rocket.Infrastructure.Db.Mongo
     {
         public async Task<BaseConnector> SaveConnectorAsync(
             BaseConnector baseConnector,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken
+        )
         {
             try
             {
@@ -105,62 +106,71 @@ namespace Rocket.Infrastructure.Db.Mongo
             }
         }
 
-        public async Task<BaseConnector> FetchConnectorAsync(
+        public async Task<T> FetchUserConnectorByIdAsync<T>(
             string userId,
             string id,
             CancellationToken cancellationToken
-        )
+        ) where T : BaseConnector
         {
-            try
-            {
-                var mongoDatabase =
-                    mongoDbClient
-                        .GetDatabase();
-
-                var connectorCollection =
-                    mongoDatabase
-                        .GetCollection<BaseConnector>(MongoConstants.ConnectorsCollection);
-
-                var filter =
-                    Builders<BaseConnector>
-                        .Filter
-                        .Eq(
-                            o => o.UserId,
-                            userId
-                        );
-
-                filter &=
-                    Builders<BaseConnector>
-                        .Filter
-                        .Eq(
-                            o => o.Id,
-                            id
-                        );
-
-                var record =
-                    await
-                        connectorCollection
-                            .Find(filter)
-                            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
-
-                return record;
-            }
-            catch (Exception ex)
-            {
-                logger
-                    .LogError(
-                        "There was an fetching connector: {error}",
-                        ex.Message
+            var filter =
+                Builders<BaseConnector>
+                    .Filter
+                    .Eq(
+                        o => o.UserId,
+                        userId
                     );
 
-                throw;
-            }
+            filter &=
+                Builders<BaseConnector>
+                    .Filter
+                    .Eq(
+                        o => o.Id,
+                        id
+                    );
+
+            return
+                await
+                    FetchUserConnectorByFilter<T>(
+                        filter,
+                        cancellationToken
+                    );
+        }
+        
+        public async Task<T> FetchUserConnectorByNameAsync<T>(
+            string userId,
+            string name,
+            CancellationToken cancellationToken
+        ) where T : BaseConnector
+        {
+            var filter =
+                Builders<BaseConnector>
+                    .Filter
+                    .Eq(
+                        o => o.UserId,
+                        userId
+                    );
+
+            filter &=
+                Builders<BaseConnector>
+                    .Filter
+                    .Eq(
+                        o => o.ConnectorName,
+                        name
+                    );
+
+            return
+                await
+                    FetchUserConnectorByFilter<T>(
+                        filter,
+                        cancellationToken
+                    );
         }
 
         public async Task<bool> DeleteConnectorAsync(
             string userId,
             string id,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken
+        )
         {
             var mongoDatabase =
                 mongoDbClient
@@ -259,35 +269,13 @@ namespace Rocket.Infrastructure.Db.Mongo
             CancellationToken cancellationToken
         )
         {
-            var mongoDatabase =
-                mongoDbClient
-                    .GetDatabase();
-
-            var connectorCollection =
-                mongoDatabase
-                    .GetCollection<BaseConnector>(MongoConstants.ConnectorsCollection);
-
-            var filter =
-                Builders<BaseConnector>
-                    .Filter
-                    .Eq(
-                        u => u.UserId,
-                        userId
-                    );
-
-            filter &=
-                Builders<BaseConnector>
-                    .Filter
-                    .Eq(
-                        o => o.ConnectorName,
-                        connectorName
-                    );
-
             var result =
                 await
-                    connectorCollection
-                        .Find(filter)
-                        .AnyAsync(cancellationToken: cancellationToken);
+                    FetchUserConnectorByNameAsync<BaseConnector>(
+                        userId,
+                        connectorName,
+                        cancellationToken
+                    ) != null;
 
             return result;
         }
@@ -314,6 +302,42 @@ namespace Rocket.Infrastructure.Db.Mongo
                         new UpdateOptions(),
                         cancellationToken
                     );
+        }
+
+        private async Task<T> FetchUserConnectorByFilter<T>(
+            FilterDefinition<BaseConnector> filter,
+            CancellationToken cancellationToken
+        ) where T : BaseConnector
+        {
+            try
+            {
+                var mongoDatabase =
+                    mongoDbClient
+                        .GetDatabase();
+
+                var connectorCollection =
+                    mongoDatabase
+                        .GetCollection<BaseConnector>(MongoConstants.ConnectorsCollection);
+
+
+                var record =
+                    await
+                        connectorCollection
+                            .Find(filter)
+                            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
+
+                return record as T;
+            }
+            catch (Exception ex)
+            {
+                logger
+                    .LogError(
+                        "There was an fetching connector: {error}",
+                        ex.Message
+                    );
+
+                throw;
+            }
         }
     }
 }

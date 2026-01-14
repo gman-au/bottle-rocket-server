@@ -1,12 +1,19 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.IO;
+using System.Net;
+using System.Threading.Tasks;
 using Dropbox.Api;
+using Dropbox.Api.Files;
+using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 
 namespace Rocket.Integrations.Dropbox
 {
-    public class DropboxClientManager : IDropboxClientManager
+    public class DropboxClientManager(ILogger<DropboxClientManager> logger) : IDropboxClientManager
     {
+        private const string UploadSubfolder = "bottle_rocket_scans";
+        
         public string GetAuthorizeUrl(string appKey)
         {
             var authorizeUri =
@@ -23,7 +30,7 @@ namespace Rocket.Integrations.Dropbox
                     .ToString();
         }
 
-        public async Task<string> GetRefreshTokenAsync(
+        public async Task<string> GetRefreshTokenFromAccessCodeAsync(
             string appKey,
             string appSecret,
             string accessCode
@@ -37,15 +44,15 @@ namespace Rocket.Integrations.Dropbox
                             appKey,
                             appSecret
                         );
-            
-            var refreshToken = 
+
+            var refreshToken =
                 tokenResult?
                     .RefreshToken;
 
             if (string.IsNullOrEmpty(refreshToken))
                 throw new RocketException(
                     "A valid refresh token was not returned from Dropbox. Make sure you have configured the app correctly.",
-                    ApiStatusCodeEnum.ServerConfigurationError
+                    ApiStatusCodeEnum.ThirdPartyServiceError
                 );
 
             return
@@ -53,9 +60,50 @@ namespace Rocket.Integrations.Dropbox
                     .RefreshToken;
         }
 
-        public async Task<bool> UploadFileAsync(byte[] fileData)
+        public async Task<bool> UploadFileAsync(
+            string appKey,
+            string appSecret,
+            string refreshToken,
+            string fileExtension,
+            byte[] fileData
+        )
         {
-            return true;
+            try
+            {
+                logger
+                    .LogInformation("Uploading file to Dropbox");
+                
+                var dbx =
+                    new DropboxClient(
+                        refreshToken,
+                        appKey,
+                        appSecret
+                    );
+
+                using var stream = new MemoryStream(fileData);
+
+                await
+                    dbx
+                        .Files
+                        .UploadAsync(
+                            new UploadArg(path: $"/{UploadSubfolder}/{Guid.NewGuid()}{fileExtension}"),
+                            stream
+                        );
+
+                return true;
+            }
+            catch (DropboxException ex)
+            {
+                logger
+                    .LogError("There was an error uploading the file to Dropbox: {message}", ex.Message);
+
+                throw new RocketException(
+                    "There was an error uploading the file to Dropbox.",
+                    ApiStatusCodeEnum.ThirdPartyServiceError,
+                    (int)HttpStatusCode.InternalServerError,
+                    ex
+                );
+            }
         }
     }
 }

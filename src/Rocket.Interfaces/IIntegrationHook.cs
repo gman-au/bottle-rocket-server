@@ -1,9 +1,15 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Rocket.Interfaces
 {
     public interface IIntegrationHook
     {
-        Task ProcessAsync(byte[] fileData);
+        Task ProcessAsync(
+            string userId,
+            byte[] fileData,
+            string fileExtension,
+            CancellationToken cancellationToken
+        );
     }
 }

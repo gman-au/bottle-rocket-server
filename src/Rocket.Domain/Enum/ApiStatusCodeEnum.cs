@@ -18,6 +18,7 @@
         PotentiallyIrrecoverableOperation,
         ConnectorAlreadyExists,
         ServerError = 5000,
-        ServerConfigurationError
+        ServerConfigurationError,
+        ThirdPartyServiceError
     }
 }

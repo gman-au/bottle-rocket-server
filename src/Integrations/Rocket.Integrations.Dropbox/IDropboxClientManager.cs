@@ -6,12 +6,18 @@ namespace Rocket.Integrations.Dropbox
     {
         string GetAuthorizeUrl(string appKey);
 
-        Task<string> GetRefreshTokenAsync(
+        Task<string> GetRefreshTokenFromAccessCodeAsync(
             string appKey,
             string appSecret,
             string accessCode
         );
 
-        Task<bool> UploadFileAsync(byte[] fileData);
+        Task<bool> UploadFileAsync(
+            string appKey,
+            string appSecret,
+            string refreshToken,
+            string fileExtension,
+            byte[] fileData
+        );
     }
 }

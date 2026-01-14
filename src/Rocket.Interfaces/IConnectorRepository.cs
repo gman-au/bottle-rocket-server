@@ -21,11 +21,17 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
-        Task<BaseConnector> FetchConnectorAsync(
+        Task<T> FetchUserConnectorByIdAsync<T>(
             string userId,
             string id,
             CancellationToken cancellationToken
-        );
+        ) where T : BaseConnector;
+
+        Task<T> FetchUserConnectorByNameAsync<T>(
+            string userId,
+            string name,
+            CancellationToken cancellationToken
+        ) where T : BaseConnector;
 
         Task<bool> DeleteConnectorAsync(
             string userId,

@@ -171,11 +171,11 @@ namespace Rocket.Api.Host.Controllers.Vendors
             var connector =
                 await
                     connectorRepository
-                        .FetchConnectorAsync(
+                        .FetchUserConnectorByIdAsync<DropboxConnector>(
                             userId,
                             id,
                             cancellationToken
-                        ) as DropboxConnector;
+                        );
 
             if (connector == null)
                 throw new RocketException(
@@ -190,7 +190,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
             var refreshToken =
                 await
                     dropboxClientManager
-                        .GetRefreshTokenAsync(
+                        .GetRefreshTokenFromAccessCodeAsync(
                             appKey,
                             appSecret,
                             accessCode
