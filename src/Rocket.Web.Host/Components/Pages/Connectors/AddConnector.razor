@@ -1,0 +1,54 @@
+﻿@page "/MyConnectors/Add"
+@using Rocket.Domain.Utils
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<MudPaper Class="p-4" elevation="2">
+    <MudText
+        Align="Align.Center"
+        Color="Color.Primary"
+        GutterBottom
+        Typo="Typo.h5">
+        Add New Connector
+    </MudText>
+    <MudGrid Justify="Justify.FlexStart" Class="pa-4">
+        @foreach (var connectorTemplate in ConnectorTemplates)
+        {
+            <MudItem xs="12" sm="12" md="6" lg="6" xl="6">
+                <MudNavLink
+                    Href="@connectorTemplate.Href">
+                    <div class="connector-item-container">
+                        <MudImage
+                            Fluid
+                            Alt="@connectorTemplate.Name"
+                            Src="@Assets[connectorTemplate.ImagePath]"
+                            Class="connector-item"/>
+                    </div>
+                </MudNavLink>
+            </MudItem>
+        }
+    </MudGrid>
+
+</MudPaper>
+
+@code {
+
+    private static readonly List<ConnectorTemplate> ConnectorTemplates =
+    [
+        new()
+        {
+            Name = DomainConstants.VendorDropbox,
+            Href = "/MyConnector/Dropbox/Add",
+            ImagePath = "/img/dropbox-logo.webp"
+        }
+    ];
+
+    private class ConnectorTemplate
+    {
+        public string Name { get; set; }
+
+        public string Href { get; set; }
+
+        public string ImagePath { get; set; }
+    }
+
+}

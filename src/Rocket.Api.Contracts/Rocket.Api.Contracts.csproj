@@ -4,4 +4,8 @@
         <TargetFramework>net9.0</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Rocket.Domain\Rocket.Domain.csproj" />
+    </ItemGroup>
+
 </Project>

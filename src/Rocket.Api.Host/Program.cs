@@ -1,17 +1,13 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
 using Rocket.Api.Host;
 using Rocket.Api.Host.Filters;
 using Rocket.Api.Host.Handlers;
 using Rocket.Api.Host.Hubs;
 using Rocket.Api.Host.Injection;
 using Rocket.Domain.Utils;
+using Rocket.Dropbox.Injection;
 
 var builder =
     WebApplication
@@ -54,6 +50,9 @@ services
 
 services
     .AddOpenApiServices();
+
+services
+    .AddDropboxIntegration();
 
 services
     .AddHostedService<StartupInitializationHostedService>();

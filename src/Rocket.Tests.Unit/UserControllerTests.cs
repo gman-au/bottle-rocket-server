@@ -188,9 +188,8 @@ namespace Rocket.Tests.Unit
             _context.AssertExceptionCode(ApiStatusCodeEnum.PotentiallyIrrecoverableOperation);
         }
 
-        private class TestContext : BaseControllerTestContext
+        private class TestContext : BaseControllerTestContext<UserController>
         {
-            private readonly UserController _sut;
             private readonly IStartupInitialization _startupInitialization;
             private readonly IActiveAdminChecker _activeAdminChecker;
             private RocketException _exception;
@@ -204,7 +203,7 @@ namespace Rocket.Tests.Unit
                 _startupInitialization = Fixture.Freeze<IStartupInitialization>();
                 _activeAdminChecker = Fixture.Freeze<IActiveAdminChecker>();
 
-                _sut =
+                Sut =
                     new UserController(
                         Fixture.Freeze<ILogger<UserController>>(),
                         UserManager,
@@ -247,14 +246,6 @@ namespace Rocket.Tests.Unit
                 _startupInitialization
                     .GetStartupPhaseAsync(CancellationToken.None)
                     .ReturnsForAnyArgs(StartupPhaseEnum.AdminPendingDeactivation);
-
-            public void ArrangeLoggedInRootAdminUser() => _sut.ControllerContext = RootAdminUserContext;
-
-            public void ArrangeLoggedInAdminUser() => _sut.ControllerContext = AdminUserContext;
-
-            public void ArrangeLoggedInInactiveAdminUser() => _sut.ControllerContext = InactiveAdminUserContext;
-
-            public void ArrangeLoggedInNonAdminUser() => _sut.ControllerContext = NonAdminUserContext;
 
             public void ArrangeValidUserReturnedFromSearch() => _userIdToSearch = ValidUserIdToModify;
 
@@ -300,7 +291,7 @@ namespace Rocket.Tests.Unit
             {
                 _result =
                     await
-                        _sut
+                        Sut
                             .GetUserAsync(
                                 _userIdToSearch,
                                 CancellationToken.None
@@ -311,7 +302,7 @@ namespace Rocket.Tests.Unit
             {
                 _result =
                     await
-                        _sut
+                        Sut
                             .UpdateUserAsync(
                                 _userToUpdate,
                                 CancellationToken.None
@@ -322,7 +313,7 @@ namespace Rocket.Tests.Unit
             {
                 _result =
                     await
-                        _sut
+                        Sut
                             .CreateUserAsync(
                                 _userToCreate,
                                 CancellationToken.None

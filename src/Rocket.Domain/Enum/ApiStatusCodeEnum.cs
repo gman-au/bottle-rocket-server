@@ -5,6 +5,7 @@
         Ok = 0,
         UnknownError = 1000,
         NoAttachmentsFound,
+        ValidationError,
         ServerConnectionError,
         UserAlreadyExists = 2000,
         UnknownUser,
@@ -15,6 +16,9 @@
         UnknownOrInaccessibleRecord,
         RequiresAdministratorAccess,
         PotentiallyIrrecoverableOperation,
-        ServerError = 5000
+        ConnectorAlreadyExists,
+        ServerError = 5000,
+        ServerConfigurationError,
+        ThirdPartyServiceError
     }
 }

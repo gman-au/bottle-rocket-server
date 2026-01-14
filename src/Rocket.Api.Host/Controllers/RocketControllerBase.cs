@@ -35,7 +35,7 @@ namespace Rocket.Api.Host.Controllers
             var user =
                 await
                     GetLoggedInUserAsync(cancellationToken);
-            
+
             if (user == null)
             {
                 throw new RocketException(
@@ -55,6 +55,11 @@ namespace Rocket.Api.Host.Controllers
 
             return user;
         }
+
+        protected string GetLoggedInUserId() =>
+            User
+                .FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?
+                .Value;
 
         protected async Task<User> GetLoggedInUserAsync(CancellationToken cancellationToken)
         {

@@ -16,6 +16,7 @@ using Rocket.Infrastructure.Db.Mongo;
 using Rocket.Infrastructure.Db.Mongo.Options;
 using Rocket.Infrastructure.Hashing;
 using Rocket.Infrastructure.Thumbnails;
+using Rocket.Dropbox.Infrastructure;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Injection
@@ -120,6 +121,7 @@ namespace Rocket.Api.Host.Injection
 
             services
                 .AddTransient<IScannedImageRepository, MongoDbScannedImageRepository>()
+                .AddTransient<IConnectorRepository, MongoDbConnectorRepository>()
                 .AddTransient<IUserRepository, MongoDbUserRepository>();
 
             return services;

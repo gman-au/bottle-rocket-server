@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Infrastructure.Blob.Local.Options;
 using Rocket.Interfaces;
 
@@ -22,47 +26,71 @@ namespace Rocket.Infrastructure.Blob.Local
             CancellationToken cancellationToken
         )
         {
-            var filePath =
-                Guid
-                    .NewGuid()
-                    .ToString();
-
-            using var ms = new MemoryStream();
-
-            var folderPath =
-                Path
-                    .Combine(
-                        _options.LocalBasePath,
-                        _options.LocalSubfolder,
-                        Path.GetDirectoryName(filePath)
+            try
+            {
+                var localBasePath =
+                    _options.LocalBasePath ??
+                    throw new ConfigurationErrorsException(
+                        nameof(LocalBlobConfigurationOptions.LocalBasePath)
                     );
 
-            EnsureFolderExists(folderPath);
-
-            var fullFilePath = $"{Path.GetFileName(filePath)}{fileExtension}";
-
-            var sourcePath =
-                Path
-                    .Combine(
-                        folderPath,
-                        fullFilePath
+                var localSubfolder =
+                    _options.LocalSubfolder ??
+                    throw new ConfigurationErrorsException(
+                        nameof(LocalBlobConfigurationOptions.LocalSubfolder)
                     );
 
-            logger
-                .LogInformation(
-                    "Using Local File storage path {path}",
-                    sourcePath
+                var filePath =
+                    Guid
+                        .NewGuid()
+                        .ToString();
+
+                using var ms = new MemoryStream();
+
+                var folderPath =
+                    Path
+                        .Combine(
+                            localBasePath,
+                            localSubfolder,
+                            Path.GetDirectoryName(filePath)
+                        );
+
+                EnsureFolderExists(folderPath);
+
+                var fullFilePath = $"{Path.GetFileName(filePath)}{fileExtension}";
+
+                var sourcePath =
+                    Path
+                        .Combine(
+                            folderPath,
+                            fullFilePath
+                        );
+
+                logger
+                    .LogInformation(
+                        "Using Local File storage path {path}",
+                        sourcePath
+                    );
+
+                await
+                    File
+                        .WriteAllBytesAsync(
+                            sourcePath,
+                            imageData,
+                            cancellationToken
+                        );
+
+                return filePath;
+            }
+            catch (ConfigurationErrorsException ex)
+            {
+                throw new RocketException(
+                    "The server requires configuration of local storage.",
+                    ApiStatusCodeEnum.ServerConfigurationError,
+                    (int)HttpStatusCode.InternalServerError,
+                    ex
                 );
-
-            await
-                File
-                    .WriteAllBytesAsync(
-                        sourcePath,
-                        imageData,
-                        cancellationToken
-                    );
-
-            return filePath;
+            }
         }
 
         public async Task<byte[]> LoadImageAsync(
@@ -87,7 +115,7 @@ namespace Rocket.Infrastructure.Blob.Local
                         folderPath,
                         fullFilePath
                     );
-            
+
             logger
                 .LogInformation(
                     "Using Local File storage path {path}",
@@ -113,7 +141,7 @@ namespace Rocket.Infrastructure.Blob.Local
                         "File not found at path {path}",
                         sourcePath
                     );
-                
+
                 return [];
             }
         }

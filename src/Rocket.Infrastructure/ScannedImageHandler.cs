@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -11,6 +12,7 @@ namespace Rocket.Infrastructure
 {
     public class ScannedImageHandler(
         ILogger<ScannedImageHandler> logger,
+        IEnumerable<IIntegrationHook> integrationHooks,
         IBlobStore blobStore,
         ISha256Calculator sha256Calculator,
         IScannedImageRepository scannedImageRepository,
@@ -60,7 +62,21 @@ namespace Rocket.Infrastructure
                                 fileExtension,
                                 cancellationToken
                             );
-
+                
+                // poc hooks
+                // TODO: there is a layer in the middle here for workflows linked to connectors
+                foreach (var hook in integrationHooks)
+                {
+                    await
+                        hook
+                            .ProcessAsync(
+                                userId,
+                                imageData,
+                                fileExtension,
+                                cancellationToken
+                            );
+                }
+                
                 scannedImage.UserId = userId;
                 scannedImage.BlobId = blobId;
                 scannedImage.CaptureDate = DateTime.UtcNow;
