@@ -5,7 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Rocket.Api.Contracts\Rocket.Api.Contracts.csproj" />
       <ProjectReference Include="..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
     </ItemGroup>
 

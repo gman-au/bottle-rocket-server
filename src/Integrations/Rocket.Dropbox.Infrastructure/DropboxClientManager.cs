@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 
-namespace Rocket.Integrations.Dropbox
+namespace Rocket.Dropbox.Infrastructure
 {
     public class DropboxClientManager(ILogger<DropboxClientManager> logger) : IDropboxClientManager
     {

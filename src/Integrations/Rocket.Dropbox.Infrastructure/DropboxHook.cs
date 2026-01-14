@@ -4,7 +4,7 @@ using Rocket.Domain.Connectors;
 using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 
-namespace Rocket.Integrations.Dropbox
+namespace Rocket.Dropbox.Infrastructure
 {
     public class DropboxHook(
         IDropboxClientManager dropboxClientManager,

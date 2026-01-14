@@ -1,8 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Api.Contracts;
-using Rocket.Api.Contracts.Connectors;
-using Rocket.Integrations.Dropbox.Contracts;
+using Rocket.Dropbox.Contracts;
 
 namespace Rocket.Web.Host.Api
 {
@@ -45,18 +44,18 @@ namespace Rocket.Web.Host.Api
             CancellationToken baseCancellationToken
         );
 
+        Task<ApiResponse> DeleteConnectorByIdAsync(
+            string id,
+            CancellationToken cancellationToken
+        );
+
         Task<CreateDropboxConnectorResponse> CreateDropboxConnectorAsync(
             CreateDropboxConnectorRequest connector,
             CancellationToken cancellationToken
         );
 
-        public Task<ApiResponse> UpdateDropboxConnectorAsync(
+        public Task<ApiResponse> FinalizeDropboxConnectorAsync(
             FinalizeDropboxConnectorRequest request,
-            CancellationToken cancellationToken
-        );
-
-        Task<ApiResponse> DeleteConnectorByIdAsync(
-            string id,
             CancellationToken cancellationToken
         );
     }

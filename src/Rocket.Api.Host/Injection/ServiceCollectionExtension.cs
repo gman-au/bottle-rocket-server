@@ -16,7 +16,7 @@ using Rocket.Infrastructure.Db.Mongo;
 using Rocket.Infrastructure.Db.Mongo.Options;
 using Rocket.Infrastructure.Hashing;
 using Rocket.Infrastructure.Thumbnails;
-using Rocket.Integrations.Dropbox;
+using Rocket.Dropbox.Infrastructure;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Injection
@@ -195,15 +195,6 @@ namespace Rocket.Api.Host.Injection
                     }
                 );
 
-            return services;
-        }
-
-        public static IServiceCollection AddDropboxIntegration(this IServiceCollection services)
-        {
-            services
-                .AddTransient<IIntegrationHook, DropboxHook>()
-                .AddTransient<IDropboxClientManager, DropboxClientManager>();
-            
             return services;
         }
     }

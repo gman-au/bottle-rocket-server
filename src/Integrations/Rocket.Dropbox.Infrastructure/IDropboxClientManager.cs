@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Rocket.Integrations.Dropbox
+namespace Rocket.Dropbox.Infrastructure
 {
     public interface IDropboxClientManager
     {

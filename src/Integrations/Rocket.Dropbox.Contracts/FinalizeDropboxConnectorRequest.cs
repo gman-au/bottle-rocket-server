@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Rocket.Integrations.Dropbox.Contracts
+namespace Rocket.Dropbox.Contracts
 {
     public class FinalizeDropboxConnectorRequest
     {

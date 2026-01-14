@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Rocket.Api.Contracts;
 
-namespace Rocket.Integrations.Dropbox.Contracts
+namespace Rocket.Dropbox.Contracts
 {
     public class CreateDropboxConnectorResponse : ApiResponse
     {

@@ -12,8 +12,8 @@ using Rocket.Domain.Connectors;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Utils;
-using Rocket.Integrations.Dropbox;
-using Rocket.Integrations.Dropbox.Contracts;
+using Rocket.Dropbox.Contracts;
+using Rocket.Dropbox.Infrastructure;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers.Vendors

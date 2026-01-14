@@ -2,8 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
-using Rocket.Api.Contracts.Connectors;
-using Rocket.Integrations.Dropbox.Contracts;
+using Rocket.Dropbox.Contracts;
 using Rocket.Web.Host.Extensions;
 
 namespace Rocket.Web.Host.Api
@@ -41,7 +40,7 @@ namespace Rocket.Web.Host.Api
             return result;
         }
 
-        public async Task<ApiResponse> UpdateDropboxConnectorAsync(
+        public async Task<ApiResponse> FinalizeDropboxConnectorAsync(
             FinalizeDropboxConnectorRequest request,
             CancellationToken cancellationToken
         )

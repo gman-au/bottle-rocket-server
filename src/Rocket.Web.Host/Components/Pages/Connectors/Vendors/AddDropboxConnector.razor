@@ -1,5 +1,5 @@
 ﻿@page "/MyConnector/Dropbox/Add"
-@using Rocket.Integrations.Dropbox.Contracts
+@using Rocket.Dropbox.Contracts
 @using Rocket.Web.Host.Api
 @using Rocket.Web.Host.Infrastructure
 @inject IApiRequestManager ApiRequestManager
@@ -241,7 +241,7 @@
                 var response =
                     await
                         ApiRequestManager
-                            .UpdateDropboxConnectorAsync(
+                            .FinalizeDropboxConnectorAsync(
                                 new FinalizeDropboxConnectorRequest
                                 {
                                     Id = _connectorId,
