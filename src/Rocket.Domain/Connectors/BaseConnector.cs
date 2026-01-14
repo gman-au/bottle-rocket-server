@@ -7,7 +7,7 @@ namespace Rocket.Domain.Connectors
 {
     [BsonDiscriminator(RootClass = true)] 
     [BsonKnownTypes(typeof(DropboxConnector))]
-    public abstract class BaseConnector
+    public abstract record BaseConnector
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

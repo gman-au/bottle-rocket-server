@@ -93,7 +93,7 @@ namespace Rocket.Tests.Unit
                 );
             }
 
-            private class UnknownConnector : BaseConnector
+            private record UnknownConnector : BaseConnector
             {
                 public override int ConnectorType { get; set; } = (int)ConnectorTypeEnum.FileForwarding;
                 public override string ConnectorName { get; set; } = "UNKNOWN";

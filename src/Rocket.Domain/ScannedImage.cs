@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Rocket.Domain
 {
-    public class ScannedImage
+    public record ScannedImage
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

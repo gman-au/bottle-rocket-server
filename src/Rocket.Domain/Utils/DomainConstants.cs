@@ -22,6 +22,7 @@ namespace Rocket.Domain.Utils
         public static readonly Dictionary<int, string> ConnectorTypes = new()
         {
             { (int)ConnectorTypeEnum.FileForwarding, "File Forwarding" },
+            { (int)ConnectorTypeEnum.FileConversion, "File Conversion" },
             { (int)ConnectorTypeEnum.OcrExtraction, "OCR Extraction" },
         };
 

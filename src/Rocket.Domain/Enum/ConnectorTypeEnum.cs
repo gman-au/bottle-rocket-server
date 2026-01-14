@@ -3,6 +3,7 @@
     public enum ConnectorTypeEnum
     {
         FileForwarding,
+        FileConversion,
         OcrExtraction
     }
 }

@@ -3,7 +3,7 @@ using Rocket.Domain.Utils;
 
 namespace Rocket.Domain.Connectors
 {
-    public class DropboxConnector : BaseConnector
+    public record DropboxConnector : BaseConnector
     {
         public override int ConnectorType { get; set; } = (int)ConnectorTypeEnum.FileForwarding;
 
