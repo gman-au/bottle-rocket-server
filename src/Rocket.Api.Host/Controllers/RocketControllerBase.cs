@@ -56,11 +56,6 @@ namespace Rocket.Api.Host.Controllers
             return user;
         }
 
-        protected string GetLoggedInUserId() =>
-            User
-                .FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?
-                .Value;
-
         protected async Task<User> GetLoggedInUserAsync(CancellationToken cancellationToken)
         {
             var userId =

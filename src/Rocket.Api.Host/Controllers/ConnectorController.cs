@@ -47,11 +47,13 @@ namespace Rocket.Api.Host.Controllers
             CancellationToken cancellationToken
         )
         {
-            await
-                ThrowIfNotActiveUserAsync(cancellationToken);
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
 
             var userId =
-                GetLoggedInUserId();
+                user
+                    .Id;
 
             var (records, totalRecordCount) =
                 await
@@ -68,23 +70,22 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Connectors =
                         records
-                            .Select(
-                                o =>
-                                    new ConnectorItem
-                                    {
-                                        Id = o.Id,
-                                        ConnectorType =
-                                            DomainConstants
-                                                .ConnectorTypes
-                                                .GetValueOrDefault(
-                                                    o.ConnectorType,
-                                                    "Unknown"
-                                                ),
-                                        ConnectorName = o.ConnectorName,
-                                        CreatedAt = o.CreatedAt.ToLocalTime(),
-                                        LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
-                                        Status = (int)o.DetermineStatus()
-                                    }
+                            .Select(o =>
+                                new ConnectorItem
+                                {
+                                    Id = o.Id,
+                                    ConnectorType =
+                                        DomainConstants
+                                            .ConnectorTypes
+                                            .GetValueOrDefault(
+                                                o.ConnectorType,
+                                                "Unknown"
+                                            ),
+                                    ConnectorName = o.ConnectorName,
+                                    CreatedAt = o.CreatedAt.ToLocalTime(),
+                                    LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
+                                    Status = (int)o.DetermineStatus()
+                                }
                             ),
                     TotalRecords = (int)totalRecordCount
                 };

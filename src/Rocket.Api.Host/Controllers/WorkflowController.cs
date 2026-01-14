@@ -48,11 +48,13 @@ namespace Rocket.Api.Host.Controllers
             CancellationToken cancellationToken
         )
         {
-            await
-                ThrowIfNotActiveUserAsync(cancellationToken);
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
 
             var userId =
-                GetLoggedInUserId();
+                user
+                    .Id;
 
             var (records, totalRecordCount) =
                 await
@@ -69,17 +71,16 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Workflows =
                         records
-                            .Select(
-                                o =>
-                                    new MyWorkflowItem
-                                    {
-                                        Id = o.Id,
-                                        MatchingPageSymbol = o.MatchingPageSymbol,
-                                        Name = o.Name,
-                                        IsActive = o.IsActive,
-                                        CreatedAt = o.CreatedAt.ToLocalTime(),
-                                        LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
-                                    }
+                            .Select(o =>
+                                new MyWorkflowItem
+                                {
+                                    Id = o.Id,
+                                    MatchingPageSymbol = o.MatchingPageSymbol,
+                                    Name = o.Name,
+                                    IsActive = o.IsActive,
+                                    CreatedAt = o.CreatedAt.ToLocalTime(),
+                                    LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
+                                }
                             ),
                     TotalRecords = (int)totalRecordCount
                 };
@@ -145,7 +146,7 @@ namespace Rocket.Api.Host.Controllers
                 response
                     .AsApiSuccess();
         }
-        
+
         [HttpPost("create")]
         [EndpointSummary("Add a new workflow")]
         [EndpointGroupName("Manage workflows")]
@@ -269,7 +270,7 @@ namespace Rocket.Api.Host.Controllers
                     .Id;
 
             var name = request.Name;
-            
+
             if (!string.IsNullOrEmpty(name))
             {
                 if (await
@@ -286,7 +287,7 @@ namespace Rocket.Api.Host.Controllers
                         ApiStatusCodeEnum.RecordAlreadyExists
                     );
                 }
-                
+
                 await
                     workflowRepository
                         .UpdateWorkflowFieldAsync(
@@ -319,6 +320,86 @@ namespace Rocket.Api.Host.Controllers
             return
                 response
                     .AsApiSuccess();
+        }
+
+        [HttpGet("get/{id}")]
+        [EndpointSummary("Get workflow by ID")]
+        [EndpointGroupName("Manage workflows")]
+        [EndpointDescription("Returns a workflow by its unique identifier.")]
+        [ProducesResponseType(typeof(UserDetail), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetWorkflowAsync(
+            string id,
+            CancellationToken cancellationToken
+        )
+        {
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
+
+            logger
+                .LogInformation(
+                    "Received workflow request for id: {id}",
+                    id
+                );
+
+            var userId =
+                user
+                    .Id;
+
+            var workflow =
+                await
+                    workflowRepository
+                        .FetchWorkflowByIdAsync(
+                            userId,
+                            id,
+                            cancellationToken
+                        );
+
+            if (workflow == null)
+            {
+                throw new RocketException(
+                    $"Workflow id: {id} not found",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+            }
+
+            var response =
+                new MyWorkflowItemDetail
+                {
+                    Id = workflow.Id,
+                    UserId = workflow.UserId,
+                    MatchingPageSymbol = workflow.MatchingPageSymbol,
+                    CreatedAt = workflow.CreatedAt.ToLocalTime(),
+                    LastUpdatedAt = workflow.LastUpdatedAt?.ToLocalTime(),
+                    Name = workflow.Name,
+                    IsActive = workflow.IsActive,
+                    Steps =
+                        workflow
+                            .Steps
+                            .Select(Map)
+                };
+
+            return
+                response
+                    .AsApiSuccess();
+        }
+
+        private static WorkflowStepDetail Map(BaseWorkflowStep value)
+        {
+            return new WorkflowStepDetail
+            {
+                Id = value.Id,
+                ConnectionId = value.ConnectionId,
+                InputType = value.InputType,
+                OutputType = value.OutputType,
+                StepName = value.StepName,
+                ChildSteps =
+                    value
+                        .ChildSteps
+                        .Select(Map)
+            };
         }
     }
 }

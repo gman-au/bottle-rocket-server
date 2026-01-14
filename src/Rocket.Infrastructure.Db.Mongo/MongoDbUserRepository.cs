@@ -14,11 +14,29 @@ namespace Rocket.Infrastructure.Db.Mongo
     public class MongoDbUserRepository(
         ILogger<MongoDbUserRepository> logger,
         IMongoDbClient mongoDbClient
-    ) : IUserRepository
+    ) : MongoDbRepositoryBase<User>(mongoDbClient, logger), IUserRepository
     {
-        public async Task<User> GetUserByUsernameAsync(string username, CancellationToken cancellationToken) =>
+        protected override string CollectionName => MongoConstants.UserCollection;
+
+        public async Task<(IEnumerable<User> records, long totalRecordCount)> FetchUsersAsync(
+            int startIndex,
+            int recordCount,
+            CancellationToken cancellationToken
+        ) => await
+            FetchAllPagedAndFilteredRecordsAsync(
+                startIndex,
+                recordCount,
+                null,
+                o => o.CreatedAt,
+                cancellationToken
+            );
+
+        public async Task<User> GetUserByUsernameAsync(
+            string username,
+            CancellationToken cancellationToken
+        ) =>
             await
-                GetUserByFilterAsync(
+                FetchFirstFilteredRecordAsync(
                     Builders<User>
                         .Filter
                         .Eq(
@@ -28,9 +46,11 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 );
 
-        public async Task<User> GetUserByUserIdAsync(string userId, CancellationToken cancellationToken) =>
+        public async Task<User> GetUserByUserIdAsync(
+            string userId,
+            CancellationToken cancellationToken) =>
             await
-                GetUserByFilterAsync(
+                FetchFirstFilteredRecordAsync(
                     Builders<User>
                         .Filter
                         .Eq(
@@ -40,84 +60,29 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 );
 
+        public async Task<User> CreateUserAsync(
+            User user,
+            CancellationToken cancellationToken) =>
+            await
+                InsertRecordAsync(user, cancellationToken);
+
         public async Task UpdateUserFieldAsync<T>(
             string userId,
             Expression<Func<User, T>> setter,
             T value,
-            CancellationToken cancellationToken
-        )
-        {
-            try
-            {
-                var filter =
+            CancellationToken cancellationToken) =>
+            await
+                ApplyUpdateToFilteredRecordFieldAsync(
+                    setter,
+                    value,
                     Builders<User>
                         .Filter
                         .Eq(
                             u => u.Id,
                             userId
-                        );
-
-                var update =
-                    Builders<User>
-                        .Update
-                        .Set(
-                            setter,
-                            value
-                        );
-
-                await
-                    UpdateUserAsync
-                    (
-                        filter,
-                        update,
-                        cancellationToken
-                    );
-            }
-            catch (Exception ex)
-            {
-                logger
-                    .LogError(
-                        "Error updating last login for user {userId}: {error}",
-                        userId,
-                        ex.Message
-                    );
-                throw;
-            }
-        }
-        
-        public async Task<User> CreateUserAsync(User user, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var mongoDatabase =
-                    mongoDbClient
-                        .GetDatabase();
-
-                var userCollection =
-                    mongoDatabase
-                        .GetCollection<User>(MongoConstants.UserCollection);
-
-                await
-                    userCollection
-                        .InsertOneAsync(
-                            user,
-                            new InsertOneOptions(),
-                            cancellationToken
-                        );
-
-                return user;
-            }
-            catch (Exception ex)
-            {
-                logger
-                    .LogError(
-                        "Error creating user {username}: {error}",
-                        user.Username,
-                        ex.Message
-                    );
-                throw;
-            }
-        }
+                        ),
+                    cancellationToken
+                );
 
         public async Task DeactivateAdminUserAsync(CancellationToken cancellationToken)
         {
@@ -140,7 +105,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                         );
 
                 await
-                    UpdateUserAsync
+                    ApplyUpdateToFilteredRecordAsync
                     (
                         filter,
                         update,
@@ -161,68 +126,10 @@ namespace Rocket.Infrastructure.Db.Mongo
             }
         }
 
-        public async Task<(IEnumerable<User> records, long totalRecordCount)> FetchUsersAsync(
-            int startIndex,
-            int recordCount,
-            CancellationToken cancellationToken
-        )
-        {
-            try
-            {
-                var mongoDatabase =
-                    mongoDbClient
-                        .GetDatabase();
-
-                var userCollection =
-                    mongoDatabase
-                        .GetCollection<User>(MongoConstants.UserCollection);
-
-                var filter = 
-                    Builders<User>
-                        .Filter
-                        .Empty;
-
-                var totalRecordCount =
-                    await
-                        userCollection
-                            .Find(filter)
-                            .CountDocumentsAsync(cancellationToken: cancellationToken);
-
-                var records =
-                    await
-                        userCollection
-                            .Find(filter)
-                            .SortByDescending(x => x.CreatedAt)
-                            .Skip(startIndex)
-                            .Limit(recordCount)
-                            .ToListAsync(cancellationToken: cancellationToken);
-
-                return (records, totalRecordCount);
-            }
-            catch (Exception ex)
-            {
-                logger
-                    .LogError(
-                        "There was an fetching users: {error}",
-                        ex.Message
-                    );
-
-                throw;
-            }
-        }
-
         public async Task<(IEnumerable<User> records, long totalRecordCount)> GetActiveAdminsAsync(CancellationToken cancellationToken)
         {
             try
             {
-                var mongoDatabase =
-                    mongoDbClient
-                        .GetDatabase();
-
-                var userCollection =
-                    mongoDatabase
-                        .GetCollection<User>(MongoConstants.UserCollection);
-
                 var filter =
                     Builders<User>
                         .Filter
@@ -230,7 +137,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                             u => u.IsActive,
                             true
                         );
-                
+
                 filter &=
                     Builders<User>
                         .Filter
@@ -238,7 +145,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                             o => o.IsAdmin,
                             true
                         );
-                
+
                 // do not count the root admin account
                 filter &=
                     Builders<User>
@@ -246,22 +153,14 @@ namespace Rocket.Infrastructure.Db.Mongo
                         .Ne(
                             o => o.Username,
                             DomainConstants.RootAdminUserName
-                        );                
+                        );
 
-                var totalRecordCount =
+                return
                     await
-                        userCollection
-                            .Find(filter)
-                            .CountDocumentsAsync(cancellationToken: cancellationToken);
-
-                var records =
-                    await
-                        userCollection
-                            .Find(filter)
-                            .SortByDescending(x => x.CreatedAt)
-                            .ToListAsync(cancellationToken: cancellationToken);
-
-                return (records, totalRecordCount);
+                        FetchAllPagedAndFilteredRecordsAsync(
+                            filter: filter,
+                            cancellationToken: cancellationToken
+                        );
             }
             catch (Exception ex)
             {
@@ -273,62 +172,6 @@ namespace Rocket.Infrastructure.Db.Mongo
 
                 throw;
             }
-        }
-
-        private async Task<User> GetUserByFilterAsync(
-            FilterDefinition<User> filter,
-            CancellationToken cancellationToken
-        )
-        {
-            try
-            {
-                var mongoDatabase =
-                    mongoDbClient
-                        .GetDatabase();
-
-                var userCollection =
-                    mongoDatabase
-                        .GetCollection<User>(MongoConstants.UserCollection);
-
-                return
-                    await
-                        userCollection
-                            .Find(filter)
-                            .FirstOrDefaultAsync(cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                logger
-                    .LogError(
-                        "Error retrieving user : {error}",
-                        ex.Message
-                    );
-                throw;
-            }
-        }
-
-        private async Task UpdateUserAsync(
-            FilterDefinition<User> filter,
-            UpdateDefinition<User> update,
-            CancellationToken cancellationToken
-        )
-        {
-            var mongoDatabase =
-                mongoDbClient
-                    .GetDatabase();
-
-            var userCollection =
-                mongoDatabase
-                    .GetCollection<User>(MongoConstants.UserCollection);
-
-            await
-                userCollection
-                    .UpdateOneAsync(
-                        filter,
-                        update,
-                        new UpdateOptions(),
-                        cancellationToken
-                    );
         }
     }
 }

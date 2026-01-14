@@ -20,7 +20,6 @@
         <ProjectReference Include="..\Integrations\Rocket.Dropbox.Injection\Rocket.Dropbox.Injection.csproj" />
         <ProjectReference Include="..\Rocket.Api.Contracts\Rocket.Api.Contracts.csproj" />
         <ProjectReference Include="..\Rocket.Domain\Rocket.Domain.csproj" />
-        <ProjectReference Include="..\Rocket.Dropbox.Injection\Rocket.Dropbox.Injection.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Blob.Local\Rocket.Infrastructure.Blob.Local.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Db.Mongo\Rocket.Infrastructure.Db.Mongo.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Hashing\Rocket.Infrastructure.Hashing.csproj" />

@@ -52,5 +52,11 @@ namespace Rocket.Interfaces
             string workflowName,
             CancellationToken cancellationToken
         );
+
+        Task<bool> DeleteWorkflowStepAsync(
+            string userId,
+            string id,
+            CancellationToken cancellationToken
+        );
     }
 }
