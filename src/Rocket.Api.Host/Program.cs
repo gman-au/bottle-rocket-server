@@ -6,6 +6,7 @@ using Rocket.Api.Host.Filters;
 using Rocket.Api.Host.Handlers;
 using Rocket.Api.Host.Hubs;
 using Rocket.Api.Host.Injection;
+using Rocket.Api.Host.Json;
 using Rocket.Domain.Utils;
 using Rocket.Dropbox.Injection;
 
@@ -22,7 +23,11 @@ var services =
         .Services;
 
 services
-    .AddControllers();
+    .AddControllers()
+    .AddJsonOptions(
+        options =>
+            options.JsonSerializerOptions.TypeInfoResolver = RocketTypeInfoResolver.Instance
+    );
 
 services
     .AddMvc(options => options.Filters.Add<RocketExceptionFilter>());
