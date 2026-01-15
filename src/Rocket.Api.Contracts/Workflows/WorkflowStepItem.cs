@@ -3,10 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Rocket.Api.Contracts.Workflows
 {
-    [JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
-    [JsonDerivedType(typeof(WorkflowStepDetail), typeDiscriminator: "base")]
-    //[JsonDerivedType(typeof(DropboxUploadStepDetail), typeDiscriminator: "dropbox_upload")]
-    public class WorkflowStepDetail
+    public class WorkflowStepItem
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }
@@ -30,6 +27,6 @@ namespace Rocket.Api.Contracts.Workflows
         public string StepName { get; set; }
 
         [JsonPropertyName("child_steps")]
-        public IEnumerable<WorkflowStepDetail> ChildSteps { get; set; }
+        public IEnumerable<WorkflowStepItem> ChildSteps { get; set; }
     }
 }

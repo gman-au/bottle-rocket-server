@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Rocket.Api.Contracts.Workflows
@@ -7,6 +8,9 @@ namespace Rocket.Api.Contracts.Workflows
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }
+        
+        [JsonPropertyName("user_id")]
+        public string UserId { get; set; }
         
         [JsonPropertyName("matching_page_symbol")]
         public int? MatchingPageSymbol { get; set; }
@@ -22,5 +26,8 @@ namespace Rocket.Api.Contracts.Workflows
         
         [JsonPropertyName("is_active")]
         public bool? IsActive { get; set; }
+        
+        [JsonPropertyName("steps")]
+        public IEnumerable<WorkflowStepItem> Steps { get; set; }
     }
 }

@@ -370,7 +370,7 @@ namespace Rocket.Api.Host.Controllers
             }
 
             var response =
-                new MyWorkflowItemDetail
+                new MyWorkflowItem
                 {
                     Id = workflow.Id,
                     UserId = workflow.UserId,
@@ -389,9 +389,9 @@ namespace Rocket.Api.Host.Controllers
                     .AsApiSuccess();
         }
 
-        private static WorkflowStepDetail Map(BaseWorkflowStep value)
+        private static WorkflowStepItem Map(BaseWorkflowStep value)
         {
-            return new WorkflowStepDetail
+            return new WorkflowStepItem
             {
                 Id = value.Id,
                 ConnectionId = value.ConnectionId,
