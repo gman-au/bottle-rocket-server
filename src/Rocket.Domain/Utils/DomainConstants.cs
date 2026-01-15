@@ -26,5 +26,13 @@ namespace Rocket.Domain.Utils
             { (int)ConnectorTypeEnum.OcrExtraction, "OCR Extraction" },
         };
 
+        public static readonly Dictionary<int, string> WorkflowFormatTypes = new()
+        {
+            { (int)WorkflowFormatTypeEnum.Void, "(Nothing)" },
+            { (int)WorkflowFormatTypeEnum.File, "File Data" },
+            { (int)WorkflowFormatTypeEnum.ImageData, "Image Data" },
+            { (int)WorkflowFormatTypeEnum.RawTextData, "Raw Text Data" },
+        };
+
     }
 }

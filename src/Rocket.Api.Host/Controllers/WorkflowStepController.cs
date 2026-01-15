@@ -82,7 +82,7 @@ namespace Rocket.Api.Host.Controllers
                     .AsApiSuccess();
         }
 
-        [HttpPost("create")]
+        /*[HttpPost("create")]
         [EndpointSummary("Add a new workflow step")]
         [EndpointGroupName("Manage workflows")]
         [EndpointDescription(
@@ -162,6 +162,6 @@ namespace Rocket.Api.Host.Controllers
             return
                 response
                     .AsApiSuccess();
-        }
+        }*/
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Rocket.Api.Contracts.Workflows;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Domain.Utils;
 using Rocket.Domain.Workflows;
 using Rocket.Interfaces;
 
@@ -379,7 +381,7 @@ namespace Rocket.Api.Host.Controllers
                     IsActive = workflow.IsActive,
                     Steps =
                         (workflow.Steps ?? [])
-                            .Select(Map)
+                        .Select(Map)
                 };
 
             return
@@ -394,11 +396,25 @@ namespace Rocket.Api.Host.Controllers
                 Id = value.Id,
                 ConnectionId = value.ConnectionId,
                 InputType = value.InputType,
+                InputTypeName =
+                    DomainConstants
+                        .WorkflowFormatTypes
+                        .GetValueOrDefault(
+                            value.InputType,
+                            "Unknown"
+                        ),
                 OutputType = value.OutputType,
+                OutputTypeName =
+                    DomainConstants
+                        .WorkflowFormatTypes
+                        .GetValueOrDefault(
+                            value.OutputType,
+                            "Unknown"
+                        ),
                 StepName = value.StepName,
                 ChildSteps =
                     (value.ChildSteps ?? [])
-                        .Select(Map)
+                    .Select(Map)
             };
         }
     }

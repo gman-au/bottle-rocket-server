@@ -4,14 +4,14 @@ namespace Rocket.Domain.Workflows
 {
     public record DropboxUploadStep : BaseWorkflowStep
     {
-        public override int InputType => (int)WorkflowFormatTypeEnum.File;
+        public override int InputType { get; set; } = (int)WorkflowFormatTypeEnum.File;
 
-        public override int OutputType => (int)WorkflowFormatTypeEnum.Void;
+        public override int OutputType { get; set; } = (int)WorkflowFormatTypeEnum.Void;
 
-        public override string StepName => "Upload file to Dropbox";
+        public override string StepName { get; set; } = "Upload file to Dropbox";
 
         // metadata here e.g. "SubFolder", "FileName"
 
-        public string SubFolder { get; set; }
+        public string Subfolder { get; set; }
     }
 }

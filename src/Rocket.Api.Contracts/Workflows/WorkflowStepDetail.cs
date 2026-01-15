@@ -14,8 +14,14 @@ namespace Rocket.Api.Contracts.Workflows
         [JsonPropertyName("input_type")]
         public int InputType { get; set; }
 
+        [JsonPropertyName("input_type_name")]
+        public string InputTypeName { get; set; }
+
         [JsonPropertyName("output_type")]
         public int OutputType { get; set; }
+
+        [JsonPropertyName("output_type_name")]
+        public string OutputTypeName { get; set; }
 
         [JsonPropertyName("step_name")]
         public string StepName { get; set; }

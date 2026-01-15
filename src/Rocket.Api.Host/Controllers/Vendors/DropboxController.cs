@@ -7,14 +7,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
+using Rocket.Api.Contracts.Workflows;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Connectors;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Utils;
+using Rocket.Domain.Workflows;
 using Rocket.Dropbox.Contracts;
 using Rocket.Dropbox.Infrastructure;
 using Rocket.Interfaces;
+using DropboxUploadStep = Rocket.Domain.Workflows.DropboxUploadStep;
 
 namespace Rocket.Api.Host.Controllers.Vendors
 {
@@ -22,9 +25,10 @@ namespace Rocket.Api.Host.Controllers.Vendors
     [Authorize]
     public class DropboxController(
         ILogger<DropboxController> logger,
-        IDropboxClientManager dropboxClientManager,
         IUserManager userManager,
-        IConnectorRepository connectorRepository
+        IDropboxClientManager dropboxClientManager,
+        IConnectorRepository connectorRepository,
+        IWorkflowStepRepository workflowStepRepository
     ) : RocketControllerBase(userManager)
     {
         [HttpPost, Route("/api/dropbox/connectors/create")]
@@ -224,6 +228,89 @@ namespace Rocket.Api.Host.Controllers.Vendors
 
             return
                 new ApiResponse()
+                    .AsApiSuccess();
+        }
+
+        [HttpPost, Route("/api/dropbox/workflowSteps/create")]
+        [EndpointSummary("Add a new Dropbox workflow step")]
+        [EndpointGroupName("Manage workflows")]
+        [EndpointDescription(
+            """
+            // TODO
+            """
+        )]
+        [ProducesResponseType(
+            typeof(CreateDropboxConnectorResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CreateUploadFileWorkflowStepAsync(
+            [FromBody] CreateWorkflowStepRequest<DropboxUploadStepDetail> request,
+            CancellationToken cancellationToken
+        )
+        {
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
+
+            logger
+                .LogInformation(
+                    "Received (Dropbox) workflow step creation request for username: {username}",
+                    user.Username
+                );
+
+            var userId =
+                user
+                    .Id;
+
+            if (string.IsNullOrEmpty(request.WorkflowId))
+                throw new RocketException(
+                    "No workflow ID was provided.",
+                    ApiStatusCodeEnum.ValidationError
+                );
+
+            if (request.Step == null)
+                throw new RocketException(
+                    "Could not determine workflow step from request",
+                    ApiStatusCodeEnum.ValidationError
+                );
+
+            var newWorkflowStep =
+                new DropboxUploadStep
+                {
+                    ConnectionId = request.Step.ConnectionId,
+                    Subfolder = request.Step.Subfolder,
+                };
+
+            var result =
+                await
+                    workflowStepRepository
+                        .InsertWorkflowStepAsync(
+                            newWorkflowStep,
+                            userId,
+                            request.WorkflowId,
+                            request.ParentStepId,
+                            cancellationToken
+                        );
+
+            if (result == null)
+                throw new RocketException(
+                    "Failed to create Dropbox workflow step",
+                    ApiStatusCodeEnum.ServerError
+                );
+
+            var response =
+                new CreateWorkflowStepResponse
+                {
+                    Id = result.Id
+                };
+
+            return
+                response
                     .AsApiSuccess();
         }
     }
