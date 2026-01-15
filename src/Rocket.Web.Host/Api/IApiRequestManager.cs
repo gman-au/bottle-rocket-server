@@ -87,5 +87,10 @@ namespace Rocket.Web.Host.Api
             FinalizeDropboxConnectorRequest request,
             CancellationToken cancellationToken
         );
+
+        public Task<CreateWorkflowStepResponse> CreateDropboxUploadFileStepAsync(
+            CreateWorkflowStepRequest<DropboxUploadStepSpecifics> request,
+            CancellationToken cancellationToken
+        );
     }
 }

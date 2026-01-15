@@ -50,7 +50,7 @@
                 <!-- form -->
                 <MudPaper Class="p-4 mermaid-paper">
                 <pre class="mermaid">
-                    @_mermaidText
+                    @MermaidText
                 </pre>
                 </MudPaper>
             </MudItem>
@@ -65,14 +65,16 @@
     [Parameter]
     public string Id { get; set; }
 
-    private string _mermaidText { get; set; }
+    private string MermaidText { get; set; }
     private DotNetObjectReference<WorkflowDetails> _dotNetRef;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            _dotNetRef = DotNetObjectReference.Create(this);
+            _dotNetRef = 
+                DotNetObjectReference
+                    .Create(this);
 
             // Store the .NET reference
             await
@@ -89,7 +91,7 @@
                         "eval",
                         @"
                                    var script = document.createElement('script');
-                                   script.src = 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js';
+                                   script.src = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
                                    script.onload = () => {
                                        mermaid.initialize({ 
                                            startOnLoad: false,
@@ -157,7 +159,7 @@
                             BaseCancellationToken
                         );
 
-            _mermaidText =
+            MermaidText =
                 WorkflowMermaidConverter
                     .Convert(_workflowSpecifics);
         }

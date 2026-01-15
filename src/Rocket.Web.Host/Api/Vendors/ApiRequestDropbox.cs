@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
+using Rocket.Api.Contracts.Workflows;
 using Rocket.Dropbox.Contracts;
 using Rocket.Web.Host.Extensions;
 
@@ -61,6 +62,37 @@ namespace Rocket.Web.Host.Api
                 await
                     response
                         .TryParseResponse<ApiResponse>(
+                            logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
+        
+        public async Task<CreateWorkflowStepResponse> CreateDropboxUploadFileStepAsync(
+            CreateWorkflowStepRequest<DropboxUploadStepSpecifics> request,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation("Received Upload File (Dropbox) Workflow Step request");
+
+            var response =
+                await
+                    authenticatedApiClient
+                        .PostAsJsonAsync(
+                            $"/api/dropbox/workflowSteps/create",
+                            request,
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<CreateWorkflowStepResponse>(
                             logger,
                             cancellationToken
                         );

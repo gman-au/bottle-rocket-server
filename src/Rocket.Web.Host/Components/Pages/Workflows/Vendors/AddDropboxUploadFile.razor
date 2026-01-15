@@ -1,0 +1,144 @@
+﻿@page "/MyWorkflow/Dropbox/{workflowId}/AddStep"
+@page "/MyWorkflow/Dropbox/{workflowId}/Steps/{stepId}/AddStep"
+
+@using Rocket.Api.Contracts.Workflows
+@using Rocket.Dropbox.Contracts
+@using Rocket.Web.Host.Api
+@using Rocket.Web.Host.Infrastructure
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject ISnackbar Snackbar
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_stepSpecifics != null)
+    {
+        <MudForm
+            Model="@_stepSpecifics"
+            @ref="_form">
+            <MudPaper Class="p-4" elevation="2">
+                <MudText
+                    Align="Align.Center"
+                    Typo="Typo.h4"
+                    Color="Color.Primary"
+                    Class="mb-4">
+                    Add a Dropbox Upload File Step
+                </MudText>
+
+                <MudGrid>
+                    <MudItem sm="12" lg="6">
+                        <MudTextField
+                            T="string"
+                            Label="Subfolder"
+                            HelperText="Enter the Dropbox sub folder to upload to"
+                            @bind-Value="_stepSpecifics.Subfolder"
+                            For="@(() => _stepSpecifics.Subfolder)"
+                        />
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="align-start mt-2" Justify="Justify.FlexEnd">
+                    <MudItem>
+                        <GoBackButton/>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton
+                            Variant="Variant.Outlined"
+                            Color="Color.Success"
+                            Disabled="@(_isLoading)"
+                            OnClick="@SubmitAsync">
+                            Submit
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudForm>
+    }
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    MudForm _form;
+
+    private bool _isLoading;
+    private CreateWorkflowStepRequest<DropboxUploadStepSpecifics> _createRequest;
+    private DropboxUploadStepSpecifics _stepSpecifics;
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+
+            _createRequest = new CreateWorkflowStepRequest<DropboxUploadStepSpecifics>();
+            _stepSpecifics = new DropboxUploadStepSpecifics();
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SubmitAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                _createRequest.WorkflowId = WorkflowId;
+                _createRequest.ParentStepId = StepId;
+                _createRequest.Step = _stepSpecifics;
+
+                await
+                    ApiRequestManager
+                        .CreateDropboxUploadFileStepAsync(
+                            _createRequest,
+                            BaseCancellationToken
+                        );
+
+                Snackbar
+                    .Add(
+                        "The connection has been added.",
+                        Severity.Success
+                    );
+
+                NavigationManager
+                    .NavigateTo($"/MyWorkflow/{WorkflowId}");
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+}

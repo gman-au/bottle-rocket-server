@@ -1,0 +1,102 @@
+﻿@page "/MyWorkflow/{workflowId}/AddStep"
+@page "/MyWorkflow/{workflowId}/Steps/{stepId}/AddStep"
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<MudPaper Class="p-4" elevation="2">
+    <MudText
+        Align="Align.Center"
+        Color="Color.Primary"
+        GutterBottom
+        Typo="Typo.h5">
+        Add New Workflow Step
+    </MudText>
+    <MudGrid Justify="Justify.FlexStart" Class="pa-4">
+        @foreach (var template in WorkflowStepTemplates)
+        {
+            <MudItem xs="12" sm="12" md="6" lg="4" xl="3">
+                <MudCard Outlined>
+                    <MudCardMedia
+                        Image="@Assets[template.ImagePath]"
+                        Height="100"
+                    />
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">
+                            @template.Name
+                        </MudText>
+                    </MudCardContent>
+                    <MudCardActions Class="justify-end">
+                        <MudButton
+                            Variant="Variant.Text"
+                            Color="Color.Success"
+                            @onclick="@(() => NavigationManager.NavigateTo(
+                                          BuildHref(
+                                              template.HrefBase,
+                                              template.HrefChild,
+                                              WorkflowId,
+                                              StepId
+                                          )
+                                      ))">
+                            + Add step
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+</MudPaper>
+
+@code {
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+    private static readonly List<WorkflowStepTemplate> WorkflowStepTemplates =
+    [
+        new()
+        {
+            Name = "Upload file to Dropbox",
+            HrefBase = "/MyWorkflow/Dropbox/{0}/AddStep",
+            HrefChild = "/MyWorkflow/Dropbox/{0}/Steps/{1}/Add",
+            ImagePath = "/img/dropbox-logo.webp"
+        }
+    ];
+
+    private class WorkflowStepTemplate
+    {
+        public string Name { get; init; }
+
+        public string HrefBase { get; init; }
+
+        public string HrefChild { get; init; }
+
+        public string ImagePath { get; init; }
+    }
+
+    private static string BuildHref(
+        string basePath,
+        string childPath,
+        string workflowId,
+        string stepId
+    )
+    {
+        if (string.IsNullOrEmpty(stepId))
+            return
+                string
+                    .Format(
+                        basePath,
+                        workflowId
+                    );
+
+        return
+            string
+                .Format(
+                    childPath,
+                    workflowId,
+                    stepId
+                );
+    }
+
+}

@@ -7,8 +7,8 @@ window.initMermaidWithBlazorRouting = (dotNetHelper) => {
     console.log('Mermaid routing initialized');
 };
 
-window.blazorNavigate = (stepId) => {
+window.blazorNavigateToRoute = (route) => {
     if (window.blazorDotNetRef) {
-        window.blazorDotNetRef.invokeMethodAsync('NavigateToRoute', `/steps/${stepId}`);
+        window.blazorDotNetRef.invokeMethodAsync('NavigateToRoute', route);
     }
 };
