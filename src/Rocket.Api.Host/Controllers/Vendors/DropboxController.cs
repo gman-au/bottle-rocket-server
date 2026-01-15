@@ -249,7 +249,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
         )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateUploadFileWorkflowStepAsync(
-            [FromBody] CreateWorkflowStepRequest<DropboxUploadStepDetail> request,
+            [FromBody] CreateWorkflowStepRequest<DropboxUploadStepSpecifics> request,
             CancellationToken cancellationToken
         )
         {

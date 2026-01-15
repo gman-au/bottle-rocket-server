@@ -16,6 +16,7 @@ using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Utils;
 using Rocket.Domain.Workflows;
+using Rocket.Dropbox.Contracts;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers
@@ -75,16 +76,17 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Workflows =
                         records
-                            .Select(o =>
-                                new WorkflowSummary
-                                {
-                                    Id = o.Id,
-                                    MatchingPageSymbol = o.MatchingPageSymbol,
-                                    Name = o.Name,
-                                    IsActive = o.IsActive,
-                                    CreatedAt = o.CreatedAt.ToLocalTime(),
-                                    LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
-                                }
+                            .Select(
+                                o =>
+                                    new WorkflowSummary
+                                    {
+                                        Id = o.Id,
+                                        MatchingPageSymbol = o.MatchingPageSymbol,
+                                        Name = o.Name,
+                                        IsActive = o.IsActive,
+                                        CreatedAt = o.CreatedAt.ToLocalTime(),
+                                        LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
+                                    }
                             ),
                     TotalRecords = (int)totalRecordCount
                 };
@@ -251,8 +253,14 @@ namespace Rocket.Api.Host.Controllers
             Updates one or more details of an existing workflow. A value not supplied will not be updated.
             """
         )]
-        [ProducesResponseType(typeof(UpdateWorkflowResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(
+            typeof(UpdateWorkflowResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdateWorkflowAsync(
             [FromBody] MyWorkflowSummary request,
@@ -330,8 +338,14 @@ namespace Rocket.Api.Host.Controllers
         [EndpointSummary("Get workflow by ID")]
         [EndpointGroupName("Manage workflows")]
         [EndpointDescription("Returns a workflow by its unique identifier.")]
-        [ProducesResponseType(typeof(UserSpecifics), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(
+            typeof(UserSpecifics),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetWorkflowAsync(
             string id,
@@ -381,41 +395,12 @@ namespace Rocket.Api.Host.Controllers
                     IsActive = workflow.IsActive,
                     Steps =
                         (workflow.Steps ?? [])
-                        .Select(Map)
+                        .Select(o => o.Map())
                 };
 
             return
                 response
                     .AsApiSuccess();
-        }
-
-        private static WorkflowStepSummary Map(BaseWorkflowStep value)
-        {
-            return new WorkflowStepSummary
-            {
-                Id = value.Id,
-                ConnectionId = value.ConnectionId,
-                InputType = value.InputType,
-                InputTypeName =
-                    DomainConstants
-                        .WorkflowFormatTypes
-                        .GetValueOrDefault(
-                            value.InputType,
-                            "Unknown"
-                        ),
-                OutputType = value.OutputType,
-                OutputTypeName =
-                    DomainConstants
-                        .WorkflowFormatTypes
-                        .GetValueOrDefault(
-                            value.OutputType,
-                            "Unknown"
-                        ),
-                StepName = value.StepName,
-                ChildSteps =
-                    (value.ChildSteps ?? [])
-                    .Select(Map)
-            };
         }
     }
 }

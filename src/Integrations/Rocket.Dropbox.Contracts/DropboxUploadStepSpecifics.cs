@@ -3,7 +3,7 @@ using Rocket.Api.Contracts.Workflows;
 
 namespace Rocket.Dropbox.Contracts
 {
-    public class DropboxUploadStepDetail : WorkflowStepSummary
+    public class DropboxUploadStepSpecifics : WorkflowStepSummary
     {
         [JsonPropertyName("subfolder")]
         public string Subfolder { get; set; }
