@@ -9,7 +9,7 @@ namespace Rocket.Interfaces
 {
     public interface IWorkflowRepository
     {
-        Task<Workflow> SaveWorkflowAsync(
+        Task<Workflow> InsertWorkflowAsync(
             Workflow workflow,
             CancellationToken cancellationToken
         );
@@ -50,12 +50,6 @@ namespace Rocket.Interfaces
         Task<bool> WorkflowExistsForUserAsync(
             string userId,
             string workflowName,
-            CancellationToken cancellationToken
-        );
-
-        Task<bool> DeleteWorkflowStepAsync(
-            string userId,
-            string id,
             CancellationToken cancellationToken
         );
     }

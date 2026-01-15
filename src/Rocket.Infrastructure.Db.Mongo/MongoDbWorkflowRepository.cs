@@ -17,7 +17,7 @@ namespace Rocket.Infrastructure.Db.Mongo
     {
         protected override string CollectionName => MongoConstants.WorkflowsCollection;
 
-        public async Task<Workflow> SaveWorkflowAsync(
+        public async Task<Workflow> InsertWorkflowAsync(
             Workflow workflow,
             CancellationToken cancellationToken) =>
             await
@@ -149,11 +149,5 @@ namespace Rocket.Infrastructure.Db.Mongo
 
             return result;
         }
-
-        public Task<bool> DeleteWorkflowStepAsync(
-            string userId,
-            string id,
-            CancellationToken cancellationToken) =>
-            throw new NotImplementedException();
     }
 }

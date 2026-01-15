@@ -19,7 +19,7 @@ using Rocket.Interfaces;
 namespace Rocket.Api.Host.Controllers.Vendors
 {
     [ApiController]
-    [Route("/api/connectors/dropbox")]
+    [Route("/api/dropbox/connectors")]
     [Authorize]
     public class DropboxController(
         ILogger<DropboxController> logger,

@@ -220,7 +220,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                     .GetCollection<TCustom>(CollectionName);
         }
 
-        private IMongoCollection<T> GetMongoCollection()
+        protected IMongoCollection<T> GetMongoCollection()
         {
             var mongoDatabase =
                 mongoDbClient

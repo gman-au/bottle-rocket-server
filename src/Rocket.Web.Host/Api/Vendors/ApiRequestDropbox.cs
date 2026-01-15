@@ -21,7 +21,7 @@ namespace Rocket.Web.Host.Api
                 await
                     authenticatedApiClient
                         .PostAsJsonAsync(
-                            $"/api/connectors/dropbox/create",
+                            $"/api/dropbox/connectors/create",
                             connector,
                             cancellationToken
                         );
@@ -52,7 +52,7 @@ namespace Rocket.Web.Host.Api
                 await
                     authenticatedApiClient
                         .PatchAsJsonAsync(
-                            $"/api/connectors/dropbox/finalize",
+                            $"/api/dropbox/connectors/finalize",
                             request,
                             cancellationToken
                         );

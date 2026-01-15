@@ -122,6 +122,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IScannedImageRepository, MongoDbScannedImageRepository>()
                 .AddTransient<IConnectorRepository, MongoDbConnectorRepository>()
                 .AddTransient<IWorkflowRepository, MongoDbWorkflowRepository>()
+                .AddTransient<IWorkflowStepRepository, MongoDbWorkflowStepRepository>()
                 .AddTransient<IUserRepository, MongoDbUserRepository>();
 
             return services;

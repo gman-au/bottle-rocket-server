@@ -220,7 +220,7 @@ namespace Rocket.Api.Host.Controllers
             var result =
                 await
                     workflowRepository
-                        .SaveWorkflowAsync(
+                        .InsertWorkflowAsync(
                             newWorkflow,
                             cancellationToken
                         );
@@ -378,8 +378,7 @@ namespace Rocket.Api.Host.Controllers
                     Name = workflow.Name,
                     IsActive = workflow.IsActive,
                     Steps =
-                        workflow
-                            .Steps
+                        (workflow.Steps ?? [])
                             .Select(Map)
                 };
 
@@ -398,8 +397,7 @@ namespace Rocket.Api.Host.Controllers
                 OutputType = value.OutputType,
                 StepName = value.StepName,
                 ChildSteps =
-                    value
-                        .ChildSteps
+                    (value.ChildSteps ?? [])
                         .Select(Map)
             };
         }
