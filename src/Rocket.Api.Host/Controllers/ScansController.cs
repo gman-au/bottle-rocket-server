@@ -80,7 +80,7 @@ namespace Rocket.Api.Host.Controllers
                         records
                             .Select(
                                 o =>
-                                    new MyScanItem
+                                    new ScanSummary
                                     {
                                         Id = o.Id,
                                         DateScanned = o.CaptureDate.ToLocalTime(),
@@ -105,7 +105,7 @@ namespace Rocket.Api.Host.Controllers
             The full image data is provided as well as other capture and processing details. 
             """
         )]
-        [ProducesResponseType(typeof(MyScanItemDetail), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ScanSpecifics), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> FetchMyScanAsync(
@@ -142,7 +142,7 @@ namespace Rocket.Api.Host.Controllers
                         );
 
             var response =
-                new MyScanItemDetail
+                new ScanSpecifics
                 {
                     Id = record.Id,
                     UserId = record.UserId,

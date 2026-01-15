@@ -170,7 +170,7 @@ namespace Rocket.Tests.Unit
             public void AssertResultIsCompleteMyScanItemDetail()
             {
                 Assert.NotNull(_result);
-                var myScanItemDetail = Assert.IsType<MyScanItemDetail>(_result);
+                var myScanItemDetail = Assert.IsType<ScanSpecifics>(_result);
                 Assert.Equal(0, myScanItemDetail.ErrorCode);
                 Assert.Equal("abcdef", myScanItemDetail.Id);
                 Assert.Equal("no error", myScanItemDetail.ErrorMessage);

@@ -81,7 +81,7 @@
     private bool _isLoading;
     private bool _noMoreRecords = false;
     private int _currentIndex = 0;
-    private IEnumerable<MyWorkflowItem> _workflows = [];
+    private IEnumerable<WorkflowSummary> _workflows = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -133,8 +133,8 @@
 
         _noMoreRecords = _currentIndex == (response?.TotalRecords ?? 0);
 
-        var existingWorkflows = new List<MyWorkflowItem>(_workflows);
-        var newWorkflows = new List<MyWorkflowItem>(response?.Workflows ?? []);
+        var existingWorkflows = new List<WorkflowSummary>(_workflows);
+        var newWorkflows = new List<WorkflowSummary>(response?.Workflows ?? []);
 
         _workflows =
             existingWorkflows
@@ -145,7 +145,7 @@
                 .OrderByDescending(o => o.CreatedAt);
     }
 
-    private async Task ConfirmDeleteAsync(MyWorkflowItem workflow)
+    private async Task ConfirmDeleteAsync(WorkflowSummary workflow)
     {
         var dialog =
             await

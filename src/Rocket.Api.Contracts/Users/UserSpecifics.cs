@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Rocket.Api.Contracts.Users
 {
-    public class UserDetail : ApiResponse
+    public class UserSpecifics : ApiResponse
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

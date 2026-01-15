@@ -78,7 +78,7 @@
     MudForm _form;
 
     private bool _isLoading;
-    private UserDetail _newModel = null;
+    private UserSpecifics _newModel = null;
     private MudTextField<string> _pwField1;
 
     [Parameter]
@@ -92,7 +92,7 @@
                 base
                     .OnInitializedAsync();
 
-            _newModel = new UserDetail();
+            _newModel = new UserSpecifics();
 
             _isLoading = true;
             StateHasChanged();

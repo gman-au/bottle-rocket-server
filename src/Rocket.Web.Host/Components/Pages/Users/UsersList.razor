@@ -82,7 +82,7 @@
     private bool _isLoading;
     private bool _noMoreRecords = false;
     private int _currentIndex = 0;
-    private IEnumerable<UserItem> _users = [];
+    private IEnumerable<UserSummary> _users = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -134,8 +134,8 @@
 
         _noMoreRecords = _currentIndex == (response?.TotalRecords ?? 0);
 
-        var existingUsers = new List<UserItem>(_users);
-        var newUsers = new List<UserItem>(response?.Users ?? []);
+        var existingUsers = new List<UserSummary>(_users);
+        var newUsers = new List<UserSummary>(response?.Users ?? []);
 
         _users =
             existingUsers

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Rocket.Api.Contracts.Scans
 {
-    public class MyScanItem
+    public class ScanSummary
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

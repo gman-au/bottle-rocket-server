@@ -43,7 +43,7 @@
     private IMudDialogInstance MudDialog { get; set; }
     
     [Parameter]
-    public MyWorkflowItem Workflow { get; set; }
+    public WorkflowSummary Workflow { get; set; }
 
     private void Submit() => MudDialog.Close(DialogResult.Ok(true));
 

@@ -16,18 +16,18 @@ namespace Rocket.Web.Host.Api
             CancellationToken cancellationToken
         );
 
-        Task<MyScanItemDetail> GetMyScanAsync(
+        Task<ScanSpecifics> GetMyScanAsync(
             string id,
             CancellationToken cancellationToken
         );
 
-        Task<UserDetail> GetUserByIdAsync(
+        Task<UserSpecifics> GetUserByIdAsync(
             string id,
             CancellationToken cancellationToken
         );
 
         Task<UpdateUserResponse> UpdateUserAsync(
-            UserDetail user,
+            UserSpecifics user,
             CancellationToken cancellationToken
         );
 
@@ -48,13 +48,13 @@ namespace Rocket.Web.Host.Api
             CancellationToken cancellationToken
         );
 
-        Task<MyWorkflowItemDetail> GetWorkflowByIdAsync(
+        Task<MyWorkflowSummary> GetWorkflowByIdAsync(
             string id,
             CancellationToken cancellationToken
         );
 
         Task<UpdateWorkflowResponse> UpdateWorkflowAsync(
-            MyWorkflowItemDetail workflow,
+            MyWorkflowSummary workflow,
             CancellationToken cancellationToken
         );
 

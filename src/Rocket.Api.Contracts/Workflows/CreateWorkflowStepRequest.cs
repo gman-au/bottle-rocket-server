@@ -2,7 +2,7 @@
 
 namespace Rocket.Api.Contracts.Workflows
 {
-    public class CreateWorkflowStepRequest<T> where T : WorkflowStepDetail
+    public class CreateWorkflowStepRequest<T> where T : WorkflowStepSummary
     {
         [JsonPropertyName("workflow_id")]
         public string WorkflowId { get; set; }

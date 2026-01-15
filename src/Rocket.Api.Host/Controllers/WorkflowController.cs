@@ -76,7 +76,7 @@ namespace Rocket.Api.Host.Controllers
                     Workflows =
                         records
                             .Select(o =>
-                                new MyWorkflowItem
+                                new WorkflowSummary
                                 {
                                     Id = o.Id,
                                     MatchingPageSymbol = o.MatchingPageSymbol,
@@ -255,7 +255,7 @@ namespace Rocket.Api.Host.Controllers
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdateWorkflowAsync(
-            [FromBody] MyWorkflowItemDetail request,
+            [FromBody] MyWorkflowSummary request,
             CancellationToken cancellationToken
         )
         {
@@ -330,7 +330,7 @@ namespace Rocket.Api.Host.Controllers
         [EndpointSummary("Get workflow by ID")]
         [EndpointGroupName("Manage workflows")]
         [EndpointDescription("Returns a workflow by its unique identifier.")]
-        [ProducesResponseType(typeof(UserDetail), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserSpecifics), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetWorkflowAsync(
@@ -370,7 +370,7 @@ namespace Rocket.Api.Host.Controllers
             }
 
             var response =
-                new MyWorkflowItem
+                new WorkflowSummary
                 {
                     Id = workflow.Id,
                     UserId = workflow.UserId,
@@ -389,9 +389,9 @@ namespace Rocket.Api.Host.Controllers
                     .AsApiSuccess();
         }
 
-        private static WorkflowStepItem Map(BaseWorkflowStep value)
+        private static WorkflowStepSummary Map(BaseWorkflowStep value)
         {
-            return new WorkflowStepItem
+            return new WorkflowStepSummary
             {
                 Id = value.Id,
                 ConnectionId = value.ConnectionId,

@@ -40,7 +40,7 @@ namespace Rocket.Web.Host.Api
             return result;
         }
 
-        public async Task<MyWorkflowItemDetail> GetWorkflowByIdAsync(
+        public async Task<MyWorkflowSummary> GetWorkflowByIdAsync(
             string id,
             CancellationToken cancellationToken
         )
@@ -59,7 +59,7 @@ namespace Rocket.Web.Host.Api
             var result =
                 await
                     response
-                        .TryParseResponse<MyWorkflowItemDetail>(
+                        .TryParseResponse<MyWorkflowSummary>(
                             logger,
                             cancellationToken
                         );
@@ -71,7 +71,7 @@ namespace Rocket.Web.Host.Api
         }
 
         public async Task<UpdateWorkflowResponse> UpdateWorkflowAsync(
-            MyWorkflowItemDetail workflow,
+            MyWorkflowSummary workflow,
             CancellationToken cancellationToken
         )
         {

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Rocket.Api.Contracts.Users
 {
-    public class UserItem
+    public class UserSummary
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

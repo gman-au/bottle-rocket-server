@@ -196,7 +196,7 @@ namespace Rocket.Tests.Unit
             private IActionResult _result;
             private CreateUserRequest _userToCreate;
             private string _userIdToSearch;
-            private UserDetail _userToUpdate;
+            private UserSpecifics _userToUpdate;
 
             public TestContext()
             {
@@ -252,7 +252,7 @@ namespace Rocket.Tests.Unit
             public void ArrangeNoUserReturnedFromSearch() => _userIdToSearch = "17592812e239877900dc092d";
 
             public void ArrangeValidMinimalUpdateUserAsNotNewAdminRequest() =>
-                _userToUpdate = new UserDetail
+                _userToUpdate = new UserSpecifics
                 {
                     Id = ValidUserIdToModify,
                     Username = "user",
@@ -262,7 +262,7 @@ namespace Rocket.Tests.Unit
                 };
 
             public void ArrangeValidUpdateUserAsNewAdminRequest() =>
-                _userToUpdate = new UserDetail
+                _userToUpdate = new UserSpecifics
                 {
                     Id = ValidUserIdToModify,
                     Username = null,

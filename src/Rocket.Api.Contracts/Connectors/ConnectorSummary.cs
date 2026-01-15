@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Rocket.Api.Contracts.Connectors
 {
-    public class ConnectorItem
+    public class ConnectorSummary
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

@@ -6,7 +6,7 @@ namespace Rocket.Api.Contracts.Connectors
     public class FetchConnectorsResponse : ApiResponse
     {
         [JsonPropertyName("connectors")]
-        public IEnumerable<ConnectorItem> Connectors { get; set; }
+        public IEnumerable<ConnectorSummary> Connectors { get; set; }
         
         [JsonPropertyName("total_records")]
         public int TotalRecords { get; set; }

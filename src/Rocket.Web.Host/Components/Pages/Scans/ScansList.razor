@@ -75,7 +75,7 @@
     private bool _isConnected;
     private bool _noMoreRecords = false;
     private int _currentIndex = 0;
-    private IEnumerable<MyScanItem> _scans = [];
+    private IEnumerable<ScanSummary> _scans = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -177,8 +177,8 @@
 
         _noMoreRecords = _currentIndex == (response?.TotalRecords ?? 0);
 
-        var existingScans = new List<MyScanItem>(_scans);
-        var newScans = new List<MyScanItem>(response?.Scans ?? []);
+        var existingScans = new List<ScanSummary>(_scans);
+        var newScans = new List<ScanSummary>(response?.Scans ?? []);
 
         _scans =
             existingScans

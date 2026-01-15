@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Rocket.Api.Contracts.Workflows
 {
-    public class MyWorkflowItemDetail : ApiResponse
+    public class WorkflowSummary : ApiResponse
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }
@@ -28,6 +28,6 @@ namespace Rocket.Api.Contracts.Workflows
         public bool? IsActive { get; set; }
         
         [JsonPropertyName("steps")]
-        public IEnumerable<WorkflowStepDetail> Steps { get; set; }
+        public IEnumerable<WorkflowStepSummary> Steps { get; set; }
     }
 }

@@ -39,7 +39,7 @@ namespace Rocket.Web.Host.Api
             return result;
         }
 
-        public async Task<MyScanItemDetail> GetMyScanAsync(
+        public async Task<ScanSpecifics> GetMyScanAsync(
             string id,
             CancellationToken cancellationToken)
         {
@@ -57,7 +57,7 @@ namespace Rocket.Web.Host.Api
             var result =
                 await
                     response
-                        .TryParseResponse<MyScanItemDetail>(
+                        .TryParseResponse<ScanSpecifics>(
                             logger,
                             cancellationToken
                         );

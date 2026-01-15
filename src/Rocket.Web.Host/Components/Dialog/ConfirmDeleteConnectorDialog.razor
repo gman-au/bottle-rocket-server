@@ -43,7 +43,7 @@
     private IMudDialogInstance MudDialog { get; set; }
     
     [Parameter]
-    public ConnectorItem Connector { get; set; }
+    public ConnectorSummary Connector { get; set; }
 
     private void Submit() => MudDialog.Close(DialogResult.Ok(true));
 

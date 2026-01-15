@@ -39,7 +39,7 @@ namespace Rocket.Web.Host.Api
             return result;
         }
 
-        public async Task<UserDetail> GetUserByIdAsync(
+        public async Task<UserSpecifics> GetUserByIdAsync(
             string id,
             CancellationToken cancellationToken
         )
@@ -58,7 +58,7 @@ namespace Rocket.Web.Host.Api
             var result =
                 await
                     response
-                        .TryParseResponse<UserDetail>(
+                        .TryParseResponse<UserSpecifics>(
                             logger,
                             cancellationToken
                         );
@@ -70,7 +70,7 @@ namespace Rocket.Web.Host.Api
         }
 
         public async Task<UpdateUserResponse> UpdateUserAsync(
-            UserDetail user,
+            UserSpecifics user,
             CancellationToken cancellationToken
         )
         {

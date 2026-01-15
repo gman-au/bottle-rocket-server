@@ -7,13 +7,13 @@
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
-    @if (_scanItemDetail != null)
+    @if (_scanSpecifics != null)
     {
         <MudGrid Class="pa-8" Justify="Justify.SpaceEvenly">
             <MudItem xs="12" sm="6">
                 <MudImage
                     Class="mud-paper mud-paper-outlined"
-                    src=@($"data:{_scanItemDetail.ContentType};base64,{_scanItemDetail.ImageBase64}")
+                    src=@($"data:{_scanSpecifics.ContentType};base64,{_scanSpecifics.ImageBase64}")
                     Fluid
                 />
             </MudItem>
@@ -37,8 +37,8 @@
                             Dense
                         >
                             <tbody>
-                            <SimpleTableRowPair Title="Capture Date" Value=@_scanItemDetail.CaptureDate?.ToString("yyyy-MM-dd HH:mm:ss")/>
-                            <SimpleTableRowPair Title="Content Type" Value=@_scanItemDetail.ContentType/>
+                            <SimpleTableRowPair Title="Capture Date" Value=@_scanSpecifics.CaptureDate?.ToString("yyyy-MM-dd HH:mm:ss")/>
+                            <SimpleTableRowPair Title="Content Type" Value=@_scanSpecifics.ContentType/>
                             </tbody>
                         </MudSimpleTable>
                     </div>
@@ -51,7 +51,7 @@
 
 @code {
     private bool _isLoading;
-    private MyScanItemDetail _scanItemDetail = null;
+    private ScanSpecifics _scanSpecifics = null;
 
     [Parameter]
     public string Id { get; set; }
@@ -67,7 +67,7 @@
             _isLoading = true;
             StateHasChanged();
 
-            _scanItemDetail =
+            _scanSpecifics =
                 await
                     ApiRequestManager
                         .GetMyScanAsync(

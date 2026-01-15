@@ -55,7 +55,7 @@
     MudForm _form;
 
     private bool _isLoading;
-    private MyWorkflowItemDetail _newModel = null;
+    private MyWorkflowSummary _newModel = null;
 
     [Parameter]
     public string Id { get; set; }
@@ -68,7 +68,7 @@
                 base
                     .OnInitializedAsync();
 
-            _newModel = new MyWorkflowItemDetail();
+            _newModel = new MyWorkflowSummary();
 
             _isLoading = true;
             StateHasChanged();

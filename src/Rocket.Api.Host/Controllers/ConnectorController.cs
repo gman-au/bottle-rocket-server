@@ -71,7 +71,7 @@ namespace Rocket.Api.Host.Controllers
                     Connectors =
                         records
                             .Select(o =>
-                                new ConnectorItem
+                                new ConnectorSummary
                                 {
                                     Id = o.Id,
                                     ConnectorType =
