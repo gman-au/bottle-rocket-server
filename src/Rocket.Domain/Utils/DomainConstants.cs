@@ -28,7 +28,7 @@ namespace Rocket.Domain.Utils
 
         public static readonly Dictionary<int, string> WorkflowFormatTypes = new()
         {
-            { (int)WorkflowFormatTypeEnum.Void, "(Nothing)" },
+            { (int)WorkflowFormatTypeEnum.Void, "No Data" },
             { (int)WorkflowFormatTypeEnum.File, "File Data" },
             { (int)WorkflowFormatTypeEnum.ImageData, "Image Data" },
             { (int)WorkflowFormatTypeEnum.RawTextData, "Raw Text Data" },
