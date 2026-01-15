@@ -31,7 +31,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                 cancellationToken
             );
 
-        public async Task<User> GetUserByUsernameAsync(
+        public async Task<User> GetUserByNameAsync(
             string username,
             CancellationToken cancellationToken
         ) =>
@@ -46,7 +46,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 );
 
-        public async Task<User> GetUserByUserIdAsync(
+        public async Task<User> GetUserByIdAsync(
             string userId,
             CancellationToken cancellationToken) =>
             await
@@ -60,7 +60,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 );
 
-        public async Task<User> CreateUserAsync(
+        public async Task<User> InsertUserAsync(
             User user,
             CancellationToken cancellationToken) =>
             await
@@ -126,7 +126,7 @@ namespace Rocket.Infrastructure.Db.Mongo
             }
         }
 
-        public async Task<(IEnumerable<User> records, long totalRecordCount)> GetActiveAdminsAsync(CancellationToken cancellationToken)
+        public async Task<(IEnumerable<User> records, long totalRecordCount)> FetchActiveAdminsAsync(CancellationToken cancellationToken)
         {
             try
             {

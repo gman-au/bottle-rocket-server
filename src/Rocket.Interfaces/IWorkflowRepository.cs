@@ -9,8 +9,21 @@ namespace Rocket.Interfaces
 {
     public interface IWorkflowRepository
     {
-        Task<Workflow> InsertWorkflowAsync(
-            Workflow workflow,
+        Task<bool> WorkflowExistsForUserAsync(
+            string userId,
+            string workflowName,
+            CancellationToken cancellationToken
+        );
+
+        Task<Workflow> GetWorkflowByIdAsync(
+            string userId,
+            string id,
+            CancellationToken cancellationToken
+        );
+
+        Task<Workflow> GetWorkflowByNameAsync(
+            string userId,
+            string name,
             CancellationToken cancellationToken
         );
 
@@ -21,21 +34,8 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
-        Task<Workflow> FetchWorkflowByIdAsync(
-            string userId,
-            string id,
-            CancellationToken cancellationToken
-        );
-
-        Task<Workflow> FetchWorkflowByNameAsync(
-            string userId,
-            string name,
-            CancellationToken cancellationToken
-        );
-
-        Task<bool> DeleteWorkflowAsync(
-            string userId,
-            string id,
+        Task<Workflow> InsertWorkflowAsync(
+            Workflow workflow,
             CancellationToken cancellationToken
         );
 
@@ -47,9 +47,9 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
-        Task<bool> WorkflowExistsForUserAsync(
+        Task<bool> DeleteWorkflowAsync(
             string userId,
-            string workflowName,
+            string id,
             CancellationToken cancellationToken
         );
     }

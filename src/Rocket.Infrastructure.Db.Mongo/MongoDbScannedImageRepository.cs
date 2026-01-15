@@ -15,7 +15,7 @@ namespace Rocket.Infrastructure.Db.Mongo
     {
         protected override string CollectionName => MongoConstants.ScannedImageCollection;
 
-        public async Task<ScannedImage> SaveCaptureAsync(
+        public async Task<ScannedImage> InsertScanAsync(
             ScannedImage scannedImage,
             CancellationToken cancellationToken) =>
             await
@@ -40,7 +40,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                 cancellationToken
             );
 
-        public async Task<ScannedImage> FetchScanAsync(
+        public async Task<ScannedImage> GetScanByIdAsync(
             string userId,
             string id,
             CancellationToken cancellationToken

@@ -99,7 +99,7 @@ namespace Rocket.Tests.Unit
                         .Create();
 
                 _userRepository
-                    .GetUserByUsernameAsync(null, CancellationToken.None)
+                    .GetUserByNameAsync(null, CancellationToken.None)
                     .ReturnsForAnyArgs(Task.FromResult(user));
             }
 
@@ -112,14 +112,14 @@ namespace Rocket.Tests.Unit
                         .Create();
 
                 _userRepository
-                    .GetUserByUsernameAsync(null, CancellationToken.None)
+                    .GetUserByNameAsync(null, CancellationToken.None)
                     .ReturnsForAnyArgs(Task.FromResult(user));
             }
 
             public void ArrangeUserNotFound()
             {
                 _userRepository
-                    .GetUserByUsernameAsync(null, CancellationToken.None)
+                    .GetUserByNameAsync(null, CancellationToken.None)
                     .ReturnsForAnyArgs(Task.FromResult<User>(null));
             }
 

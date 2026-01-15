@@ -89,7 +89,7 @@ namespace Rocket.Infrastructure
 
                 await
                     scannedImageRepository
-                        .SaveCaptureAsync(
+                        .InsertScanAsync(
                             scannedImage,
                             cancellationToken
                         );
@@ -126,7 +126,7 @@ namespace Rocket.Infrastructure
                 var record =
                     await
                         scannedImageRepository
-                            .FetchScanAsync(
+                            .GetScanByIdAsync(
                                 userId,
                                 id,
                                 cancellationToken

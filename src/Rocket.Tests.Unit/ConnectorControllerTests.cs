@@ -49,7 +49,7 @@ namespace Rocket.Tests.Unit
                         .Create();
 
                 _connectorRepository
-                    .FetchUserConnectorByIdAsync<DropboxConnector>(
+                    .GetConnectorByIdAsync<DropboxConnector>(
                         null,
                         null,
                         CancellationToken.None
@@ -65,7 +65,7 @@ namespace Rocket.Tests.Unit
                         .Create();
 
                 _connectorRepository
-                    .FetchUserConnectorByIdAsync<UnknownConnector>(
+                    .GetConnectorByIdAsync<UnknownConnector>(
                         null,
                         null,
                         CancellationToken.None

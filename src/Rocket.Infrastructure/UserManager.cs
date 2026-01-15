@@ -49,7 +49,7 @@ namespace Rocket.Infrastructure
 
                 await
                     userRepository
-                        .CreateUserAsync(
+                        .InsertUserAsync(
                             newUser,
                             cancellationToken
                         );
@@ -94,10 +94,13 @@ namespace Rocket.Infrastructure
                         cancellationToken
                     );
 
-        public async Task<User> GetUserByUserIdAsync(string userId, CancellationToken cancellationToken) =>
+        public async Task<User> GetUserByUserIdAsync(
+            string userId,
+            CancellationToken cancellationToken
+        ) =>
             await
                 userRepository
-                    .GetUserByUserIdAsync(
+                    .GetUserByIdAsync(
                         userId,
                         cancellationToken
                     );
@@ -142,7 +145,7 @@ namespace Rocket.Infrastructure
                         userName,
                         cancellationToken
                     );
-                
+
                 await
                     userRepository
                         .UpdateUserFieldAsync(
@@ -156,11 +159,11 @@ namespace Rocket.Infrastructure
             if (!string.IsNullOrEmpty(newPassword))
             {
                 ThrowIfPasswordInvalid(newPassword);
-                
+
                 var passwordHash =
                     passwordHasher
                         .HashPassword(newPassword);
-                
+
                 await
                     userRepository
                         .UpdateUserFieldAsync(
@@ -189,7 +192,7 @@ namespace Rocket.Infrastructure
             var existingUser =
                 await
                     userRepository
-                        .GetUserByUsernameAsync(
+                        .GetUserByNameAsync(
                             userName,
                             cancellationToken
                         );

@@ -17,7 +17,7 @@ namespace Rocket.Infrastructure.Db.Mongo
     {
         protected override string CollectionName => MongoConstants.ConnectorsCollection;
 
-        public async Task<BaseConnector> SaveConnectorAsync(
+        public async Task<BaseConnector> InsertConnectorAsync(
             BaseConnector baseConnector,
             CancellationToken cancellationToken
         ) =>
@@ -44,7 +44,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 );
 
-        public async Task<T> FetchUserConnectorByIdAsync<T>(
+        public async Task<T> GetConnectorByIdAsync<T>(
             string userId,
             string id,
             CancellationToken cancellationToken
@@ -66,7 +66,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 ) as T;
 
-        public async Task<T> FetchUserConnectorByNameAsync<T>(
+        public async Task<T> GetConnectorByNameAsync<T>(
             string userId,
             string name,
             CancellationToken cancellationToken
@@ -173,7 +173,7 @@ namespace Rocket.Infrastructure.Db.Mongo
         {
             var result =
                 await
-                    FetchUserConnectorByNameAsync<BaseConnector>(
+                    GetConnectorByNameAsync<BaseConnector>(
                         userId,
                         connectorName,
                         cancellationToken

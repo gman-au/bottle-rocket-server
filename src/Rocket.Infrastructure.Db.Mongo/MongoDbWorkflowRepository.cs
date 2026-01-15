@@ -42,7 +42,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                 cancellationToken
             );
 
-        public async Task<Workflow> FetchWorkflowByIdAsync(
+        public async Task<Workflow> GetWorkflowByIdAsync(
             string userId,
             string id,
             CancellationToken cancellationToken
@@ -64,7 +64,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 );
 
-        public async Task<Workflow> FetchWorkflowByNameAsync(
+        public async Task<Workflow> GetWorkflowByNameAsync(
             string userId,
             string name,
             CancellationToken cancellationToken
@@ -141,7 +141,7 @@ namespace Rocket.Infrastructure.Db.Mongo
         {
             var result =
                 await
-                    FetchWorkflowByNameAsync(
+                    GetWorkflowByNameAsync(
                         userId,
                         workflowName,
                         cancellationToken

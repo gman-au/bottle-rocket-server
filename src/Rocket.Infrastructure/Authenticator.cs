@@ -24,7 +24,7 @@ namespace Rocket.Infrastructure
                 var user =
                     await
                         userRepository
-                            .GetUserByUsernameAsync(
+                            .GetUserByNameAsync(
                                 username,
                                 cancellationToken
                             );

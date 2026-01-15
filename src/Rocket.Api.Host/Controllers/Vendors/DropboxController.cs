@@ -19,7 +19,6 @@ using Rocket.Interfaces;
 namespace Rocket.Api.Host.Controllers.Vendors
 {
     [ApiController]
-    [Route("/api/dropbox/connectors")]
     [Authorize]
     public class DropboxController(
         ILogger<DropboxController> logger,
@@ -28,7 +27,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
         IConnectorRepository connectorRepository
     ) : RocketControllerBase(userManager)
     {
-        [HttpPost("create")]
+        [HttpPost, Route("/api/dropbox/connectors/create")]
         [EndpointSummary("Add a new Dropbox connector")]
         [EndpointGroupName("Manage connectors")]
         [EndpointDescription(
@@ -103,7 +102,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
             var result =
                 await
                     connectorRepository
-                        .SaveConnectorAsync(
+                        .InsertConnectorAsync(
                             newConnector,
                             cancellationToken
                         );
@@ -130,7 +129,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
                     .AsApiSuccess();
         }
 
-        [HttpPatch("finalize")]
+        [HttpPatch, Route("/api/dropbox/connectors/finalize")]
         [EndpointSummary("Finalize a Dropbox connector")]
         [EndpointGroupName("Manage connectors")]
         [EndpointDescription(
@@ -171,7 +170,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
             var connector =
                 await
                     connectorRepository
-                        .FetchUserConnectorByIdAsync<DropboxConnector>(
+                        .GetConnectorByIdAsync<DropboxConnector>(
                             userId,
                             id,
                             cancellationToken

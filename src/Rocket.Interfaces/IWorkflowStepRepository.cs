@@ -6,11 +6,17 @@ namespace Rocket.Interfaces
 {
     public interface IWorkflowStepRepository
     {
-        Task<bool> DeleteWorkflowStepAsync(
-            string userId,
+        Task<Workflow> GetWorkflowByIdAsync(
             string workflowId,
-            string workflowStepId,
+            string userId,
             CancellationToken cancellationToken
+        );
+
+        Task<BaseWorkflowStep> GetWorkflowStepByIdAsync(
+            string workflowStepId,
+            string workflowId,
+            string userId,
+            CancellationToken cancellationToken = default
         );
 
         Task<BaseWorkflowStep> InsertWorkflowStepAsync(
@@ -21,16 +27,10 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
-        Task<BaseWorkflowStep> GetWorkflowStepByIdAsync(
-            string workflowId,
+        Task<bool> DeleteWorkflowStepAsync(
             string userId,
+            string workflowId,
             string workflowStepId,
-            CancellationToken cancellationToken = default
-        );
-
-        Task<Workflow> GetWorkflowForUserByIdAsync(
-            string workflowId,
-            string userId,
             CancellationToken cancellationToken
         );
     }

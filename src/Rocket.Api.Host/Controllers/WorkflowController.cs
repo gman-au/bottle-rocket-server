@@ -353,7 +353,7 @@ namespace Rocket.Api.Host.Controllers
             var workflow =
                 await
                     workflowRepository
-                        .FetchWorkflowByIdAsync(
+                        .GetWorkflowByIdAsync(
                             userId,
                             id,
                             cancellationToken

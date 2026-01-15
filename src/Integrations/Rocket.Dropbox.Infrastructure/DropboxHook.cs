@@ -21,7 +21,7 @@ namespace Rocket.Dropbox.Infrastructure
             var connector =
                 await
                     connectorRepository
-                        .FetchUserConnectorByNameAsync<DropboxConnector>(
+                        .GetConnectorByNameAsync<DropboxConnector>(
                             userId,
                             DomainConstants.VendorDropbox,
                             cancellationToken
