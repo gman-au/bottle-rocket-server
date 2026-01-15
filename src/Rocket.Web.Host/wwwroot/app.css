@@ -122,3 +122,8 @@ h1:focus {
     max-height: 100px;
     border-radius: 10px;
 }
+
+.mermaid-paper {
+    text-align: center;
+    background-color: white !important;
+}

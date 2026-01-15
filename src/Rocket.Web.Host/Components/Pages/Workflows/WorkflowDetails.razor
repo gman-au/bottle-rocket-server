@@ -1,10 +1,144 @@
 ﻿@page "/MyWorkflow/{id}"
+@using Rocket.Api.Contracts.Workflows
+@using Rocket.Web.Host.Api
+@using Rocket.Web.Host.Infrastructure
+@inject IJSRuntime JsRuntime
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject IWorkflowMermaidConverter WorkflowMermaidConverter
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
-<h3>Workflow Details</h3>
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_workflowSpecifics != null)
+    {
+        <MudGrid Class="pa-8" Justify="Justify.SpaceEvenly">
+            <MudItem xs="12" sm="4">
+                <MudStack
+                    Style="height:100%;"
+                    Justify="Justify.SpaceBetween"
+                    StretchItems="StretchItems.Middle"
+                    AlignItems="AlignItems.Start"
+                >
+                    <MudText
+                        Align="Align.Center"
+                        Typo="Typo.h4"
+                        Color="Color.Primary"
+                        Class="mb-4">
+                        Workflow Details
+                    </MudText>
+                    <div style="width:100%;">
+                        <MudSimpleTable
+                            Bordered
+                            Dense
+                        >
+                            <tbody>
+                            <SimpleTableRowPair Title="Name" Value=@_workflowSpecifics.Name/>
+                            <SimpleTableRowPair Title="Date Created" Value=@_workflowSpecifics.CreatedAt?.ToString("yyyy-MM-dd HH:mm:ss")/>
+                            <SimpleTableRowPair Title="Last Updated"
+                                                Value=@_workflowSpecifics.LastUpdatedAt?.ToString("yyyy-MM-dd HH:mm:ss")/>
+                            </tbody>
+                        </MudSimpleTable>
+                    </div>
+                    <GoBackButton BackPath="/MyScans"/>
+                </MudStack>
+            </MudItem>
+            <MudItem xs="12" sm="8">
+                <!-- form -->
+                <MudPaper Class="p-4 mermaid-paper">
+                <pre class="mermaid">
+                    @_mermaidText
+                </pre>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    }
+</BottleRocketLoadingOverlay>
 
 @code {
+    private bool _isLoading;
+    private MyWorkflowSummary _workflowSpecifics = null;
 
     [Parameter]
     public string Id { get; set; }
+
+    private string _mermaidText { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await
+                JsRuntime
+                    .InvokeVoidAsync(
+                        "eval",
+                        @"
+                                       var script = document.createElement('script');
+                                       script.src = 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js';
+                                       script.onload = () => {
+                                            mermaid.initialize({ 
+                                            startOnLoad: false,
+                                            theme: 'base',
+                                            themeVariables: {
+                                                fontFamily: 'JetBrains Mono, sans-serif',
+                                                primaryColor: '#1a4d2e',
+                                                primaryTextColor: '#3a881b',
+                                                primaryBorderColor: '#3a881b',
+                                                lineColor: '#3a881b',
+                                                secondaryColor: '#2d6a4f',
+                                                tertiaryColor: '#081c15',
+                                                background: '#081c15',
+                                                mainBkg: '#e8f9eb',
+                                                secondBkg: '#2d6a4f',
+                                                tertiaryBkg: '#52b788',
+                                                nodeBorder: '#74c69d',
+                                                clusterBkg: '#1a4d2e',
+                                                clusterBorder: '#2d6a4f',
+                                                textColor: '#3a881b',
+                                                edgeLabelBackground: '#9dcc8e'
+                                            }
+                                        });
+                                        mermaid.run();
+                                   };
+                                   document.head.appendChild(script);
+                                   "
+                    );
+        }
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+
+            _workflowSpecifics =
+                await
+                    ApiRequestManager
+                        .GetWorkflowByIdAsync(
+                            Id,
+                            BaseCancellationToken
+                        );
+
+            _mermaidText =
+                WorkflowMermaidConverter
+                    .Convert(_workflowSpecifics);
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
 
 }
