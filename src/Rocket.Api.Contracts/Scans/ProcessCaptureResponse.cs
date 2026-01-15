@@ -1,4 +1,4 @@
-﻿namespace Rocket.Api.Contracts
+﻿namespace Rocket.Api.Contracts.Scans
 {
     public class ProcessCaptureResponse : ApiResponse
     {

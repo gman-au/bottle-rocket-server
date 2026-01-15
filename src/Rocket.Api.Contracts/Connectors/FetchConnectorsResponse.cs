@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Rocket.Api.Contracts.Connectors;
 
-namespace Rocket.Api.Contracts
+namespace Rocket.Api.Contracts.Connectors
 {
     public class FetchConnectorsResponse : ApiResponse
     {

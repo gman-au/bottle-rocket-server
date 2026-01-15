@@ -8,6 +8,7 @@ using AutoFixture;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Rocket.Api.Contracts;
+using Rocket.Api.Contracts.Scans;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Tests.Unit.Extensions;

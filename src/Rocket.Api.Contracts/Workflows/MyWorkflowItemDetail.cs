@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Rocket.Api.Contracts
+namespace Rocket.Api.Contracts.Workflows
 {
     public class MyWorkflowItemDetail : ApiResponse
     {

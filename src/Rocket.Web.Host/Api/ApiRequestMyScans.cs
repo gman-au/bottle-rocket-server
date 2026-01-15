@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Rocket.Api.Contracts;
+using Rocket.Api.Contracts.Scans;
 using Rocket.Web.Host.Extensions;
 
 namespace Rocket.Web.Host.Api

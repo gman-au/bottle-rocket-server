@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Rocket.Api.Contracts
+namespace Rocket.Api.Contracts.Connectors
 {
     public class DeleteConnectorResponse : ApiResponse
     {

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Rocket.Api.Contracts
+namespace Rocket.Api.Contracts.Users
 {
     public class CreateUserRequest
     {

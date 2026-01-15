@@ -1,6 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Api.Contracts;
+using Rocket.Api.Contracts.Connectors;
+using Rocket.Api.Contracts.Scans;
+using Rocket.Api.Contracts.Users;
+using Rocket.Api.Contracts.Workflows;
 using Rocket.Dropbox.Contracts;
 
 namespace Rocket.Web.Host.Api

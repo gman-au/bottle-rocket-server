@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Rocket.Api.Contracts
+namespace Rocket.Api.Contracts.Connectors
 {
-    public class MyWorkflowsRequest
+    public class FetchConnectorsRequest
     {
         [JsonPropertyName("start_index")]
         public int StartIndex { get; set; }

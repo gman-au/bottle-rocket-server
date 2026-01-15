@@ -5,7 +5,7 @@ using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using Rocket.Api.Contracts;
+using Rocket.Api.Contracts.Users;
 using Rocket.Api.Host.Controllers;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
