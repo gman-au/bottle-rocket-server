@@ -15,7 +15,10 @@ namespace Rocket.Infrastructure.Db.Mongo
     public class MongoDbWorkflowStepRepository(
         ILogger<MongoDbWorkflowStepRepository> logger,
         IMongoDbClient mongoDbClient
-    ) : MongoDbRepositoryBase<Workflow>(mongoDbClient, logger), IWorkflowStepRepository
+    ) : MongoDbRepositoryBase<Workflow>(
+        mongoDbClient,
+        logger
+    ), IWorkflowStepRepository
     {
         protected override string CollectionName => MongoConstants.WorkflowsCollection;
 
@@ -35,7 +38,10 @@ namespace Rocket.Infrastructure.Db.Mongo
             workflowStep.Id = id;
 
             var filter =
-                BuildWorkflowFilterByIdAndUserId(workflowId, userId);
+                BuildWorkflowFilterByIdAndUserId(
+                    workflowId,
+                    userId
+                );
 
             var options = new UpdateOptions();
 
@@ -58,7 +64,10 @@ namespace Rocket.Infrastructure.Db.Mongo
                 var update =
                     Builders<Workflow>
                         .Update
-                        .Push(w => w.Steps, workflowStep);
+                        .Push(
+                            w => w.Steps,
+                            workflowStep
+                        );
 
                 await
                     GetMongoCollection()
@@ -71,7 +80,10 @@ namespace Rocket.Infrastructure.Db.Mongo
             }
             else
             {
-                if (!workflow.Steps.AddChildToParent(workflowStep, ref parentStepId))
+                if (!workflow.Steps.AddChildToParent(
+                        workflowStep,
+                        ref parentStepId
+                    ))
                     throw new RocketException(
                         $"Could not find parent record with id [{parentStepId}]",
                         ApiStatusCodeEnum.UnknownOrInaccessibleRecord
@@ -142,7 +154,10 @@ namespace Rocket.Infrastructure.Db.Mongo
                 );
 
             var filter =
-                BuildWorkflowFilterByIdAndUserId(workflowId, userId);
+                BuildWorkflowFilterByIdAndUserId(
+                    workflowId,
+                    userId
+                );
 
             await
                 GetMongoCollection()
@@ -162,7 +177,10 @@ namespace Rocket.Infrastructure.Db.Mongo
         )
         {
             var filter =
-                BuildWorkflowFilterByIdAndUserId(workflowId, userId);
+                BuildWorkflowFilterByIdAndUserId(
+                    workflowId,
+                    userId
+                );
 
             var workflow =
                 await
@@ -179,9 +197,70 @@ namespace Rocket.Infrastructure.Db.Mongo
             return workflow;
         }
 
+        public async Task<Workflow> UpdateWorkflowStepAsync<TWorkflowStep>(
+            string workflowStepId,
+            string workflowId,
+            string userId,
+            TWorkflowStep updatedWorkflowStep,
+            CancellationToken cancellationToken
+        ) where TWorkflowStep : BaseWorkflowStep
+        {
+            var filter =
+                Builders<Workflow>
+                    .Filter
+                    .Eq(
+                        u => u.UserId,
+                        userId
+                    );
+
+            filter &=
+                Builders<Workflow>
+                    .Filter
+                    .Eq(
+                        o => o.Id,
+                        workflowId
+                    );
+
+            var workflow =
+                await
+                    GetMongoCollection()
+                        .Find(filter)
+                        .FirstOrDefaultAsync(cancellationToken);
+
+            if (workflow == null)
+                throw new RocketException(
+                    $"Could not find workflow record with id [{workflowId}]",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
+            if (!BaseWorkflowStepEx.UpdateStepById(
+                    workflow.Steps,
+                    workflowStepId,
+                    updatedWorkflowStep, 
+                    out var modifiedSteps
+                ))
+                throw new RocketException(
+                    $"Could not find workflow step record with id [{workflowStepId}]",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
+            workflow.Steps = modifiedSteps;
+
+            await
+                GetMongoCollection()
+                    .ReplaceOneAsync(
+                        filter,
+                        workflow,
+                        cancellationToken: cancellationToken
+                    );
+
+            return workflow;
+        }
+
         private static FilterDefinition<Workflow> BuildWorkflowFilterByIdAndUserId(
             string workflowId,
-            string userId) =>
+            string userId
+        ) =>
             Builders<Workflow>
                 .Filter
                 .Eq(

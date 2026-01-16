@@ -27,6 +27,14 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
+        Task<Workflow> UpdateWorkflowStepAsync<TWorkflowStep>(
+            string workflowStepId,
+            string workflowId,
+            string userId,
+            TWorkflowStep updatedWorkflowStep,
+            CancellationToken cancellationToken
+        ) where TWorkflowStep : BaseWorkflowStep;
+
         Task<bool> DeleteWorkflowStepAsync(
             string userId,
             string workflowId,

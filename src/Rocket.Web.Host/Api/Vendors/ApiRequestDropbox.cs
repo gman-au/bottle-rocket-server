@@ -102,5 +102,36 @@ namespace Rocket.Web.Host.Api
 
             return result;
         }
+
+        public async Task<UpdateWorkflowStepResponse> UpdateDropboxUploadFileStepAsync<T>(
+            UpdateWorkflowStepRequest<T> updateRequest,
+            CancellationToken cancellationToken
+        ) where T : WorkflowStepSummary
+        {
+            logger
+                .LogInformation("Received Update Workflow request");
+
+            var response =
+                await
+                    authenticatedApiClient
+                        .PatchAsJsonAsync(
+                            "/api/dropbox/workflowSteps/update",
+                            updateRequest,
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<UpdateWorkflowStepResponse>(
+                            logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
     }
 }

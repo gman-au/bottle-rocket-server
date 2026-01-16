@@ -57,8 +57,57 @@ namespace Rocket.Infrastructure.Db.Mongo.Extensions
                     return true;
                 }
 
-                if (step.ChildSteps.AddChildToParent(workflowStep, ref parentStepId))
+                if (step.ChildSteps.AddChildToParent(
+                        workflowStep,
+                        ref parentStepId
+                    ))
                     return true;
+            }
+
+            return false;
+        }
+
+        public static bool UpdateStepById(
+            IEnumerable<BaseWorkflowStep> steps,
+            string stepId,
+            BaseWorkflowStep updatedStep,
+            out IEnumerable<BaseWorkflowStep> modifiedSteps
+        )
+        {
+            modifiedSteps = steps;
+            
+            if (steps == null)
+                return false;
+
+            var stepsList =
+                steps
+                    .ToList();
+
+            for (var i = 0; i < stepsList.Count; i++)
+            {
+                if (stepsList[i].Id == stepId)
+                {
+                    // Preserve ChildSteps from original
+                    updatedStep.ChildSteps =
+                        stepsList[i]
+                            .ChildSteps;
+
+                    stepsList[i] = updatedStep;
+                    modifiedSteps = stepsList;
+                    return true;
+                }
+
+                if (UpdateStepById(
+                        stepsList[i].ChildSteps,
+                        stepId,
+                        updatedStep,
+                        out var modifiedChildren
+                    ))
+                {
+                    stepsList[i].ChildSteps = modifiedChildren;
+                    modifiedSteps = stepsList;
+                    return true;
+                }
             }
 
             return false;
@@ -89,7 +138,10 @@ namespace Rocket.Infrastructure.Db.Mongo.Extensions
             // Check nested levels
             foreach (var step in rootSteps)
             {
-                if (!DeleteStepFromChildren(step, stepId)) continue;
+                if (!DeleteStepFromChildren(
+                        step,
+                        stepId
+                    )) continue;
 
                 workflow.Steps = rootSteps;
 
@@ -99,7 +151,7 @@ namespace Rocket.Infrastructure.Db.Mongo.Extensions
             return false;
         }
 
-        public static bool DeleteStepFromChildren(
+        private static bool DeleteStepFromChildren(
             this BaseWorkflowStep parentStep,
             string stepId
         )

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Captures;
-using Rocket.Api.Contracts.Scans;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;

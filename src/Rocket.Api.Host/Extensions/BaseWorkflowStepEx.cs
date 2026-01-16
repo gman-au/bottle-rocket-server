@@ -9,7 +9,7 @@ namespace Rocket.Api.Host.Extensions
 {
     public static class BaseWorkflowStepEx
     {
-        public static WorkflowStepSummary Map(this BaseWorkflowStep value)
+        public static WorkflowStepSummary MapWorkflowStepToSpecific(this BaseWorkflowStep value)
         {
             var result =
                 value switch
@@ -46,7 +46,7 @@ namespace Rocket.Api.Host.Extensions
 
             result.ChildSteps =
                 (value.ChildSteps ?? [])
-                .Select(o => o.Map());
+                .Select(o => o.MapWorkflowStepToSpecific());
 
             return result;
         }

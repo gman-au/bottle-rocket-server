@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,9 +13,7 @@ using Rocket.Api.Contracts.Workflows;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
-using Rocket.Domain.Utils;
 using Rocket.Domain.Workflows;
-using Rocket.Dropbox.Contracts;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers
@@ -407,7 +404,7 @@ namespace Rocket.Api.Host.Controllers
                     IsActive = workflow.IsActive,
                     Steps =
                         (workflow.Steps ?? [])
-                        .Select(o => o.Map())
+                        .Select(o => o.MapWorkflowStepToSpecific())
                 };
 
             return

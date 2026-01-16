@@ -1,0 +1,260 @@
+﻿@page "/MyWorkflow/Dropbox/{workflowId}/AddStep"
+@page "/MyWorkflow/Dropbox/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/Dropbox/{workflowId}/Steps/{stepId}/UpdateStep"
+
+@using Rocket.Api.Contracts.Workflows
+@using Rocket.Dropbox.Contracts
+@using Rocket.Web.Host.Api
+@using Rocket.Web.Host.Components.Dialog
+@using Rocket.Web.Host.Infrastructure
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_stepSpecifics != null)
+    {
+        <MudForm
+            Model="@_stepSpecifics"
+            @ref="_form">
+            <MudPaper Class="p-4" elevation="2">
+                <MudText
+                    Align="Align.Center"
+                    Typo="Typo.h4"
+                    Color="Color.Primary"
+                    Class="mb-4">
+                    Dropbox Upload File Step - @(_isNew ? "New" : "Update")
+                </MudText>
+
+                <MudGrid>
+                    <MudItem sm="12" lg="6">
+                        <MudTextField
+                            T="string"
+                            Label="Subfolder"
+                            HelperText="Enter the Dropbox sub folder to upload to"
+                            @bind-Value="_stepSpecifics.Subfolder"
+                            For="@(() => _stepSpecifics.Subfolder)"
+                        />
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="align-start mt-2" Justify="Justify.FlexEnd">
+                    <MudItem>
+                        <MudButton
+                            Disabled="@(_isNew)"
+                            Variant="Variant.Outlined"
+                            Color="Color.Error"
+                            OnClick="@(() => ConfirmDeleteAsync(_stepSpecifics))">
+                            Delete
+                        </MudButton>
+                    </MudItem>
+                    <MudItem>
+                        <GoBackButton/>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton
+                            Variant="Variant.Outlined"
+                            Color="Color.Success"
+                            Disabled="@(_isLoading)"
+                            OnClick="@SubmitAsync">
+                            Submit
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudForm>
+    }
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    MudForm _form;
+
+    private bool _isLoading;
+    private DropboxUploadStepSpecifics _stepSpecifics;
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+    private bool _isNew = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _isNew = string.IsNullOrEmpty(StepId);
+
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+
+            if (!_isNew)
+            {
+                _stepSpecifics =
+                    await
+                        ApiRequestManager
+                            .GetWorkflowStepAsync<DropboxUploadStepSpecifics>(
+                                WorkflowId,
+                                StepId,
+                                BaseCancellationToken
+                            );
+            }
+            else
+            {
+                _stepSpecifics = new DropboxUploadStepSpecifics();
+            }
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SubmitAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                if (_isNew)
+                {
+                    var request =
+                        new CreateWorkflowStepRequest<DropboxUploadStepSpecifics>
+                        {
+                            WorkflowId = WorkflowId,
+                            ParentStepId = StepId,
+                            Step = _stepSpecifics
+                        };
+
+                    await
+                        ApiRequestManager
+                            .CreateDropboxUploadFileStepAsync(
+                                request,
+                                BaseCancellationToken
+                            );
+                }
+                else
+                {
+                    var request =
+                        new UpdateWorkflowStepRequest<DropboxUploadStepSpecifics>
+                        {
+                            WorkflowId = WorkflowId,
+                            WorkflowStepId = StepId,
+                            Step = _stepSpecifics
+                        };
+
+                    await
+                        ApiRequestManager
+                            .UpdateDropboxUploadFileStepAsync(
+                                request,
+                                BaseCancellationToken
+                            );
+                }
+
+                Snackbar
+                    .Add(
+                        $"The step has been {(_isNew ? "added" : "updated")}.",
+                        Severity.Success
+                    );
+
+                NavigationManager
+                    .NavigateTo($"/MyWorkflow/{WorkflowId}");
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task ConfirmDeleteAsync(WorkflowStepSummary workflowStep)
+    {
+        var dialog =
+            await
+                DialogService
+                    .ShowAsync<ConfirmDeleteWorkflowStepDialog>(
+                        null,
+                        new DialogParameters
+                        {
+                            { "WorkflowStep", workflowStep }
+                        }
+                    );
+
+        var result =
+            await
+                dialog
+                    .Result;
+
+        if (!(result?.Canceled ?? true))
+        {
+            try
+            {
+                _isLoading = true;
+                StateHasChanged();
+
+                var request =
+                    new DeleteWorkflowStepRequest
+                    {
+                        WorkflowStepId = workflowStep.Id,
+                        WorkflowId = WorkflowId
+                    };
+
+                await
+                    ApiRequestManager
+                        .DeleteWorkflowStepByIdAsync(
+                            request,
+                            BaseCancellationToken
+                        );
+
+                Snackbar
+                    .Add(
+                        "The step has been deleted.",
+                        Severity.Success
+                    );
+
+                NavigationManager
+                    .NavigateTo($"/MyWorkflow/{WorkflowId}");
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+}

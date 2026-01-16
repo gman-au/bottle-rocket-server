@@ -131,7 +131,7 @@ namespace Rocket.Web.Host.Api
 
             return result;
         }
-        
+
         public async Task<ApiResponse> DeleteWorkflowByIdAsync(
             string id,
             CancellationToken cancellationToken
@@ -145,6 +145,68 @@ namespace Rocket.Web.Host.Api
                     authenticatedApiClient
                         .DeleteAsync(
                             $"/api/workflows/{id}",
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<ApiResponse>(
+                            logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
+
+        public async Task<T> GetWorkflowStepAsync<T>(
+            string workflowId,
+            string stepId,
+            CancellationToken cancellationToken
+        ) where T : WorkflowStepSummary
+        {
+            logger
+                .LogInformation("Received Get Workflow Step request");
+
+            var response =
+                await
+                    authenticatedApiClient
+                        .GetAsync(
+                            $"/api/workflowSteps/{workflowId}/get/{stepId}",
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<T>(
+                            logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
+
+        public async Task<ApiResponse> DeleteWorkflowStepByIdAsync(
+            DeleteWorkflowStepRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation("Received Delete Workflow Step request");
+
+            var response =
+                await
+                    authenticatedApiClient
+                        .PostAsJsonAsync(
+                            $"/api/workflowSteps/delete",
+                            request,
                             cancellationToken
                         );
 

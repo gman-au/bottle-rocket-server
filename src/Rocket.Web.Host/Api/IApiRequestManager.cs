@@ -88,8 +88,24 @@ namespace Rocket.Web.Host.Api
             CancellationToken cancellationToken
         );
 
+        public Task<T> GetWorkflowStepAsync<T>(
+            string workflowId,
+            string stepId,
+            CancellationToken cancellationToken
+        ) where T : WorkflowStepSummary;
+
         public Task<CreateWorkflowStepResponse> CreateDropboxUploadFileStepAsync(
             CreateWorkflowStepRequest<DropboxUploadStepSpecifics> request,
+            CancellationToken cancellationToken
+        );
+
+        public Task<UpdateWorkflowStepResponse> UpdateDropboxUploadFileStepAsync<T>(
+            UpdateWorkflowStepRequest<T> updateRequest,
+            CancellationToken cancellationToken
+        ) where T : WorkflowStepSummary;
+
+        Task<ApiResponse> DeleteWorkflowStepByIdAsync(
+            DeleteWorkflowStepRequest request,
             CancellationToken cancellationToken
         );
     }

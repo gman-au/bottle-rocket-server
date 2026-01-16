@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Workflows;
 using Rocket.Api.Host.Extensions;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers
@@ -55,7 +57,7 @@ namespace Rocket.Api.Host.Controllers
                 .LogInformation(
                     "Received workflow step deletion request for username: {userId}, id: {id}",
                     userId,
-                    request.Id
+                    request.WorkflowStepId
                 );
 
             var result =
@@ -64,7 +66,7 @@ namespace Rocket.Api.Host.Controllers
                         .DeleteWorkflowStepAsync(
                             userId,
                             request.WorkflowId,
-                            request.Id,
+                            request.WorkflowStepId,
                             cancellationToken
                         );
 
@@ -78,13 +80,13 @@ namespace Rocket.Api.Host.Controllers
                 response
                     .AsApiSuccess();
         }
-
-        /*[HttpPost("create")]
-        [EndpointSummary("Add a new workflow step")]
+        
+        [HttpGet("{workflowId}/get/{workflowStepId}")]
+        [EndpointSummary("Get a specific workflow step")]
         [EndpointGroupName("Manage workflows")]
         [EndpointDescription(
             """
-            Creates a new workflow step for the given workflow. Validates that the output and input types will match.
+            TODO
             """
         )]
         [ProducesResponseType(
@@ -97,7 +99,8 @@ namespace Rocket.Api.Host.Controllers
         )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateWorkflowStepAsync(
-            [FromBody] CreateWorkflowStepRequest request,
+            string workflowId,
+            string workflowStepId,
             CancellationToken cancellationToken
         )
         {
@@ -112,53 +115,31 @@ namespace Rocket.Api.Host.Controllers
                 );
 
             var userId = user.Id;
-            var workflowId = request.WorkflowId;
 
-            var workflow =
+            var workflowStep =
                 await
                     workflowStepRepository
-                        .GetWorkflowByIdAsync(
+                        .GetWorkflowStepByIdAsync(
+                            workflowStepId,
                             workflowId,
                             userId,
                             cancellationToken
                         );
 
-            if (workflow == null)
+            if (workflowStep == null)
                 throw new RocketException(
-                    "Workflow could not be found",
+                    "Workflow step could not be found",
                     ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                 );
 
-            var newWorkflowStep =
-                new DropboxUploadStep();
-
-            var parentStepId = request.ParentStepId;
-
-            var result =
-                await
-                    workflowStepRepository
-                        .InsertWorkflowStepAsync(
-                            newWorkflowStep,
-                            userId,
-                            workflowId,
-                            parentStepId,
-                            cancellationToken
-                        );
-
-            if (result == null)
-                throw new RocketException(
-                    "Failed to create workflow",
-                    ApiStatusCodeEnum.ServerError
-                );
-
-            var response = new CreateWorkflowResponse
-            {
-                Id = result.Id
-            };
-
+            // serialize to type
+            var response = 
+                workflowStep
+                    .MapWorkflowStepToSpecific();
+            
             return
                 response
                     .AsApiSuccess();
-        }*/
+        }
     }
 }

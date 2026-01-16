@@ -113,7 +113,7 @@ namespace Rocket.Web.Host.Infrastructure
                 var route = string.Empty;
                 if (step is DropboxUploadStepSpecifics dropboxUploadStep)
                 {
-                    route = $"/MyWorkflow/{workflowId}/Steps/{step.Id}/AddStep";
+                    route = $"/MyWorkflow/Dropbox/{workflowId}/Steps/{step.Id}/UpdateStep";
                 }
 
                 if (!string.IsNullOrEmpty(route))
