@@ -1,7 +1,9 @@
 ﻿@page "/MyWorkflows"
 @using Rocket.Api.Contracts.Workflows
+@using Rocket.Domain.Enum
 @using Rocket.Web.Host.Api
 @using Rocket.Web.Host.Components.Dialog
+@using Rocket.Web.Host.Extensions
 @using Rocket.Web.Host.Infrastructure
 @implements IAsyncDisposable
 @inject IApiRequestManager ApiRequestManager
@@ -23,8 +25,9 @@
         <MudSimpleTable Dense>
             <thead>
             <tr>
-                <th>Workflow Name</th>
-                <th>Date Created</th>
+                <th class="general-centered">Workflow Name</th>
+                <th class="general-centered">Matching Page Symbol</th>
+                <th class="general-centered">Date Created</th>
                 <th/>
             </tr>
             </thead>
@@ -32,15 +35,20 @@
             @foreach (var workflow in _workflows)
             {
                 <tr>
-                    <td>
+                    <td class="general-centered">
                         <MudNavLink Href="@($"/MyWorkflow/{workflow.Id}")">
-                            <MudText Color="Color.Primary">
+                            <MudText Align="Align.Center" Color="Color.Primary">
                                 @workflow.Name
                             </MudText>
                         </MudNavLink>
                     </td>
-                    <td>@workflow.CreatedAt?.ToString("g")</td>
-                    <td>
+                    <td class="general-centered">
+                        <img height="40px" class="rocketbook-icon-round" src="@(workflow.MatchingPageSymbol.GetRocketbookPageSymbolImagePath())"/>
+                    </td>
+                    <td class="general-centered">
+                        @workflow.CreatedAt?.ToString("g")
+                    </td>
+                    <td class="general-centered">
                         <MudIconButton
                             OnClick="@(() => ConfirmDeleteAsync(workflow))"
                             Icon="@StandardIcons.DeleteIcon"/>

@@ -21,9 +21,8 @@ namespace Rocket.Web.Host.Infrastructure
             var result = new StringBuilder();
 
             aliasEnumerator.MoveNext();
-            var parent = aliasEnumerator.Current;
             aliasEnumerator.MoveNext();
-            var child = aliasEnumerator.Current;
+            var parent = aliasEnumerator.Current;
 
             var entitiesBuilder = new StringBuilder();
             var linksBuilder = new StringBuilder();
@@ -32,7 +31,7 @@ namespace Rocket.Web.Host.Infrastructure
 
             // start node
             entitiesBuilder
-                .AppendLine($"{child}@{{ shape: lin-rect, label: \"{workflow.Name}\"}}");
+                .AppendLine($"{parent}@{{ shape: lin-rect, label: \"This workflow\"}}");
 
             var workflowId = 
                 workflow
@@ -40,7 +39,7 @@ namespace Rocket.Web.Host.Infrastructure
 
             WriteNested(
                 workflowId,
-                child,
+                parent,
                 entitiesBuilder,
                 linksBuilder,
                 clicksBuilder,
@@ -59,7 +58,7 @@ namespace Rocket.Web.Host.Infrastructure
                 .AppendLine($"{aliasEnumerator.Current}([{AddNewStep}]):::clickable");
 
             linksBuilder
-                .AppendLine($"{child} --> |{DomainConstants.WorkflowFormatTypes[(int)WorkflowFormatTypeEnum.ImageData]}| {aliasEnumerator.Current}");
+                .AppendLine($"{parent} --> |{DomainConstants.WorkflowFormatTypes[(int)WorkflowFormatTypeEnum.ImageData]}| {aliasEnumerator.Current}");
 
             clicksBuilder
                 .AppendLine(

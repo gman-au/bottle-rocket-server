@@ -1,6 +1,8 @@
 ﻿@page "/MyWorkflow/{id}"
 @using Rocket.Api.Contracts.Workflows
+@using Rocket.Domain.Enum
 @using Rocket.Web.Host.Api
+@using Rocket.Web.Host.Extensions
 @using Rocket.Web.Host.Infrastructure
 @inject IJSRuntime JsRuntime
 @inject ISnackbar Snackbar
@@ -17,7 +19,7 @@
             @ref="_form">
             <MudPaper Class="p-4" elevation="2">
                 <MudGrid Class="pa-8" Justify="Justify.SpaceEvenly">
-                    <MudItem xs="12" sm="4">
+                    <MudItem sm="12" md="4">
                         <MudStack
                             Style="height:100%;"
                             Justify="Justify.SpaceBetween"
@@ -42,6 +44,70 @@
                                         For="@(() => _newModel.Name)"
                                         OnlyValidateIfDirty/>
                                 </MudItem>
+                                <MudItem sm="12">
+                                    <div class="rocketbook-icon-dropdown">
+                                        <MudSelect
+                                            T="int?"
+                                            Clearable
+                                            Label="Matching Page Symbol"
+                                            HelperText="Select a matching page symbol to associate with this workflow."
+                                            Disabled="@(_isLoading)"
+                                            @bind-Value="_newModel.MatchingPageSymbol"
+                                            For="@(() => _newModel.MatchingPageSymbol)"
+                                            OnlyValidateIfDirty>
+                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Rocket)">
+                                                <img src="@(((int?)PageSymbolEnum.Rocket).GetRocketbookPageSymbolImagePath())"
+                                                     height="80"
+                                                     class="mr-4 rocketbook-icon-round"
+                                                />
+                                                Rocket
+                                            </MudSelectItem>
+                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Diamond)">
+                                                <img src="@(((int?)PageSymbolEnum.Diamond).GetRocketbookPageSymbolImagePath())"
+                                                     height="80"
+                                                     class="mr-4 rocketbook-icon-round"
+                                                />
+                                                Diamond
+                                            </MudSelectItem>
+                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Apple)">
+                                                <img src="@(((int?)PageSymbolEnum.Apple).GetRocketbookPageSymbolImagePath())"
+                                                     height="80"
+                                                     class="mr-4 rocketbook-icon-round"
+                                                />
+                                                Apple
+                                            </MudSelectItem>
+                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Bell)">
+                                                <img src="@(((int?)PageSymbolEnum.Bell).GetRocketbookPageSymbolImagePath())"
+                                                     height="80"
+                                                     class="mr-4 rocketbook-icon-round"
+                                                />
+                                                Bell
+                                            </MudSelectItem>
+                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Clover)">
+                                                <img src="@(((int?)PageSymbolEnum.Clover).GetRocketbookPageSymbolImagePath())"
+                                                     height="80"
+                                                     class="mr-4 rocketbook-icon-round"
+                                                />
+                                                Clover
+                                            </MudSelectItem>
+                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Star)">
+                                                <img src="@(((int?)PageSymbolEnum.Star).GetRocketbookPageSymbolImagePath())"
+                                                     height="80"
+                                                     class="mr-4 rocketbook-icon-round"
+                                                />
+                                                Star
+                                            </MudSelectItem>
+                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Horseshoe)">
+                                                <img src="@(((int?)PageSymbolEnum.Horseshoe).GetRocketbookPageSymbolImagePath())"
+                                                     height="80"
+                                                     class="mr-4 rocketbook-icon-round"
+                                                />
+                                                Horseshoe
+                                            </MudSelectItem>
+
+                                        </MudSelect>
+                                    </div>
+                                </MudItem>
                             </MudGrid>
                             <MudGrid Class="align-start" Justify="Justify.FlexEnd">
                                 <MudItem>
@@ -59,7 +125,7 @@
                             </MudGrid>
                         </MudStack>
                     </MudItem>
-                    <MudItem xs="12" sm="8">
+                    <MudItem sm="12" md="8">
                         <!-- form -->
                         <MudPaper Class="p-4 mermaid-paper">
                         <pre class="mermaid">
@@ -256,7 +322,7 @@
                                 Id = _newModel.Id,
                                 Name = _currentModel.Name != _newModel.Name ? _newModel.Name : null,
                                 IsActive = _currentModel.IsActive != _newModel.IsActive ? _newModel.IsActive : null,
-                                MatchingPageSymbol = _currentModel.MatchingPageSymbol != _newModel.MatchingPageSymbol ? _newModel.MatchingPageSymbol : null
+                                MatchingPageSymbol = _newModel.MatchingPageSymbol
                             },
                             BaseCancellationToken
                         );
