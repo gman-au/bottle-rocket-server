@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Rocket.Infrastructure;
 
 namespace Rocket.Web.Host.Extensions
 {
@@ -21,7 +22,11 @@ namespace Rocket.Web.Host.Extensions
                     await
                         httpResponseMessage
                             .Content
-                            .ReadFromJsonAsync<T>(cancellationToken);
+                            .ReadFromJsonAsync<T>(
+                                RocketTypeInfoResolver
+                                    .DefaultJsonSerializationOptions,
+                                cancellationToken
+                            );
 
                 return result;
             }

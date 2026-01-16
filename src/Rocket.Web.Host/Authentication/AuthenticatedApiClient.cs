@@ -3,11 +3,13 @@ using System.Configuration;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Infrastructure;
 using Rocket.Interfaces;
 using Rocket.Web.Host.Options;
 
@@ -17,6 +19,7 @@ namespace Rocket.Web.Host.Authentication
     {
         private readonly IAuthenticationManager _authenticationManager;
         private readonly HttpClient _httpClient;
+        private readonly JsonSerializerOptions _jsonOptions;
 
         public AuthenticatedApiClient(
             IOptions<ApiConfigurationOptions> apiConfigurationOptionsAccessor,
@@ -26,6 +29,7 @@ namespace Rocket.Web.Host.Authentication
             _authenticationManager = authenticationManager;
 
             var options = apiConfigurationOptionsAccessor.Value;
+
             _httpClient = new HttpClient();
             _httpClient.BaseAddress =
                 new Uri(
@@ -34,6 +38,10 @@ namespace Rocket.Web.Host.Authentication
                         nameof(options.BaseUrl)
                     )
                 );
+
+            _jsonOptions = 
+                RocketTypeInfoResolver
+                    .DefaultJsonSerializationOptions;
         }
 
         public async Task<HttpResponseMessage> GetAsync(string requestUri, CancellationToken cancellationToken)
@@ -92,6 +100,7 @@ namespace Rocket.Web.Host.Authentication
                             .PostAsJsonAsync(
                                 requestUri,
                                 content,
+                                _jsonOptions,
                                 cancellationToken
                             );
             }
@@ -179,6 +188,7 @@ namespace Rocket.Web.Host.Authentication
                             .PatchAsJsonAsync(
                                 requestUri,
                                 content,
+                                _jsonOptions,
                                 cancellationToken
                             );
             }

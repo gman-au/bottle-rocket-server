@@ -3,6 +3,7 @@ using System.Text;
 using Rocket.Api.Contracts.Workflows;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Utils;
+using Rocket.Dropbox.Contracts;
 
 namespace Rocket.Web.Host.Infrastructure
 {
@@ -104,19 +105,29 @@ namespace Rocket.Web.Host.Infrastructure
                     aliasEnumerator
                         .Current;
 
-                entitiesBuilder
-                    .AppendLine($"{currentChildAlias}({step.StepName}):::clickable");
+                var entityLine = $"{currentChildAlias}({step.StepName})";
 
                 linksBuilder
                     .AppendLine($"{currentParentAlias} --> |{step.InputTypeName}| {currentChildAlias}");
 
-                // need to think about this; similar to connectors we can't yet determine what form to display for the workflow step
-                /*
-                clicksBuilder
-                    .AppendLine(
-                        $"click {currentChildAlias} call blazorNavigateToRoute(\"/MyWorkflow/{workflowId}/Steps/{step.Id}/AddStep\")"
-                    );
-                */
+                var route = string.Empty;
+                if (step is DropboxUploadStepSpecifics dropboxUploadStep)
+                {
+                    route = $"/MyWorkflow/{workflowId}/Steps/{step.Id}/AddStep";
+                }
+
+                if (!string.IsNullOrEmpty(route))
+                {
+                    entityLine += ":::clickable";
+                    
+                    clicksBuilder
+                        .AppendLine(
+                            $"click {currentChildAlias} call blazorNavigateToRoute(\"{route}\")"
+                        );
+                }
+                
+                entitiesBuilder
+                    .AppendLine(entityLine);
 
                 WriteNested(
                     workflowId,

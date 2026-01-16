@@ -2,7 +2,7 @@
 
 namespace Rocket.Api.Contracts.Workflows
 {
-    public class EmailFileAttachmentStep : WorkflowStepSummary
+    public class EmailFileAttachmentStepSpecifics : WorkflowStepSummary
     {
         [JsonPropertyName("target_email_address")]
         public string TargetEmailAddress { get; set; }

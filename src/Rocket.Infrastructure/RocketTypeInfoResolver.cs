@@ -1,8 +1,9 @@
-﻿using System.Text.Json.Serialization.Metadata;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using Rocket.Api.Contracts.Workflows;
 using Rocket.Dropbox.Contracts;
 
-namespace Rocket.Api.Host.Json
+namespace Rocket.Infrastructure
 {
     public static class RocketTypeInfoResolver
     {
@@ -21,7 +22,7 @@ namespace Rocket.Api.Host.Json
                                 DerivedTypes =
                                 {
                                     Build<DropboxUploadStepSpecifics>("dropbox_upload"),
-                                    Build<EmailFileAttachmentStep>("email_file_attachment")
+                                    Build<EmailFileAttachmentStepSpecifics>("email_file_attachment")
                                     // ... register all derived types here
                                 }
                             };
@@ -29,6 +30,11 @@ namespace Rocket.Api.Host.Json
                     }
                 }
             };
+ 
+        public static readonly JsonSerializerOptions DefaultJsonSerializationOptions = new()
+        {
+            TypeInfoResolver = Instance
+        };
         
         private static JsonDerivedType Build<T>(string discriminator) => new(typeof(T), discriminator);
     }
