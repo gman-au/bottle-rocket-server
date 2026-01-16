@@ -81,7 +81,7 @@ namespace Rocket.Web.Host.Api
             var response =
                 await
                     authenticatedApiClient
-                        .PostAsJsonAsync(
+                        .PatchAsJsonAsync(
                             "/api/workflows/update",
                             workflow,
                             cancellationToken

@@ -3,64 +3,84 @@
 @using Rocket.Web.Host.Api
 @using Rocket.Web.Host.Infrastructure
 @inject IJSRuntime JsRuntime
+@inject ISnackbar Snackbar
 @inject IApiRequestManager ApiRequestManager
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject IWorkflowMermaidConverter WorkflowMermaidConverter
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
-<HeadContent>
-    <script src="js/blazor.mermaid.js"></script>
-</HeadContent>
-
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
-    @if (_workflowSpecifics != null)
+    @if (_newModel != null)
     {
-        <MudGrid Class="pa-8" Justify="Justify.SpaceEvenly">
-            <MudItem xs="12" sm="4">
-                <MudStack
-                    Style="height:100%;"
-                    Justify="Justify.SpaceBetween"
-                    StretchItems="StretchItems.Middle"
-                    AlignItems="AlignItems.Start"
-                >
-                    <MudText
-                        Align="Align.Center"
-                        Typo="Typo.h4"
-                        Color="Color.Primary"
-                        Class="mb-4">
-                        Workflow Details
-                    </MudText>
-                    <div style="width:100%;">
-                        <MudSimpleTable
-                            Bordered
-                            Dense
-                        >
-                            <tbody>
-                            <SimpleTableRowPair Title="Name" Value=@_workflowSpecifics.Name/>
-                            <SimpleTableRowPair Title="Date Created" Value=@_workflowSpecifics.CreatedAt?.ToString("yyyy-MM-dd HH:mm:ss")/>
-                            <SimpleTableRowPair Title="Last Updated"
-                                                Value=@_workflowSpecifics.LastUpdatedAt?.ToString("yyyy-MM-dd HH:mm:ss")/>
-                            </tbody>
-                        </MudSimpleTable>
-                    </div>
-                    <GoBackButton/>
-                </MudStack>
-            </MudItem>
-            <MudItem xs="12" sm="8">
-                <!-- form -->
-                <MudPaper Class="p-4 mermaid-paper">
-                <pre class="mermaid">
+        <MudForm
+            Model="@_newModel"
+            @ref="_form">
+            <MudPaper Class="p-4" elevation="2">
+                <MudGrid Class="pa-8" Justify="Justify.SpaceEvenly">
+                    <MudItem xs="12" sm="4">
+                        <MudStack
+                            Style="height:100%;"
+                            Justify="Justify.SpaceBetween"
+                            StretchItems="StretchItems.Middle"
+                            AlignItems="AlignItems.Start">
+                            <MudText
+                                Align="Align.Center"
+                                Typo="Typo.h4"
+                                Color="Color.Primary"
+                                Class="mb-4">
+                                Workflow Details
+                            </MudText>
+                            <MudGrid>
+                                <MudItem sm="12">
+                                    <MudTextField
+                                        T="string"
+                                        Label="Workflow Name"
+                                        Required="true"
+                                        RequiredError="Please enter a valid workflow name"
+                                        Disabled="@(_isLoading)"
+                                        @bind-Value="_newModel.Name"
+                                        For="@(() => _newModel.Name)"
+                                        OnlyValidateIfDirty/>
+                                </MudItem>
+                            </MudGrid>
+                            <MudGrid Class="align-start" Justify="Justify.FlexEnd">
+                                <MudItem>
+                                    <GoBackButton BackPath="/MyWorkflows"/>
+                                </MudItem>
+                                <MudItem>
+                                    <MudButton
+                                        Variant="Variant.Outlined"
+                                        Color="Color.Success"
+                                        Disabled="@(_isLoading)"
+                                        OnClick="@SubmitAsync">
+                                        Submit
+                                    </MudButton>
+                                </MudItem>
+                            </MudGrid>
+                        </MudStack>
+                    </MudItem>
+                    <MudItem xs="12" sm="8">
+                        <!-- form -->
+                        <MudPaper Class="p-4 mermaid-paper">
+                        <pre class="mermaid">
                     @MermaidText
                 </pre>
-                </MudPaper>
-            </MudItem>
-        </MudGrid>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudForm>
     }
 </BottleRocketLoadingOverlay>
 
 @code {
+
+    MudForm _form;
+
+    private bool _disposed = false;
     private bool _isLoading;
-    private MyWorkflowSummary _workflowSpecifics = null;
+    private MyWorkflowSummary _currentModel = null;
+    private MyWorkflowSummary _newModel = null;
 
     [Parameter]
     public string Id { get; set; }
@@ -72,17 +92,41 @@
     {
         if (firstRender)
         {
-            _dotNetRef = 
+            _dotNetRef =
                 DotNetObjectReference
                     .Create(this);
 
-            // Store the .NET reference
-            await
-                JsRuntime
-                    .InvokeVoidAsync(
-                        "storeDotNetRef",
-                        _dotNetRef
-                    );
+            // Wait for the script to be available
+            const int maxAttempts = 10;
+
+            var attempt = 0;
+
+            while (attempt < maxAttempts)
+            {
+                try
+                {
+                    // Store the .NET reference
+                    await
+                        JsRuntime
+                            .InvokeVoidAsync(
+                                "storeDotNetRef",
+                                _dotNetRef
+                            );
+
+                    break; // Success!
+                }
+                catch (JSException)
+                {
+                    attempt++;
+
+                    if (attempt >= maxAttempts)
+                        throw;
+
+                    await
+                        Task
+                            .Delay(50); // Wait 50ms and retry
+                }
+            }
 
             // Load and initialize Mermaid (same as before)
             await
@@ -127,17 +171,21 @@
     [JSInvokable]
     public void NavigateToRoute(string route)
     {
+        if (_disposed)
+            return;
+
         NavigationManager
             .NavigateTo(route);
     }
 
     public override void Dispose()
     {
-        _dotNetRef?
-            .Dispose();
-
-        base
-            .Dispose();
+        if (!_disposed)
+        {
+            _disposed = true;
+            _dotNetRef?.Dispose();
+            base.Dispose();
+        }
     }
 
     protected override async Task OnInitializedAsync()
@@ -151,7 +199,7 @@
             _isLoading = true;
             StateHasChanged();
 
-            _workflowSpecifics =
+            _currentModel =
                 await
                     ApiRequestManager
                         .GetWorkflowByIdAsync(
@@ -159,9 +207,21 @@
                             BaseCancellationToken
                         );
 
+            _newModel =
+                new MyWorkflowSummary
+                {
+                    Id = _currentModel.Id,
+                    UserId = _currentModel.UserId,
+                    MatchingPageSymbol = _currentModel.MatchingPageSymbol,
+                    CreatedAt = _currentModel.CreatedAt,
+                    LastUpdatedAt = _currentModel.LastUpdatedAt,
+                    Name = _currentModel.Name,
+                    IsActive = _currentModel.IsActive
+                };
+
             MermaidText =
                 WorkflowMermaidConverter
-                    .Convert(_workflowSpecifics);
+                    .Convert(_currentModel);
         }
         catch (Exception ex)
         {
@@ -172,6 +232,51 @@
         {
             _isLoading = false;
             StateHasChanged();
+        }
+    }
+
+    private async Task SubmitAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                await
+                    ApiRequestManager
+                        .UpdateWorkflowAsync(
+                            new MyWorkflowSummary
+                            {
+                                Id = _newModel.Id,
+                                Name = _currentModel.Name != _newModel.Name ? _newModel.Name : null,
+                                IsActive = _currentModel.IsActive != _newModel.IsActive ? _newModel.IsActive : null,
+                                MatchingPageSymbol = _currentModel.MatchingPageSymbol != _newModel.MatchingPageSymbol ? _newModel.MatchingPageSymbol : null
+                            },
+                            BaseCancellationToken
+                        );
+
+                Snackbar
+                    .Add(
+                        "The workflow has been updated.",
+                        Severity.Success
+                    );
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
         }
     }
 

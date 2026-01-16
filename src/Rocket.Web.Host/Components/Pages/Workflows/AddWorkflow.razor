@@ -14,7 +14,7 @@
             Color="Color.Primary"
             GutterBottom
             Typo="Typo.h5">
-            Add User
+            Add Workflow
         </MudText>
         <BottleRocketLoadingOverlay IsLoading="@_isLoading">
             <MudForm
@@ -35,6 +35,9 @@
                     </MudItem>
                 </MudGrid>
                 <MudGrid Class="align-start" Justify="Justify.FlexEnd">
+                    <MudItem>
+                        <GoBackButton/>
+                    </MudItem>
                     <MudItem>
                         <MudButton
                             Variant="Variant.Outlined"
@@ -136,4 +139,5 @@
             }
         }
     }
+
 }

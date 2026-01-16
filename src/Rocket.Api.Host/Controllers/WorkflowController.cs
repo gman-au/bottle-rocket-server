@@ -326,6 +326,20 @@ namespace Rocket.Api.Host.Controllers
                         );
             }
 
+            if (request.MatchingPageSymbol.HasValue)
+            {
+                await
+                    workflowRepository
+                        .UpdateWorkflowFieldAsync(
+                            request.Id,
+                            userId,
+                            o =>
+                                o.MatchingPageSymbol,
+                            request.MatchingPageSymbol.Value,
+                            cancellationToken
+                        );
+            }
+
             var response =
                 new UpdateWorkflowResponse();
 
