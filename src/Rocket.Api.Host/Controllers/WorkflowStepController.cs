@@ -10,6 +10,8 @@ using Rocket.Api.Contracts.Workflows;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Domain.Workflows;
+using Rocket.Dropbox.Contracts;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers
@@ -80,7 +82,7 @@ namespace Rocket.Api.Host.Controllers
                 response
                     .AsApiSuccess();
         }
-        
+
         [HttpGet("{workflowId}/get/{workflowStepId}")]
         [EndpointSummary("Get a specific workflow step")]
         [EndpointGroupName("Manage workflows")]
@@ -98,7 +100,7 @@ namespace Rocket.Api.Host.Controllers
             StatusCodes.Status500InternalServerError
         )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> CreateWorkflowStepAsync(
+        public async Task<IActionResult> GetWorkflowStepAsync(
             string workflowId,
             string workflowStepId,
             CancellationToken cancellationToken
@@ -133,10 +135,199 @@ namespace Rocket.Api.Host.Controllers
                 );
 
             // serialize to type
-            var response = 
+            var response =
                 workflowStep
                     .MapWorkflowStepToSpecific();
-            
+
+            return
+                response
+                    .AsApiSuccess();
+        }
+
+        [HttpPost("create")]
+        [EndpointSummary("Add a new Dropbox workflow step")]
+        [EndpointGroupName("Manage workflows")]
+        [EndpointDescription(
+            """
+            // TODO
+            """
+        )]
+        [ProducesResponseType(
+            typeof(CreateWorkflowStepResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CreateWorkflowStepAsync(
+            [FromBody] CreateWorkflowStepRequest<WorkflowStepSummary> request,
+            CancellationToken cancellationToken
+        )
+        {
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
+
+            logger
+                .LogInformation(
+                    "Received workflow step creation request for username: {username}",
+                    user.Username
+                );
+
+            var userId =
+                user
+                    .Id;
+
+            if (string.IsNullOrEmpty(request.WorkflowId))
+                throw new RocketException(
+                    "No workflow ID was provided.",
+                    ApiStatusCodeEnum.ValidationError
+                );
+
+            if (request.Step == null)
+                throw new RocketException(
+                    "Could not determine workflow step from request",
+                    ApiStatusCodeEnum.ValidationError
+                );
+
+            // TODO: fix generic
+            BaseWorkflowStep newWorkflowStep;
+            switch (request.Step)
+            {
+                case DropboxUploadStepSpecifics dropbox:
+                    newWorkflowStep = new DropboxUploadStep { ConnectionId = dropbox.ConnectionId, Subfolder = dropbox.Subfolder, };
+                    break;
+                case EmailFileAttachmentStepSpecifics email:
+                    newWorkflowStep = new EmailFileAttachmentStep { ConnectionId = email.ConnectionId, };
+                    break;
+                default:
+                    throw new RocketException(
+                        $"Unsupported workflow step type: {request.Step.GetType().Name}",
+                        ApiStatusCodeEnum.ValidationError
+                    );
+            }
+
+            var result =
+                await
+                    workflowStepRepository
+                        .InsertWorkflowStepAsync(
+                            newWorkflowStep,
+                            userId,
+                            request.WorkflowId,
+                            request.ParentStepId,
+                            cancellationToken
+                        );
+
+            if (result == null)
+                throw new RocketException(
+                    "Failed to create Dropbox workflow step",
+                    ApiStatusCodeEnum.ServerError
+                );
+
+            var response =
+                new CreateWorkflowStepResponse
+                {
+                    Id = result.Id
+                };
+
+            return
+                response
+                    .AsApiSuccess();
+        }
+
+        [HttpPatch, Route("update")]
+        [EndpointSummary("Update a workflow step")]
+        [EndpointGroupName("Manage workflows")]
+        [EndpointDescription(
+            """
+            // TODO
+            """
+        )]
+        [ProducesResponseType(
+            typeof(UpdateWorkflowResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> UpdateUploadFileWorkflowStepAsync<T>(
+            [FromBody] UpdateWorkflowStepRequest<T> request,
+            CancellationToken cancellationToken
+        ) where T : WorkflowStepSummary
+        {
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
+
+            logger
+                .LogInformation(
+                    "Received (Dropbox) workflow step update request for username: {username}",
+                    user.Username
+                );
+
+            var userId =
+                user
+                    .Id;
+
+            if (string.IsNullOrEmpty(request.WorkflowId))
+                throw new RocketException(
+                    "No workflow ID was provided.",
+                    ApiStatusCodeEnum.ValidationError
+                );
+
+            var step =
+                await
+                    workflowStepRepository
+                        .GetWorkflowStepByIdAsync(
+                            request.WorkflowStepId,
+                            request.WorkflowId,
+                            userId,
+                            cancellationToken
+                        );
+
+            if (step == null)
+                throw new RocketException(
+                    "Could not find workflow step from request",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
+            // TODO: fix generic
+            var updatedWorkflowStep =
+                new DropboxUploadStep
+                {
+                    Id = step.Id,
+                    ChildSteps = step.ChildSteps,
+                    ConnectionId = request.Step.ConnectionId,
+                    //Subfolder = request.Step.Subfolder,
+                };
+
+            var result =
+                await
+                    workflowStepRepository
+                        .UpdateWorkflowStepAsync(
+                            request.WorkflowStepId,
+                            request.WorkflowId,
+                            userId,
+                            updatedWorkflowStep,
+                            cancellationToken
+                        );
+
+            if (result == null)
+                throw new RocketException(
+                    "Failed to update Dropbox workflow step",
+                    ApiStatusCodeEnum.ServerError
+                );
+
+            var response =
+                new UpdateWorkflowStepResponse
+                {
+                    Id = result.Id
+                };
+
             return
                 response
                     .AsApiSuccess();

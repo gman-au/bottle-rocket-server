@@ -94,12 +94,12 @@ namespace Rocket.Web.Host.Api
             CancellationToken cancellationToken
         ) where T : WorkflowStepSummary;
 
-        public Task<CreateWorkflowStepResponse> CreateDropboxUploadFileStepAsync(
-            CreateWorkflowStepRequest<DropboxUploadStepSpecifics> request,
+        public Task<CreateWorkflowStepResponse> CreateWorkflowStepAsync<T>(
+            CreateWorkflowStepRequest<T> request,
             CancellationToken cancellationToken
-        );
+        ) where T : WorkflowStepSummary;
 
-        public Task<UpdateWorkflowStepResponse> UpdateDropboxUploadFileStepAsync<T>(
+        public Task<UpdateWorkflowStepResponse> UpdateWorkflowStepAsync<T>(
             UpdateWorkflowStepRequest<T> updateRequest,
             CancellationToken cancellationToken
         ) where T : WorkflowStepSummary;

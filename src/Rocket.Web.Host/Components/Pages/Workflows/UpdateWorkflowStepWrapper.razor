@@ -1,0 +1,255 @@
+﻿@using Rocket.Api.Contracts.Workflows
+@using Rocket.Web.Host.Api
+@using Rocket.Web.Host.Components.Dialog
+@using Rocket.Web.Host.Infrastructure
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+@typeparam T where T : WorkflowStepSummary, new()
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (StepSpecifics != null)
+    {
+        <MudForm
+            Model="@StepSpecifics"
+            @ref="_form">
+            <MudPaper Class="p-4" elevation="2">
+                <MudText
+                    Align="Align.Center"
+                    Typo="Typo.h4"
+                    Color="Color.Primary"
+                    Class="mb-4">
+                    @WorkflowStepName - @(_isNew ? "New" : "Update")
+                </MudText>
+
+                @ChildContent(StepSpecifics)
+
+                <MudGrid Class="align-start mt-2" Justify="Justify.FlexEnd">
+                    <MudItem>
+                        <MudButton
+                            Disabled="@(_isNew)"
+                            Variant="Variant.Outlined"
+                            Color="Color.Error"
+                            OnClick="@(() => ConfirmDeleteAsync(StepSpecifics))">
+                            Delete
+                        </MudButton>
+                    </MudItem>
+                    <MudItem>
+                        <GoBackButton/>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton
+                            Variant="Variant.Outlined"
+                            Color="Color.Success"
+                            Disabled="@(_isLoading)"
+                            OnClick="@SubmitAsync">
+                            Submit
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudForm>
+    }
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    MudForm _form;
+
+    private bool _isLoading;
+
+    [Parameter]
+    public T StepSpecifics { get; set; }
+
+    [Parameter]
+    public string WorkflowStepName { get; set; }
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+    [Parameter]
+    public RenderFragment<T> ChildContent { get; set; }  // Changed to RenderFragment<T>
+
+    private bool _isNew = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _isNew = string.IsNullOrEmpty(StepId);
+
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+
+            if (!_isNew)
+            {
+                StepSpecifics =
+                    await
+                        ApiRequestManager
+                            .GetWorkflowStepAsync<T>(
+                                WorkflowId,
+                                StepId,
+                                BaseCancellationToken
+                            );
+            }
+            else
+            {
+                StepSpecifics = new T();
+            }
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SubmitAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                if (_isNew)
+                {
+                    var request =
+                        new CreateWorkflowStepRequest<T>
+                        {
+                            WorkflowId = WorkflowId,
+                            ParentStepId = StepId,
+                            Step = StepSpecifics
+                        };
+
+                    await
+                        ApiRequestManager
+                            .CreateWorkflowStepAsync(
+                                request,
+                                BaseCancellationToken
+                            );
+                }
+                else
+                {
+                    var request =
+                        new UpdateWorkflowStepRequest<T>
+                        {
+                            WorkflowId = WorkflowId,
+                            WorkflowStepId = StepId,
+                            Step = StepSpecifics
+                        };
+
+                    await
+                        ApiRequestManager
+                            .UpdateWorkflowStepAsync(
+                                request,
+                                BaseCancellationToken
+                            );
+                }
+
+                Snackbar
+                    .Add(
+                        $"The step has been {(_isNew ? "added" : "updated")}.",
+                        Severity.Success
+                    );
+
+                NavigationManager
+                    .NavigateTo($"/MyWorkflow/{WorkflowId}");
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task ConfirmDeleteAsync(WorkflowStepSummary workflowStep)
+    {
+        var dialog =
+            await
+                DialogService
+                    .ShowAsync<ConfirmDeleteWorkflowStepDialog>(
+                        null,
+                        new DialogParameters
+                        {
+                            { "WorkflowStep", workflowStep }
+                        }
+                    );
+
+        var result =
+            await
+                dialog
+                    .Result;
+
+        if (!(result?.Canceled ?? true))
+        {
+            try
+            {
+                _isLoading = true;
+                StateHasChanged();
+
+                var request =
+                    new DeleteWorkflowStepRequest
+                    {
+                        WorkflowStepId = workflowStep.Id,
+                        WorkflowId = WorkflowId
+                    };
+
+                await
+                    ApiRequestManager
+                        .DeleteWorkflowStepByIdAsync(
+                            request,
+                            BaseCancellationToken
+                        );
+
+                Snackbar
+                    .Add(
+                        "The step has been deleted.",
+                        Severity.Success
+                    );
+
+                NavigationManager
+                    .NavigateTo($"/MyWorkflow/{WorkflowId}");
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+}
