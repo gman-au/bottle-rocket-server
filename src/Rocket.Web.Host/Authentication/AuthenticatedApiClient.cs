@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
-using Rocket.Infrastructure;
+using Rocket.Infrastructure.Json;
 using Rocket.Interfaces;
 using Rocket.Web.Host.Options;
 

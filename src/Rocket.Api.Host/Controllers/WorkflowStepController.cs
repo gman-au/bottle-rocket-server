@@ -10,8 +10,6 @@ using Rocket.Api.Contracts.Workflows;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
-using Rocket.Domain.Workflows;
-using Rocket.Dropbox.Contracts;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers
@@ -22,6 +20,7 @@ namespace Rocket.Api.Host.Controllers
     public class WorkflowStepController(
         ILogger<WorkflowStepController> logger,
         IUserManager userManager,
+        IWorkflowStepModelMapperRegistry workflowStepModelMapperRegistry,
         IWorkflowStepRepository workflowStepRepository
     ) : RocketControllerBase(userManager)
     {
@@ -192,22 +191,17 @@ namespace Rocket.Api.Host.Controllers
                     ApiStatusCodeEnum.ValidationError
                 );
 
-            // TODO: fix generic
-            BaseWorkflowStep newWorkflowStep;
-            switch (request.Step)
-            {
-                case DropboxUploadStepSpecifics dropbox:
-                    newWorkflowStep = new DropboxUploadStep { ConnectionId = dropbox.ConnectionId, Subfolder = dropbox.Subfolder, };
-                    break;
-                case EmailFileAttachmentStepSpecifics email:
-                    newWorkflowStep = new EmailFileAttachmentStep { ConnectionId = email.ConnectionId, };
-                    break;
-                default:
-                    throw new RocketException(
-                        $"Unsupported workflow step type: {request.Step.GetType().Name}",
-                        ApiStatusCodeEnum.ValidationError
-                    );
-            }
+            var step =
+                request
+                    .Step;
+
+            var mapper =
+                workflowStepModelMapperRegistry
+                    .GetMapperForView(step.GetType());
+
+            var newWorkflowStep =
+                mapper
+                    .For(step);
 
             var result =
                 await
@@ -295,15 +289,13 @@ namespace Rocket.Api.Host.Controllers
                     ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                 );
 
-            // TODO: fix generic
+            var mapper =
+                workflowStepModelMapperRegistry
+                    .GetMapperForView(step.GetType());
+
             var updatedWorkflowStep =
-                new DropboxUploadStep
-                {
-                    Id = step.Id,
-                    ChildSteps = step.ChildSteps,
-                    ConnectionId = request.Step.ConnectionId,
-                    //Subfolder = request.Step.Subfolder,
-                };
+                mapper
+                    .For(step);
 
             var result =
                 await

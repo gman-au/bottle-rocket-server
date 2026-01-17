@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
-using Rocket.Api.Contracts.Workflows;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Connectors;
 using Rocket.Domain.Enum;
@@ -16,7 +15,6 @@ using Rocket.Domain.Utils;
 using Rocket.Dropbox.Contracts;
 using Rocket.Dropbox.Infrastructure;
 using Rocket.Interfaces;
-using DropboxUploadStep = Rocket.Domain.Workflows.DropboxUploadStep;
 
 namespace Rocket.Api.Host.Controllers.Vendors
 {

@@ -15,6 +15,7 @@ using Rocket.Infrastructure.Blob.Local.Options;
 using Rocket.Infrastructure.Db.Mongo;
 using Rocket.Infrastructure.Db.Mongo.Options;
 using Rocket.Infrastructure.Hashing;
+using Rocket.Infrastructure.Mapping;
 using Rocket.Infrastructure.Thumbnails;
 using Rocket.Interfaces;
 
@@ -75,7 +76,8 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IPasswordHasher, PasswordHasher>()
                 .AddTransient<IActiveAdminChecker, ActiveAdminChecker>()
                 .AddTransient<IThumbnailer, Thumbnailer>()
-                .AddTransient<IUserManager, UserManager>();
+                .AddTransient<IUserManager, UserManager>()
+                .AddTransient<IWorkflowStepModelMapperRegistry, WorkflowStepModelMapperRegistry>();
 
             if (environment.IsDevelopment())
                 services

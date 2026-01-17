@@ -19,6 +19,7 @@
         RecordAlreadyExists,
         ServerError = 5000,
         ServerConfigurationError,
-        ThirdPartyServiceError
+        ThirdPartyServiceError,
+        DeveloperError = 6000
     }
 }

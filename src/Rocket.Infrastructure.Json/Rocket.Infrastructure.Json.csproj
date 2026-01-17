@@ -5,8 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Rocket.Api.Contracts\Rocket.Api.Contracts.csproj" />
-      <ProjectReference Include="..\Rocket.Domain\Rocket.Domain.csproj" />
+      <ProjectReference Include="..\Integrations\Rocket.Dropbox.Contracts\Rocket.Dropbox.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

@@ -8,7 +8,7 @@ using Rocket.Api.Host.Hubs;
 using Rocket.Api.Host.Injection;
 using Rocket.Domain.Utils;
 using Rocket.Dropbox.Injection;
-using Rocket.Infrastructure;
+using Rocket.Infrastructure.Json;
 
 var builder =
     WebApplication

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization.Metadata;
 using Rocket.Api.Contracts.Workflows;
 using Rocket.Dropbox.Contracts;
 
-namespace Rocket.Infrastructure
+namespace Rocket.Infrastructure.Json
 {
     public static class RocketTypeInfoResolver
     {
