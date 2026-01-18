@@ -6,6 +6,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
@@ -17,17 +18,20 @@ namespace Rocket.Web.Host.Authentication
 {
     public class AuthenticatedApiClient : IAuthenticatedApiClient
     {
+        private readonly ILogger<AuthenticatedApiClient> _logger;
         private readonly IAuthenticationManager _authenticationManager;
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions _jsonOptions;
 
         public AuthenticatedApiClient(
+            ILogger<AuthenticatedApiClient> logger,
             IOptions<ApiConfigurationOptions> apiConfigurationOptionsAccessor,
             IAuthenticationManager authenticationManager
         )
         {
             _authenticationManager = authenticationManager;
-
+            _logger = logger;
+            
             var options = apiConfigurationOptionsAccessor.Value;
 
             _httpClient = new HttpClient();
@@ -94,6 +98,9 @@ namespace Rocket.Web.Host.Authentication
                 await
                     SetAuthHeaderAsync();
 
+                _logger
+                    .LogDebug("Sending POST Json: {json}", JsonSerializer.Serialize(content));
+                
                 return
                     await
                         _httpClient

@@ -231,7 +231,7 @@ namespace Rocket.Api.Host.Controllers
                     .AsApiSuccess();
         }
 
-        [HttpPatch, Route("update")]
+        [HttpPatch("update")]
         [EndpointSummary("Update a workflow step")]
         [EndpointGroupName("Manage workflows")]
         [EndpointDescription(
@@ -248,10 +248,10 @@ namespace Rocket.Api.Host.Controllers
             StatusCodes.Status500InternalServerError
         )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> UpdateUploadFileWorkflowStepAsync<T>(
-            [FromBody] UpdateWorkflowStepRequest<T> request,
+        public async Task<IActionResult> UpdateWorkflowStepAsync(
+            [FromBody] UpdateWorkflowStepRequest<WorkflowStepSummary> request,
             CancellationToken cancellationToken
-        ) where T : WorkflowStepSummary
+        )
         {
             var user =
                 await
@@ -274,20 +274,8 @@ namespace Rocket.Api.Host.Controllers
                 );
 
             var step =
-                await
-                    workflowStepRepository
-                        .GetWorkflowStepByIdAsync(
-                            request.WorkflowStepId,
-                            request.WorkflowId,
-                            userId,
-                            cancellationToken
-                        );
-
-            if (step == null)
-                throw new RocketException(
-                    "Could not find workflow step from request",
-                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
-                );
+                request
+                    .Step;
 
             var mapper =
                 workflowStepModelMapperRegistry
@@ -310,7 +298,7 @@ namespace Rocket.Api.Host.Controllers
 
             if (result == null)
                 throw new RocketException(
-                    "Failed to update Dropbox workflow step",
+                    "Failed to update workflow step",
                     ApiStatusCodeEnum.ServerError
                 );
 

@@ -70,6 +70,37 @@ namespace Rocket.Web.Host.Api
 
             return result;
         }
+        
+        public async Task<UpdateWorkflowStepResponse> UpdateWorkflowStepAsync<T>(
+            UpdateWorkflowStepRequest<T> request,
+            CancellationToken cancellationToken
+        ) where T : WorkflowStepSummary
+        {
+            logger
+                .LogInformation("Received Update Workflow request");
+
+            var response =
+                await
+                    authenticatedApiClient
+                        .PatchAsJsonAsync(
+                            "/api/workflowSteps/update",
+                            request,
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<UpdateWorkflowStepResponse>(
+                            logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
 
         public async Task<ApiResponse> DeleteWorkflowStepByIdAsync(
             DeleteWorkflowStepRequest request,
@@ -92,37 +123,6 @@ namespace Rocket.Web.Host.Api
                 await
                     response
                         .TryParseResponse<ApiResponse>(
-                            logger,
-                            cancellationToken
-                        );
-
-            EnsureApiSuccessStatusCode(result);
-            EnsureHttpSuccessStatusCode(response);
-
-            return result;
-        }
-
-        public async Task<UpdateWorkflowStepResponse> UpdateWorkflowStepAsync<T>(
-            UpdateWorkflowStepRequest<T> updateRequest,
-            CancellationToken cancellationToken
-        ) where T : WorkflowStepSummary
-        {
-            logger
-                .LogInformation("Received Update Workflow request");
-
-            var response =
-                await
-                    authenticatedApiClient
-                        .PatchAsJsonAsync(
-                            "/api/workflowSteps/update",
-                            updateRequest,
-                            cancellationToken
-                        );
-
-            var result =
-                await
-                    response
-                        .TryParseResponse<UpdateWorkflowStepResponse>(
                             logger,
                             cancellationToken
                         );

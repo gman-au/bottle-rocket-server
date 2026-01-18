@@ -100,7 +100,7 @@ namespace Rocket.Web.Host.Api
         ) where T : WorkflowStepSummary;
 
         public Task<UpdateWorkflowStepResponse> UpdateWorkflowStepAsync<T>(
-            UpdateWorkflowStepRequest<T> updateRequest,
+            UpdateWorkflowStepRequest<T> request,
             CancellationToken cancellationToken
         ) where T : WorkflowStepSummary;
 

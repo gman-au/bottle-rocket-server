@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 
 namespace Rocket.Api.Contracts.Workflows
 {
-    // [JsonDerivedType(typeof(ConnectorDetail), typeDiscriminator: "base")]
     public class WorkflowStepSummary : ApiResponse
     {
         [JsonPropertyName("id")]
