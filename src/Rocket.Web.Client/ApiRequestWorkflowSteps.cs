@@ -1,26 +1,58 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Rocket.Api.Contracts.Users;
-using Rocket.Web.Host.Extensions;
+using Rocket.Api.Contracts;
+using Rocket.Api.Contracts.Workflows;
+using Rocket.Web.Client.Extensions;
 
-namespace Rocket.Web.Host.Api
+namespace Rocket.Web.Client
 {
     public partial class ApiRequestManager
     {
-        public async Task<FetchUsersResponse> GetUsersAsync(
-            FetchUsersRequest request,
+        public async Task<T> GetWorkflowStepAsync<T>(
+            string workflowId,
+            string stepId,
             CancellationToken cancellationToken
-        )
+        ) where T : WorkflowStepSummary
         {
             logger
-                .LogInformation("Received get users request");
+                .LogInformation("Received Get Workflow Step request");
+
+            var response =
+                await
+                    authenticatedApiClient
+                        .GetAsync(
+                            $"/api/workflowSteps/{workflowId}/get/{stepId}",
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<T>(
+                            logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
+
+        public async Task<CreateWorkflowStepResponse> CreateWorkflowStepAsync<T>(
+            CreateWorkflowStepRequest<T> request,
+            CancellationToken cancellationToken
+        ) where T : WorkflowStepSummary
+        {
+            logger
+                .LogInformation("Received Create Workflow Step request");
 
             var response =
                 await
                     authenticatedApiClient
                         .PostAsJsonAsync(
-                            $"/api/users/fetch",
+                            "/api/workflowSteps/create",
                             request,
                             cancellationToken
                         );
@@ -28,7 +60,7 @@ namespace Rocket.Web.Host.Api
             var result =
                 await
                     response
-                        .TryParseResponse<FetchUsersResponse>(
+                        .TryParseResponse<CreateWorkflowStepResponse>(
                             logger,
                             cancellationToken
                         );
@@ -38,27 +70,28 @@ namespace Rocket.Web.Host.Api
 
             return result;
         }
-
-        public async Task<UserSpecifics> GetUserByIdAsync(
-            string id,
+        
+        public async Task<UpdateWorkflowStepResponse> UpdateWorkflowStepAsync<T>(
+            UpdateWorkflowStepRequest<T> request,
             CancellationToken cancellationToken
-        )
+        ) where T : WorkflowStepSummary
         {
             logger
-                .LogInformation("Received Get User request");
+                .LogInformation("Received Update Workflow request");
 
             var response =
                 await
                     authenticatedApiClient
-                        .GetAsync(
-                            $"/api/users/get/{id}",
+                        .PatchAsJsonAsync(
+                            "/api/workflowSteps/update",
+                            request,
                             cancellationToken
                         );
 
             var result =
                 await
                     response
-                        .TryParseResponse<UserSpecifics>(
+                        .TryParseResponse<UpdateWorkflowStepResponse>(
                             logger,
                             cancellationToken
                         );
@@ -69,58 +102,27 @@ namespace Rocket.Web.Host.Api
             return result;
         }
 
-        public async Task<UpdateUserResponse> UpdateUserAsync(
-            UserSpecifics user,
+        public async Task<ApiResponse> DeleteWorkflowStepByIdAsync(
+            DeleteWorkflowStepRequest request,
             CancellationToken cancellationToken
         )
         {
             logger
-                .LogInformation("Received Update User request");
-
-            var response =
-                await
-                    authenticatedApiClient
-                        .PostAsJsonAsync(
-                            "/api/users/update",
-                            user,
-                            cancellationToken
-                        );
-
-            var result =
-                await
-                    response
-                        .TryParseResponse<UpdateUserResponse>(
-                            logger,
-                            cancellationToken
-                        );
-
-            EnsureApiSuccessStatusCode(result);
-            EnsureHttpSuccessStatusCode(response);
-
-            return result;
-        }
-
-        public async Task<CreateUserResponse> CreateUserAsync(
-            CreateUserRequest user,
-            CancellationToken cancellationToken
-        )
-        {
-            logger
-                .LogInformation("Received Create User request");
+                .LogInformation("Received Delete Workflow Step request");
 
             var response =
                 await
                     authenticatedApiClient
                         .PostAsJsonAsync(
-                            "/api/users/create",
-                            user,
+                            "/api/workflowSteps/delete",
+                            request,
                             cancellationToken
                         );
 
             var result =
                 await
                     response
-                        .TryParseResponse<CreateUserResponse>(
+                        .TryParseResponse<ApiResponse>(
                             logger,
                             cancellationToken
                         );

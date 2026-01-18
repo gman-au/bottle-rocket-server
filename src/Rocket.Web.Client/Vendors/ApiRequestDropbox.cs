@@ -1,34 +1,34 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Rocket.Api.Contracts.Scans;
-using Rocket.Web.Host.Extensions;
+using Rocket.Api.Contracts;
+using Rocket.Dropbox.Contracts;
+using Rocket.Web.Client.Extensions;
 
-namespace Rocket.Web.Host.Api
+namespace Rocket.Web.Client
 {
     public partial class ApiRequestManager
     {
-        public async Task<MyScansResponse> GetMyScansAsync(
-            MyScansRequest request,
+        public async Task<CreateDropboxConnectorResponse> CreateDropboxConnectorAsync(
+            CreateDropboxConnectorRequest connector,
             CancellationToken cancellationToken
         )
         {
-            logger
-                .LogInformation("Received My Scans request");
+            logger.LogInformation("Received Create (Dropbox) Connector request");
 
             var response =
                 await
                     authenticatedApiClient
                         .PostAsJsonAsync(
-                            "/api/scans/fetch",
-                            request,
+                            "/api/dropbox/connectors/create",
+                            connector,
                             cancellationToken
                         );
 
             var result =
                 await
                     response
-                        .TryParseResponse<MyScansResponse>(
+                        .TryParseResponse<CreateDropboxConnectorResponse>(
                             logger,
                             cancellationToken
                         );
@@ -39,25 +39,26 @@ namespace Rocket.Web.Host.Api
             return result;
         }
 
-        public async Task<ScanSpecifics> GetMyScanAsync(
-            string id,
-            CancellationToken cancellationToken)
+        public async Task<ApiResponse> FinalizeDropboxConnectorAsync(
+            FinalizeDropboxConnectorRequest request,
+            CancellationToken cancellationToken
+        )
         {
-            logger
-                .LogInformation("Received My Scan request");
+            logger.LogInformation("Received Patch (Dropbox) Connector request");
 
             var response =
                 await
                     authenticatedApiClient
-                        .GetAsync(
-                            $"/api/scans/{id}",
+                        .PatchAsJsonAsync(
+                            "/api/dropbox/connectors/finalize",
+                            request,
                             cancellationToken
                         );
 
             var result =
                 await
                     response
-                        .TryParseResponse<ScanSpecifics>(
+                        .TryParseResponse<ApiResponse>(
                             logger,
                             cancellationToken
                         );

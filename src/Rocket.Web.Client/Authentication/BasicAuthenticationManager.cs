@@ -11,10 +11,10 @@ using Microsoft.Extensions.Options;
 using Rocket.Api.Contracts;
 using Rocket.Domain.Utils;
 using Rocket.Interfaces;
-using Rocket.Web.Host.Extensions;
-using Rocket.Web.Host.Options;
+using Rocket.Web.Client.Extensions;
+using Rocket.Web.Client.Options;
 
-namespace Rocket.Web.Host.Authentication
+namespace Rocket.Web.Client.Authentication
 {
     public class BasicAuthenticationManager : IAuthenticationManager
     {

@@ -11,9 +11,9 @@ using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Scans;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Interfaces;
 using Rocket.Tests.Unit.Extensions;
-using Rocket.Web.Host.Api;
-using Rocket.Web.Host.Authentication;
+using Rocket.Web.Client;
 using Xunit;
 
 namespace Rocket.Tests.Unit

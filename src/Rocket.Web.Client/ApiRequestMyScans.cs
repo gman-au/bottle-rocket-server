@@ -1,27 +1,26 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Rocket.Api.Contracts;
-using Rocket.Api.Contracts.Connectors;
-using Rocket.Web.Host.Extensions;
+using Rocket.Api.Contracts.Scans;
+using Rocket.Web.Client.Extensions;
 
-namespace Rocket.Web.Host.Api
+namespace Rocket.Web.Client
 {
     public partial class ApiRequestManager
     {
-        public async Task<FetchConnectorsResponse> GetMyConnectorsAsync(
-            FetchConnectorsRequest request, 
+        public async Task<MyScansResponse> GetMyScansAsync(
+            MyScansRequest request,
             CancellationToken cancellationToken
         )
         {
             logger
-                .LogInformation("Received get connectors request");
+                .LogInformation("Received My Scans request");
 
             var response =
                 await
                     authenticatedApiClient
                         .PostAsJsonAsync(
-                            $"/api/connectors/fetch",
+                            "/api/scans/fetch",
                             request,
                             cancellationToken
                         );
@@ -29,7 +28,7 @@ namespace Rocket.Web.Host.Api
             var result =
                 await
                     response
-                        .TryParseResponse<FetchConnectorsResponse>(
+                        .TryParseResponse<MyScansResponse>(
                             logger,
                             cancellationToken
                         );
@@ -39,27 +38,26 @@ namespace Rocket.Web.Host.Api
 
             return result;
         }
-        
-        public async Task<ApiResponse> DeleteConnectorByIdAsync(
+
+        public async Task<ScanSpecifics> GetMyScanAsync(
             string id,
-            CancellationToken cancellationToken
-        )
+            CancellationToken cancellationToken)
         {
             logger
-                .LogInformation("Received Delete Connector request");
+                .LogInformation("Received My Scan request");
 
             var response =
                 await
                     authenticatedApiClient
-                        .DeleteAsync(
-                            $"/api/connectors/{id}",
+                        .GetAsync(
+                            $"/api/scans/{id}",
                             cancellationToken
                         );
 
             var result =
                 await
                     response
-                        .TryParseResponse<ApiResponse>(
+                        .TryParseResponse<ScanSpecifics>(
                             logger,
                             cancellationToken
                         );

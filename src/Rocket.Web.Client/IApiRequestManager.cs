@@ -7,7 +7,7 @@ using Rocket.Api.Contracts.Users;
 using Rocket.Api.Contracts.Workflows;
 using Rocket.Dropbox.Contracts;
 
-namespace Rocket.Web.Host.Api
+namespace Rocket.Web.Client
 {
     public interface IApiRequestManager
     {

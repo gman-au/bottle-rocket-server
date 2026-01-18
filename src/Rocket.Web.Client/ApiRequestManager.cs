@@ -5,10 +5,10 @@ using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
-using Rocket.Web.Host.Authentication;
-using Rocket.Web.Host.Extensions;
+using Rocket.Interfaces;
+using Rocket.Web.Client.Extensions;
 
-namespace Rocket.Web.Host.Api
+namespace Rocket.Web.Client
 {
     public partial class ApiRequestManager(
         ILogger<ApiRequestManager> logger,

@@ -12,9 +12,9 @@ using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Infrastructure.Json;
 using Rocket.Interfaces;
-using Rocket.Web.Host.Options;
+using Rocket.Web.Client.Options;
 
-namespace Rocket.Web.Host.Authentication
+namespace Rocket.Web.Client.Authentication
 {
     public class AuthenticatedApiClient : IAuthenticatedApiClient
     {

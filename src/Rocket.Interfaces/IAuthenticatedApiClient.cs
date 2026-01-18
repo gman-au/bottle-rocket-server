@@ -2,7 +2,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Rocket.Web.Host.Authentication
+namespace Rocket.Interfaces
 {
     public interface IAuthenticatedApiClient
     {

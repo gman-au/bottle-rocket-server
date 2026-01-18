@@ -1,4 +1,4 @@
-﻿namespace Rocket.Web.Host.Options
+﻿namespace Rocket.Web.Client.Options
 {
     public class ApiConfigurationOptions
     {

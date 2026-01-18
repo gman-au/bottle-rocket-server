@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 
-namespace Rocket.Web.Host.Authentication
+namespace Rocket.Web.Client.Authentication
 {
     public class ApiAuthenticationStateProvider : AuthenticationStateProvider
     {

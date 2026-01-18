@@ -1,27 +1,26 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Rocket.Api.Contracts;
-using Rocket.Api.Contracts.Workflows;
-using Rocket.Web.Host.Extensions;
+using Rocket.Api.Contracts.Users;
+using Rocket.Web.Client.Extensions;
 
-namespace Rocket.Web.Host.Api
+namespace Rocket.Web.Client
 {
     public partial class ApiRequestManager
     {
-        public async Task<FetchWorkflowsResponse> GetWorkflowsAsync(
-            FetchWorkflowsRequest request,
+        public async Task<FetchUsersResponse> GetUsersAsync(
+            FetchUsersRequest request,
             CancellationToken cancellationToken
         )
         {
             logger
-                .LogInformation("Received get workflows request");
+                .LogInformation("Received get users request");
 
             var response =
                 await
                     authenticatedApiClient
                         .PostAsJsonAsync(
-                            $"/api/workflows/fetch",
+                            "/api/users/fetch",
                             request,
                             cancellationToken
                         );
@@ -29,7 +28,7 @@ namespace Rocket.Web.Host.Api
             var result =
                 await
                     response
-                        .TryParseResponse<FetchWorkflowsResponse>(
+                        .TryParseResponse<FetchUsersResponse>(
                             logger,
                             cancellationToken
                         );
@@ -40,26 +39,26 @@ namespace Rocket.Web.Host.Api
             return result;
         }
 
-        public async Task<MyWorkflowSummary> GetWorkflowByIdAsync(
+        public async Task<UserSpecifics> GetUserByIdAsync(
             string id,
             CancellationToken cancellationToken
         )
         {
             logger
-                .LogInformation("Received Get Workflow request");
+                .LogInformation("Received Get User request");
 
             var response =
                 await
                     authenticatedApiClient
                         .GetAsync(
-                            $"/api/workflows/get/{id}",
+                            $"/api/users/get/{id}",
                             cancellationToken
                         );
 
             var result =
                 await
                     response
-                        .TryParseResponse<MyWorkflowSummary>(
+                        .TryParseResponse<UserSpecifics>(
                             logger,
                             cancellationToken
                         );
@@ -70,58 +69,27 @@ namespace Rocket.Web.Host.Api
             return result;
         }
 
-        public async Task<UpdateWorkflowResponse> UpdateWorkflowAsync(
-            MyWorkflowSummary workflow,
+        public async Task<UpdateUserResponse> UpdateUserAsync(
+            UserSpecifics user,
             CancellationToken cancellationToken
         )
         {
             logger
-                .LogInformation("Received Update Workflow request");
-
-            var response =
-                await
-                    authenticatedApiClient
-                        .PatchAsJsonAsync(
-                            "/api/workflows/update",
-                            workflow,
-                            cancellationToken
-                        );
-
-            var result =
-                await
-                    response
-                        .TryParseResponse<UpdateWorkflowResponse>(
-                            logger,
-                            cancellationToken
-                        );
-
-            EnsureApiSuccessStatusCode(result);
-            EnsureHttpSuccessStatusCode(response);
-
-            return result;
-        }
-
-        public async Task<CreateWorkflowResponse> CreateWorkflowAsync(
-            CreateWorkflowRequest workflow,
-            CancellationToken cancellationToken
-        )
-        {
-            logger
-                .LogInformation("Received Create Workflow request");
+                .LogInformation("Received Update User request");
 
             var response =
                 await
                     authenticatedApiClient
                         .PostAsJsonAsync(
-                            "/api/workflows/create",
-                            workflow,
+                            "/api/users/update",
+                            user,
                             cancellationToken
                         );
 
             var result =
                 await
                     response
-                        .TryParseResponse<CreateWorkflowResponse>(
+                        .TryParseResponse<UpdateUserResponse>(
                             logger,
                             cancellationToken
                         );
@@ -132,26 +100,27 @@ namespace Rocket.Web.Host.Api
             return result;
         }
 
-        public async Task<ApiResponse> DeleteWorkflowByIdAsync(
-            string id,
+        public async Task<CreateUserResponse> CreateUserAsync(
+            CreateUserRequest user,
             CancellationToken cancellationToken
         )
         {
             logger
-                .LogInformation("Received Delete Workflow request");
+                .LogInformation("Received Create User request");
 
             var response =
                 await
                     authenticatedApiClient
-                        .DeleteAsync(
-                            $"/api/workflows/{id}",
+                        .PostAsJsonAsync(
+                            "/api/users/create",
+                            user,
                             cancellationToken
                         );
 
             var result =
                 await
                     response
-                        .TryParseResponse<ApiResponse>(
+                        .TryParseResponse<CreateUserResponse>(
                             logger,
                             cancellationToken
                         );

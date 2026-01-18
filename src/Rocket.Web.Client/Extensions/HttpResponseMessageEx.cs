@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Infrastructure.Json;
 
-namespace Rocket.Web.Host.Extensions
+namespace Rocket.Web.Client.Extensions
 {
     public static class HttpResponseMessageEx
     {
