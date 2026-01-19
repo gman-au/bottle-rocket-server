@@ -1,14 +1,14 @@
 ﻿using System;
-using Rocket.Domain.Workflows;
+using Rocket.Domain.Vendors.Dropbox;
 using Rocket.Dropbox.Contracts;
 using Rocket.Infrastructure.Mapping;
 
 namespace Rocket.Dropbox.Infrastructure
 {
-    public class DropboxUploadStepMapper(IServiceProvider serviceProvider)
-        : WorkflowStepModelMapperBase<DropboxUploadStep, DropboxUploadStepSpecifics>(serviceProvider)
+    public class DropboxUploadExecutionStepMapper(IServiceProvider serviceProvider)
+        : ExecutionStepModelMapperBase<DropboxUploadExecutionStep, DropboxUploadExecutionStepSpecifics>(serviceProvider)
     {
-        public override DropboxUploadStep For(DropboxUploadStepSpecifics value)
+        public override DropboxUploadExecutionStep For(DropboxUploadExecutionStepSpecifics value)
         {
             var result =
                 base
@@ -19,7 +19,7 @@ namespace Rocket.Dropbox.Infrastructure
             return result;
         }
 
-        public override DropboxUploadStepSpecifics From(DropboxUploadStep value)
+        public override DropboxUploadExecutionStepSpecifics From(DropboxUploadExecutionStep value)
         {
             var result =
                 base

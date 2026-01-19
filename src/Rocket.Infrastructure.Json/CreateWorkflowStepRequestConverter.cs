@@ -59,7 +59,7 @@ namespace Rocket.Infrastructure.Json
                     value
                         .Step
                         .GetType()
-                        .GetDiscriminator();
+                        .GetWorkflowStepTypeDiscriminator();
 
                 writer.WriteString(
                     "$type",

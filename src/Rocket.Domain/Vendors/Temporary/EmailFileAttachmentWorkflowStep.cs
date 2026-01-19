@@ -1,8 +1,9 @@
 ﻿using Rocket.Domain.Enum;
+using Rocket.Domain.Workflows;
 
-namespace Rocket.Domain.Workflows
+namespace Rocket.Domain.Vendors.Temporary
 {
-    public record EmailFileAttachmentStep : BaseWorkflowStep
+    public record EmailFileAttachmentWorkflowStep : BaseWorkflowStep
     {
         public override int InputType { get; set; } = (int)WorkflowFormatTypeEnum.File;
 

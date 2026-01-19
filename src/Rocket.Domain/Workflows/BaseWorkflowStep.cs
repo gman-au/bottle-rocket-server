@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
+using Rocket.Domain.Vendors.Dropbox;
+using Rocket.Domain.Vendors.Temporary;
 
 namespace Rocket.Domain.Workflows
 {
     [BsonDiscriminator(RootClass = true)] 
-    [BsonKnownTypes(typeof(DropboxUploadStep))]
-    [BsonKnownTypes(typeof(EmailFileAttachmentStep))]
+    [BsonKnownTypes(typeof(DropboxUploadWorkflowStep))]
+    [BsonKnownTypes(typeof(EmailFileAttachmentWorkflowStep))]
     public abstract record BaseWorkflowStep
     {
         public string Id { get; set; }

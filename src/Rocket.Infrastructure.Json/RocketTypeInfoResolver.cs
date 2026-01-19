@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
+using Rocket.Api.Contracts.Executions;
 using Rocket.Api.Contracts.Workflows;
 
 namespace Rocket.Infrastructure.Json
@@ -36,9 +37,32 @@ namespace Rocket.Infrastructure.Json
                                     );
                             }
                         }
+
+                        if (typeInfo.Type == typeof(ExecutionStepSummary))
+                        {
+                            typeInfo.PolymorphismOptions =
+                                new JsonPolymorphismOptions
+                                {
+                                    TypeDiscriminatorPropertyName = "$type"
+                                };
+                            
+                            foreach (var kvp in ExecutionStepTypeDiscriminatorMap.TypeDiscriminatorMap)
+                            {
+                                typeInfo
+                                    .PolymorphismOptions
+                                    .DerivedTypes
+                                    .Add(
+                                        new JsonDerivedType(
+                                            kvp.Key,
+                                            kvp.Value
+                                        )
+                                    );
+                            }
+                        }
                     }
                 }
             };
+
 
         public static readonly JsonSerializerOptions DefaultJsonSerializationOptions = new()
         {

@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using Rocket.Api.Contracts.Workflows;
 using Rocket.Dropbox.Contracts;
 
 namespace Rocket.Infrastructure.Json
 {
-    public static class WorkflowStepTypeDiscriminatorMap
+    public static class ExecutionStepTypeDiscriminatorMap
     {
         public static readonly Dictionary<Type, string> TypeDiscriminatorMap = new()
         {
-            { typeof(DropboxUploadWorkflowStepSpecifics), "dropbox_upload_workflow" },
-            { typeof(EmailFileAttachmentStepSpecifics), "email_file_attachment" }
+            { typeof(DropboxUploadExecutionStepSpecifics), "dropbox_upload_execution" }
         };
 
-        public static string GetWorkflowStepTypeDiscriminator(this Type type)
+        public static string GetExecutionStepTypeDiscriminator(this Type type)
         {
             return
                 TypeDiscriminatorMap

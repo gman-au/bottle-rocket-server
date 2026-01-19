@@ -13,9 +13,11 @@ namespace Rocket.Domain.Executions
         
         public string UserId { get; set; }
         
+        public string WorkflowId { get; set; }
+        
         public int? MatchingPageSymbol { get; set; }
         
-        public DateTime RunDate { get; set; }
+        public DateTime? RunDate { get; set; }
         
         public string Name { get; set; }
         

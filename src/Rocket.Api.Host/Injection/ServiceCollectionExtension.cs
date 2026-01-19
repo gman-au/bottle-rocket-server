@@ -78,7 +78,9 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IThumbnailer, Thumbnailer>()
                 .AddTransient<IUserManager, UserManager>()
                 .AddTransient<IWorkflowStepModelMapperRegistry, WorkflowStepModelMapperRegistry>()
-                .AddTransient<IExecutionStepModelMapperRegistry, ExecutionStepModelMapperRegistry>();
+                .AddTransient<IExecutionStepModelMapperRegistry, ExecutionStepModelMapperRegistry>()
+                .AddTransient<IStepModelClonerRegistry, StepModelClonerRegistry>()
+                .AddTransient<IWorkflowCloner, WorkflowCloner>();
 
             if (environment.IsDevelopment())
                 services

@@ -111,7 +111,7 @@ namespace Rocket.Web.Host.Infrastructure
                     .AppendLine($"{currentParentAlias} --> |{step.InputTypeName}| {currentChildAlias}");
 
                 var route = string.Empty;
-                if (step is DropboxUploadStepSpecifics dropboxUploadStep)
+                if (step is DropboxUploadWorkflowStepSpecifics dropboxUploadStep)
                 {
                     route = $"/MyWorkflow/Dropbox/{workflowId}/Steps/{step.Id}/UpdateStep";
                 }

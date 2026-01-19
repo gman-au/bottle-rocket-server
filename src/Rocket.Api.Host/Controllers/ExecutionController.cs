@@ -12,7 +12,6 @@ using Rocket.Api.Contracts.Users;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
-using Rocket.Domain.Executions;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers
@@ -24,6 +23,7 @@ namespace Rocket.Api.Host.Controllers
         ILogger<ExecutionController> logger,
         IUserManager userManager,
         IWorkflowRepository workflowRepository,
+        IWorkflowCloner workflowCloner,
         IExecutionRepository executionRepository,
         IExecutionStepModelMapperRegistry executionStepModelMapperRegistry
     ) : RocketControllerBase(userManager)
@@ -186,20 +186,24 @@ namespace Rocket.Api.Host.Controllers
                 user
                     .Id;
 
-            if (await
+            var workflow =
+                await
                     workflowRepository
                         .GetWorkflowByIdAsync(
                             userId,
                             request.WorkflowId,
                             cancellationToken
-                        ) == null)
+                        );
+
+            if (workflow == null)
                 throw new RocketException(
                     "Workflow does not exist for this user.",
                     ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                 );
 
-            // TODO: clone based on workflow
-            var newExecution = new Execution();
+            var newExecution =
+                workflowCloner
+                    .Clone(workflow);
 
             var result =
                 await
