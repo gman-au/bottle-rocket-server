@@ -77,7 +77,8 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IActiveAdminChecker, ActiveAdminChecker>()
                 .AddTransient<IThumbnailer, Thumbnailer>()
                 .AddTransient<IUserManager, UserManager>()
-                .AddTransient<IWorkflowStepModelMapperRegistry, WorkflowStepModelMapperRegistry>();
+                .AddTransient<IWorkflowStepModelMapperRegistry, WorkflowStepModelMapperRegistry>()
+                .AddTransient<IExecutionStepModelMapperRegistry, ExecutionStepModelMapperRegistry>();
 
             if (environment.IsDevelopment())
                 services
@@ -125,6 +126,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IConnectorRepository, MongoDbConnectorRepository>()
                 .AddTransient<IWorkflowRepository, MongoDbWorkflowRepository>()
                 .AddTransient<IWorkflowStepRepository, MongoDbWorkflowStepRepository>()
+                .AddTransient<IExecutionRepository, MongoDbExecutionRepository>()
                 .AddTransient<IUserRepository, MongoDbUserRepository>();
 
             return services;

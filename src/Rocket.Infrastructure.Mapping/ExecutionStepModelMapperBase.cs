@@ -2,27 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Rocket.Api.Contracts.Workflows;
+using Rocket.Api.Contracts.Executions;
+using Rocket.Domain.Executions;
 using Rocket.Domain.Utils;
-using Rocket.Domain.Workflows;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Mapping
 {
-    public abstract class WorkflowStepModelMapperBase<TDomain, TView>(IServiceProvider serviceProvider)
-        : IWorkflowStepModelMapper<TDomain, TView>
-        where TDomain : BaseWorkflowStep, new()
-        where TView : WorkflowStepSummary, new()
+    public abstract class ExecutionStepModelMapperBase<TDomain, TView>(IServiceProvider serviceProvider)
+        : IExecutionStepModelMapper<TDomain, TView>
+        where TDomain : BaseExecutionStep, new()
+        where TView : ExecutionStepSummary, new()
     {
         public bool AppliesFor(Type type) => type == typeof(TView);
         public bool AppliesFrom(Type type) => type == typeof(TDomain);
 
-        private IWorkflowStepModelMapperRegistry _mapperRegistry;
+        private IExecutionStepModelMapperRegistry _mapperRegistry;
 
-        private IWorkflowStepModelMapperRegistry MapperRegistry =>
+        private IExecutionStepModelMapperRegistry MapperRegistry =>
             _mapperRegistry ??=
                 serviceProvider
-                    .GetRequiredService<IWorkflowStepModelMapperRegistry>();
+                    .GetRequiredService<IExecutionStepModelMapperRegistry>();
 
         public virtual TDomain For(TView value)
         {
@@ -87,7 +87,7 @@ namespace Rocket.Infrastructure.Mapping
         public Type DomainType => typeof(TDomain);
         public Type ViewType => typeof(TView);
 
-        public BaseWorkflowStep For(object value) => For((TView)value);
-        public WorkflowStepSummary From(object value) => From((TDomain)value);
+        public BaseExecutionStep For(object value) => For((TView)value);
+        public ExecutionStepSummary From(object value) => From((TDomain)value);
     }
 }

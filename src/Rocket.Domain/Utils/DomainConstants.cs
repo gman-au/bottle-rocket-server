@@ -18,6 +18,8 @@ namespace Rocket.Domain.Utils
         public const string RoleKey = "userRole";
 
         public const string VendorDropbox = "Dropbox";
+        
+        public const string UnknownType = "Unknown";
 
         public static readonly Dictionary<int, string> ConnectorTypes = new()
         {

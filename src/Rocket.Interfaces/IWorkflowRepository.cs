@@ -21,12 +21,6 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
-        Task<Workflow> GetWorkflowByNameAsync(
-            string userId,
-            string name,
-            CancellationToken cancellationToken
-        );
-
         Task<(IEnumerable<Workflow> records, long totalRecordCount)> FetchWorkflowsAsync(
             string userId,
             int startIndex,

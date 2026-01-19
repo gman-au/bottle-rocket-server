@@ -24,7 +24,8 @@ namespace Rocket.Api.Host.Controllers
     public class WorkflowController(
         ILogger<WorkflowController> logger,
         IUserManager userManager,
-        IWorkflowRepository workflowRepository
+        IWorkflowRepository workflowRepository,
+        IWorkflowStepModelMapperRegistry workflowStepModelMapperRegistry
     ) : RocketControllerBase(userManager)
     {
         [HttpPost("fetch")]
@@ -404,7 +405,17 @@ namespace Rocket.Api.Host.Controllers
                     IsActive = workflow.IsActive,
                     Steps =
                         (workflow.Steps ?? [])
-                        .Select(o => o.MapWorkflowStepToSpecific())
+                        .Select(o =>
+                            {
+                                var mapper =
+                                    workflowStepModelMapperRegistry
+                                        .GetMapperForDomain(o.GetType());
+                                
+                                return 
+                                    mapper
+                                        .From(o);
+                            }
+                        )
                 };
 
             return

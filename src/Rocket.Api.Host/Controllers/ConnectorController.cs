@@ -79,7 +79,7 @@ namespace Rocket.Api.Host.Controllers
                                             .ConnectorTypes
                                             .GetValueOrDefault(
                                                 o.ConnectorType,
-                                                "Unknown"
+                                                DomainConstants.UnknownType
                                             ),
                                     ConnectorName = o.ConnectorName,
                                     CreatedAt = o.CreatedAt.ToLocalTime(),

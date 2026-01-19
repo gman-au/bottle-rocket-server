@@ -10,8 +10,6 @@ namespace Rocket.Domain.Workflows
 
         public override string StepName { get; set; } = "Upload file to Dropbox";
 
-        // metadata here e.g. "SubFolder", "FileName"
-
         public string Subfolder { get; set; }
     }
 }

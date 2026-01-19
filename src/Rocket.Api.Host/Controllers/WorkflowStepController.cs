@@ -133,10 +133,13 @@ namespace Rocket.Api.Host.Controllers
                     ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                 );
 
-            // serialize to type
+            var mapper =
+                workflowStepModelMapperRegistry
+                    .GetMapperForDomain(workflowStep.GetType());
+
             var response =
-                workflowStep
-                    .MapWorkflowStepToSpecific();
+                mapper
+                    .From(workflowStep);
 
             return
                 response
