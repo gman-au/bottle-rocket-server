@@ -4,6 +4,6 @@ namespace Rocket.Web.Host.Infrastructure
 {
     public interface IWorkflowMermaidConverter
     {
-        string Convert(MyWorkflowSummary workflow);
+        string Convert(WorkflowSummary workflow);
     }
 }

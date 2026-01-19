@@ -13,7 +13,7 @@ namespace Rocket.Web.Host.Infrastructure
         private const string AddNewStep = "+ Add New Step";
         private const string AddBackgroundButtonColor = "#a8ef6d";
 
-        public string Convert(MyWorkflowSummary workflow)
+        public string Convert(WorkflowSummary workflow)
         {
             using var aliasEnumerator =
                 GenerateSequence()

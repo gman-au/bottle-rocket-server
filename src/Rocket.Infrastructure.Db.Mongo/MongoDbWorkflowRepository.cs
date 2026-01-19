@@ -25,8 +25,8 @@ namespace Rocket.Infrastructure.Db.Mongo
 
         public async Task<(IEnumerable<Workflow> records, long totalRecordCount)> FetchWorkflowsAsync(
             string userId,
-            int startIndex,
-            int recordCount,
+            int? startIndex,
+            int? recordCount,
             CancellationToken cancellationToken
         ) => await
             FetchAllPagedAndFilteredRecordsAsync(

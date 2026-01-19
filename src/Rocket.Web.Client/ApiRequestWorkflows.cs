@@ -40,7 +40,7 @@ namespace Rocket.Web.Client
             return result;
         }
 
-        public async Task<MyWorkflowSummary> GetWorkflowByIdAsync(
+        public async Task<WorkflowSummary> GetWorkflowByIdAsync(
             string id,
             CancellationToken cancellationToken
         )
@@ -59,7 +59,7 @@ namespace Rocket.Web.Client
             var result =
                 await
                     response
-                        .TryParseResponse<MyWorkflowSummary>(
+                        .TryParseResponse<WorkflowSummary>(
                             logger,
                             cancellationToken
                         );

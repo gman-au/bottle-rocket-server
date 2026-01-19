@@ -26,8 +26,5 @@ namespace Rocket.Api.Contracts.Workflows
         
         [JsonPropertyName("is_active")]
         public bool? IsActive { get; set; }
-        
-        [JsonPropertyName("steps")]
-        public IEnumerable<WorkflowStepSummary> Steps { get; set; }
     }
 }

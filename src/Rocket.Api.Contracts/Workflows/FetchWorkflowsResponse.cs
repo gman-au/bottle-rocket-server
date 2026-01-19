@@ -6,7 +6,7 @@ namespace Rocket.Api.Contracts.Workflows
     public class FetchWorkflowsResponse : ApiResponse
     {
         [JsonPropertyName("workflows")]
-        public IEnumerable<WorkflowSummary> Workflows { get; set; }
+        public IEnumerable<MyWorkflowSummary> Workflows { get; set; }
         
         [JsonPropertyName("total_records")]
         public int TotalRecords { get; set; }

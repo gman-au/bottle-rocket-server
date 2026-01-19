@@ -5,9 +5,9 @@ namespace Rocket.Api.Contracts.Workflows
     public class FetchWorkflowsRequest
     {
         [JsonPropertyName("start_index")]
-        public int StartIndex { get; set; }
+        public int? StartIndex { get; set; }
         
         [JsonPropertyName("record_count")]
-        public int RecordCount { get; set; }
+        public int? RecordCount { get; set; }
     }
 }

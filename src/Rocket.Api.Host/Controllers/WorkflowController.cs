@@ -76,7 +76,7 @@ namespace Rocket.Api.Host.Controllers
                         records
                             .Select(
                                 o =>
-                                    new WorkflowSummary
+                                    new MyWorkflowSummary
                                     {
                                         Id = o.Id,
                                         MatchingPageSymbol = o.MatchingPageSymbol,

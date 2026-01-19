@@ -48,7 +48,7 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         );
 
-        Task<MyWorkflowSummary> GetWorkflowByIdAsync(
+        Task<WorkflowSummary> GetWorkflowByIdAsync(
             string id,
             CancellationToken cancellationToken
         );
