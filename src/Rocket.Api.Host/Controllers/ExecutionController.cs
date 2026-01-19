@@ -80,6 +80,7 @@ namespace Rocket.Api.Host.Controllers
                                         Id = o.Id,
                                         UserId = o.UserId,
                                         MatchingPageSymbol = o.MatchingPageSymbol,
+                                        CreatedAt = o.CreatedAt,
                                         RunDate = o.RunDate,
                                         Name = o.Name,
                                         ExecutionStatus = o.ExecutionStatus
@@ -285,6 +286,7 @@ namespace Rocket.Api.Host.Controllers
                     UserId = execution.UserId,
                     MatchingPageSymbol = execution.MatchingPageSymbol,
                     RunDate = execution.RunDate,
+                    CreatedAt = execution.CreatedAt,
                     Name = execution.Name,
                     ExecutionStatus = execution.ExecutionStatus,
                     Steps =

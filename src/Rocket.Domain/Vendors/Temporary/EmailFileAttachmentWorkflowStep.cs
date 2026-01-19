@@ -11,6 +11,8 @@ namespace Rocket.Domain.Vendors.Temporary
 
         public override string StepName { get; set; } = "Send file attachment as email";
 
+        public override string RequiresConnectorCode { get; set; } = string.Empty;
+
         // metadata here e.g. "SubFolder", "FileName"
 
         public string TargetEmailAddress { get; set; }

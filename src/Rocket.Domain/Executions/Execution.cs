@@ -17,6 +17,8 @@ namespace Rocket.Domain.Executions
         
         public int? MatchingPageSymbol { get; set; }
         
+        public DateTime CreatedAt { get; set; }
+        
         public DateTime? RunDate { get; set; }
         
         public string Name { get; set; }

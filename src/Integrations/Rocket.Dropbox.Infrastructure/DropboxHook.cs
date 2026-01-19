@@ -23,7 +23,7 @@ namespace Rocket.Dropbox.Infrastructure
                     connectorRepository
                         .GetConnectorByNameAsync<DropboxConnector>(
                             userId,
-                            DomainConstants.VendorDropbox,
+                            DomainConstants.ConnectorNameDropboxApi,
                             cancellationToken
                         );
 

@@ -17,6 +17,9 @@ namespace Rocket.Api.Contracts.Workflows
         [JsonPropertyName("input_type_name")]
         public string InputTypeName { get; set; }
 
+        [JsonPropertyName("requires_connector_code")]
+        public string RequiresConnectorCode { get; set; }
+
         [JsonPropertyName("output_type")]
         public int OutputType { get; set; }
 

@@ -54,6 +54,7 @@ namespace Rocket.Infrastructure.Mapping
                 Id = value.Id,
                 ConnectionId = value.ConnectionId,
                 StepName = value.StepName,
+                RequiresConnectorCode = value.RequiresConnectorCode,
                 InputTypeName =
                     DomainConstants
                         .WorkflowFormatTypes

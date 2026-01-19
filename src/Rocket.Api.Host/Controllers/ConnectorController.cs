@@ -56,14 +56,24 @@ namespace Rocket.Api.Host.Controllers
                     .Id;
 
             var (records, totalRecordCount) =
-                await
-                    connectorRepository
-                        .FetchConnectorsAsync(
-                            userId,
-                            request.StartIndex,
-                            request.RecordCount,
-                            cancellationToken
-                        );
+                string.IsNullOrEmpty(request.Code)
+                    ? await
+                        connectorRepository
+                            .FetchConnectorsAsync(
+                                userId,
+                                request.StartIndex.GetValueOrDefault(),
+                                request.RecordCount.GetValueOrDefault(),
+                                cancellationToken
+                            )
+                    : await
+                        connectorRepository
+                            .FetchConnectorsByCodeAndUserAsync(
+                                userId,
+                                request.StartIndex,
+                                request.RecordCount,
+                                request.Code,
+                                cancellationToken
+                            );
 
             var response =
                 new FetchConnectorsResponse

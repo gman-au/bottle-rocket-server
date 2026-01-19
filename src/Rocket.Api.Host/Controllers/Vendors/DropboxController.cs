@@ -69,7 +69,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
                 connectorRepository
                     .ConnectorExistsForUserAsync(
                         userId,
-                        DomainConstants.VendorDropbox,
+                        DomainConstants.ConnectorNameDropboxApi,
                         cancellationToken
                     )
                )

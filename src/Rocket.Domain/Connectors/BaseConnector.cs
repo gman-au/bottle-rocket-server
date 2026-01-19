@@ -19,6 +19,8 @@ namespace Rocket.Domain.Connectors
 
         public abstract string ConnectorName { get; set; }
 
+        public abstract string ConnectorCode { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         public DateTime? LastUpdatedAt { get; set; }

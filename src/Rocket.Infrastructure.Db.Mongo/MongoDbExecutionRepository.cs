@@ -33,7 +33,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                         u => u.UserId,
                         userId
                     ),
-                o => o.RunDate,
+                o => o.CreatedAt,
                 cancellationToken
             );
 

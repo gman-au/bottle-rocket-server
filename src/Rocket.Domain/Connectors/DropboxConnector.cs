@@ -7,7 +7,9 @@ namespace Rocket.Domain.Connectors
     {
         public override int ConnectorType { get; set; } = (int)ConnectorTypeEnum.FileForwarding;
 
-        public override string ConnectorName { get; set; } = DomainConstants.VendorDropbox;
+        public override string ConnectorName { get; set; } = DomainConstants.ConnectorNameDropboxApi;
+        
+        public override string ConnectorCode { get; set; } = DomainConstants.ConnectorCodeDropboxApi;
 
         public string AppKey { get; set; }
 

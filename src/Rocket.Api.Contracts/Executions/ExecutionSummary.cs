@@ -15,6 +15,9 @@ namespace Rocket.Api.Contracts.Executions
         [JsonPropertyName("matching_page_symbol")]
         public int? MatchingPageSymbol { get; set; }
         
+        [JsonPropertyName("created_at")]
+        public DateTime? CreatedAt { get; set; }
+        
         [JsonPropertyName("run_date")]
         public DateTime? RunDate { get; set; }
         

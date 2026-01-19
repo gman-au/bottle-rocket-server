@@ -34,6 +34,14 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
+        Task<(IEnumerable<BaseConnector> records, long totalRecordCount)> FetchConnectorsByCodeAndUserAsync(
+            string userId,
+            int? startIndex,
+            int? recordCount,
+            string code,
+            CancellationToken cancellationToken
+        );
+
         Task<BaseConnector> InsertConnectorAsync(
             BaseConnector baseConnector,
             CancellationToken cancellationToken

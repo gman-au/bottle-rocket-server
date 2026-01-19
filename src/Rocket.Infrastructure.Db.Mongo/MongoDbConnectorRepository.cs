@@ -13,7 +13,10 @@ namespace Rocket.Infrastructure.Db.Mongo
     public class MongoDbConnectorRepository(
         ILogger<MongoDbConnectorRepository> logger,
         IMongoDbClient mongoDbClient
-    ) : MongoDbRepositoryBase<BaseConnector>(mongoDbClient, logger), IConnectorRepository
+    ) : MongoDbRepositoryBase<BaseConnector>(
+        mongoDbClient,
+        logger
+    ), IConnectorRepository
     {
         protected override string CollectionName => MongoConstants.ConnectorsCollection;
 
@@ -22,7 +25,10 @@ namespace Rocket.Infrastructure.Db.Mongo
             CancellationToken cancellationToken
         ) =>
             await
-                InsertRecordAsync(baseConnector, cancellationToken);
+                InsertRecordAsync(
+                    baseConnector,
+                    cancellationToken
+                );
 
         public async Task<(IEnumerable<BaseConnector> records, long totalRecordCount)> FetchConnectorsAsync(
             string userId,
@@ -39,6 +45,33 @@ namespace Rocket.Infrastructure.Db.Mongo
                         .Eq(
                             u => u.UserId,
                             userId
+                        ),
+                    o => o.CreatedAt,
+                    cancellationToken
+                );
+
+        public async Task<(IEnumerable<BaseConnector> records, long totalRecordCount)> FetchConnectorsByCodeAndUserAsync(
+            string userId,
+            int? startIndex,
+            int? recordCount,
+            string code,
+            CancellationToken cancellationToken
+        ) =>
+            await
+                FetchAllPagedAndFilteredRecordsAsync(
+                    startIndex,
+                    recordCount,
+                    Builders<BaseConnector>
+                        .Filter
+                        .Eq(
+                            u => u.UserId,
+                            userId
+                        ) &
+                    Builders<BaseConnector>
+                        .Filter
+                        .Eq(
+                            o => o.ConnectorCode,
+                            code
                         ),
                     o => o.CreatedAt,
                     cancellationToken

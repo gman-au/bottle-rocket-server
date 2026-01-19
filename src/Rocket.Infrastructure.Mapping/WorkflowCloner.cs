@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Workflows;
@@ -15,6 +16,7 @@ namespace Rocket.Infrastructure.Mapping
                 UserId = workflow.UserId,
                 WorkflowId = workflow.Id,
                 MatchingPageSymbol = workflow.MatchingPageSymbol,
+                CreatedAt = DateTime.UtcNow,
                 RunDate = null,
                 Name = workflow.Name,
                 ExecutionStatus = (int)ExecutionStatusEnum.NotRun,
