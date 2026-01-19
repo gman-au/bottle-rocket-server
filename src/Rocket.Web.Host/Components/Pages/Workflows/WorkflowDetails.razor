@@ -152,6 +152,7 @@
     public string Id { get; set; }
 
     private string MermaidText { get; set; }
+    
     private DotNetObjectReference<WorkflowDetails> _dotNetRef;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -159,11 +160,17 @@
         if (firstRender)
         {
             _dotNetRef = DotNetObjectReference.Create(this);
-            await JsRuntime.InvokeVoidAsync("storeDotNetRef", _dotNetRef);
+            await 
+                JsRuntime
+                    .InvokeVoidAsync("storeDotNetRef", _dotNetRef);
         
-            // Give DOM a moment to render the mermaid text, then run
-            await Task.Delay(100);
-            await JsRuntime.InvokeVoidAsync("mermaid.run");
+            await 
+                Task
+                    .Delay(100);
+            
+            await 
+                JsRuntime
+                    .InvokeVoidAsync("mermaid.run");
         }
     }
 
@@ -182,8 +189,12 @@
         if (!_disposed)
         {
             _disposed = true;
-            _dotNetRef?.Dispose();
-            base.Dispose();
+            
+            _dotNetRef?
+                .Dispose();
+            
+            base
+                .Dispose();
         }
     }
 
