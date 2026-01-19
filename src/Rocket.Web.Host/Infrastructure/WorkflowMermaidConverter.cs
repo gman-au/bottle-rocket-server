@@ -34,7 +34,7 @@ namespace Rocket.Web.Host.Infrastructure
             entitiesBuilder
                 .AppendLine($"{parent}@{{ shape: lin-rect, label: \"This workflow\"}}");
 
-            var workflowId = 
+            var workflowId =
                 workflow
                     .Id;
 
@@ -50,22 +50,24 @@ namespace Rocket.Web.Host.Infrastructure
                 null,
                 null
             );
-            
+
             aliasEnumerator
                 .MoveNext();
-            
+
             // add the "+ Add Step" option for each child
             entitiesBuilder
-                .AppendLine($"{aliasEnumerator.Current}([{AddNewStep}]):::clickable");
+                .AppendLine($"{aliasEnumerator.Current}([\"{AddNewStep}\"]):::clickable");
 
             linksBuilder
-                .AppendLine($"{parent} --> |{DomainConstants.WorkflowFormatTypes[(int)WorkflowFormatTypeEnum.ImageData]}| {aliasEnumerator.Current}");
+                .AppendLine(
+                    $"{parent} --> |{DomainConstants.WorkflowFormatTypes[(int)WorkflowFormatTypeEnum.ImageData]}| {aliasEnumerator.Current}"
+                );
 
             clicksBuilder
                 .AppendLine(
                     $"click {aliasEnumerator.Current} call blazorNavigateToRoute(\"/MyWorkflow/{workflowId}/AddStep\")"
                 );
-            
+
             styleBuilder
                 .AppendLine($"style {aliasEnumerator.Current} fill:{AddBackgroundButtonColor}");
 
@@ -100,12 +102,25 @@ namespace Rocket.Web.Host.Infrastructure
             {
                 aliasEnumerator
                     .MoveNext();
-                
-                var currentChildAlias = 
+
+                var missingConnection = string.IsNullOrEmpty(step.ConnectionId);
+
+                var currentChildAlias =
                     aliasEnumerator
                         .Current;
 
-                var entityLine = $"{currentChildAlias}({step.StepName})";
+                var entityLine = $"{currentChildAlias}";
+                entityLine += "(\"";
+                if (missingConnection)
+                {
+                    entityLine += "\u26a0\ufe0f";
+                }
+                else
+                {
+                    entityLine += "\u2705";
+                }
+                entityLine += $" {step.StepName}";
+                entityLine += "\")";
 
                 linksBuilder
                     .AppendLine($"{currentParentAlias} --> |{step.InputTypeName}| {currentChildAlias}");
@@ -119,13 +134,13 @@ namespace Rocket.Web.Host.Infrastructure
                 if (!string.IsNullOrEmpty(route))
                 {
                     entityLine += ":::clickable";
-                    
+
                     clicksBuilder
                         .AppendLine(
                             $"click {currentChildAlias} call blazorNavigateToRoute(\"{route}\")"
                         );
                 }
-                
+
                 entitiesBuilder
                     .AppendLine(entityLine);
 
@@ -161,7 +176,7 @@ namespace Rocket.Web.Host.Infrastructure
                         .AppendLine(
                             $"click {aliasEnumerator.Current} call blazorNavigateToRoute(\"/MyWorkflow/{workflowId}/Steps/{currentParentId}/AddStep\")"
                         );
-            
+
                     styleBuilder
                         .AppendLine($"style {aliasEnumerator.Current} fill:{AddBackgroundButtonColor}");
                 }
