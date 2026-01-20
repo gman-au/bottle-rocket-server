@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -23,22 +25,53 @@ namespace Rocket.Infrastructure.Db.Mongo
 
         public async Task<(IEnumerable<Execution> records, long totalRecordCount)> FetchExecutionsAsync(
             string userId,
-            int startIndex,
-            int recordCount,
+            int? startIndex,
+            int? recordCount,
+            string scanId,
+            string workflowId,
             CancellationToken cancellationToken
-        ) => await
-            FetchAllPagedAndFilteredRecordsAsync(
-                startIndex,
-                recordCount,
+        )
+        {
+            var filter =
                 Builders<Execution>
                     .Filter
                     .Eq(
                         u => u.UserId,
                         userId
-                    ),
-                o => o.CreatedAt,
-                cancellationToken
-            );
+                    );
+
+            if (!string.IsNullOrWhiteSpace(scanId))
+            {
+                filter &=
+                    Builders<Execution>
+                        .Filter
+                        .Eq(
+                            o => o.ScanId,
+                            scanId
+                        );
+            }
+
+            if (!string.IsNullOrWhiteSpace(workflowId))
+            {
+                filter &=
+                    Builders<Execution>
+                        .Filter
+                        .Eq(
+                            o => o.WorkflowId,
+                            workflowId
+                        );
+            }
+
+            return
+                await
+                    FetchAllPagedAndFilteredRecordsAsync(
+                        startIndex,
+                        recordCount,
+                        filter,
+                        o => o.CreatedAt,
+                        cancellationToken
+                    );
+        }
 
         public async Task<bool> DeleteExecutionAsync(
             string userId,
@@ -153,5 +186,31 @@ namespace Rocket.Infrastructure.Db.Mongo
 
             return execution;
         }
+        
+        public async Task UpdateExecutionFieldAsync<TField>(
+            string executionId,
+            string userId,
+            Expression<Func<Execution, TField>> setter,
+            TField value,
+            CancellationToken cancellationToken
+        ) =>
+            await
+                ApplyUpdateToFilteredRecordFieldAsync(
+                    setter,
+                    value,
+                    Builders<Execution>
+                        .Filter
+                        .Eq(
+                            u => u.UserId,
+                            userId
+                        ) &
+                    Builders<Execution>
+                        .Filter
+                        .Eq(
+                            o => o.Id,
+                            executionId
+                        ),
+                    cancellationToken
+                );
     }
 }

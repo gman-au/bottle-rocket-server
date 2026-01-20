@@ -88,6 +88,18 @@
                         <GoBackButton BackPath="/MyScans"/>
                     </MudStack>
                 </MudItem>
+                <MudFlexBreak/>
+                <MudDivider Class="mt-4"/>
+                <MudItem xs="12">
+                    <MudText
+                        Align="Align.Center"
+                        Typo="Typo.h5"
+                        Color="Color.Primary"
+                        Class="mb-4">
+                        Previous runs
+                    </MudText>
+                </MudItem>
+                <PreviousWorkflowRuns Executions="@_executions"/>
             </MudGrid>
         }
     </MudPaper>
@@ -102,6 +114,7 @@
     public string Id { get; set; }
 
     private IEnumerable<MyWorkflowSummary> _availableWorkflows = [];
+    private IEnumerable<ExecutionSummary> _executions = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -134,6 +147,17 @@
                             BaseCancellationToken
                         )
                 ).Workflows;
+
+            _executions =
+                (await
+                    ApiRequestManager
+                        .GetExecutionsAsync(
+                            new FetchExecutionsRequest
+                            {
+                                ScanId = Id,
+                            }, BaseCancellationToken
+                        ))?
+                .Executions;
         }
         catch (Exception ex)
         {

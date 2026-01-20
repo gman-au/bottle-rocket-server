@@ -110,6 +110,11 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         );
 
+        Task<FetchExecutionsResponse> GetExecutionsAsync(
+            FetchExecutionsRequest request,
+            CancellationToken cancellationToken
+        );
+
         Task<ExecutionSummary> GetExecutionByIdAsync(
             string id,
             CancellationToken cancellationToken

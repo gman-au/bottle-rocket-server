@@ -52,6 +52,16 @@ namespace Rocket.Jobs.Service
                     ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                 );
 
+            await
+                executionRepository
+                    .UpdateExecutionFieldAsync(
+                        executionId,
+                        userId,
+                        o => o.RunDate,
+                        DateTime.UtcNow,
+                        cts.Token
+                    );
+            
             queue
                 .Enqueue(async token =>
                 {
@@ -91,6 +101,12 @@ namespace Rocket.Jobs.Service
                             .LogInformation("Job has completed: {id}", executionId);
 
                         // update execution status
+                        await
+                            UpdateExecutionStatusCallback(
+                                userId,
+                                executionId,
+                                (int)ExecutionStatusEnum.Completed
+                            );
                     }
                     catch (OperationCanceledException)
                     {
@@ -98,6 +114,12 @@ namespace Rocket.Jobs.Service
                             .LogInformation("Job was cancelled: {id}", executionId);
 
                         // update execution status
+                        await
+                            UpdateExecutionStatusCallback(
+                                userId,
+                                executionId,
+                                (int)ExecutionStatusEnum.Cancelled
+                            );
                     }
                     catch (RocketException ex)
                     {
@@ -105,6 +127,12 @@ namespace Rocket.Jobs.Service
                             .LogError(ex, "Job has failed: {id}", executionId);
 
                         // update execution status
+                        await
+                            UpdateExecutionStatusCallback(
+                                userId,
+                                executionId,
+                                (int)ExecutionStatusEnum.Errored
+                            );
                     }
                     finally
                     {
@@ -147,6 +175,23 @@ namespace Rocket.Jobs.Service
                         executionId,
                         userId,
                         executionStep,
+                        CancellationToken.None
+                    );
+        }
+
+        private async Task UpdateExecutionStatusCallback(
+            string userId,
+            string executionId,
+            int executionStatus
+        )
+        {
+            await
+                executionRepository
+                    .UpdateExecutionFieldAsync(
+                        executionId,
+                        userId,
+                        o => o.ExecutionStatus,
+                        executionStatus,
                         CancellationToken.None
                     );
         }

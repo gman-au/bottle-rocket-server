@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain.Executions;
@@ -9,8 +11,10 @@ namespace Rocket.Interfaces
     {
         Task<(IEnumerable<Execution> records, long totalRecordCount)> FetchExecutionsAsync(
             string userId,
-            int startIndex,
-            int recordCount,
+            int? startIndex,
+            int? recordCount,
+            string scanId,
+            string workflowId,
             CancellationToken cancellationToken
         );
 
@@ -28,6 +32,14 @@ namespace Rocket.Interfaces
 
         Task<Execution> InsertExecutionAsync(
             Execution execution,
+            CancellationToken cancellationToken
+        );
+
+        Task UpdateExecutionFieldAsync<TField>(
+            string executionId,
+            string userId,
+            Expression<Func<Execution, TField>> setter,
+            TField value,
             CancellationToken cancellationToken
         );
 

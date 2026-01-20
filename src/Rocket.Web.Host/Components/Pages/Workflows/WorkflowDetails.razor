@@ -1,4 +1,5 @@
 ﻿@page "/MyWorkflow/{id}"
+@using Rocket.Api.Contracts.Executions
 @using Rocket.Api.Contracts.Workflows
 @using Rocket.Domain.Enum
 @using Rocket.Interfaces
@@ -129,11 +130,23 @@
                     <MudItem sm="12" md="8">
                         <!-- form -->
                         <MudPaper Elevation="4" Class="p-4 mermaid-paper">
-                        <pre class="mermaid">
+                            <pre class="mermaid">
                     @MermaidText
                 </pre>
                         </MudPaper>
                     </MudItem>
+                    <MudFlexBreak/>
+                    <MudDivider Class="mt-4"/>
+                    <MudItem xs="12">
+                        <MudText
+                            Align="Align.Center"
+                            Typo="Typo.h5"
+                            Color="Color.Primary"
+                            Class="mb-4">
+                            Previous runs
+                        </MudText>
+                    </MudItem>
+                    <PreviousWorkflowRuns Executions="@_executions"/>
                 </MudGrid>
             </MudPaper>
         </MudForm>
@@ -148,31 +161,35 @@
     private bool _isLoading;
     private WorkflowSummary _currentModel = null;
     private MyWorkflowSummary _newModel = null;
+    private IEnumerable<ExecutionSummary> _executions = [];
 
     [Parameter]
     public string Id { get; set; }
 
     private string MermaidText { get; set; }
-    
+
     private DotNetObjectReference<WorkflowDetails> _dotNetRef;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            _dotNetRef = 
+            _dotNetRef =
                 DotNetObjectReference
                     .Create(this);
-            
-            await 
+
+            await
                 JsRuntime
-                    .InvokeVoidAsync("storeDotNetRef", _dotNetRef);
-        
-            await 
+                    .InvokeVoidAsync(
+                        "storeDotNetRef",
+                        _dotNetRef
+                    );
+
+            await
                 Task
                     .Delay(100);
-            
-            await 
+
+            await
                 JsRuntime
                     .InvokeVoidAsync("mermaid.run");
         }
@@ -193,10 +210,10 @@
         if (!_disposed)
         {
             _disposed = true;
-            
+
             _dotNetRef?
                 .Dispose();
-            
+
             base
                 .Dispose();
         }
@@ -236,6 +253,17 @@
             MermaidText =
                 WorkflowMermaidConverter
                     .Convert(_currentModel);
+
+            _executions =
+                (await
+                    ApiRequestManager
+                        .GetExecutionsAsync(
+                            new FetchExecutionsRequest
+                            {
+                                WorkflowId = Id,
+                            }, BaseCancellationToken
+                        ))?
+                .Executions;
         }
         catch (Exception ex)
         {

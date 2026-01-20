@@ -8,6 +8,37 @@ namespace Rocket.Web.Client
 {
     public partial class ApiRequestManager
     {
+        public async Task<FetchExecutionsResponse> GetExecutionsAsync(
+            FetchExecutionsRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation("Received get executions request");
+
+            var response =
+                await
+                    authenticatedApiClient
+                        .PostAsJsonAsync(
+                            "/api/executions/fetch",
+                            request,
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<FetchExecutionsResponse>(
+                            logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
+        
         public async Task<ExecutionSummary> GetExecutionByIdAsync(
             string id,
             CancellationToken cancellationToken

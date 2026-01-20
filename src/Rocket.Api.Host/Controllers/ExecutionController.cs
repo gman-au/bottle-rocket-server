@@ -66,6 +66,8 @@ namespace Rocket.Api.Host.Controllers
                             userId,
                             request.StartIndex,
                             request.RecordCount,
+                            request.ScanId,
+                            request.WorkflowId,
                             cancellationToken
                         );
 
@@ -74,18 +76,19 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Executions =
                         records
-                            .Select(o =>
-                                new ExecutionSummary
-                                {
-                                    Id = o.Id,
-                                    UserId = o.UserId,
-                                    ScanId = o.ScanId,
-                                    MatchingPageSymbol = o.MatchingPageSymbol,
-                                    CreatedAt = o.CreatedAt,
-                                    RunDate = o.RunDate,
-                                    Name = o.Name,
-                                    ExecutionStatus = o.ExecutionStatus
-                                }
+                            .Select(
+                                o =>
+                                    new ExecutionSummary
+                                    {
+                                        Id = o.Id,
+                                        UserId = o.UserId,
+                                        ScanId = o.ScanId,
+                                        MatchingPageSymbol = o.MatchingPageSymbol,
+                                        CreatedAt = o.CreatedAt,
+                                        RunDate = o.RunDate,
+                                        Name = o.Name,
+                                        ExecutionStatus = o.ExecutionStatus
+                                    }
                             ),
                     TotalRecords = (int)totalRecordCount
                 };
@@ -211,7 +214,10 @@ namespace Rocket.Api.Host.Controllers
 
             var newExecution =
                 workflowCloner
-                    .Clone(workflow, request.ScanId);
+                    .Clone(
+                        workflow,
+                        request.ScanId
+                    );
 
             var result =
                 await
@@ -445,7 +451,8 @@ namespace Rocket.Api.Host.Controllers
                     ExecutionStatus = execution.ExecutionStatus,
                     Steps =
                         (execution.Steps ?? [])
-                        .Select(o =>
+                        .Select(
+                            o =>
                             {
                                 var mapper =
                                     executionStepModelMapperRegistry

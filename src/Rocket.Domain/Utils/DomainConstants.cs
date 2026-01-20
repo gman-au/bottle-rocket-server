@@ -37,5 +37,14 @@ namespace Rocket.Domain.Utils
             { (int)WorkflowFormatTypeEnum.RawTextData, "Raw Text Data" },
         };
 
+        public static readonly Dictionary<int, string> ExecutionStatusTypes = new()
+        {
+            { (int)ExecutionStatusEnum.NotRun, "Not run" },
+            { (int)ExecutionStatusEnum.Running, "Running" },
+            { (int)ExecutionStatusEnum.Completed, "Completed" },
+            { (int)ExecutionStatusEnum.Errored, "Errored" },
+            { (int)ExecutionStatusEnum.Cancelled, "Cancelled" }
+        };
+
     }
 }

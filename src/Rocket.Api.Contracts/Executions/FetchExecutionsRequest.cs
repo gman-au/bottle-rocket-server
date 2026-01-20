@@ -5,9 +5,15 @@ namespace Rocket.Api.Contracts.Executions
     public class FetchExecutionsRequest
     {
         [JsonPropertyName("start_index")]
-        public int StartIndex { get; set; }
+        public int? StartIndex { get; set; }
         
         [JsonPropertyName("record_count")]
-        public int RecordCount { get; set; }
+        public int? RecordCount { get; set; }
+
+        [JsonPropertyName("workflow_id")]
+        public string WorkflowId { get; set; }
+
+        [JsonPropertyName("scan_id")]
+        public string ScanId { get; set; }
     }
 }
