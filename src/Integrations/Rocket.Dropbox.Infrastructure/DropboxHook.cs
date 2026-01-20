@@ -8,10 +8,7 @@ using Rocket.Interfaces;
 
 namespace Rocket.Dropbox.Infrastructure
 {
-    public class DropboxHook(
-        IDropboxClientManager dropboxClientManager,
-        IConnectorRepository connectorRepository
-    ) : IIntegrationHook
+    public class DropboxHook(IDropboxClientManager dropboxClientManager) : IIntegrationHook
     {
         public bool IsApplicable(BaseExecutionStep step) => step is DropboxUploadExecutionStep;
 

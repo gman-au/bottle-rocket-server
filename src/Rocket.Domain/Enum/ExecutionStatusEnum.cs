@@ -6,6 +6,6 @@
         Running,
         Completed,
         Errored,
-        Aborted
+        Cancelled
     }
 }

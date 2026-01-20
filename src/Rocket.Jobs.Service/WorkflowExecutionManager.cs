@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Domain.Executions;
 using Rocket.Interfaces;
 
 namespace Rocket.Jobs.Service
@@ -73,11 +74,17 @@ namespace Rocket.Jobs.Service
                                 .CreateLinkedTokenSource(token, cts.Token);
 
                         // the task
-                        foreach (var childStep in execution.Steps)
+                        foreach (var childStep in execution.Steps ?? [])
                         {
                             await
                                 childStep
-                                    .AsTask(userId, context, linkedCts.Token);
+                                    .AsTask(
+                                        userId,
+                                        executionId,
+                                        context,
+                                        linkedCts.Token,
+                                        UpdateExecutionStepStatusCallback
+                                    );
                         }
 
                         logger
@@ -121,6 +128,27 @@ namespace Rocket.Jobs.Service
                     .CancelAsync();
 
             return true;
+        }
+
+        private async Task UpdateExecutionStepStatusCallback(
+            string userId,
+            string executionId,
+            int executionStatus,
+            BaseExecutionStep executionStep
+        )
+        {
+            executionStep.ExecutionStatus = executionStatus;
+            executionStep.RunDate = DateTime.UtcNow;
+
+            await
+                executionRepository
+                    .UpdateExecutionStepAsync(
+                        executionStep.Id,
+                        executionId,
+                        userId,
+                        executionStep,
+                        CancellationToken.None
+                    );
         }
     }
 }

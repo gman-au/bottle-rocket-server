@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Bson;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Workflows;
@@ -20,6 +21,7 @@ namespace Rocket.Infrastructure.Mapping
         {
             return new TExecutionStep
             {
+                Id = ObjectId.GenerateNewId().ToString(),
                 ConnectorId = value.ConnectorId,
                 InputType = value.InputType,
                 OutputType = value.OutputType,

@@ -1,35 +1,81 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
-using Rocket.Domain.Jobs;
 using Rocket.Interfaces;
 
 namespace Rocket.Jobs.Service
 {
     public static class WorkflowExecutionTask
     {
-        public static async Task<ExecutionStepArtifact> AsTask(
+        public static async Task AsTask(
             this BaseExecutionStep step,
             string userId,
+            string executionId,
             IWorkflowExecutionContext context,
-            CancellationToken cancellationToken
+            CancellationToken cancellationToken,
+            Func<string, string, int, BaseExecutionStep, Task> callbackFunc
         )
         {
-            // base execution step should have the connection ID
-            // we only need the applicable hook
-            var hook =
-                context
-                    .GetApplicableHook(step);
+            try
+            {
+                // base execution step should have the connection ID
+                // we only need the applicable hook
+                var hook =
+                    context
+                        .GetApplicableHook(step);
 
-            return
+                var artifactResult =
+                    await
+                        hook
+                            .ProcessAsync(
+                                context,
+                                step,
+                                userId,
+                                cancellationToken
+                            );
+
+                context
+                    .SetCurrentArtifact(artifactResult);
+
+                foreach (var childStep in step?.ChildSteps ?? [])
+                {
+                    await
+                        childStep
+                            .AsTask(
+                                userId,
+                                executionId,
+                                context,
+                                cancellationToken,
+                                callbackFunc
+                            );
+                }
+            }
+            catch (OperationCanceledException)
+            {
                 await
-                    hook
-                        .ProcessAsync(
-                            context,
-                            step,
-                            userId,
-                            cancellationToken
-                        );
+                    callbackFunc(
+                        userId,
+                        executionId,
+                        (int)ExecutionStatusEnum.Cancelled,
+                        step
+                    );
+
+                throw;
+            }
+            catch (Exception)
+            {
+                await
+                    callbackFunc(
+                        userId,
+                        executionId,
+                        (int)ExecutionStatusEnum.Errored,
+                        step
+                    );
+
+                throw;
+            }
         }
     }
 }
