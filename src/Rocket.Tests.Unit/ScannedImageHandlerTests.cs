@@ -100,7 +100,6 @@ namespace Rocket.Tests.Unit
                 _sut =
                     new ScannedImageHandler(
                         _fixture.Freeze<ILogger<ScannedImageHandler>>(),
-                        [],
                         _blobStore,
                         _sha256Calculator,
                         _scannedImageRepository,

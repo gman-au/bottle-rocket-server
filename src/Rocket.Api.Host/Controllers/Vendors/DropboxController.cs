@@ -24,8 +24,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
         ILogger<DropboxController> logger,
         IUserManager userManager,
         IDropboxClientManager dropboxClientManager,
-        IConnectorRepository connectorRepository,
-        IWorkflowStepRepository workflowStepRepository
+        IConnectorRepository connectorRepository
     ) : RocketControllerBase(userManager)
     {
         [HttpPost, Route("/api/dropbox/connectors/create")]

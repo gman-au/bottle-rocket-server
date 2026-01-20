@@ -10,7 +10,9 @@ namespace Rocket.Interfaces
         bool IsApplicable(BaseExecutionStep step);
 
         Task<ExecutionStepArtifact> ProcessAsync(
-            ExecutionStepArtifact artifact,
+            IWorkflowExecutionContext context,
+            BaseExecutionStep step,
+            string userId,
             CancellationToken cancellationToken
         );
     }

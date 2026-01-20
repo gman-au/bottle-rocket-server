@@ -79,6 +79,7 @@ namespace Rocket.Api.Host.Controllers
                                 {
                                     Id = o.Id,
                                     UserId = o.UserId,
+                                    ScanId = o.ScanId,
                                     MatchingPageSymbol = o.MatchingPageSymbol,
                                     CreatedAt = o.CreatedAt,
                                     RunDate = o.RunDate,
@@ -183,6 +184,12 @@ namespace Rocket.Api.Host.Controllers
                     user.Username
                 );
 
+            if (string.IsNullOrEmpty(request.ScanId))
+                throw new RocketException(
+                    "No scan ID was provided.",
+                    ApiStatusCodeEnum.ValidationError
+                );
+
             var userId =
                 user
                     .Id;
@@ -204,7 +211,7 @@ namespace Rocket.Api.Host.Controllers
 
             var newExecution =
                 workflowCloner
-                    .Clone(workflow);
+                    .Clone(workflow, request.ScanId);
 
             var result =
                 await
@@ -430,6 +437,7 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Id = execution.Id,
                     UserId = execution.UserId,
+                    ScanId = execution.ScanId,
                     MatchingPageSymbol = execution.MatchingPageSymbol,
                     RunDate = execution.RunDate,
                     CreatedAt = execution.CreatedAt,

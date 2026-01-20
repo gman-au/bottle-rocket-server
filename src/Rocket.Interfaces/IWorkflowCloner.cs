@@ -5,6 +5,6 @@ namespace Rocket.Interfaces
 {
     public interface IWorkflowCloner
     {
-        Execution Clone(Workflow workflow);
+        Execution Clone(Workflow workflow, string scanId);
     }
 }

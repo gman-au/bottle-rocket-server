@@ -6,7 +6,7 @@ namespace Rocket.Interfaces
 {
     public interface IScannedImageHandler
     {
-        Task WriteAsync(
+        Task<ScannedImage> WriteAsync(
             byte[] imageData,
             string contentType,
             string fileExtension,

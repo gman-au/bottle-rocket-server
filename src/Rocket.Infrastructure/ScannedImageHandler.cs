@@ -12,14 +12,13 @@ namespace Rocket.Infrastructure
 {
     public class ScannedImageHandler(
         ILogger<ScannedImageHandler> logger,
-        IEnumerable<IIntegrationHook> integrationHooks,
         IBlobStore blobStore,
         ISha256Calculator sha256Calculator,
         IScannedImageRepository scannedImageRepository,
         IThumbnailer thumbnailer
     ) : IScannedImageHandler
     {
-        public async Task WriteAsync(
+        public async Task<ScannedImage> WriteAsync(
             byte[] imageData,
             string contentType,
             string fileExtension,
@@ -62,7 +61,7 @@ namespace Rocket.Infrastructure
                                 fileExtension,
                                 cancellationToken
                             );
-                
+
                 // poc hooks
                 // TODO: there is a layer in the middle here for workflows linked to connectors
 
@@ -76,18 +75,21 @@ namespace Rocket.Infrastructure
                 scannedImage.QrCode = qrCode;
                 scannedImage.QrBoundingBox = qrBoundingBox;
 
-                await
-                    scannedImageRepository
-                        .InsertScanAsync(
-                            scannedImage,
-                            cancellationToken
-                        );
+                var result =
+                    await
+                        scannedImageRepository
+                            .InsertScanAsync(
+                                scannedImage,
+                                cancellationToken
+                            );
 
                 logger
                     .LogInformation(
                         "Successfully saved scanned image for user ID: {userId}",
                         userId
                     );
+
+                return result;
             }
             catch (Exception ex)
             {
@@ -152,7 +154,7 @@ namespace Rocket.Infrastructure
                         userId,
                         id
                     );
-                
+
                 return (record, imageData);
             }
             catch (Exception ex)

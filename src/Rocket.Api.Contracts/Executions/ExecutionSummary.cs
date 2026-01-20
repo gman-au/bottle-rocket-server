@@ -11,6 +11,9 @@ namespace Rocket.Api.Contracts.Executions
         
         [JsonPropertyName("user_id")]
         public string UserId { get; set; }
+
+        [JsonPropertyName("scan_id")]
+        public string ScanId { get; set; }
         
         [JsonPropertyName("matching_page_symbol")]
         public int? MatchingPageSymbol { get; set; }

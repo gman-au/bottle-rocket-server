@@ -9,11 +9,15 @@ namespace Rocket.Infrastructure.Mapping
 {
     public class WorkflowCloner(IStepModelClonerRegistry clonerRegistry) : IWorkflowCloner
     {
-        public Execution Clone(Workflow workflow)
+        public Execution Clone(
+            Workflow workflow,
+            string scanId
+        )
         {
             return new Execution
             {
                 UserId = workflow.UserId,
+                ScanId = scanId,
                 WorkflowId = workflow.Id,
                 MatchingPageSymbol = workflow.MatchingPageSymbol,
                 CreatedAt = DateTime.UtcNow,
@@ -22,8 +26,7 @@ namespace Rocket.Infrastructure.Mapping
                 ExecutionStatus = (int)ExecutionStatusEnum.NotRun,
                 Steps =
                     (workflow.Steps ?? [])
-                    .Select(
-                        o =>
+                    .Select(o =>
                         {
                             var mapper =
                                 clonerRegistry

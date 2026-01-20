@@ -12,10 +12,18 @@ namespace Rocket.Interfaces
 
         ExecutionStepArtifact GetInputArtifact();
 
-        Task<BaseConnector> GetConnectorAsync(
+        void SetCurrentArtifact(ExecutionStepArtifact artifact);
+
+        Task SetRootArtifactAsync(
+            string userId,
+            string scanId,
+            CancellationToken cancellationToken
+        );
+
+        Task<T> GetConnectorAsync<T>(
             string userId,
             BaseExecutionStep step,
             CancellationToken cancellationToken
-        );
+        ) where T : BaseConnector;
     }
 }

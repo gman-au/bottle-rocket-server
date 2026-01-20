@@ -42,7 +42,7 @@ namespace Rocket.Jobs.Service
                         .GetExecutionByIdAsync(
                             userId,
                             executionId,
-                            cancellationToken
+                            cts.Token
                         );
 
             if (execution == null)
@@ -59,6 +59,14 @@ namespace Rocket.Jobs.Service
                         var context =
                             serviceProvider
                                 .GetRequiredService<IWorkflowExecutionContext>();
+
+                        await
+                            context
+                                .SetRootArtifactAsync(
+                                    userId,
+                                    execution.ScanId,
+                                    cts.Token
+                                );
 
                         using var linkedCts =
                             CancellationTokenSource

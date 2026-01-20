@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Rocket.Domain.Connectors;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
-using Rocket.Domain.Utils;
 using Rocket.Domain.Vendors.Dropbox;
 using Rocket.Interfaces;
 
@@ -16,39 +15,37 @@ namespace Rocket.Dropbox.Infrastructure
     {
         public bool IsApplicable(BaseExecutionStep step) => step is DropboxUploadExecutionStep;
 
-        public Task<ExecutionStepArtifact> ProcessAsync(
-            ExecutionStepArtifact artifact,
-            CancellationToken cancellationToken) =>
-            throw new System.NotImplementedException();
-
-        public async Task ProcessAsync(
+        public async Task<ExecutionStepArtifact> ProcessAsync(
+            IWorkflowExecutionContext context,
+            BaseExecutionStep step,
             string userId,
-            byte[] fileData,
-            string fileExtension,
-            CancellationToken cancellationToken
-        )
+            CancellationToken cancellationToken)
         {
+            var artifact =
+                context
+                    .GetInputArtifact();
+
             var connector =
                 await
-                    connectorRepository
-                        .GetConnectorByNameAsync<DropboxConnector>(
+                    context
+                        .GetConnectorAsync<DropboxConnector>(
                             userId,
-                            DomainConstants.ConnectorNameDropboxApi,
+                            step,
                             cancellationToken
                         );
 
-            if (connector == null) 
-                return;
-            
             await
                 dropboxClientManager
                     .UploadFileAsync(
                         connector.AppKey,
                         connector.AppSecret,
                         connector.RefreshToken,
-                        fileExtension,
-                        fileData
+                        artifact.FileExtension,
+                        artifact.Artifact
                     );
+
+            // TODO: create a static .Empty artifact
+            return artifact;
         }
     }
 }
