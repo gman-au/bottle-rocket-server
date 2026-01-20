@@ -10,8 +10,8 @@ namespace Rocket.Api.Contracts.Workflows
         [JsonPropertyName("workflow_step_id")]
         public string WorkflowStepId { get; set; }
 
-        [JsonPropertyName("connection_id")]
-        public string ConnectionId { get; set; }
+        [JsonPropertyName("connector_id")]
+        public string ConnectorId { get; set; }
 
         [JsonPropertyName("step")]
         public T Step { get; set; }

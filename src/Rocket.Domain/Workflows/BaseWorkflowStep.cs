@@ -12,7 +12,7 @@ namespace Rocket.Domain.Workflows
     {
         public string Id { get; set; }
 
-        public string ConnectionId { get; set; }
+        public string ConnectorId { get; set; }
 
         public abstract int InputType { get; set; }
 

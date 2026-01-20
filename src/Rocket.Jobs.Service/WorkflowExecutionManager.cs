@@ -2,21 +2,28 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Interfaces;
 
-namespace Rocket.Infrastructure
+namespace Rocket.Jobs.Service
 {
     public class WorkflowExecutionManager(
         IBackgroundTaskQueue queue,
-        ILogger<WorkflowExecutionManager> logger
+        IExecutionRepository executionRepository,
+        ILogger<WorkflowExecutionManager> logger,
+        IServiceProvider serviceProvider
     ) : IWorkflowExecutionManager
     {
         private readonly ConcurrentDictionary<string, CancellationTokenSource> _cancellationTokenSources = new();
 
-        public async Task<bool> StartExecutionAsync(string executionId)
+        public async Task<bool> StartExecutionAsync(
+            string executionId,
+            string userId,
+            CancellationToken cancellationToken
+        )
         {
             var cts = new CancellationTokenSource();
 
@@ -29,18 +36,41 @@ namespace Rocket.Infrastructure
             _cancellationTokenSources
                 .TryAdd(executionId, cts);
 
+            var execution =
+                await
+                    executionRepository
+                        .GetExecutionByIdAsync(
+                            userId,
+                            executionId,
+                            cancellationToken
+                        );
+
+            if (execution == null)
+                throw new RocketException(
+                    $"Execution not found with ID {executionId}",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
             queue
                 .Enqueue(async token =>
                 {
                     try
                     {
+                        var context =
+                            serviceProvider
+                                .GetRequiredService<IWorkflowExecutionContext>();
+
                         using var linkedCts =
                             CancellationTokenSource
                                 .CreateLinkedTokenSource(token, cts.Token);
 
-                        await
-                            Task
-                                .Delay(10000, linkedCts.Token);
+                        // the task
+                        foreach (var childStep in execution.Steps)
+                        {
+                            await
+                                childStep
+                                    .AsTask(userId, context, linkedCts.Token);
+                        }
 
                         logger
                             .LogInformation("Job has completed: {id}", executionId);
@@ -51,6 +81,13 @@ namespace Rocket.Infrastructure
                     {
                         logger
                             .LogInformation("Job was cancelled: {id}", executionId);
+
+                        // update execution status
+                    }
+                    catch (RocketException ex)
+                    {
+                        logger
+                            .LogError(ex, "Job has failed: {id}", executionId);
 
                         // update execution status
                     }

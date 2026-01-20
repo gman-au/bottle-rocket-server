@@ -103,7 +103,7 @@ namespace Rocket.Web.Host.Infrastructure
                 aliasEnumerator
                     .MoveNext();
 
-                var missingConnection = string.IsNullOrEmpty(step.ConnectionId);
+                var missingConnection = string.IsNullOrEmpty(step.ConnectorId);
 
                 var currentChildAlias =
                     aliasEnumerator

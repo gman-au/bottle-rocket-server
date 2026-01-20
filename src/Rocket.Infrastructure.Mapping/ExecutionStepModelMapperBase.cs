@@ -29,7 +29,7 @@ namespace Rocket.Infrastructure.Mapping
             return new TDomain
             {
                 Id = value.Id,
-                ConnectionId = value.ConnectionId,
+                ConnectorId = value.ConnectorId,
                 ChildSteps =
                     (value.ChildSteps ?? [])
                         .Select(
@@ -52,7 +52,7 @@ namespace Rocket.Infrastructure.Mapping
             return new TView
             {
                 Id = value.Id,
-                ConnectionId = value.ConnectionId,
+                ConnectorId = value.ConnectorId,
                 StepName = value.StepName,
                 InputTypeName =
                     DomainConstants

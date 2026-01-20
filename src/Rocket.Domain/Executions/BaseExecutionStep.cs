@@ -13,7 +13,7 @@ namespace Rocket.Domain.Executions
     {
         public string Id { get; set; }
         
-        public string ConnectionId { get; set; }
+        public string ConnectorId { get; set; }
 
         public int InputType { get; set; }
         

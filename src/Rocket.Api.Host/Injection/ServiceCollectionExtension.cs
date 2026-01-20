@@ -210,6 +210,7 @@ namespace Rocket.Api.Host.Injection
         {
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddSingleton<IWorkflowExecutionManager, WorkflowExecutionManager>();
+            services.AddTransient<IWorkflowExecutionContext, WorkflowExecutionContext>();
             services.AddHostedService<QueuedHostedService>();
 
             return services;

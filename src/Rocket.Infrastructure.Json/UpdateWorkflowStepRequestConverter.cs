@@ -48,7 +48,7 @@ namespace Rocket.Infrastructure.Json
                 );
                 writer.WriteString(
                     "connection_id",
-                    value.ConnectionId
+                    value.ConnectorId
                 );
 
                 writer.WritePropertyName("step");

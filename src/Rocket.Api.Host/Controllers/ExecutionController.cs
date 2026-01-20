@@ -230,7 +230,11 @@ namespace Rocket.Api.Host.Controllers
             {
                 await
                     workflowExecutionManager
-                        .StartExecutionAsync(result.Id);
+                        .StartExecutionAsync(
+                            result.Id,
+                            userId,
+                            cancellationToken
+                        );
             }
 
             return
@@ -355,7 +359,11 @@ namespace Rocket.Api.Host.Controllers
             var result =
                 await
                     workflowExecutionManager
-                        .StartExecutionAsync(id);
+                        .StartExecutionAsync(
+                            id,
+                            userId,
+                            cancellationToken
+                        );
 
             var response =
                 new StartExecutionResponse

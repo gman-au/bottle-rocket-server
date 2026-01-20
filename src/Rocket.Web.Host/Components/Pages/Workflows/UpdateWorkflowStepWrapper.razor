@@ -30,7 +30,7 @@
                             T="string"
                             Label="Connector"
                             HelperText="Select a connector to use for this step"
-                            @bind-Value="@StepSpecifics.ConnectionId"
+                            @bind-Value="@StepSpecifics.ConnectorId"
                             Clearable="true"
                             Required="false">
                             @foreach (var connector in _availableConnectors ?? [])

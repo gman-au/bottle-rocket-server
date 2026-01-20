@@ -65,18 +65,7 @@ namespace Rocket.Infrastructure
                 
                 // poc hooks
                 // TODO: there is a layer in the middle here for workflows linked to connectors
-                foreach (var hook in integrationHooks)
-                {
-                    await
-                        hook
-                            .ProcessAsync(
-                                userId,
-                                imageData,
-                                fileExtension,
-                                cancellationToken
-                            );
-                }
-                
+
                 scannedImage.UserId = userId;
                 scannedImage.BlobId = blobId;
                 scannedImage.CaptureDate = DateTime.UtcNow;

@@ -288,6 +288,8 @@ namespace Rocket.Api.Host.Controllers
                 mapper
                     .For(step);
 
+            updatedWorkflowStep.Id = request.WorkflowStepId;
+
             var result =
                 await
                     workflowStepRepository

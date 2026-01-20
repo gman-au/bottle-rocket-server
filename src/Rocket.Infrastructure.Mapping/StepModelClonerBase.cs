@@ -20,7 +20,7 @@ namespace Rocket.Infrastructure.Mapping
         {
             return new TExecutionStep
             {
-                ConnectionId = value.ConnectionId,
+                ConnectorId = value.ConnectorId,
                 InputType = value.InputType,
                 OutputType = value.OutputType,
                 StepName = value.StepName,

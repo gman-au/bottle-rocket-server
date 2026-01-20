@@ -9,8 +9,8 @@ namespace Rocket.Api.Contracts.Executions
         [JsonPropertyName("id")]
         public string Id { get; set; }
 
-        [JsonPropertyName("connection_id")]
-        public string ConnectionId { get; set; }
+        [JsonPropertyName("connector_id")]
+        public string ConnectorId { get; set; }
 
         [JsonPropertyName("input_type")]
         public int InputType { get; set; }

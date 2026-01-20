@@ -1,14 +1,16 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Rocket.Domain.Executions;
+using Rocket.Domain.Jobs;
 
 namespace Rocket.Interfaces
 {
     public interface IIntegrationHook
     {
-        Task ProcessAsync(
-            string userId,
-            byte[] fileData,
-            string fileExtension,
+        bool IsApplicable(BaseExecutionStep step);
+
+        Task<ExecutionStepArtifact> ProcessAsync(
+            ExecutionStepArtifact artifact,
             CancellationToken cancellationToken
         );
     }
