@@ -36,6 +36,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Mappi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Web.Client", "Rocket.Web.Client\Rocket.Web.Client.csproj", "{1A0E10B4-2357-4536-AD4A-B4E3BB291E80}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Jobs.Service", "Rocket.Jobs.Service\Rocket.Jobs.Service.csproj", "{E1882690-70C7-4DF0-BE2D-C4A36323D745}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +116,10 @@ Global
 		{1A0E10B4-2357-4536-AD4A-B4E3BB291E80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A0E10B4-2357-4536-AD4A-B4E3BB291E80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A0E10B4-2357-4536-AD4A-B4E3BB291E80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1882690-70C7-4DF0-BE2D-C4A36323D745}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1882690-70C7-4DF0-BE2D-C4A36323D745}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1882690-70C7-4DF0-BE2D-C4A36323D745}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1882690-70C7-4DF0-BE2D-C4A36323D745}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{121393B8-1E90-4620-A200-444315FFB75D} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}

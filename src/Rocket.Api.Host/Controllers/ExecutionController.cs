@@ -24,6 +24,7 @@ namespace Rocket.Api.Host.Controllers
         IUserManager userManager,
         IWorkflowRepository workflowRepository,
         IWorkflowCloner workflowCloner,
+        IWorkflowExecutionManager workflowExecutionManager,
         IExecutionRepository executionRepository,
         IExecutionStepModelMapperRegistry executionStepModelMapperRegistry
     ) : RocketControllerBase(userManager)
@@ -73,18 +74,17 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Executions =
                         records
-                            .Select(
-                                o =>
-                                    new ExecutionSummary
-                                    {
-                                        Id = o.Id,
-                                        UserId = o.UserId,
-                                        MatchingPageSymbol = o.MatchingPageSymbol,
-                                        CreatedAt = o.CreatedAt,
-                                        RunDate = o.RunDate,
-                                        Name = o.Name,
-                                        ExecutionStatus = o.ExecutionStatus
-                                    }
+                            .Select(o =>
+                                new ExecutionSummary
+                                {
+                                    Id = o.Id,
+                                    UserId = o.UserId,
+                                    MatchingPageSymbol = o.MatchingPageSymbol,
+                                    CreatedAt = o.CreatedAt,
+                                    RunDate = o.RunDate,
+                                    Name = o.Name,
+                                    ExecutionStatus = o.ExecutionStatus
+                                }
                             ),
                     TotalRecords = (int)totalRecordCount
                 };
@@ -111,7 +111,7 @@ namespace Rocket.Api.Host.Controllers
             StatusCodes.Status500InternalServerError
         )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> DeleteWorkflowAsync(
+        public async Task<IActionResult> DeleteExecutionAsync(
             string id,
             CancellationToken cancellationToken
         )
@@ -225,6 +225,144 @@ namespace Rocket.Api.Host.Controllers
                 Id = result.Id
             };
 
+            // trigger background queue job
+            if (request.RunImmediately.GetValueOrDefault())
+            {
+                await
+                    workflowExecutionManager
+                        .StartExecutionAsync(result.Id);
+            }
+
+            return
+                response
+                    .AsApiSuccess();
+        }
+
+        [HttpPut("cancel/{id}")]
+        [EndpointSummary("Cancel a (running) execution by ID")]
+        [EndpointGroupName("Manage executions")]
+        [EndpointDescription("Attempts to cancel a running workflow execution by its unique identifier.")]
+        [ProducesResponseType(
+            typeof(UserSpecifics),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CancelExecutionAsync(
+            string id,
+            CancellationToken cancellationToken
+        )
+        {
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
+
+            logger
+                .LogInformation(
+                    "Received cancel execution request for id: {id}",
+                    id
+                );
+
+            var userId =
+                user
+                    .Id;
+
+            var execution =
+                await
+                    executionRepository
+                        .GetExecutionByIdAsync(
+                            userId,
+                            id,
+                            cancellationToken
+                        );
+
+            if (execution == null)
+            {
+                throw new RocketException(
+                    $"Execution id: {id} not found",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+            }
+
+            var result =
+                await
+                    workflowExecutionManager
+                        .CancelExecutionAsync(id);
+
+            var response =
+                new CancelExecutionResponse
+                {
+                    IsCancelled = result
+                };
+
+            return
+                response
+                    .AsApiSuccess();
+        }
+
+        [HttpPut("start/{id}")]
+        [EndpointSummary("Start an inactive execution by ID")]
+        [EndpointGroupName("Manage executions")]
+        [EndpointDescription("Attempts to start a running workflow execution by its unique identifier.")]
+        [ProducesResponseType(
+            typeof(UserSpecifics),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> StartExecutionAsync(
+            string id,
+            CancellationToken cancellationToken
+        )
+        {
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
+
+            logger
+                .LogInformation(
+                    "Received start execution request for id: {id}",
+                    id
+                );
+
+            var userId =
+                user
+                    .Id;
+
+            var execution =
+                await
+                    executionRepository
+                        .GetExecutionByIdAsync(
+                            userId,
+                            id,
+                            cancellationToken
+                        );
+
+            if (execution == null)
+            {
+                throw new RocketException(
+                    $"Execution id: {id} not found",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+            }
+
+            var result =
+                await
+                    workflowExecutionManager
+                        .StartExecutionAsync(id);
+
+            var response =
+                new StartExecutionResponse
+                {
+                    IsStarted = result
+                };
+
             return
                 response
                     .AsApiSuccess();
@@ -243,7 +381,7 @@ namespace Rocket.Api.Host.Controllers
             StatusCodes.Status500InternalServerError
         )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetWorkflowAsync(
+        public async Task<IActionResult> GetExecutionAsync(
             string id,
             CancellationToken cancellationToken
         )
@@ -291,8 +429,7 @@ namespace Rocket.Api.Host.Controllers
                     ExecutionStatus = execution.ExecutionStatus,
                     Steps =
                         (execution.Steps ?? [])
-                        .Select(
-                            o =>
+                        .Select(o =>
                             {
                                 var mapper =
                                     executionStepModelMapperRegistry

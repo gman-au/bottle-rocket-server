@@ -57,7 +57,8 @@ services
     .AddOpenApiServices();
 
 services
-    .AddDropboxIntegration();
+    .AddDropboxIntegration()
+    .AddWorkflowBackgroundJob();
 
 services
     .AddHostedService<StartupInitializationHostedService>();

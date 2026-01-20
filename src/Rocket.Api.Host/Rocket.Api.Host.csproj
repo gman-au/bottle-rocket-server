@@ -26,6 +26,7 @@
         <ProjectReference Include="..\Rocket.Infrastructure.Json\Rocket.Infrastructure.Json.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Thumbnails\Rocket.Infrastructure.Thumbnails.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure\Rocket.Infrastructure.csproj" />
+        <ProjectReference Include="..\Rocket.Jobs.Service\Rocket.Jobs.Service.csproj" />
     </ItemGroup>
 
 </Project>

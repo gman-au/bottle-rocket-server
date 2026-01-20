@@ -20,6 +20,7 @@
         ServerError = 5000,
         ServerConfigurationError,
         ThirdPartyServiceError,
+        WorkflowExecutionAlreadyRunning,
         DeveloperError = 6000
     }
 }

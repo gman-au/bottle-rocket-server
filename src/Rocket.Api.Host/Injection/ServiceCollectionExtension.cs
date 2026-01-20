@@ -18,6 +18,7 @@ using Rocket.Infrastructure.Hashing;
 using Rocket.Infrastructure.Mapping;
 using Rocket.Infrastructure.Thumbnails;
 using Rocket.Interfaces;
+using Rocket.Jobs.Service;
 
 namespace Rocket.Api.Host.Injection
 {
@@ -201,6 +202,15 @@ namespace Rocket.Api.Host.Injection
                         );
                     }
                 );
+
+            return services;
+        }
+
+        public static IServiceCollection AddWorkflowBackgroundJob(this IServiceCollection services)
+        {
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.AddSingleton<IWorkflowExecutionManager, WorkflowExecutionManager>();
+            services.AddHostedService<QueuedHostedService>();
 
             return services;
         }
