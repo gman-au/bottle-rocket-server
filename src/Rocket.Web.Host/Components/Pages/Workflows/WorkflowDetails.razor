@@ -1,6 +1,7 @@
 ﻿@page "/MyWorkflow/{id}"
 @using Rocket.Api.Contracts.Workflows
 @using Rocket.Domain.Enum
+@using Rocket.Interfaces
 @using Rocket.Web.Client
 @using Rocket.Web.Host.Extensions
 @using Rocket.Web.Host.Infrastructure
@@ -159,7 +160,10 @@
     {
         if (firstRender)
         {
-            _dotNetRef = DotNetObjectReference.Create(this);
+            _dotNetRef = 
+                DotNetObjectReference
+                    .Create(this);
+            
             await 
                 JsRuntime
                     .InvokeVoidAsync("storeDotNetRef", _dotNetRef);

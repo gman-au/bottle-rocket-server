@@ -16,7 +16,8 @@ namespace Rocket.Dropbox.Infrastructure
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken
+        )
         {
             var artifact =
                 context

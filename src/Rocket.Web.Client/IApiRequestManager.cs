@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Connectors;
+using Rocket.Api.Contracts.Executions;
 using Rocket.Api.Contracts.Scans;
 using Rocket.Api.Contracts.Users;
 using Rocket.Api.Contracts.Workflows;
@@ -106,6 +107,26 @@ namespace Rocket.Web.Client
 
         Task<ApiResponse> DeleteWorkflowStepByIdAsync(
             DeleteWorkflowStepRequest request,
+            CancellationToken cancellationToken
+        );
+
+        Task<ExecutionSummary> GetExecutionByIdAsync(
+            string id,
+            CancellationToken cancellationToken
+        );
+
+        Task<CreateExecutionResponse> CreateExecutionAsync(
+            CreateExecutionRequest request,
+            CancellationToken cancellationToken
+        );
+
+        Task<StartExecutionResponse> StartExecutionAsync(
+            string executionId,
+            CancellationToken cancellationToken
+        );
+
+        Task<CancelExecutionResponse> CancelExecutionAsync(
+            string executionId,
             CancellationToken cancellationToken
         );
     }

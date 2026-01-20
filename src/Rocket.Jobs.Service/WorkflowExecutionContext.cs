@@ -42,7 +42,8 @@ namespace Rocket.Jobs.Service
                 {
                     Result = (int)ExecutionStatusEnum.Completed,
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.ImageData,
-                    Artifact = imageData
+                    Artifact = imageData,
+                    FileExtension = record.FileExtension
                 }
             );
         }
@@ -80,26 +81,6 @@ namespace Rocket.Jobs.Service
             return
                 hooks
                     .FirstOrDefault(o => o.IsApplicable(step));
-        }
-
-        public async Task<BaseConnector> GetConnectorAsync(
-            string userId,
-            BaseExecutionStep step,
-            CancellationToken cancellationToken
-        )
-        {
-            var connectorId = step?.ConnectorId;
-
-            var connector =
-                await
-                    connectorRepository
-                        .GetConnectorByIdAsync<BaseConnector>(
-                            userId,
-                            connectorId,
-                            cancellationToken
-                        );
-
-            return connector;
         }
     }
 }

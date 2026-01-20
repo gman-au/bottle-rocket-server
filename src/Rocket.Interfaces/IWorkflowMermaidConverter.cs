@@ -1,6 +1,6 @@
 ﻿using Rocket.Api.Contracts.Workflows;
 
-namespace Rocket.Web.Host.Infrastructure
+namespace Rocket.Interfaces
 {
     public interface IWorkflowMermaidConverter
     {

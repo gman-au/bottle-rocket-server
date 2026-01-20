@@ -8,6 +8,7 @@
         <ProjectReference Include="..\Integrations\Rocket.Dropbox.Contracts\Rocket.Dropbox.Contracts.csproj" />
         <ProjectReference Include="..\Rocket.Api.Contracts\Rocket.Api.Contracts.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Json\Rocket.Infrastructure.Json.csproj" />
+        <ProjectReference Include="..\Rocket.Infrastructure.Mermaid\Rocket.Infrastructure.Mermaid.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure\Rocket.Infrastructure.csproj" />
         <ProjectReference Include="..\Rocket.Interfaces\Rocket.Interfaces.csproj"/>
         <ProjectReference Include="..\Rocket.Web.Client\Rocket.Web.Client.csproj" />

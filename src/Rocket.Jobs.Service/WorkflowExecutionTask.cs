@@ -14,8 +14,8 @@ namespace Rocket.Jobs.Service
             string userId,
             string executionId,
             IWorkflowExecutionContext context,
-            CancellationToken cancellationToken,
-            Func<string, string, int, BaseExecutionStep, Task> callbackFunc
+            Func<string, string, int, BaseExecutionStep, Task> callbackFunc,
+            CancellationToken cancellationToken
         )
         {
             try
@@ -38,6 +38,14 @@ namespace Rocket.Jobs.Service
 
                 context
                     .SetCurrentArtifact(artifactResult);
+                    
+                await
+                    callbackFunc(
+                        userId,
+                        executionId,
+                        (int)ExecutionStatusEnum.Completed,
+                        step
+                    );
 
                 foreach (var childStep in step?.ChildSteps ?? [])
                 {
@@ -47,8 +55,8 @@ namespace Rocket.Jobs.Service
                                 userId,
                                 executionId,
                                 context,
-                                cancellationToken,
-                                callbackFunc
+                                callbackFunc,
+                                cancellationToken
                             );
                 }
             }

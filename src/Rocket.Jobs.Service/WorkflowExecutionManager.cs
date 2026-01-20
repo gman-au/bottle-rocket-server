@@ -82,8 +82,8 @@ namespace Rocket.Jobs.Service
                                         userId,
                                         executionId,
                                         context,
-                                        linkedCts.Token,
-                                        UpdateExecutionStepStatusCallback
+                                        UpdateExecutionStepStatusCallback,
+                                        linkedCts.Token
                                     );
                         }
 

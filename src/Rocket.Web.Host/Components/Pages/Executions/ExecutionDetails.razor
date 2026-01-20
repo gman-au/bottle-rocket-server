@@ -1,0 +1,149 @@
+﻿@page "/MyExecution/{id}"
+@using Rocket.Api.Contracts.Executions
+@using Rocket.Interfaces
+@using Rocket.Web.Client
+@using Rocket.Web.Host.Infrastructure
+@inject IJSRuntime JsRuntime
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject IExecutionMermaidConverter ExecutionMermaidConverter
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_currentModel != null)
+    {
+        <MudPaper Class="p-4" elevation="2">
+            <MudGrid Class="pa-8" Justify="Justify.SpaceEvenly">
+                <MudItem sm="12" md="4">
+                    <MudStack
+                        Style="height:100%;"
+                        Justify="Justify.SpaceBetween"
+                        StretchItems="StretchItems.Middle"
+                        AlignItems="AlignItems.Start">
+                        <MudText
+                            Align="Align.Center"
+                            Typo="Typo.h4"
+                            Color="Color.Primary"
+                            Class="mb-4">
+                            Workflow Run Details
+                        </MudText>
+                        <MudGrid Class="align-start" Justify="Justify.FlexEnd">
+                            <MudItem>
+                                <GoBackButton BackPath="/MyWorkflows"/>
+                            </MudItem>
+                        </MudGrid>
+                    </MudStack>
+                </MudItem>
+                <MudItem sm="12" md="8">
+                    <!-- form -->
+                    <MudPaper Elevation="4" Class="p-4 mermaid-paper">
+                        <pre class="mermaid">
+                    @MermaidText
+                </pre>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    }
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    MudForm _form;
+
+    private bool _disposed = false;
+    private bool _isLoading;
+    private ExecutionSummary _currentModel = null;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    private string MermaidText { get; set; }
+
+    private DotNetObjectReference<ExecutionDetails> _dotNetRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetRef =
+                DotNetObjectReference
+                    .Create(this);
+
+            await
+                JsRuntime
+                    .InvokeVoidAsync(
+                        "storeDotNetRef",
+                        _dotNetRef
+                    );
+
+            await
+                Task
+                    .Delay(100);
+
+            await
+                JsRuntime
+                    .InvokeVoidAsync("mermaid.run");
+        }
+    }
+
+    [JSInvokable]
+    public void NavigateToRoute(string route)
+    {
+        if (_disposed)
+            return;
+
+        NavigationManager
+            .NavigateTo(route);
+    }
+
+    public override void Dispose()
+    {
+        if (!_disposed)
+        {
+            _disposed = true;
+
+            _dotNetRef?
+                .Dispose();
+
+            base
+                .Dispose();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+
+            _currentModel =
+                await
+                    ApiRequestManager
+                        .GetExecutionByIdAsync(
+                            Id,
+                            BaseCancellationToken
+                        );
+
+            MermaidText =
+                ExecutionMermaidConverter
+                    .Convert(_currentModel);
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+}

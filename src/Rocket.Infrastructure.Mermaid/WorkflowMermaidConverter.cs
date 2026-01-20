@@ -1,13 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts.Workflows;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Utils;
 using Rocket.Dropbox.Contracts;
+using Rocket.Infrastructure.Mermaid.Extensions;
+using Rocket.Interfaces;
 
-namespace Rocket.Web.Host.Infrastructure
+namespace Rocket.Infrastructure.Mermaid
 {
-    public class WorkflowMermaidConverter : IWorkflowMermaidConverter
+    public class WorkflowMermaidConverter(ILogger<WorkflowMermaidConverter> logger) : IWorkflowMermaidConverter
     {
         private const string StartNode = "Bottle Rocket";
         private const string AddNewStep = "+ Add New Step";
@@ -16,12 +19,12 @@ namespace Rocket.Web.Host.Infrastructure
         public string Convert(WorkflowSummary workflow)
         {
             using var aliasEnumerator =
-                GenerateSequence()
+                "a"
+                    .ToSequence()
                     .GetEnumerator();
 
             var result = new StringBuilder();
 
-            aliasEnumerator.MoveNext();
             aliasEnumerator.MoveNext();
             var parent = aliasEnumerator.Current;
 
@@ -78,7 +81,8 @@ namespace Rocket.Web.Host.Infrastructure
                 .Append(clicksBuilder)
                 .Append(styleBuilder);
 
-            var mermaid = result.ToString();
+            logger
+                .LogDebug("mermaid: {mermaid}", result.ToString());
 
             return
                 result
@@ -119,6 +123,7 @@ namespace Rocket.Web.Host.Infrastructure
                 {
                     entityLine += "\u2705";
                 }
+
                 entityLine += $" {step.StepName}";
                 entityLine += "\")";
 
@@ -179,37 +184,6 @@ namespace Rocket.Web.Host.Infrastructure
 
                     styleBuilder
                         .AppendLine($"style {aliasEnumerator.Current} fill:{AddBackgroundButtonColor}");
-                }
-            }
-        }
-
-        private static IEnumerable<string> GenerateSequence(string start = "a")
-        {
-            var chars = start.ToCharArray();
-
-            while (true)
-            {
-                yield return new string(chars);
-
-                // Increment the sequence
-                var carry = true;
-                for (var i = chars.Length - 1; i >= 0 && carry; i--)
-                    if (chars[i] < 'z')
-                    {
-                        chars[i]++;
-                        carry = false;
-                    }
-                    else
-                    {
-                        chars[i] = 'a';
-                    }
-
-                // If we still have a carry, we need an extra character
-                if (!carry) continue;
-                {
-                    chars = new char[chars.Length + 1];
-                    for (var i = 0; i < chars.Length; i++)
-                        chars[i] = 'a';
                 }
             }
         }
