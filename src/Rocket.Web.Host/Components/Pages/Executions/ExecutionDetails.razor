@@ -3,8 +3,11 @@
 @using Rocket.Domain.Utils
 @using Rocket.Interfaces
 @using Rocket.Web.Client
+@using Rocket.Web.Host.HubClients
 @using Rocket.Web.Host.Infrastructure
 @inject IJSRuntime JsRuntime
+@inject ISnackbar Snackbar
+@inject ICaptureHubClient CaptureHubClient
 @inject IApiRequestManager ApiRequestManager
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject IExecutionMermaidConverter ExecutionMermaidConverter
@@ -88,6 +91,7 @@
 
     private bool _disposed = false;
     private bool _isLoading;
+    private bool _isConnected;
     private ExecutionSummary _currentModel = null;
 
     [Parameter]
@@ -155,19 +159,21 @@
                     .OnInitializedAsync();
 
             _isLoading = true;
-            StateHasChanged();
 
-            _currentModel =
-                await
-                    ApiRequestManager
-                        .GetExecutionByIdAsync(
-                            Id,
-                            BaseCancellationToken
-                        );
+            // Set up SignalR listener
+            CaptureHubClient.OnNewExecutionUpdateReceived += HandleExecutionUpdate;
 
-            MermaidText =
-                ExecutionMermaidConverter
-                    .Convert(_currentModel);
+            // Connect to hub
+            await
+                CaptureHubClient
+                    .StartAsync();
+
+            _isConnected =
+                CaptureHubClient
+                    .IsConnected;
+
+            await
+                ReloadExecutionDetailsAsync();
         }
         catch (Exception ex)
         {
@@ -177,8 +183,67 @@
         finally
         {
             _isLoading = false;
-            StateHasChanged();
         }
+    }
+    
+    private async Task ReloadExecutionDetailsAsync()
+    {
+        _currentModel =
+            await
+                ApiRequestManager
+                    .GetExecutionByIdAsync(
+                        Id,
+                        BaseCancellationToken
+                    );
+
+        MermaidText =
+            ExecutionMermaidConverter
+                .Convert(_currentModel);
+    }
+
+    private async Task HandleExecutionUpdate()
+    {
+        await
+            InvokeAsync(
+                async () =>
+                {
+                    try
+                    {
+                        _isLoading = true;
+                        StateHasChanged();
+
+                        // new capture would be the most recent; get the latest record
+                        await
+                            ReloadExecutionDetailsAsync();
+
+                        Snackbar
+                            .Add(
+                                "New update received!",
+                                Severity.Success
+                            );
+                    }
+                    catch (Exception ex)
+                    {
+                        WebHostErrorHandler
+                            .HandleException(ex);
+                    }
+                    finally
+                    {
+                        _isLoading = false;
+                        StateHasChanged(); // Force UI update after loading
+                    }
+                }
+            );
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        // Clean up SignalR subscription
+        CaptureHubClient.OnNewExecutionUpdateReceived -= HandleExecutionUpdate;
+
+        await
+            CaptureHubClient
+                .DisposeAsync();
     }
 
 }

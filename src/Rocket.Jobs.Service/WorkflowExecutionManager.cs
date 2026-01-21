@@ -15,7 +15,8 @@ namespace Rocket.Jobs.Service
         IBackgroundTaskQueue queue,
         IExecutionRepository executionRepository,
         ILogger<WorkflowExecutionManager> logger,
-        IServiceProvider serviceProvider
+        IServiceProvider serviceProvider,
+        ICaptureNotifier captureNotifier
     ) : IWorkflowExecutionManager
     {
         private readonly ConcurrentDictionary<string, CancellationTokenSource> _cancellationTokenSources = new();
@@ -35,7 +36,10 @@ namespace Rocket.Jobs.Service
                 );
 
             _cancellationTokenSources
-                .TryAdd(executionId, cts);
+                .TryAdd(
+                    executionId,
+                    cts
+                );
 
             var execution =
                 await
@@ -61,95 +65,124 @@ namespace Rocket.Jobs.Service
                         DateTime.UtcNow,
                         cts.Token
                     );
-            
-            queue
-                .Enqueue(async token =>
-                {
-                    try
-                    {
-                        var context =
-                            serviceProvider
-                                .GetRequiredService<IWorkflowExecutionContext>();
 
-                        await
-                            context
-                                .SetRootArtifactAsync(
-                                    userId,
-                                    execution.ScanId,
-                                    cts.Token
+            // update execution status
+            await
+                UpdateExecutionStatusCallback(
+                    userId,
+                    executionId,
+                    (int)ExecutionStatusEnum.Running
+                );
+
+            queue
+                .Enqueue(
+                    async token =>
+                    {
+                        try
+                        {
+                            var context =
+                                serviceProvider
+                                    .GetRequiredService<IWorkflowExecutionContext>();
+
+                            await
+                                context
+                                    .SetRootArtifactAsync(
+                                        userId,
+                                        execution.ScanId,
+                                        cts.Token
+                                    );
+
+                            using var linkedCts =
+                                CancellationTokenSource
+                                    .CreateLinkedTokenSource(
+                                        token,
+                                        cts.Token
+                                    );
+
+                            // the task
+                            foreach (var childStep in execution.Steps ?? [])
+                            {
+                                await
+                                    childStep
+                                        .AsTask(
+                                            userId,
+                                            executionId,
+                                            context,
+                                            UpdateExecutionStepStatusCallback,
+                                            linkedCts.Token
+                                        );
+                            }
+
+                            logger
+                                .LogInformation(
+                                    "Job has completed: {id}",
+                                    executionId
                                 );
 
-                        using var linkedCts =
-                            CancellationTokenSource
-                                .CreateLinkedTokenSource(token, cts.Token);
-
-                        // the task
-                        foreach (var childStep in execution.Steps ?? [])
-                        {
+                            // update execution status
                             await
-                                childStep
-                                    .AsTask(
-                                        userId,
-                                        executionId,
-                                        context,
-                                        UpdateExecutionStepStatusCallback,
-                                        linkedCts.Token
-                                    );
+                                UpdateExecutionStatusCallback(
+                                    userId,
+                                    executionId,
+                                    (int)ExecutionStatusEnum.Completed
+                                );
                         }
+                        catch (OperationCanceledException)
+                        {
+                            logger
+                                .LogInformation(
+                                    "Job was cancelled: {id}",
+                                    executionId
+                                );
 
-                        logger
-                            .LogInformation("Job has completed: {id}", executionId);
+                            // update execution status
+                            await
+                                UpdateExecutionStatusCallback(
+                                    userId,
+                                    executionId,
+                                    (int)ExecutionStatusEnum.Cancelled
+                                );
+                        }
+                        catch (RocketException ex)
+                        {
+                            logger
+                                .LogError(
+                                    ex,
+                                    "Job has failed: {id}",
+                                    executionId
+                                );
 
-                        // update execution status
-                        await
-                            UpdateExecutionStatusCallback(
-                                userId,
-                                executionId,
-                                (int)ExecutionStatusEnum.Completed
-                            );
+                            // update execution status
+                            await
+                                UpdateExecutionStatusCallback(
+                                    userId,
+                                    executionId,
+                                    (int)ExecutionStatusEnum.Errored
+                                );
+                        }
+                        finally
+                        {
+                            _cancellationTokenSources
+                                .TryRemove(
+                                    executionId,
+                                    out _
+                                );
+
+                            cts
+                                .Dispose();
+                        }
                     }
-                    catch (OperationCanceledException)
-                    {
-                        logger
-                            .LogInformation("Job was cancelled: {id}", executionId);
-
-                        // update execution status
-                        await
-                            UpdateExecutionStatusCallback(
-                                userId,
-                                executionId,
-                                (int)ExecutionStatusEnum.Cancelled
-                            );
-                    }
-                    catch (RocketException ex)
-                    {
-                        logger
-                            .LogError(ex, "Job has failed: {id}", executionId);
-
-                        // update execution status
-                        await
-                            UpdateExecutionStatusCallback(
-                                userId,
-                                executionId,
-                                (int)ExecutionStatusEnum.Errored
-                            );
-                    }
-                    finally
-                    {
-                        _cancellationTokenSources
-                            .TryRemove(executionId, out _);
-
-                        cts
-                            .Dispose();
-                    }
-                });
+                );
 
             return true;
         }
 
         public async Task<bool> CancelExecutionAsync(string executionId)
         {
-            if (!_cancellationTokenSources.TryGetValue(executionId, out var cts)) return false;
+            if (!_cancellationTokenSources.TryGetValue(
+                    executionId,
+                    out var cts
+                )) return false;
 
             await
                 cts
@@ -177,6 +210,13 @@ namespace Rocket.Jobs.Service
                         executionStep,
                         CancellationToken.None
                     );
+
+            await
+                captureNotifier
+                    .NotifyNewExecutionUpdateAsync(
+                        userId,
+                        CancellationToken.None
+                    );
         }
 
         private async Task UpdateExecutionStatusCallback(
@@ -192,6 +232,13 @@ namespace Rocket.Jobs.Service
                         userId,
                         o => o.ExecutionStatus,
                         executionStatus,
+                        CancellationToken.None
+                    );
+
+            await
+                captureNotifier
+                    .NotifyNewExecutionUpdateAsync(
+                        userId,
                         CancellationToken.None
                     );
         }
