@@ -27,6 +27,10 @@ namespace Rocket.Domain.Executions
         
         public int ExecutionStatus { get; set; }
         
+        public string ThumbnailBase64 { get; set; }
+        
+        public string ContentType { get; set; }
+        
         public IEnumerable<BaseExecutionStep> Steps { get; set; }
     }
 }

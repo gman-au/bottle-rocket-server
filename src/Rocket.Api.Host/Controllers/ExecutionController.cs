@@ -25,6 +25,7 @@ namespace Rocket.Api.Host.Controllers
         IWorkflowRepository workflowRepository,
         IWorkflowCloner workflowCloner,
         IWorkflowExecutionManager workflowExecutionManager,
+        IScannedImageRepository scannedImageRepository,
         IExecutionRepository executionRepository,
         IExecutionStepModelMapperRegistry executionStepModelMapperRegistry
     ) : RocketControllerBase(userManager)
@@ -83,11 +84,14 @@ namespace Rocket.Api.Host.Controllers
                                         Id = o.Id,
                                         UserId = o.UserId,
                                         ScanId = o.ScanId,
+                                        WorkflowId = o.WorkflowId,
                                         MatchingPageSymbol = o.MatchingPageSymbol,
                                         CreatedAt = o.CreatedAt,
                                         RunDate = o.RunDate,
                                         Name = o.Name,
-                                        ExecutionStatus = o.ExecutionStatus
+                                        ExecutionStatus = o.ExecutionStatus,
+                                        ThumbnailBase64 = o.ThumbnailBase64,
+                                        ContentType = o.ContentType
                                     }
                             ),
                     TotalRecords = (int)totalRecordCount
@@ -212,11 +216,28 @@ namespace Rocket.Api.Host.Controllers
                     ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                 );
 
+            var scan =
+                await
+                    scannedImageRepository
+                        .GetScanByIdAsync(
+                            userId,
+                            request.ScanId,
+                            cancellationToken
+                        );
+
+            if (scan == null)
+                throw new RocketException(
+                    "Scan does not exist for this user.",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
             var newExecution =
                 workflowCloner
                     .Clone(
                         workflow,
-                        request.ScanId
+                        scan.Id,
+                        scan.ThumbnailBase64,
+                        scan.ContentType
                     );
 
             var result =
@@ -444,11 +465,14 @@ namespace Rocket.Api.Host.Controllers
                     Id = execution.Id,
                     UserId = execution.UserId,
                     ScanId = execution.ScanId,
+                    WorkflowId = execution.WorkflowId,
                     MatchingPageSymbol = execution.MatchingPageSymbol,
                     RunDate = execution.RunDate,
                     CreatedAt = execution.CreatedAt,
                     Name = execution.Name,
                     ExecutionStatus = execution.ExecutionStatus,
+                    ThumbnailBase64 = execution.ThumbnailBase64,
+                    ContentType = execution.ContentType,
                     Steps =
                         (execution.Steps ?? [])
                         .Select(

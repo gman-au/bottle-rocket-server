@@ -11,13 +11,17 @@ namespace Rocket.Infrastructure.Mapping
     {
         public Execution Clone(
             Workflow workflow,
-            string scanId
+            string scanId, 
+            string scanThumbnailBase64,
+            string scanContentType
         )
         {
             return new Execution
             {
                 UserId = workflow.UserId,
                 ScanId = scanId,
+                ThumbnailBase64 = scanThumbnailBase64,
+                ContentType = scanContentType,
                 WorkflowId = workflow.Id,
                 MatchingPageSymbol = workflow.MatchingPageSymbol,
                 CreatedAt = DateTime.UtcNow,

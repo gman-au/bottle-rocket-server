@@ -14,6 +14,9 @@ namespace Rocket.Api.Contracts.Executions
 
         [JsonPropertyName("scan_id")]
         public string ScanId { get; set; }
+
+        [JsonPropertyName("workflow_id")]
+        public string WorkflowId { get; set; }
         
         [JsonPropertyName("matching_page_symbol")]
         public int? MatchingPageSymbol { get; set; }
@@ -29,6 +32,12 @@ namespace Rocket.Api.Contracts.Executions
         
         [JsonPropertyName("execution_status")]
         public int? ExecutionStatus { get; set; }
+        
+        [JsonPropertyName("thumbnail_base64")]
+        public string ThumbnailBase64 { get; set; }
+        
+        [JsonPropertyName("content_type")]
+        public string ContentType { get; set; }
         
         [JsonPropertyName("steps")]
         public IEnumerable<ExecutionStepSummary> Steps { get; set; }

@@ -1,5 +1,6 @@
 ﻿@page "/MyExecution/{id}"
 @using Rocket.Api.Contracts.Executions
+@using Rocket.Domain.Utils
 @using Rocket.Interfaces
 @using Rocket.Web.Client
 @using Rocket.Web.Host.Infrastructure
@@ -14,7 +15,7 @@
     {
         <MudPaper Class="p-4" elevation="2">
             <MudGrid Class="pa-8" Justify="Justify.SpaceEvenly">
-                <MudItem sm="12" md="4">
+                <MudItem sm="12" md="6">
                     <MudStack
                         Style="height:100%;"
                         Justify="Justify.SpaceBetween"
@@ -27,14 +28,48 @@
                             Class="mb-4">
                             Workflow Run Details
                         </MudText>
+                        <div style="text-align: center; width:100%">
+                            <MudSimpleTable
+                                Bordered
+                                Dense>
+                                <tbody>
+                                <ComplexTableRowPair Title="Workflow Name">
+                                    <MudLink Href=@($"/MyWorkflow/{_currentModel.WorkflowId}")>
+                                        <MudText
+                                            Class="code-text"
+                                            Typo="Typo.body1"
+                                            Align="Align.Left"
+                                            GutterBottom="true">
+                                            @_currentModel.Name
+                                        </MudText>
+                                    </MudLink>
+                                </ComplexTableRowPair>
+                                <SimpleTableRowPair
+                                    Title="Run Status"
+                                    Value=@(DomainConstants.ExecutionStatusTypes.ContainsKey((int)_currentModel.ExecutionStatus) ? DomainConstants.ExecutionStatusTypes[(int)_currentModel.ExecutionStatus] : "Unknown")
+                                />
+                                <SimpleTableRowPair Title="Run Date"
+                                                    Value=@_currentModel?.RunDate?.ToString("g")/>
+                                <ComplexTableRowPair Title="Image">
+                                    <MudLink Href=@($"/MyScans/{_currentModel.ScanId}")>
+                                        <MudImage
+                                            Class="mud-border-secondary border rounded"
+                                            Src=@($"data:{_currentModel.ContentType};base64,{_currentModel.ThumbnailBase64}") Width="200"
+                                            Height="200"/>
+
+                                    </MudLink>
+                                </ComplexTableRowPair>
+                                </tbody>
+                            </MudSimpleTable>
+                        </div>
                         <MudGrid Class="align-start" Justify="Justify.FlexEnd">
                             <MudItem>
-                                <GoBackButton BackPath="/MyWorkflows"/>
+                                <GoBackButton/>
                             </MudItem>
                         </MudGrid>
                     </MudStack>
                 </MudItem>
-                <MudItem sm="12" md="8">
+                <MudItem sm="12" md="6">
                     <!-- form -->
                     <MudPaper Elevation="4" Class="p-4 mermaid-paper">
                         <pre class="mermaid">
