@@ -1,0 +1,66 @@
+﻿@using Rocket.Api.Contracts.Executions
+@using Rocket.Domain.Enum
+@using Rocket.Domain.Utils
+@using Rocket.Web.Host.Extensions
+@if ((Executions ?? []).Any())
+{
+    <MudSimpleTable
+        Style="width:100%;"
+        Dense>
+        <thead>
+        <tr>
+            <th>Workflow</th>
+            <th>Run Date</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var execution in Executions)
+        {
+            <tr>
+                <td>
+                    <MudLink Href="@($"/MyExecution/{execution.Id}")">@execution.Name</MudLink>
+                </td>
+                <td>
+                    @execution.RunDate?.ToString("g")
+                </td>
+                <td>
+                    @if (execution?.ExecutionStatus != null)
+                    {
+                        <span style="display:inline-flex;">
+                        <MudText Color="@(execution.ExecutionStatus.MapStatusToColor())">
+                            @if (execution.ExecutionStatus != null && DomainConstants.ExecutionStatusTypes.ContainsKey((int)execution.ExecutionStatus))
+                            {
+                                @DomainConstants.ExecutionStatusTypes[(int)execution.ExecutionStatus]
+                            }
+                        </MudText>
+                            @if (execution.ExecutionStatus == (int)ExecutionStatusEnum.Running)
+                            {
+                                <div class="ml-2">
+                                <MudProgressCircular Color="Color.Info" Size="Size.Small" Indeterminate="true"/>
+                            </div>
+                            }
+                        </span>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </MudSimpleTable>
+}
+else
+{
+    <MudText
+        Align="Align.Center"
+        Typo="Typo.body2"
+        Color="Color.Default">
+        No previous runs found
+    </MudText>
+}
+
+@code {
+
+    [Parameter]
+    public IEnumerable<ExecutionSummary> Executions { get; set; }
+
+}

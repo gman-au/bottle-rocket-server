@@ -1,0 +1,208 @@
+﻿@page "/MyWorkflows"
+@using Rocket.Api.Contracts.Workflows
+@using Rocket.Web.Client
+@using Rocket.Web.Host.Components.Dialog
+@using Rocket.Web.Host.Extensions
+@using Rocket.Web.Host.Infrastructure
+@implements IAsyncDisposable
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject IDialogService DialogService
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<MudText
+    Align="Align.Center"
+    Typo="Typo.h4"
+    Color="Color.Primary"
+    Class="mb-4">
+    My Workflows
+</MudText>
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_workflows.Any())
+    {
+        <MudSimpleTable Dense>
+            <thead>
+            <tr>
+                <th class="general-centered">Workflow Name</th>
+                <th class="general-centered">Matching Page Symbol</th>
+                <th class="general-centered">Date Created</th>
+                <th/>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var workflow in _workflows)
+            {
+                <tr>
+                    <td class="general-centered">
+                        <MudNavLink Href="@($"/MyWorkflow/{workflow.Id}")">
+                            <MudText Align="Align.Center" Color="Color.Primary">
+                                @workflow.Name
+                            </MudText>
+                        </MudNavLink>
+                    </td>
+                    <td class="general-centered">
+                        <img height="40px" class="rocketbook-icon-round" src="@(workflow.MatchingPageSymbol.GetRocketbookPageSymbolImagePath())"/>
+                    </td>
+                    <td class="general-centered">
+                        @workflow.CreatedAt?.ToString("g")
+                    </td>
+                    <td class="general-centered">
+                        <MudIconButton
+                            OnClick="@(() => ConfirmDeleteAsync(workflow))"
+                            Icon="@StandardIcons.DeleteIcon"/>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </MudSimpleTable>
+        <MudDivider Class="my-4"/>
+        <MudGrid Justify="Justify.Center">
+            <MudItem>
+                <MudButton
+                    Variant="Variant.Outlined"
+                    Color="Color.Primary"
+                    Disabled="@_noMoreRecords"
+                    @onclick="@(async () => await LoadWorkflows(
+                                  _currentIndex,
+                                  DefaultPageSize
+                              ))">
+                    Load More
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    }
+    else
+    {
+        <MudText
+            Align="Align.Center"
+            Typo="Typo.body2"
+            Color="Color.Default">
+            No workflows found
+        </MudText>
+    }
+</BottleRocketLoadingOverlay>
+
+@code {
+    private const int DefaultPageSize = 12;
+    private bool _isLoading;
+    private bool _noMoreRecords = false;
+    private int _currentIndex = 0;
+    private IEnumerable<MyWorkflowSummary> _workflows = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+
+            await
+                LoadWorkflows(
+                    _currentIndex,
+                    DefaultPageSize
+                );
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task LoadWorkflows(int index, int count)
+    {
+        var request =
+            new FetchWorkflowsRequest
+            {
+                StartIndex = index,
+                RecordCount = count
+            };
+
+        var response =
+            await
+                ApiRequestManager
+                    .GetWorkflowsAsync(
+                        request,
+                        BaseCancellationToken
+                    );
+
+        _currentIndex +=
+            (response?.Workflows ?? [])
+            .Count();
+
+        _noMoreRecords = _currentIndex == (response?.TotalRecords ?? 0);
+
+        var existingWorkflows = new List<MyWorkflowSummary>(_workflows);
+        var newWorkflows = new List<MyWorkflowSummary>(response?.Workflows ?? []);
+
+        _workflows =
+            existingWorkflows
+                .UnionBy(
+                    newWorkflows,
+                    o => o.Id
+                )
+                .OrderByDescending(o => o.CreatedAt);
+    }
+
+    private async Task ConfirmDeleteAsync(MyWorkflowSummary workflow)
+    {
+        var dialog =
+            await
+                DialogService
+                    .ShowAsync<ConfirmDeleteWorkflowDialog>(
+                        null,
+                        new DialogParameters
+                        {
+                            { "Workflow", workflow }
+                        }
+                    );
+
+        var result =
+            await
+                dialog
+                    .Result;
+
+        if (!(result?.Canceled ?? true))
+        {
+            try
+            {
+                _isLoading = true;
+                StateHasChanged();
+
+                await
+                    ApiRequestManager
+                        .DeleteWorkflowByIdAsync(
+                            workflow.Id,
+                            BaseCancellationToken
+                        );
+
+                _workflows =
+                    _workflows
+                        .Where(o => o.Id != workflow.Id);
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+    }
+
+}

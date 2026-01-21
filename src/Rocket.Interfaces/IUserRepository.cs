@@ -9,11 +9,21 @@ namespace Rocket.Interfaces
 {
     public interface IUserRepository
     {
-        Task<User> GetUserByUsernameAsync(string username, CancellationToken cancellationToken);
+        Task<User> GetUserByNameAsync(string username, CancellationToken cancellationToken);
 
-        Task<User> GetUserByUserIdAsync(string userId, CancellationToken cancellationToken);
+        Task<User> GetUserByIdAsync(string userId, CancellationToken cancellationToken);
 
-        Task<User> CreateUserAsync(User user, CancellationToken cancellationToken);
+        Task<(IEnumerable<User> records, long totalRecordCount)> FetchUsersAsync(
+            int startIndex,
+            int recordCount,
+            CancellationToken cancellationToken
+        );
+
+        Task<(IEnumerable<User> records, long totalRecordCount)> FetchActiveAdminsAsync(
+            CancellationToken cancellationToken
+        );
+
+        Task<User> InsertUserAsync(User user, CancellationToken cancellationToken);
 
         Task UpdateUserFieldAsync<T>(
             string userId,
@@ -23,15 +33,5 @@ namespace Rocket.Interfaces
         );
 
         Task DeactivateAdminUserAsync(CancellationToken cancellationToken);
-        
-        Task<(IEnumerable<User> records, long totalRecordCount)> FetchUsersAsync(
-            int startIndex,
-            int recordCount,
-            CancellationToken cancellationToken
-        );
-        
-        Task<(IEnumerable<User> records, long totalRecordCount)> GetActiveAdminsAsync(
-            CancellationToken cancellationToken
-        );
     }
 }

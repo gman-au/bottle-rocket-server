@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using MudBlazor;
+using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 
 namespace Rocket.Web.Host.Infrastructure
@@ -15,18 +16,23 @@ namespace Rocket.Web.Host.Infrastructure
                 case HttpRequestException:
                     return;
                 case RocketException rex:
-                    throw rex;
+                    switch (rex.ApiStatusCode)
+                    {
+                        case (int)ApiStatusCodeEnum.WorkflowExecutionAlreadyRunning:
+                            break;
+                        default:
+                            throw rex;
+                    }
+                    break;
                 case TaskCanceledException:
                 case OperationCanceledException:
                     return;
-                default:
-                    snackbar
-                        .Add(
-                            ex.Message,
-                            Severity.Error
-                        );
-                    break;
             }
+            snackbar
+                .Add(
+                    ex.Message,
+                    Severity.Error
+                );
         }
     }
 }

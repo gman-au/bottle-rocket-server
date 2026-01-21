@@ -9,10 +9,23 @@ namespace Rocket.Interfaces
 {
     public interface IConnectorRepository
     {
-        Task<BaseConnector> SaveConnectorAsync(
-            BaseConnector baseConnector,
+        Task<bool> ConnectorExistsForUserAsync(
+            string userId,
+            string connectorName,
             CancellationToken cancellationToken
         );
+
+        Task<T> GetConnectorByIdAsync<T>(
+            string userId,
+            string id,
+            CancellationToken cancellationToken
+        ) where T : BaseConnector;
+
+        Task<T> GetConnectorByNameAsync<T>(
+            string userId,
+            string name,
+            CancellationToken cancellationToken
+        ) where T : BaseConnector;
 
         Task<(IEnumerable<BaseConnector> records, long totalRecordCount)> FetchConnectorsAsync(
             string userId,
@@ -21,21 +34,16 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
-        Task<T> FetchUserConnectorByIdAsync<T>(
+        Task<(IEnumerable<BaseConnector> records, long totalRecordCount)> FetchConnectorsByCodeAndUserAsync(
             string userId,
-            string id,
+            int? startIndex,
+            int? recordCount,
+            string code,
             CancellationToken cancellationToken
-        ) where T : BaseConnector;
+        );
 
-        Task<T> FetchUserConnectorByNameAsync<T>(
-            string userId,
-            string name,
-            CancellationToken cancellationToken
-        ) where T : BaseConnector;
-
-        Task<bool> DeleteConnectorAsync(
-            string userId,
-            string id,
+        Task<BaseConnector> InsertConnectorAsync(
+            BaseConnector baseConnector,
             CancellationToken cancellationToken
         );
 
@@ -47,9 +55,9 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         ) where TConnector : BaseConnector;
 
-        Task<bool> ConnectorExistsForUserAsync(
+        Task<bool> DeleteConnectorAsync(
             string userId,
-            string connectorName,
+            string id,
             CancellationToken cancellationToken
         );
     }

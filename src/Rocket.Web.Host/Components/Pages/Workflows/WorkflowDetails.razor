@@ -1,0 +1,325 @@
+﻿@page "/MyWorkflow/{id}"
+@using Rocket.Api.Contracts.Executions
+@using Rocket.Api.Contracts.Workflows
+@using Rocket.Domain.Enum
+@using Rocket.Interfaces
+@using Rocket.Web.Client
+@using Rocket.Web.Host.Extensions
+@using Rocket.Web.Host.Infrastructure
+@inject IJSRuntime JsRuntime
+@inject ISnackbar Snackbar
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject IWorkflowMermaidConverter WorkflowMermaidConverter
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_newModel != null)
+    {
+        <MudForm
+            Model="@_newModel"
+            @ref="_form">
+            <MudPaper Class="p-4" elevation="2">
+                <MudGrid Class="pa-8" Justify="Justify.SpaceEvenly">
+                    <MudItem sm="12" md="4">
+                        <MudStack
+                            Style="height:100%;"
+                            Justify="Justify.SpaceBetween"
+                            StretchItems="StretchItems.Middle"
+                            AlignItems="AlignItems.Start">
+                            <MudText
+                                Align="Align.Center"
+                                Typo="Typo.h4"
+                                Color="Color.Primary"
+                                Class="mb-4">
+                                Workflow Details
+                            </MudText>
+                            <MudGrid>
+                                <MudItem sm="12">
+                                    <MudTextField
+                                        T="string"
+                                        Label="Workflow Name"
+                                        Required="true"
+                                        RequiredError="Please enter a valid workflow name"
+                                        Disabled="@(_isLoading)"
+                                        @bind-Value="_newModel.Name"
+                                        For="@(() => _newModel.Name)"
+                                        OnlyValidateIfDirty/>
+                                </MudItem>
+                                <MudItem sm="12">
+                                    <div class="rocketbook-icon-dropdown">
+                                        <MudSelect
+                                            T="int?"
+                                            Clearable
+                                            Label="Matching Page Symbol"
+                                            HelperText="Select a matching page symbol to associate with this workflow."
+                                            Disabled="@(_isLoading)"
+                                            @bind-Value="_newModel.MatchingPageSymbol"
+                                            For="@(() => _newModel.MatchingPageSymbol)"
+                                            OnlyValidateIfDirty>
+                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Rocket)">
+                                                <img src="@(((int?)PageSymbolEnum.Rocket).GetRocketbookPageSymbolImagePath())"
+                                                     height="80"
+                                                     class="mr-4 rocketbook-icon-round"
+                                                />
+                                                Rocket
+                                            </MudSelectItem>
+                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Diamond)">
+                                                <img src="@(((int?)PageSymbolEnum.Diamond).GetRocketbookPageSymbolImagePath())"
+                                                     height="80"
+                                                     class="mr-4 rocketbook-icon-round"
+                                                />
+                                                Diamond
+                                            </MudSelectItem>
+                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Apple)">
+                                                <img src="@(((int?)PageSymbolEnum.Apple).GetRocketbookPageSymbolImagePath())"
+                                                     height="80"
+                                                     class="mr-4 rocketbook-icon-round"
+                                                />
+                                                Apple
+                                            </MudSelectItem>
+                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Bell)">
+                                                <img src="@(((int?)PageSymbolEnum.Bell).GetRocketbookPageSymbolImagePath())"
+                                                     height="80"
+                                                     class="mr-4 rocketbook-icon-round"
+                                                />
+                                                Bell
+                                            </MudSelectItem>
+                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Clover)">
+                                                <img src="@(((int?)PageSymbolEnum.Clover).GetRocketbookPageSymbolImagePath())"
+                                                     height="80"
+                                                     class="mr-4 rocketbook-icon-round"
+                                                />
+                                                Clover
+                                            </MudSelectItem>
+                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Star)">
+                                                <img src="@(((int?)PageSymbolEnum.Star).GetRocketbookPageSymbolImagePath())"
+                                                     height="80"
+                                                     class="mr-4 rocketbook-icon-round"
+                                                />
+                                                Star
+                                            </MudSelectItem>
+                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Horseshoe)">
+                                                <img src="@(((int?)PageSymbolEnum.Horseshoe).GetRocketbookPageSymbolImagePath())"
+                                                     height="80"
+                                                     class="mr-4 rocketbook-icon-round"
+                                                />
+                                                Horseshoe
+                                            </MudSelectItem>
+
+                                        </MudSelect>
+                                    </div>
+                                </MudItem>
+                            </MudGrid>
+                            <MudGrid Class="align-start" Justify="Justify.FlexEnd">
+                                <MudItem>
+                                    <GoBackButton BackPath="/MyWorkflows"/>
+                                </MudItem>
+                                <MudItem>
+                                    <MudButton
+                                        Variant="Variant.Outlined"
+                                        Color="Color.Success"
+                                        Disabled="@(_isLoading)"
+                                        OnClick="@SubmitAsync">
+                                        Submit
+                                    </MudButton>
+                                </MudItem>
+                            </MudGrid>
+                        </MudStack>
+                    </MudItem>
+                    <MudItem sm="12" md="8">
+                        <!-- form -->
+                        <MudPaper Elevation="4" Class="p-4 mermaid-paper">
+                            <pre class="mermaid">
+                    @MermaidText
+                </pre>
+                        </MudPaper>
+                    </MudItem>
+                    <MudFlexBreak/>
+                    <MudDivider Class="mt-4"/>
+                    <MudItem xs="12">
+                        <MudText
+                            Align="Align.Center"
+                            Typo="Typo.h5"
+                            Color="Color.Primary"
+                            Class="mb-4">
+                            Previous runs
+                        </MudText>
+                    </MudItem>
+                    <PreviousWorkflowRuns Executions="@_executions"/>
+                </MudGrid>
+            </MudPaper>
+        </MudForm>
+    }
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    MudForm _form;
+
+    private bool _disposed = false;
+    private bool _isLoading;
+    private WorkflowSummary _currentModel = null;
+    private MyWorkflowSummary _newModel = null;
+    private IEnumerable<ExecutionSummary> _executions = [];
+
+    [Parameter]
+    public string Id { get; set; }
+
+    private string MermaidText { get; set; }
+
+    private DotNetObjectReference<WorkflowDetails> _dotNetRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetRef =
+                DotNetObjectReference
+                    .Create(this);
+
+            await
+                JsRuntime
+                    .InvokeVoidAsync(
+                        "storeDotNetRef",
+                        _dotNetRef
+                    );
+
+            await
+                Task
+                    .Delay(100);
+
+            await
+                JsRuntime
+                    .InvokeVoidAsync("mermaid.run");
+        }
+    }
+
+    [JSInvokable]
+    public void NavigateToRoute(string route)
+    {
+        if (_disposed)
+            return;
+
+        NavigationManager
+            .NavigateTo(route);
+    }
+
+    public override void Dispose()
+    {
+        if (!_disposed)
+        {
+            _disposed = true;
+
+            _dotNetRef?
+                .Dispose();
+
+            base
+                .Dispose();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+
+            _currentModel =
+                await
+                    ApiRequestManager
+                        .GetWorkflowByIdAsync(
+                            Id,
+                            BaseCancellationToken
+                        );
+
+            _newModel =
+                new MyWorkflowSummary
+                {
+                    Id = _currentModel.Id,
+                    UserId = _currentModel.UserId,
+                    MatchingPageSymbol = _currentModel.MatchingPageSymbol,
+                    CreatedAt = _currentModel.CreatedAt,
+                    LastUpdatedAt = _currentModel.LastUpdatedAt,
+                    Name = _currentModel.Name,
+                    IsActive = _currentModel.IsActive
+                };
+
+            MermaidText =
+                WorkflowMermaidConverter
+                    .Convert(_currentModel);
+
+            _executions =
+                (await
+                    ApiRequestManager
+                        .GetExecutionsAsync(
+                            new FetchExecutionsRequest
+                            {
+                                WorkflowId = Id,
+                            }, BaseCancellationToken
+                        ))?
+                .Executions;
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SubmitAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                await
+                    ApiRequestManager
+                        .UpdateWorkflowAsync(
+                            new MyWorkflowSummary
+                            {
+                                Id = _newModel.Id,
+                                Name = _currentModel.Name != _newModel.Name ? _newModel.Name : null,
+                                IsActive = _currentModel.IsActive != _newModel.IsActive ? _newModel.IsActive : null,
+                                MatchingPageSymbol = _newModel.MatchingPageSymbol
+                            },
+                            BaseCancellationToken
+                        );
+
+                Snackbar
+                    .Add(
+                        "The workflow has been updated.",
+                        Severity.Success
+                    );
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+}

@@ -19,7 +19,7 @@ namespace Rocket.Infrastructure
 
             var (records, recordCount) = await
                 userRepository
-                    .GetActiveAdminsAsync(cancellationToken);
+                    .FetchActiveAdminsAsync(cancellationToken);
 
             var adminUsers = records as User[] ?? records.ToArray();
 
@@ -53,7 +53,7 @@ namespace Rocket.Infrastructure
                 var proposedUser =
                     await
                         userRepository
-                            .GetUserByUserIdAsync(
+                            .GetUserByIdAsync(
                                 proposedUserId,
                                 cancellationToken
                             );

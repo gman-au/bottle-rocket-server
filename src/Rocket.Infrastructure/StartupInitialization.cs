@@ -59,7 +59,7 @@ namespace Rocket.Infrastructure
 
             await
                 userRepository
-                    .CreateUserAsync(
+                    .InsertUserAsync(
                         adminUser,
                         cancellationToken
                     );
@@ -90,7 +90,7 @@ namespace Rocket.Infrastructure
                 var adminUser =
                     await
                         userRepository
-                            .GetUserByUsernameAsync(
+                            .GetUserByNameAsync(
                                 DomainConstants.RootAdminUserName,
                                 cancellationToken
                             );

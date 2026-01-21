@@ -33,5 +33,26 @@ namespace Rocket.Api.Host.Notifiers
                         cancellationToken: cancellationToken
                     );
         }
+
+        public async Task NotifyNewExecutionUpdateAsync(
+            string userId,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation(
+                    "Notifying user {userId} of new execution update",
+                    userId
+                );
+
+            await
+                hubContext
+                    .Clients
+                    .Group($"user_{userId}")
+                    .SendAsync(
+                        "NewExecutionUpdateReceived",
+                        cancellationToken: cancellationToken
+                    );
+        }
     }
 }

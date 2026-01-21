@@ -18,6 +18,9 @@ namespace Rocket.Web.Host
         public const string AddConnectorIcon = Icons.Material.Filled.AddCircleOutline;
         public const string DeleteIcon = Icons.Material.Filled.Delete;
         public const string SyncActive = Icons.Material.Filled.Sync;
-        public const string SyncPending = @Icons.Material.Filled.SyncProblem;
+        public const string SyncPending = Icons.Material.Filled.SyncProblem;
+        public const string WorkflowsIcon = Icons.Material.Filled.AccountTree;
+        public const string SearchWorkflowIcon = Icons.Material.Filled.Search;
+        public const string AddWorkflowIcon = Icons.Material.Filled.AddCircleOutline;
     }
 }

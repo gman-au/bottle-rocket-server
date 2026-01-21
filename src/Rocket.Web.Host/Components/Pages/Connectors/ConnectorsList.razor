@@ -1,8 +1,7 @@
 ﻿@page "/MyConnectors"
-@using Rocket.Api.Contracts
 @using Rocket.Api.Contracts.Connectors
 @using Rocket.Domain.Enum
-@using Rocket.Web.Host.Api
+@using Rocket.Web.Client
 @using Rocket.Web.Host.Components.Dialog
 @using Rocket.Web.Host.Infrastructure
 @implements IAsyncDisposable
@@ -20,62 +19,74 @@
 </MudText>
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
-    <MudSimpleTable Dense>
-        <thead>
-        <tr>
-            <th></th>
-            <th>Connector</th>
-            <th>Type</th>
-            <th>Created</th>
-            <th>Last Updated</th>
-            <th/>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var connector in _connectors)
-        {
+    @if (_connectors.Any())
+    {
+        <MudSimpleTable Dense>
+            <thead>
             <tr>
-                <td>
-                    <MudIcon
-                        Icon="@MapStatusToIcon(connector.Status)"
-                        Color="@MapStatusToColor(connector.Status)"/>
-                </td>
-                <td>
-                    <MudText Color="Color.Primary">
-                        @connector.ConnectorName
-                    </MudText>
-                </td>
-                <td>
-                    <MudText Color="Color.Secondary">
-                        @connector.ConnectorType
-                    </MudText>
-                </td>
-                <td>@connector.CreatedAt?.ToString("g")</td>
-                <td>@connector.LastUpdatedAt?.ToString("g")</td>
-                <td>
-                    <MudIconButton
-                        OnClick="@(() => ConfirmDeleteAsync(connector))"
-                        Icon="@StandardIcons.DeleteIcon"/>
-                </td>
+                <th></th>
+                <th>Connector</th>
+                <th>Type</th>
+                <th>Created</th>
+                <th>Last Updated</th>
+                <th/>
             </tr>
-        }
-        </tbody>
-    </MudSimpleTable>
-    <MudDivider Class="my-4"/>
-    <MudGrid Justify="Justify.Center">
-        <MudItem>
-            <MudButton
-                Variant="Variant.Outlined"
-                Color="Color.Primary"
-                Disabled="@_noMoreRecords"
-                @onclick="@(async () => await LoadMyConnectors(
-                              _currentIndex,
-                              DefaultPageSize
-                          ))">
-                Load More
-            </MudButton>
-        </MudItem>
-    </MudGrid>
+            </thead>
+            <tbody>
+            @foreach (var connector in _connectors)
+            {
+                <tr>
+                    <td>
+                        <MudIcon
+                            Icon="@MapStatusToIcon(connector.Status)"
+                            Color="@MapStatusToColor(connector.Status)"/>
+                    </td>
+                    <td>
+                        <MudText Color="Color.Primary">
+                            @connector.ConnectorName
+                        </MudText>
+                    </td>
+                    <td>
+                        <MudText Color="Color.Secondary">
+                            @connector.ConnectorType
+                        </MudText>
+                    </td>
+                    <td>@connector.CreatedAt?.ToString("g")</td>
+                    <td>@connector.LastUpdatedAt?.ToString("g")</td>
+                    <td>
+                        <MudIconButton
+                            OnClick="@(() => ConfirmDeleteAsync(connector))"
+                            Icon="@StandardIcons.DeleteIcon"/>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </MudSimpleTable>
+        <MudDivider Class="my-4"/>
+        <MudGrid Justify="Justify.Center">
+            <MudItem>
+                <MudButton
+                    Variant="Variant.Outlined"
+                    Color="Color.Primary"
+                    Disabled="@_noMoreRecords"
+                    @onclick="@(async () => await LoadMyConnectors(
+                                  _currentIndex,
+                                  DefaultPageSize
+                              ))">
+                    Load More
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    }
+    else
+    {
+        <MudText
+            Align="Align.Center"
+            Typo="Typo.body2"
+            Color="Color.Default">
+            No connectors found
+        </MudText>
+    }
 </BottleRocketLoadingOverlay>
 
 @code {
@@ -83,7 +94,7 @@
     private bool _isLoading;
     private bool _noMoreRecords = false;
     private int _currentIndex = 0;
-    private IEnumerable<ConnectorItem> _connectors = [];
+    private IEnumerable<ConnectorSummary> _connectors = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -135,8 +146,8 @@
 
         _noMoreRecords = _currentIndex == (response?.TotalRecords ?? 0);
 
-        var existingConnectors = new List<ConnectorItem>(_connectors);
-        var newConnectors = new List<ConnectorItem>(response?.Connectors ?? []);
+        var existingConnectors = new List<ConnectorSummary>(_connectors);
+        var newConnectors = new List<ConnectorSummary>(response?.Connectors ?? []);
 
         _connectors =
             existingConnectors
@@ -146,8 +157,8 @@
                 )
                 .OrderByDescending(o => o.LastUpdatedAt);
     }
-    
-    private async Task ConfirmDeleteAsync(ConnectorItem connector)
+
+    private async Task ConfirmDeleteAsync(ConnectorSummary connector)
     {
         var dialog =
             await

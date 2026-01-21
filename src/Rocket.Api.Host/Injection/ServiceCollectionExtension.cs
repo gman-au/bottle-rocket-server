@@ -15,9 +15,10 @@ using Rocket.Infrastructure.Blob.Local.Options;
 using Rocket.Infrastructure.Db.Mongo;
 using Rocket.Infrastructure.Db.Mongo.Options;
 using Rocket.Infrastructure.Hashing;
+using Rocket.Infrastructure.Mapping;
 using Rocket.Infrastructure.Thumbnails;
-using Rocket.Dropbox.Infrastructure;
 using Rocket.Interfaces;
+using Rocket.Jobs.Service;
 
 namespace Rocket.Api.Host.Injection
 {
@@ -76,7 +77,11 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IPasswordHasher, PasswordHasher>()
                 .AddTransient<IActiveAdminChecker, ActiveAdminChecker>()
                 .AddTransient<IThumbnailer, Thumbnailer>()
-                .AddTransient<IUserManager, UserManager>();
+                .AddTransient<IUserManager, UserManager>()
+                .AddTransient<IWorkflowStepModelMapperRegistry, WorkflowStepModelMapperRegistry>()
+                .AddTransient<IExecutionStepModelMapperRegistry, ExecutionStepModelMapperRegistry>()
+                .AddTransient<IStepModelClonerRegistry, StepModelClonerRegistry>()
+                .AddTransient<IWorkflowCloner, WorkflowCloner>();
 
             if (environment.IsDevelopment())
                 services
@@ -122,6 +127,9 @@ namespace Rocket.Api.Host.Injection
             services
                 .AddTransient<IScannedImageRepository, MongoDbScannedImageRepository>()
                 .AddTransient<IConnectorRepository, MongoDbConnectorRepository>()
+                .AddTransient<IWorkflowRepository, MongoDbWorkflowRepository>()
+                .AddTransient<IWorkflowStepRepository, MongoDbWorkflowStepRepository>()
+                .AddTransient<IExecutionRepository, MongoDbExecutionRepository>()
                 .AddTransient<IUserRepository, MongoDbUserRepository>();
 
             return services;
@@ -194,6 +202,16 @@ namespace Rocket.Api.Host.Injection
                         );
                     }
                 );
+
+            return services;
+        }
+
+        public static IServiceCollection AddWorkflowBackgroundJob(this IServiceCollection services)
+        {
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.AddSingleton<IWorkflowExecutionManager, WorkflowExecutionManager>();
+            services.AddTransient<IWorkflowExecutionContext, WorkflowExecutionContext>();
+            services.AddHostedService<QueuedHostedService>();
 
             return services;
         }

@@ -5,13 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 using MudBlazor.Services;
 using Rocket.Infrastructure;
+using Rocket.Infrastructure.Mermaid;
 using Rocket.Interfaces;
-using Rocket.Web.Host.Api;
-using Rocket.Web.Host.Authentication;
+using Rocket.Web.Client;
+using Rocket.Web.Client.Authentication;
+using Rocket.Web.Client.Options;
 using Rocket.Web.Host.HubClients;
 using Rocket.Web.Host.Infrastructure;
-using Rocket.Web.Host.Options;
-using ConfigurationManager = Microsoft.Extensions.Configuration.ConfigurationManager;
 
 namespace Rocket.Web.Host.Injection
 {
@@ -46,6 +46,8 @@ namespace Rocket.Web.Host.Injection
             services
                 .AddTransient<IApiRequestManager, ApiRequestManager>()
                 .AddTransient<IEmailAddressValidator, EmailAddressValidator>()
+                .AddTransient<IWorkflowMermaidConverter, WorkflowMermaidConverter>()
+                .AddTransient<IExecutionMermaidConverter, ExecutionMermaidConverter>()
                 .AddTransient<IWebHostErrorHandler, WebHostErrorHandler>();
 
             return services;

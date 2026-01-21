@@ -1,7 +1,7 @@
 ﻿@page "/Users/Add"
-@using Rocket.Api.Contracts
+@using Rocket.Api.Contracts.Users
 @using Rocket.Interfaces
-@using Rocket.Web.Host.Api
+@using Rocket.Web.Client
 @using Rocket.Web.Host.Infrastructure
 @inject IApiRequestManager ApiRequestManager
 @inject IEmailAddressValidator EmailAddressValidator
@@ -78,7 +78,7 @@
     MudForm _form;
 
     private bool _isLoading;
-    private UserDetail _newModel = null;
+    private UserSpecifics _newModel = null;
     private MudTextField<string> _pwField1;
 
     [Parameter]
@@ -92,7 +92,7 @@
                 base
                     .OnInitializedAsync();
 
-            _newModel = new UserDetail();
+            _newModel = new UserSpecifics();
 
             _isLoading = true;
             StateHasChanged();

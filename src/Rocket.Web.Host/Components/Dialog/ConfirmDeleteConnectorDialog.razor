@@ -13,7 +13,7 @@
             Typo="Typo.h6"
             Color="Color.Default"
         >
-            Do you wish to delete this @Connector?.ConnectorName connector?
+            Do you wish to delete this <b>@Connector?.ConnectorName</b> connector?
         </MudText>
         <MudText
             Typo="Typo.body1"
@@ -43,7 +43,7 @@
     private IMudDialogInstance MudDialog { get; set; }
     
     [Parameter]
-    public ConnectorItem Connector { get; set; }
+    public ConnectorSummary Connector { get; set; }
 
     private void Submit() => MudDialog.Close(DialogResult.Ok(true));
 

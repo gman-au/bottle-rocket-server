@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
+using Rocket.Api.Contracts.Captures;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
@@ -25,7 +26,8 @@ namespace Rocket.Api.Host.Controllers
         [HttpPost("process")]
         [EndpointSummary("Process captured image(s)")]
         [EndpointGroupName("Manage captures / scans")]
-        [EndpointDescription("Process uploaded images via this endpoint. Use the url-encoded multipart form schema to POST the image data.")]
+        [EndpointDescription(
+            "Process uploaded images via this endpoint. Use the url-encoded multipart form schema to POST the image data.")]
         [ProducesResponseType(typeof(ProcessCaptureResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -41,19 +43,19 @@ namespace Rocket.Api.Host.Controllers
                 User
                     .FindFirst(ClaimTypes.NameIdentifier)?
                     .Value;
-            
+
             if (string.IsNullOrEmpty(userId))
             {
                 logger
                     .LogWarning("User authentication information missing from claims");
-                
+
                 throw new RocketException(
                     "User authentication failed",
                     ApiStatusCodeEnum.UnknownUser,
                     401
                 );
             }
-            
+
             var form =
                 model?
                     .Form;
@@ -68,18 +70,20 @@ namespace Rocket.Api.Host.Controllers
                     ApiStatusCodeEnum.NoAttachmentsFound
                 );
 
+            var scanId = string.Empty;
+
             foreach (var formFile in formFiles)
             {
                 using var ms = new MemoryStream();
 
-                var contentType = 
+                var contentType =
                     formFile
                         .ContentType;
 
                 var fileExtension =
                     Path
                         .GetExtension(formFile.FileName);
-                
+
                 await
                     formFile
                         .CopyToAsync(
@@ -87,17 +91,20 @@ namespace Rocket.Api.Host.Controllers
                             cancellationToken
                         );
 
-                await
-                    scannedImageHandler
-                        .WriteAsync(
-                            ms.ToArray(),
-                            contentType,
-                            fileExtension,
-                            userId,
-                            model.QrCode,
-                            model.QrBoundingBox,
-                            cancellationToken
-                        );
+                var result =
+                    await
+                        scannedImageHandler
+                            .WriteAsync(
+                                ms.ToArray(),
+                                contentType,
+                                fileExtension,
+                                userId,
+                                model.QrCode,
+                                model.QrBoundingBox,
+                                cancellationToken
+                            );
+
+                scanId = result.Id;
 
                 await
                     captureNotifier
@@ -106,21 +113,25 @@ namespace Rocket.Api.Host.Controllers
                             cancellationToken
                         );
             }
-            
+
+            var response =
+                new ProcessCaptureResponse
+                {
+                    Id = scanId
+                };
+
             return
-                new ProcessCaptureResponse()
+                response
                     .AsApiSuccess();
         }
 
         public class ImageUploadModel
         {
             public IFormCollection Form { get; set; }
-            
-            [FromForm(Name = "qr_code")]
-            public string QrCode { get; set; }
-            
-            [FromForm(Name = "qr_bounding_box")]
-            public string QrBoundingBox { get; set; }
+
+            [FromForm(Name = "qr_code")] public string QrCode { get; set; }
+
+            [FromForm(Name = "qr_bounding_box")] public string QrBoundingBox { get; set; }
         }
     }
 }

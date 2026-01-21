@@ -16,9 +16,12 @@
         UnknownOrInaccessibleRecord,
         RequiresAdministratorAccess,
         PotentiallyIrrecoverableOperation,
-        ConnectorAlreadyExists,
+        RecordAlreadyExists,
+        WorkflowMissingConnection,
         ServerError = 5000,
         ServerConfigurationError,
-        ThirdPartyServiceError
+        ThirdPartyServiceError,
+        WorkflowExecutionAlreadyRunning,
+        DeveloperError = 6000
     }
 }

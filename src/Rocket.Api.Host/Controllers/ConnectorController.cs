@@ -47,44 +47,55 @@ namespace Rocket.Api.Host.Controllers
             CancellationToken cancellationToken
         )
         {
-            await
-                ThrowIfNotActiveUserAsync(cancellationToken);
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
 
             var userId =
-                GetLoggedInUserId();
+                user
+                    .Id;
 
             var (records, totalRecordCount) =
-                await
-                    connectorRepository
-                        .FetchConnectorsAsync(
-                            userId,
-                            request.StartIndex,
-                            request.RecordCount,
-                            cancellationToken
-                        );
+                string.IsNullOrEmpty(request.Code)
+                    ? await
+                        connectorRepository
+                            .FetchConnectorsAsync(
+                                userId,
+                                request.StartIndex.GetValueOrDefault(),
+                                request.RecordCount.GetValueOrDefault(),
+                                cancellationToken
+                            )
+                    : await
+                        connectorRepository
+                            .FetchConnectorsByCodeAndUserAsync(
+                                userId,
+                                request.StartIndex,
+                                request.RecordCount,
+                                request.Code,
+                                cancellationToken
+                            );
 
             var response =
                 new FetchConnectorsResponse
                 {
                     Connectors =
                         records
-                            .Select(
-                                o =>
-                                    new ConnectorItem
-                                    {
-                                        Id = o.Id,
-                                        ConnectorType =
-                                            DomainConstants
-                                                .ConnectorTypes
-                                                .GetValueOrDefault(
-                                                    o.ConnectorType,
-                                                    "Unknown"
-                                                ),
-                                        ConnectorName = o.ConnectorName,
-                                        CreatedAt = o.CreatedAt.ToLocalTime(),
-                                        LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
-                                        Status = (int)o.DetermineStatus()
-                                    }
+                            .Select(o =>
+                                new ConnectorSummary
+                                {
+                                    Id = o.Id,
+                                    ConnectorType =
+                                        DomainConstants
+                                            .ConnectorTypes
+                                            .GetValueOrDefault(
+                                                o.ConnectorType,
+                                                DomainConstants.UnknownType
+                                            ),
+                                    ConnectorName = o.ConnectorName,
+                                    CreatedAt = o.CreatedAt.ToLocalTime(),
+                                    LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
+                                    Status = (int)o.DetermineStatus()
+                                }
                             ),
                     TotalRecords = (int)totalRecordCount
                 };

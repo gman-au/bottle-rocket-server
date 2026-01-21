@@ -8,11 +8,12 @@ using AutoFixture;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Rocket.Api.Contracts;
+using Rocket.Api.Contracts.Scans;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Interfaces;
 using Rocket.Tests.Unit.Extensions;
-using Rocket.Web.Host.Api;
-using Rocket.Web.Host.Authentication;
+using Rocket.Web.Client;
 using Xunit;
 
 namespace Rocket.Tests.Unit
@@ -169,7 +170,7 @@ namespace Rocket.Tests.Unit
             public void AssertResultIsCompleteMyScanItemDetail()
             {
                 Assert.NotNull(_result);
-                var myScanItemDetail = Assert.IsType<MyScanItemDetail>(_result);
+                var myScanItemDetail = Assert.IsType<ScanSpecifics>(_result);
                 Assert.Equal(0, myScanItemDetail.ErrorCode);
                 Assert.Equal("abcdef", myScanItemDetail.Id);
                 Assert.Equal("no error", myScanItemDetail.ErrorMessage);

@@ -100,7 +100,6 @@ namespace Rocket.Tests.Unit
                 _sut =
                     new ScannedImageHandler(
                         _fixture.Freeze<ILogger<ScannedImageHandler>>(),
-                        [],
                         _blobStore,
                         _sha256Calculator,
                         _scannedImageRepository,
@@ -130,7 +129,7 @@ namespace Rocket.Tests.Unit
             public void ArrangeValidDataToLoad()
             {
                 _scannedImageRepository
-                    .FetchScanAsync(null, null, CancellationToken.None)
+                    .GetScanByIdAsync(null, null, CancellationToken.None)
                     .ReturnsForAnyArgs(
                         Task
                             .FromResult(
@@ -158,7 +157,7 @@ namespace Rocket.Tests.Unit
             public void ArrangeNoRecordFoundToLoad()
             {
                 _scannedImageRepository
-                    .FetchScanAsync(null, null, CancellationToken.None)
+                    .GetScanByIdAsync(null, null, CancellationToken.None)
                     .ReturnsForAnyArgs(Task.FromResult<ScannedImage>(null));
             }
 
@@ -282,28 +281,28 @@ namespace Rocket.Tests.Unit
             {
                 _scannedImageRepository
                     .ReceivedWithAnyArgs(0)
-                    .FetchScanAsync(null, null, CancellationToken.None);
+                    .GetScanByIdAsync(null, null, CancellationToken.None);
             }
 
             public void AssertImageRepositoryLoadWasCalledOnce()
             {
                 _scannedImageRepository
                     .ReceivedWithAnyArgs(1)
-                    .FetchScanAsync(null, null, CancellationToken.None);
+                    .GetScanByIdAsync(null, null, CancellationToken.None);
             }
 
             public void AssertImageRepositorySaveWasNotCalled()
             {
                 _scannedImageRepository
                     .ReceivedWithAnyArgs(0)
-                    .SaveCaptureAsync(null, CancellationToken.None);
+                    .InsertScanAsync(null, CancellationToken.None);
             }
 
             public void AssertImageRepositorySaveWasCalledOnce()
             {
                 _scannedImageRepository
                     .ReceivedWithAnyArgs(1)
-                    .SaveCaptureAsync(null, CancellationToken.None);
+                    .InsertScanAsync(null, CancellationToken.None);
             }
         }
     }

@@ -1,0 +1,66 @@
+﻿@using Rocket.Api.Contracts.Workflows
+<MudDialog Class="p-2">
+    <TitleContent>
+        <MudText
+            Color="Color.Primary"
+            GutterBottom
+            Typo="Typo.h5">
+            Delete workflow
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText 
+            Typo="Typo.h6"
+            Color="Color.Default"
+        >
+            Do you wish to delete the workflow step <b>"@WorkflowStep?.StepName"</b>?
+        </MudText>
+        <MudText
+            Typo="Typo.body1"
+            Color="Color.Error"
+        >
+            You will not be able to recover this workflow step after deletion. All of the child steps will also be deleted.
+        </MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton
+            Variant="Variant.Outlined"
+            OnClick="Cancel">
+            Cancel
+        </MudButton>
+        <MudButton
+            Variant="Variant.Outlined"
+            Color="Color.Error"
+            OnClick="Submit">
+            Delete
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+    
+    [Parameter]
+    public WorkflowStepSummary WorkflowStep { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await
+            MudDialog
+                .SetOptionsAsync(
+                    new DialogOptions
+                    {
+                        FullWidth = true,
+                        MaxWidth = MaxWidth.Medium,
+                        BackgroundClass = "dialog-blur-backdrop"
+                    }
+                );
+    }
+
+}

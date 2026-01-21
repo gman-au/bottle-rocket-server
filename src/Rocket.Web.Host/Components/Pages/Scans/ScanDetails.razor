@@ -1,60 +1,120 @@
 ﻿@page "/MyScans/{id}"
-@using Rocket.Api.Contracts
-@using Rocket.Web.Host.Api
+@using Rocket.Api.Contracts.Executions
+@using Rocket.Api.Contracts.Scans
+@using Rocket.Api.Contracts.Workflows
+@using Rocket.Web.Client
+@using Rocket.Web.Host.Components.Dialog
 @using Rocket.Web.Host.Infrastructure
 @inject IApiRequestManager ApiRequestManager
 @inject IWebHostErrorHandler WebHostErrorHandler
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
-    @if (_scanItemDetail != null)
-    {
-        <MudGrid Class="pa-8" Justify="Justify.SpaceEvenly">
-            <MudItem xs="12" sm="6">
-                <MudImage
-                    Class="mud-paper mud-paper-outlined"
-                    src=@($"data:{_scanItemDetail.ContentType};base64,{_scanItemDetail.ImageBase64}")
-                    Fluid
-                />
-            </MudItem>
-            <MudItem xs="12" sm="6">
-                <MudStack
-                    Style="height:100%;"
-                    Justify="Justify.SpaceBetween"
-                    StretchItems="StretchItems.Middle"
-                    AlignItems="AlignItems.Start"
-                >
+    <MudPaper Class="p-4" elevation="2">
+        @if (_scanSpecifics != null)
+        {
+            <MudGrid Class="pa-4" Justify="Justify.SpaceEvenly">
+                <MudItem xs="12" sm="6">
+                    <MudImage
+                        Class="mud-paper mud-paper-outlined"
+                        src=@($"data:{_scanSpecifics.ContentType};base64,{_scanSpecifics.ImageBase64}")
+                        Fluid/>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudStack
+                        Style="height:100%;"
+                        Justify="Justify.SpaceBetween"
+                        StretchItems="StretchItems.Middle"
+                        AlignItems="AlignItems.Start">
+                        <MudText
+                            Align="Align.Center"
+                            Typo="Typo.h4"
+                            Color="Color.Primary"
+                            Class="mb-4">
+                            Scan Details
+                        </MudText>
+                        <div style="width:100%;">
+                            <MudSimpleTable
+                                Bordered
+                                Dense>
+                                <tbody>
+                                <SimpleTableRowPair Title="Capture Date"
+                                                    Value=@_scanSpecifics.CaptureDate?.ToString("yyyy-MM-dd HH:mm:ss")/>
+                                <SimpleTableRowPair Title="Content Type" Value=@_scanSpecifics.ContentType/>
+                                </tbody>
+                            </MudSimpleTable>
+                        </div>
+                        <div class="mud-border-secondary border p-4 rounded">
+                            <MudText
+                                Typo="Typo.h5"
+                                Color="Color.Primary">
+                                Manually trigger workflow
+                            </MudText>
+                            <MudText
+                                Typo="Typo.body1">
+                                Select a workflow from the list and click the button to run the workflow against this scan.
+                            </MudText>
+                            <MudGrid Class="mt-2" Justify="Justify.SpaceBetween">
+                                <MudItem xs="12">
+                                    <MudSelect
+                                        T="string"
+                                        Label="Workflow"
+                                        @bind-Value="@_workflowIdToTrigger"
+                                        HelperText="Select a workflow to trigger against this scan"
+                                        Clearable="true"
+                                        Required="false">
+                                        @foreach (var workflow in _availableWorkflows ?? [])
+                                        {
+                                            <MudSelectItem Value="@workflow.Id">
+                                                @workflow.Name
+                                            </MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+                                <MudItem xs="12">
+                                    <MudButton
+                                        Disabled="@(string.IsNullOrEmpty(_workflowIdToTrigger))"
+                                        OnClick="@(async () => await ConfirmTriggerWorkflowAsync())"
+                                        Variant="Variant.Outlined"
+                                        Color="Color.Success">
+                                        Run workflow
+                                    </MudButton>
+                                </MudItem>
+                            </MudGrid>
+                        </div>
+                        <MudDivider/>
+                        <GoBackButton BackPath="/MyScans"/>
+                    </MudStack>
+                </MudItem>
+                <MudFlexBreak/>
+                <MudDivider Class="mt-4"/>
+                <MudItem xs="12">
                     <MudText
                         Align="Align.Center"
-                        Typo="Typo.h4"
+                        Typo="Typo.h5"
                         Color="Color.Primary"
                         Class="mb-4">
-                        Scan Details
+                        Previous runs
                     </MudText>
-                    <div style="width:100%;">
-                        <MudSimpleTable
-                            Bordered
-                            Dense
-                        >
-                            <tbody>
-                            <SimpleTableRowPair Title="Capture Date" Value=@_scanItemDetail.CaptureDate?.ToString("yyyy-MM-dd HH:mm:ss")/>
-                            <SimpleTableRowPair Title="Content Type" Value=@_scanItemDetail.ContentType/>
-                            </tbody>
-                        </MudSimpleTable>
-                    </div>
-                    <GoBackButton BackPath="/MyScans"/>
-                </MudStack>
-            </MudItem>
-        </MudGrid>
-    }
+                </MudItem>
+                <PreviousWorkflowRuns Executions="@_executions"/>
+            </MudGrid>
+        }
+    </MudPaper>
 </BottleRocketLoadingOverlay>
 
 @code {
     private bool _isLoading;
-    private MyScanItemDetail _scanItemDetail = null;
+    private ScanSpecifics _scanSpecifics = null;
+    private string _workflowIdToTrigger = null;
 
     [Parameter]
     public string Id { get; set; }
+
+    private IEnumerable<MyWorkflowSummary> _availableWorkflows = [];
+    private IEnumerable<ExecutionSummary> _executions = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -63,17 +123,41 @@
             await
                 base
                     .OnInitializedAsync();
-            
+
             _isLoading = true;
             StateHasChanged();
 
-            _scanItemDetail =
+            _scanSpecifics =
                 await
                     ApiRequestManager
                         .GetMyScanAsync(
                             Id,
                             BaseCancellationToken
                         );
+
+            _availableWorkflows =
+                (await
+                    ApiRequestManager
+                        .GetWorkflowsAsync(
+                            new FetchWorkflowsRequest
+                            {
+                                StartIndex = null,
+                                RecordCount = null
+                            },
+                            BaseCancellationToken
+                        )
+                ).Workflows;
+
+            _executions =
+                (await
+                    ApiRequestManager
+                        .GetExecutionsAsync(
+                            new FetchExecutionsRequest
+                            {
+                                ScanId = Id,
+                            }, BaseCancellationToken
+                        ))?
+                .Executions;
         }
         catch (Exception ex)
         {
@@ -84,6 +168,82 @@
         {
             _isLoading = false;
             StateHasChanged();
+        }
+    }
+
+    private async Task ConfirmTriggerWorkflowAsync()
+    {
+        var dialog =
+            await
+                DialogService
+                    .ShowAsync<ConfirmTriggerWorkflowDialog>();
+
+        var result =
+            await
+                dialog
+                    .Result;
+
+        if (!(result?.Canceled ?? true))
+        {
+            try
+            {
+                _isLoading = true;
+                StateHasChanged();
+
+                var execution =
+                    await
+                        ApiRequestManager
+                            .CreateExecutionAsync(
+                                new CreateExecutionRequest
+                                {
+                                    WorkflowId = _workflowIdToTrigger,
+                                    ScanId = Id,
+                                    RunImmediately = true
+                                },
+                                BaseCancellationToken
+                            );
+
+                if (execution != null)
+                {
+                    try
+                    {
+                        var response =
+                            await
+                                ApiRequestManager
+                                    .StartExecutionAsync(
+                                        execution.Id,
+                                        BaseCancellationToken
+                                    );
+
+                        if (response.IsStarted)
+                        {
+                            Snackbar
+                                .Add(
+                                    "The workflow has been triggered.",
+                                    Severity.Success
+                                );
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        WebHostErrorHandler
+                            .HandleException(ex);
+                    }
+
+                    NavigationManager
+                        .NavigateTo($"/MyExecution/{execution.Id}");
+                }
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
         }
     }
 

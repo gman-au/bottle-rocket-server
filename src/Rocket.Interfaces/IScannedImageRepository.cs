@@ -7,8 +7,9 @@ namespace Rocket.Interfaces
 {
     public interface IScannedImageRepository
     {
-        Task<ScannedImage> SaveCaptureAsync(
-            ScannedImage scannedImage,
+        Task<ScannedImage> GetScanByIdAsync(
+            string userId,
+            string id,
             CancellationToken cancellationToken
         );
 
@@ -19,9 +20,8 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
-        Task<ScannedImage> FetchScanAsync(
-            string userId,
-            string id,
+        Task<ScannedImage> InsertScanAsync(
+            ScannedImage scannedImage,
             CancellationToken cancellationToken
         );
     }

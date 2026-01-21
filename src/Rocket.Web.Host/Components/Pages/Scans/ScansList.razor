@@ -1,6 +1,6 @@
 ﻿@page "/MyScans"
-@using Rocket.Api.Contracts
-@using Rocket.Web.Host.Api
+@using Rocket.Api.Contracts.Scans
+@using Rocket.Web.Client
 @using Rocket.Web.Host.HubClients
 @using Rocket.Web.Host.Infrastructure
 @implements IAsyncDisposable
@@ -17,51 +17,56 @@
     Class="mb-4">
     My Scans
 </MudText>
-    @* @if (_isConnected) *@
-    @* { *@
-    @*     <MudChip Color="Color.Success" Size="Size.Small" Class="ml-2"> *@
-    @*         <MudIcon Icon="@Icons.Material.Filled.Wifi" Size="Size.Small"/> *@
-    @*         Connected *@
-    @*     </MudChip> *@
-    @* } *@
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
-    <MudGrid Justify="Justify.FlexStart" Class="pa-4">
-        @foreach (var scan in _scans)
-        {
-            <MudItem xs="12" sm="6" md="4" lg="3" xl="2">
-                <MudCard Outlined>
-                    <MudCardMedia
-                        Image=@($"data:{scan.ContentType};base64,{scan.ThumbnailBase64}") Width="200" Height="200"/>
-                    <MudCardContent>
-                        <MudText Typo="Typo.subtitle2">@(scan.DateScanned.ToString("g"))</MudText>
-                    </MudCardContent>
-                    <MudCardActions>
-                        <MudButton
-                            Variant="Variant.Text"
-                            Color="Color.Primary"
-                            @onclick="@(() => NavigationManager.NavigateTo($"/MyScans/{scan.Id}"))">
-                            Details
-                        </MudButton>
-                    </MudCardActions>
-                </MudCard>
+    @if (_scans.Any())
+    {
+        <MudGrid Justify="Justify.FlexStart" Class="pa-4">
+            @foreach (var scan in _scans)
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3" xl="2">
+                    <MudCard Outlined>
+                        <MudCardMedia
+                            Image=@($"data:{scan.ContentType};base64,{scan.ThumbnailBase64}") Width="200" Height="200"/>
+                        <MudCardContent>
+                            <MudText Typo="Typo.subtitle2">@(scan.DateScanned.ToString("g"))</MudText>
+                        </MudCardContent>
+                        <MudCardActions Class="justify-end">
+                            <MudButton
+                                Variant="Variant.Text"
+                                Color="Color.Primary"
+                                @onclick="@(() => NavigationManager.NavigateTo($"/MyScans/{scan.Id}"))">
+                                Details
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+        <MudDivider Class="my-4"/>
+        <MudGrid Justify="Justify.Center">
+            <MudItem>
+                <MudButton
+                    Variant="Variant.Outlined"
+                    Color="Color.Primary"
+                    Disabled="@_noMoreRecords"
+                    @onclick="@(async () => await LoadScansAsync(
+                                  _currentIndex,
+                                  DefaultPageSize
+                              ))">
+                    Load More
+                </MudButton>
             </MudItem>
-        }
-    </MudGrid>
-    <MudDivider Class="my-4"/>
-    <MudGrid Justify="Justify.Center">
-        <MudItem>
-            <MudButton
-                Variant="Variant.Outlined"
-                Color="Color.Primary"
-                Disabled="@_noMoreRecords"
-                @onclick="@(async () => await LoadScansAsync(
-                              _currentIndex,
-                              DefaultPageSize
-                          ))">
-                Load More
-            </MudButton>
-        </MudItem>
-    </MudGrid>
+        </MudGrid>
+    }
+    else
+    {
+        <MudText
+            Align="Align.Center"
+            Typo="Typo.body2"
+            Color="Color.Default">
+            No scans found
+        </MudText>
+    }
 </BottleRocketLoadingOverlay>
 
 @code {
@@ -70,7 +75,7 @@
     private bool _isConnected;
     private bool _noMoreRecords = false;
     private int _currentIndex = 0;
-    private IEnumerable<MyScanItem> _scans = [];
+    private IEnumerable<ScanSummary> _scans = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -79,7 +84,7 @@
             await
                 base
                     .OnInitializedAsync();
-            
+
             _isLoading = true;
 
             // Set up SignalR listener
@@ -172,8 +177,8 @@
 
         _noMoreRecords = _currentIndex == (response?.TotalRecords ?? 0);
 
-        var existingScans = new List<MyScanItem>(_scans);
-        var newScans = new List<MyScanItem>(response?.Scans ?? []);
+        var existingScans = new List<ScanSummary>(_scans);
+        var newScans = new List<ScanSummary>(response?.Scans ?? []);
 
         _scans =
             existingScans

@@ -1,44 +1,50 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain.Connectors;
-using Rocket.Domain.Utils;
+using Rocket.Domain.Executions;
+using Rocket.Domain.Jobs;
+using Rocket.Domain.Vendors.Dropbox;
 using Rocket.Interfaces;
 
 namespace Rocket.Dropbox.Infrastructure
 {
-    public class DropboxHook(
-        IDropboxClientManager dropboxClientManager,
-        IConnectorRepository connectorRepository
-    ) : IIntegrationHook
+    public class DropboxHook(IDropboxClientManager dropboxClientManager) : IIntegrationHook
     {
-        public async Task ProcessAsync(
+        public bool IsApplicable(BaseExecutionStep step) => step is DropboxUploadExecutionStep;
+
+        public async Task<ExecutionStepArtifact> ProcessAsync(
+            IWorkflowExecutionContext context,
+            BaseExecutionStep step,
             string userId,
-            byte[] fileData,
-            string fileExtension,
             CancellationToken cancellationToken
         )
         {
+            var artifact =
+                context
+                    .GetInputArtifact();
+
             var connector =
                 await
-                    connectorRepository
-                        .FetchUserConnectorByNameAsync<DropboxConnector>(
+                    context
+                        .GetConnectorAsync<DropboxConnector>(
                             userId,
-                            DomainConstants.VendorDropbox,
+                            step,
                             cancellationToken
                         );
 
-            if (connector == null) 
-                return;
-            
             await
                 dropboxClientManager
                     .UploadFileAsync(
                         connector.AppKey,
                         connector.AppSecret,
                         connector.RefreshToken,
-                        fileExtension,
-                        fileData
+                        artifact.FileExtension,
+                        artifact.Artifact,
+                        cancellationToken
                     );
+
+            // TODO: create a static .Empty artifact
+            return artifact;
         }
     }
 }

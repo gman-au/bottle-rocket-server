@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rocket.Interfaces;
-using Rocket.Web.Host.Options;
+using Rocket.Web.Client.Options;
 
 namespace Rocket.Web.Host.HubClients
 {
@@ -22,6 +22,8 @@ namespace Rocket.Web.Host.HubClients
         private HubConnection _hubConnection;
 
         public event Func<Task> OnNewCaptureReceived;
+        
+        public event Func<Task> OnNewExecutionUpdateReceived;
 
         public bool IsConnected =>
             _hubConnection?.State == HubConnectionState.Connected;
@@ -71,6 +73,22 @@ namespace Rocket.Web.Host.HubClients
                     {
                         await
                             OnNewCaptureReceived
+                                .Invoke();
+                    }
+                }
+            );
+            
+            _hubConnection.On(
+                "NewExecutionUpdateReceived",
+                async () =>
+                {
+                    logger
+                        .LogInformation("Received NewExecutionUpdateReceived notification");
+
+                    if (OnNewExecutionUpdateReceived != null)
+                    {
+                        await
+                            OnNewExecutionUpdateReceived
                                 .Invoke();
                     }
                 }

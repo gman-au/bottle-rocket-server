@@ -19,16 +19,15 @@ using Rocket.Interfaces;
 namespace Rocket.Api.Host.Controllers.Vendors
 {
     [ApiController]
-    [Route("/api/connectors/dropbox")]
     [Authorize]
     public class DropboxController(
         ILogger<DropboxController> logger,
-        IDropboxClientManager dropboxClientManager,
         IUserManager userManager,
+        IDropboxClientManager dropboxClientManager,
         IConnectorRepository connectorRepository
     ) : RocketControllerBase(userManager)
     {
-        [HttpPost("create")]
+        [HttpPost, Route("/api/dropbox/connectors/create")]
         [EndpointSummary("Add a new Dropbox connector")]
         [EndpointGroupName("Manage connectors")]
         [EndpointDescription(
@@ -69,13 +68,13 @@ namespace Rocket.Api.Host.Controllers.Vendors
                 connectorRepository
                     .ConnectorExistsForUserAsync(
                         userId,
-                        DomainConstants.VendorDropbox,
+                        DomainConstants.ConnectorNameDropboxApi,
                         cancellationToken
                     )
                )
                 throw new RocketException(
                     "Dropbox connector already exists",
-                    ApiStatusCodeEnum.ConnectorAlreadyExists
+                    ApiStatusCodeEnum.RecordAlreadyExists
                 );
 
             if (string.IsNullOrEmpty(request.AppKey))
@@ -103,7 +102,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
             var result =
                 await
                     connectorRepository
-                        .SaveConnectorAsync(
+                        .InsertConnectorAsync(
                             newConnector,
                             cancellationToken
                         );
@@ -130,7 +129,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
                     .AsApiSuccess();
         }
 
-        [HttpPatch("finalize")]
+        [HttpPatch, Route("/api/dropbox/connectors/finalize")]
         [EndpointSummary("Finalize a Dropbox connector")]
         [EndpointGroupName("Manage connectors")]
         [EndpointDescription(
@@ -171,7 +170,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
             var connector =
                 await
                     connectorRepository
-                        .FetchUserConnectorByIdAsync<DropboxConnector>(
+                        .GetConnectorByIdAsync<DropboxConnector>(
                             userId,
                             id,
                             cancellationToken
@@ -198,7 +197,6 @@ namespace Rocket.Api.Host.Controllers.Vendors
 
             if (!string.IsNullOrEmpty(refreshToken))
             {
-                // swap code for token
                 await
                     connectorRepository
                         .UpdateConnectorFieldAsync<DropboxConnector, string>(

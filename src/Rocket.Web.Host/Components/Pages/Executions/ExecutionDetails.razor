@@ -1,0 +1,337 @@
+﻿@page "/MyExecution/{id}"
+@using Rocket.Api.Contracts.Executions
+@using Rocket.Domain.Enum
+@using Rocket.Domain.Utils
+@using Rocket.Interfaces
+@using Rocket.Web.Client
+@using Rocket.Web.Host.Components.Dialog
+@using Rocket.Web.Host.Extensions
+@using Rocket.Web.Host.HubClients
+@using Rocket.Web.Host.Infrastructure
+@inject IJSRuntime JsRuntime
+@inject IDialogService DialogService
+@inject ICaptureHubClient CaptureHubClient
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject IExecutionMermaidConverter ExecutionMermaidConverter
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_currentModel != null)
+    {
+        <MudPaper Class="p-4" elevation="2">
+            <MudGrid Class="pa-8" Justify="Justify.SpaceEvenly">
+                <MudItem sm="12" md="6">
+                    <MudStack
+                        Style="height:100%;"
+                        Justify="Justify.SpaceBetween"
+                        StretchItems="StretchItems.Middle"
+                        AlignItems="AlignItems.Start">
+                        <MudText
+                            Align="Align.Center"
+                            Typo="Typo.h4"
+                            Color="Color.Primary"
+                            Class="mb-4">
+                            Workflow Run Details
+                        </MudText>
+                        <div style="text-align: center; width:100%">
+                            <MudSimpleTable
+                                Bordered
+                                Dense>
+                                <tbody>
+                                <ComplexTableRowPair Title="Workflow Name">
+                                    <MudLink Href=@($"/MyWorkflow/{_currentModel.WorkflowId}")>
+                                        <MudText
+                                            Class="code-text"
+                                            Typo="Typo.body1"
+                                            Align="Align.Left"
+                                            GutterBottom="true">
+                                            @_currentModel.Name
+                                        </MudText>
+                                    </MudLink>
+                                </ComplexTableRowPair>
+                                <ComplexTableRowPair
+                                    Title="Run Status">
+                                    <span style="display:flex;">
+                                    <MudText
+                                        Color="@(_currentModel.ExecutionStatus.MapStatusToColor())"
+                                        Class="code-text"
+                                        Typo="Typo.body1"
+                                        Align="Align.Left"
+                                        GutterBottom="true">
+                                        @(DomainConstants.ExecutionStatusTypes.ContainsKey((int)_currentModel.ExecutionStatus) ? DomainConstants.ExecutionStatusTypes[(int)_currentModel.ExecutionStatus] : "Unknown")
+                                    </MudText>
+                                        @if (_currentModel.ExecutionStatus == (int)ExecutionStatusEnum.Running)
+                                        {
+                                            <div class="ml-2">
+                                                <MudProgressCircular Color="Color.Info" Size="Size.Small" Indeterminate="true"/>
+                                            </div>
+                                        }
+                                    </span>
+                                </ComplexTableRowPair>
+                                <SimpleTableRowPair Title="Run Date"
+                                                    Value=@_currentModel?.RunDate?.ToString("g")/>
+                                <ComplexTableRowPair Title="Image">
+                                    <MudLink Href=@($"/MyScans/{_currentModel.ScanId}")>
+                                        <MudImage
+                                            Class="mud-border-secondary border rounded"
+                                            Src=@($"data:{_currentModel.ContentType};base64,{_currentModel.ThumbnailBase64}") Width="200"
+                                            Height="200"/>
+
+                                    </MudLink>
+                                </ComplexTableRowPair>
+                                </tbody>
+                            </MudSimpleTable>
+                        </div>
+                        <MudGrid Class="align-start" Justify="Justify.FlexEnd">
+                            <MudItem>
+                                <GoBackButton/>
+                            </MudItem>
+                            <MudItem>
+                                <MudButton
+                                    Variant="Variant.Outlined"
+                                    Color="Color.Warning"
+                                    Disabled="@(_currentModel.ExecutionStatus != (int)ExecutionStatusEnum.Running)"
+                                    OnClick="@ConfirmCancelAsync">
+                                    Cancel
+                                </MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudStack>
+                </MudItem>
+                <MudItem sm="12" md="6">
+                    <MudPaper Elevation="4" Class="p-4 mermaid-paper">
+                        @if (_showMermaid)
+                        {
+                            <pre class="mermaid">
+@MermaidText
+        </pre>
+                        }
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    }
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    private bool _disposed = false;
+    private bool _isLoading;
+    private bool _isConnected;
+    private bool _showMermaid = true;
+    private ExecutionSummary _currentModel = null;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    private string MermaidText { get; set; }
+
+    private DotNetObjectReference<ExecutionDetails> _dotNetRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetRef =
+                DotNetObjectReference
+                    .Create(this);
+
+            await
+                JsRuntime
+                    .InvokeVoidAsync(
+                        "storeDotNetRef",
+                        _dotNetRef
+                    );
+
+            await
+                Task
+                    .Delay(100);
+
+            await
+                JsRuntime
+                    .InvokeVoidAsync("mermaid.run");
+        }
+    }
+
+    [JSInvokable]
+    public void NavigateToRoute(string route)
+    {
+        if (_disposed)
+            return;
+
+        NavigationManager
+            .NavigateTo(route);
+    }
+
+    public override void Dispose()
+    {
+        if (!_disposed)
+        {
+            _disposed = true;
+
+            _dotNetRef?
+                .Dispose();
+
+            base
+                .Dispose();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+
+            // Set up SignalR listener
+            CaptureHubClient.OnNewExecutionUpdateReceived += HandleExecutionUpdate;
+
+            // Connect to hub
+            await
+                CaptureHubClient
+                    .StartAsync();
+
+            _isConnected =
+                CaptureHubClient
+                    .IsConnected;
+
+            await
+                ReloadExecutionDetailsAsync();
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task ReloadExecutionDetailsAsync()
+    {
+        _currentModel =
+            await
+                ApiRequestManager
+                    .GetExecutionByIdAsync(
+                        Id,
+                        BaseCancellationToken
+                    );
+
+        MermaidText =
+            ExecutionMermaidConverter
+                .Convert(_currentModel);
+    }
+
+    private async Task HandleExecutionUpdate()
+    {
+        await
+            InvokeAsync(
+                async () =>
+                {
+                    try
+                    {
+                        _isLoading = true;
+                        StateHasChanged();
+
+                        // new capture would be the most recent; get the latest record
+                        await
+                            ReloadExecutionDetailsAsync();
+
+                        await
+                            RefreshMermaidDiagramAsync();
+
+                        await
+                            Task
+                                .Delay(100);
+                    }
+                    catch (Exception ex)
+                    {
+                        WebHostErrorHandler
+                            .HandleException(ex);
+                    }
+                    finally
+                    {
+                        _isLoading = false;
+                        StateHasChanged(); // Force UI update after loading
+                    }
+                }
+            );
+    }
+
+    private async Task RefreshMermaidDiagramAsync()
+    {
+        // Hide the element completely
+        _showMermaid = false;
+        StateHasChanged();
+        await Task.Delay(50);
+
+        // Show it again with new content
+        _showMermaid = true;
+        StateHasChanged();
+        await Task.Delay(100);
+
+        // Now run Mermaid on the fresh element
+        await
+            JsRuntime
+                .InvokeVoidAsync("mermaid.run");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        // Clean up SignalR subscription
+        CaptureHubClient.OnNewExecutionUpdateReceived -= HandleExecutionUpdate;
+
+        await
+            CaptureHubClient
+                .DisposeAsync();
+    }
+
+    private async Task ConfirmCancelAsync()
+    {
+        var dialog =
+            await
+                DialogService
+                    .ShowAsync<ConfirmCancelExecutionDialog>(
+                        null
+                    );
+
+        var result =
+            await
+                dialog
+                    .Result;
+
+        if (!(result?.Canceled ?? true))
+        {
+            try
+            {
+                _isLoading = true;
+                StateHasChanged();
+
+                await
+                    ApiRequestManager
+                        .CancelExecutionAsync(
+                            _currentModel.Id,
+                            BaseCancellationToken
+                        );
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+}

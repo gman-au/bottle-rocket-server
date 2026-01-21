@@ -3,11 +3,13 @@ using Rocket.Domain.Utils;
 
 namespace Rocket.Domain.Connectors
 {
-    public class DropboxConnector : BaseConnector
+    public record DropboxConnector : BaseConnector
     {
         public override int ConnectorType { get; set; } = (int)ConnectorTypeEnum.FileForwarding;
 
-        public override string ConnectorName { get; set; } = DomainConstants.VendorDropbox;
+        public override string ConnectorName { get; set; } = DomainConstants.ConnectorNameDropboxApi;
+        
+        public override string ConnectorCode { get; set; } = DomainConstants.ConnectorCodeDropboxApi;
 
         public string AppKey { get; set; }
 

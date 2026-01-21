@@ -122,3 +122,28 @@ h1:focus {
     max-height: 100px;
     border-radius: 10px;
 }
+
+.mermaid-paper {
+    text-align: center;
+    background-color: white !important;
+}
+
+.rocketbook-icon-round {
+    border-radius: 50%;
+}
+
+.rocketbook-icon-dropdown {
+    .mud-input-control-input-container {
+        .mud-input {
+            height: 100px;
+            
+            .mud-input-slot {
+                height: 80px;
+            }
+        }
+    }
+}
+
+.general-centered {
+    text-align: center !important;
+}

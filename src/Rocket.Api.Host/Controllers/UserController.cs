@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using Rocket.Api.Contracts;
+using Rocket.Api.Contracts.Users;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
@@ -63,7 +64,7 @@ namespace Rocket.Api.Host.Controllers
                         records
                             .Select(
                                 o =>
-                                    new UserItem
+                                    new UserSummary
                                     {
                                         Id = o.Username == DomainConstants.RootAdminUserName ? null : o.Id,
                                         Username = o.Username,
@@ -83,7 +84,7 @@ namespace Rocket.Api.Host.Controllers
         [EndpointSummary("Get user by ID")]
         [EndpointGroupName("Manage users")]
         [EndpointDescription("Returns a user by their unique identifier.")]
-        [ProducesResponseType(typeof(UserDetail), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserSpecifics), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetUserAsync(
@@ -131,7 +132,7 @@ namespace Rocket.Api.Host.Controllers
             }
 
             var response =
-                new UserDetail
+                new UserSpecifics
                 {
                     Id = user.Id,
                     Username = user.Username,
@@ -260,7 +261,7 @@ namespace Rocket.Api.Host.Controllers
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdateUserAsync(
-            [FromBody] UserDetail request,
+            [FromBody] UserSpecifics request,
             CancellationToken cancellationToken
         )
         {

@@ -49,7 +49,7 @@ namespace Rocket.Tests.Unit
                         .Create();
 
                 _connectorRepository
-                    .FetchUserConnectorByIdAsync<DropboxConnector>(
+                    .GetConnectorByIdAsync<DropboxConnector>(
                         null,
                         null,
                         CancellationToken.None
@@ -65,7 +65,7 @@ namespace Rocket.Tests.Unit
                         .Create();
 
                 _connectorRepository
-                    .FetchUserConnectorByIdAsync<UnknownConnector>(
+                    .GetConnectorByIdAsync<UnknownConnector>(
                         null,
                         null,
                         CancellationToken.None
@@ -93,10 +93,12 @@ namespace Rocket.Tests.Unit
                 );
             }
 
-            private class UnknownConnector : BaseConnector
+            private record UnknownConnector : BaseConnector
             {
                 public override int ConnectorType { get; set; } = (int)ConnectorTypeEnum.FileForwarding;
                 public override string ConnectorName { get; set; } = "UNKNOWN";
+                
+                public override string ConnectorCode { get; set; } = "UNKNOWN";
                 public override ConnectorStatusEnum DetermineStatus() => ConnectorStatusEnum.Pending;
             }
         }
