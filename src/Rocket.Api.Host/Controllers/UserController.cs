@@ -239,7 +239,7 @@ namespace Rocket.Api.Host.Controllers
                 new CreateUserResponse
                 {
                     Username = newUser.Username,
-                    CreatedAt = newUser.CreatedAt
+                    CreatedAt = newUser.CreatedAt.ToLocalTime()
                 };
 
             return
