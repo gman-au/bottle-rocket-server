@@ -143,7 +143,7 @@ namespace Rocket.Jobs.Service
                                     (int)ExecutionStatusEnum.Cancelled
                                 );
                         }
-                        catch (RocketException ex)
+                        catch (Exception ex)
                         {
                             logger
                                 .LogError(

@@ -1,4 +1,5 @@
-﻿using Rocket.Domain.Enum;
+﻿using MudBlazor;
+using Rocket.Domain.Enum;
 
 namespace Rocket.Web.Host.Extensions
 {
@@ -27,6 +28,18 @@ namespace Rocket.Web.Host.Extensions
                 default:
                     return null;
             }
+        }
+
+        public static Color MapStatusToColor(this int? executionStatus)
+        {
+            return executionStatus switch
+            {
+                (int)ExecutionStatusEnum.Cancelled => Color.Warning,
+                (int)ExecutionStatusEnum.Completed => Color.Success,
+                (int)ExecutionStatusEnum.Errored => Color.Error,
+                (int)ExecutionStatusEnum.Running => Color.Info,
+                _ => Color.Default
+            };
         }
     }
 }

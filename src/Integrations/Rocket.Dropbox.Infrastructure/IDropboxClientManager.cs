@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Rocket.Dropbox.Infrastructure
 {
@@ -17,7 +18,8 @@ namespace Rocket.Dropbox.Infrastructure
             string appSecret,
             string refreshToken,
             string fileExtension,
-            byte[] fileData
+            byte[] fileData, 
+            CancellationToken cancellationToken
         );
     }
 }

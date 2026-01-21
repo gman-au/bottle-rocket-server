@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Rocket.Api.Host;
 using Rocket.Api.Host.Filters;
 using Rocket.Api.Host.Handlers;
@@ -21,6 +22,14 @@ var configuration =
 var services =
     builder
         .Services;
+
+services
+    .Configure<HostOptions>(
+        options =>
+        {
+            options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+        }
+    );
 
 services
     .AddControllers()

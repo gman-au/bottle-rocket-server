@@ -38,17 +38,12 @@ namespace Rocket.Jobs.Service
 
                 context
                     .SetCurrentArtifact(artifactResult);
-                    
-                await
-                    updateExecutionStepCallbackFunc(
-                        userId,
-                        executionId,
-                        (int)ExecutionStatusEnum.Completed,
-                        step
-                    );
 
                 foreach (var childStep in step?.ChildSteps ?? [])
                 {
+                    cancellationToken
+                        .ThrowIfCancellationRequested();
+                    
                     await
                         childStep
                             .AsTask(
@@ -59,6 +54,14 @@ namespace Rocket.Jobs.Service
                                 cancellationToken
                             );
                 }
+                
+                await
+                    updateExecutionStepCallbackFunc(
+                        userId,
+                        executionId,
+                        (int)ExecutionStatusEnum.Completed,
+                        step
+                    );
             }
             catch (OperationCanceledException)
             {

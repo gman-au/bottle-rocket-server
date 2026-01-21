@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Dropbox.Api;
 using Dropbox.Api.Files;
@@ -13,7 +14,7 @@ namespace Rocket.Dropbox.Infrastructure
     public class DropboxClientManager(ILogger<DropboxClientManager> logger) : IDropboxClientManager
     {
         private const string UploadSubfolder = "bottle_rocket_scans";
-        
+
         public string GetAuthorizeUrl(string appKey)
         {
             var authorizeUri =
@@ -64,7 +65,10 @@ namespace Rocket.Dropbox.Infrastructure
             catch (Exception ex)
             {
                 logger
-                    .LogError("There was an error finalizing the Dropbox connection: {message}", ex.Message);
+                    .LogError(
+                        "There was an error finalizing the Dropbox connection: {message}",
+                        ex.Message
+                    );
 
                 throw new RocketException(
                     "There was an error finalizing the Dropbox connection.",
@@ -80,14 +84,17 @@ namespace Rocket.Dropbox.Infrastructure
             string appSecret,
             string refreshToken,
             string fileExtension,
-            byte[] fileData
+            byte[] fileData, CancellationToken cancellationToken
         )
         {
             try
             {
                 logger
                     .LogInformation("Uploading file to Dropbox");
-                
+
+                cancellationToken
+                    .ThrowIfCancellationRequested();
+
                 var dbx =
                     new DropboxClient(
                         refreshToken,
@@ -110,7 +117,10 @@ namespace Rocket.Dropbox.Infrastructure
             catch (DropboxException ex)
             {
                 logger
-                    .LogError("There was an error uploading the file to Dropbox: {message}", ex.Message);
+                    .LogError(
+                        "There was an error uploading the file to Dropbox: {message}",
+                        ex.Message
+                    );
 
                 throw new RocketException(
                     "There was an error uploading the file to Dropbox.",

@@ -13,6 +13,19 @@ window.blazorNavigateToRoute = (route) => {
     }
 };
 
+window.refreshMermaidDiagram = async () => {
+    try {
+        // Just remove the processed markers - Blazor has recreated the element
+        document.querySelectorAll('.mermaid').forEach(el => {
+            el.removeAttribute('data-processed');
+        });
+
+        await mermaid.run();
+    } catch (error) {
+        console.error('Mermaid refresh error:', error);
+    }
+};
+
 window.initializeMermaid = () => {
     mermaid.initialize({
         startOnLoad: false,

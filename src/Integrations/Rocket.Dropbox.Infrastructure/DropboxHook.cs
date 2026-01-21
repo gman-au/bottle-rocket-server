@@ -39,7 +39,8 @@ namespace Rocket.Dropbox.Infrastructure
                         connector.AppSecret,
                         connector.RefreshToken,
                         artifact.FileExtension,
-                        artifact.Artifact
+                        artifact.Artifact,
+                        cancellationToken
                     );
 
             // TODO: create a static .Empty artifact
