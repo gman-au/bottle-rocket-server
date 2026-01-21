@@ -2,6 +2,7 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts.Executions;
+using Rocket.Domain.Enum;
 using Rocket.Infrastructure.Mermaid.Extensions;
 using Rocket.Interfaces;
 
@@ -9,6 +10,22 @@ namespace Rocket.Infrastructure.Mermaid
 {
     public class ExecutionMermaidConverter(ILogger<ExecutionMermaidConverter> logger) : IExecutionMermaidConverter
     {
+        private const string NotRunFill = "#ccc";
+        private const string NotRunStroke = "#333";
+        private const string NotRunColor = "#333";
+        
+        private const string CompletedFill = "#6ee770";
+        private const string CompletedStroke = "#185510";
+        private const string CompletedColor = "#185510";
+        
+        private const string ErroredFill = "#e18e8e";
+        private const string ErroredStroke = "#891818";
+        private const string ErroredColor = "#891818";
+        
+        private const string CancelledFill = "#e1d28e";
+        private const string CancelledStroke = "#894d18";
+        private const string CancelledColor = "#894d18";
+        
         public string Convert(ExecutionSummary execution)
         {
             using var aliasEnumerator =
@@ -30,21 +47,13 @@ namespace Rocket.Infrastructure.Mermaid
             entitiesBuilder
                 .AppendLine($"{parent}@{{ shape: lin-rect, label: \"This execution\"}}");
 
-            var executionId =
-                execution
-                    .Id;
-
             WriteNested(
-                executionId,
                 parent,
                 entitiesBuilder,
                 linksBuilder,
-                clicksBuilder,
                 styleBuilder,
                 execution.Steps,
-                aliasEnumerator,
-                null,
-                null
+                aliasEnumerator
             );
 
             aliasEnumerator
@@ -66,16 +75,12 @@ namespace Rocket.Infrastructure.Mermaid
         }
 
         private static void WriteNested(
-            string workflowId,
             string currentParentAlias,
             StringBuilder entitiesBuilder,
             StringBuilder linksBuilder,
-            StringBuilder clicksBuilder,
             StringBuilder styleBuilder,
             IEnumerable<ExecutionStepSummary> steps,
-            IEnumerator<string> aliasEnumerator,
-            string currentParentOutputTypeName,
-            string currentParentId
+            IEnumerator<string> aliasEnumerator
         )
         {
             foreach (var step in steps ?? [])
@@ -83,43 +88,53 @@ namespace Rocket.Infrastructure.Mermaid
                 aliasEnumerator
                     .MoveNext();
 
-                var missingConnection = string.IsNullOrEmpty(step.ConnectorId);
-
                 var currentChildAlias =
                     aliasEnumerator
                         .Current;
 
                 var entityLine = $"{currentChildAlias}";
                 entityLine += "(\"";
-                if (missingConnection)
+
+                switch (step.ExecutionStatus)
                 {
-                    entityLine += "\u26a0\ufe0f";
-                }
-                else
-                {
-                    entityLine += "\u2705";
+                    case (int)ExecutionStatusEnum.Completed:
+                        entityLine += "\u2705";
+                        styleBuilder
+                            .AppendLine($"style {aliasEnumerator.Current} fill:{CompletedFill},stroke:{CompletedStroke},color:{CompletedColor}");
+                        break;
+                    case (int)ExecutionStatusEnum.Errored:
+                        entityLine += "\u2716";
+                        styleBuilder
+                            .AppendLine($"style {aliasEnumerator.Current} fill:{ErroredFill},stroke:{ErroredStroke},color:{ErroredColor}");
+                        break;
+                    case (int)ExecutionStatusEnum.NotRun:
+                        entityLine += "\ud83d\udec7";
+                        styleBuilder
+                            .AppendLine($"style {aliasEnumerator.Current} fill:{NotRunFill},stroke:{NotRunStroke},color:{NotRunColor}");
+                        break;
+                    case (int)ExecutionStatusEnum.Cancelled:
+                        entityLine += "\ud83d\udec7";
+                        styleBuilder
+                            .AppendLine($"style {aliasEnumerator.Current} fill:{CancelledFill},stroke:{CancelledStroke},color:{CancelledColor}");
+                        break;
                 }
 
                 entityLine += $" {step.StepName}";
                 entityLine += "\")";
 
                 linksBuilder
-                    .AppendLine($"{currentParentAlias} --> |{step.InputTypeName}| {currentChildAlias}");
+                    .AppendLine($"{currentParentAlias} --> {currentChildAlias}");
 
                 entitiesBuilder
                     .AppendLine(entityLine);
 
                 WriteNested(
-                    workflowId,
                     currentChildAlias,
                     entitiesBuilder,
                     linksBuilder,
-                    clicksBuilder,
                     styleBuilder,
                     step.ChildSteps,
-                    aliasEnumerator,
-                    step.OutputTypeName,
-                    step.Id
+                    aliasEnumerator
                 );
             }
 
