@@ -9,9 +9,15 @@ namespace Rocket.Interfaces
 {
     public interface IWorkflowRepository
     {
-        Task<bool> WorkflowExistsForUserAsync(
+        Task<bool> WorkflowExistsForNameAsync(
             string userId,
             string workflowName,
+            CancellationToken cancellationToken
+        );
+
+        Task<bool> WorkflowExistsForMatchingSymbolAsync(
+            string userId,
+            int matchingPageSymbol,
             CancellationToken cancellationToken
         );
 

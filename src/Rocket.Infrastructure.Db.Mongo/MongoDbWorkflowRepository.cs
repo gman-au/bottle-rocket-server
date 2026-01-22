@@ -64,28 +64,6 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 );
 
-        public async Task<Workflow> GetWorkflowByNameAsync(
-            string userId,
-            string name,
-            CancellationToken cancellationToken
-        ) =>
-            await
-                FetchFirstFilteredRecordAsync(
-                    Builders<Workflow>
-                        .Filter
-                        .Eq(
-                            o => o.UserId,
-                            userId
-                        ) &
-                    Builders<Workflow>
-                        .Filter
-                        .Eq(
-                            o => o.Name,
-                            name
-                        ),
-                    cancellationToken
-                );
-
         public async Task<bool> DeleteWorkflowAsync(
             string userId,
             string id,
@@ -133,7 +111,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 );
 
-        public async Task<bool> WorkflowExistsForUserAsync(
+        public async Task<bool> WorkflowExistsForNameAsync(
             string userId,
             string workflowName,
             CancellationToken cancellationToken
@@ -149,5 +127,65 @@ namespace Rocket.Infrastructure.Db.Mongo
 
             return result;
         }
+
+        public async Task<bool> WorkflowExistsForMatchingSymbolAsync(
+            string userId,
+            int matchingPageSymbol,
+            CancellationToken cancellationToken)
+        {
+            var result =
+                await
+                    GetWorkflowByMatchingPageSymbolAsync(
+                        userId,
+                        matchingPageSymbol,
+                        cancellationToken
+                    ) != null;
+
+            return result;
+        }
+
+        private async Task<Workflow> GetWorkflowByNameAsync(
+            string userId,
+            string name,
+            CancellationToken cancellationToken
+        ) =>
+            await
+                FetchFirstFilteredRecordAsync(
+                    Builders<Workflow>
+                        .Filter
+                        .Eq(
+                            o => o.UserId,
+                            userId
+                        ) &
+                    Builders<Workflow>
+                        .Filter
+                        .Eq(
+                            o => o.Name,
+                            name
+                        ),
+                    cancellationToken
+                );
+
+        private async Task<Workflow> GetWorkflowByMatchingPageSymbolAsync(
+            string userId,
+            int matchingPageSymbol,
+            CancellationToken cancellationToken
+        ) =>
+            await
+                FetchFirstFilteredRecordAsync(
+                    Builders<Workflow>
+                        .Filter
+                        .Eq(
+                            o => o.UserId,
+                            userId
+                        ) &
+                    Builders<Workflow>
+                        .Filter
+                        .Eq(
+                            o => o.MatchingPageSymbol,
+                            matchingPageSymbol
+                        ),
+                    cancellationToken
+                );
     }
 }
