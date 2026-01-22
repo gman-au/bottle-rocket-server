@@ -180,7 +180,7 @@ namespace Rocket.Api.Host.Controllers
 
             logger
                 .LogInformation(
-                    "Received (Dropbox) workflow creation request for username: {username}",
+                    "Received workflow creation request for username: {username}",
                     user.Username
                 );
 

@@ -21,7 +21,8 @@ namespace Rocket.Api.Host.Controllers
         ILogger<WorkflowStepController> logger,
         IUserManager userManager,
         IWorkflowStepModelMapperRegistry workflowStepModelMapperRegistry,
-        IWorkflowStepRepository workflowStepRepository
+        IWorkflowStepRepository workflowStepRepository,
+        IWorkflowStepValidator workflowStepValidator
     ) : RocketControllerBase(userManager)
     {
         [HttpPost("delete")]
@@ -147,7 +148,7 @@ namespace Rocket.Api.Host.Controllers
         }
 
         [HttpPost("create")]
-        [EndpointSummary("Add a new Dropbox workflow step")]
+        [EndpointSummary("Add a new workflow step")]
         [EndpointGroupName("Manage workflows")]
         [EndpointDescription(
             """
@@ -206,6 +207,17 @@ namespace Rocket.Api.Host.Controllers
                 mapper
                     .For(step);
 
+            // validate here
+            await
+                workflowStepValidator
+                    .ValidateAsync(
+                        request.WorkflowId,
+                        request.ParentStepId,
+                        userId,
+                        newWorkflowStep.InputType,
+                        cancellationToken
+                    );
+
             var result =
                 await
                     workflowStepRepository
@@ -219,7 +231,7 @@ namespace Rocket.Api.Host.Controllers
 
             if (result == null)
                 throw new RocketException(
-                    "Failed to create Dropbox workflow step",
+                    "Failed to create workflow step",
                     ApiStatusCodeEnum.ServerError
                 );
 
@@ -262,7 +274,7 @@ namespace Rocket.Api.Host.Controllers
 
             logger
                 .LogInformation(
-                    "Received (Dropbox) workflow step update request for username: {username}",
+                    "Received workflow step update request for username: {username}",
                     user.Username
                 );
 
