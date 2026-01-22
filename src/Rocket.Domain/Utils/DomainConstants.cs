@@ -46,5 +46,10 @@ namespace Rocket.Domain.Utils
             { (int)ExecutionStatusEnum.Cancelled, "Cancelled" }
         };
 
+        public static readonly Dictionary<int, string> BookVendorTypes = new()
+        {
+            { (int)BookVendorTypeEnum.Rocketbook, "Rocketbook" }
+        };
+
     }
 }
