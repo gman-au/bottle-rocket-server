@@ -7,5 +7,6 @@
         public const string ConnectorsCollection = "Connectors";
         public const string WorkflowsCollection = "Workflows";
         public const string ExecutionsCollection = "Executions";
+        public const string PageTemplateCollection= "PageTemplates";
     }
 }

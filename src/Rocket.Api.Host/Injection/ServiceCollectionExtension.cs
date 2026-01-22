@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Rocket.Api.Host.Exceptions;
 using Rocket.Api.Host.Notifiers;
+using Rocket.Api.Host.Prepopulation;
 using Rocket.Domain.Utils;
 using Rocket.Infrastructure;
 using Rocket.Infrastructure.Blob.Local;
@@ -73,6 +74,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IAuthenticator, Authenticator>()
                 .AddTransient<ISha256Calculator, Sha256Calculator>()
                 .AddTransient<IStartupInitialization, StartupInitialization>()
+                .AddTransient<IDatabasePrepopulator, DatabasePrepopulator>()
                 .AddTransient<IWorkflowStepValidator, WorkflowStepValidator>()
                 .AddTransient<IEmailAddressValidator, EmailAddressValidator>()
                 .AddTransient<IPasswordHasher, PasswordHasher>()
@@ -131,6 +133,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IWorkflowRepository, MongoDbWorkflowRepository>()
                 .AddTransient<IWorkflowStepRepository, MongoDbWorkflowStepRepository>()
                 .AddTransient<IExecutionRepository, MongoDbExecutionRepository>()
+                .AddTransient<IPageTemplateRepository, MongoDbPageTemplateRepository>()
                 .AddTransient<IUserRepository, MongoDbUserRepository>();
 
             return services;

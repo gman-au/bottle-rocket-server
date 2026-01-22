@@ -12,12 +12,17 @@ namespace Rocket.Infrastructure
     public class StartupInitialization(
         ILogger<StartupInitialization> logger,
         IUserRepository userRepository,
+        IDatabasePrepopulator databasePrepopulator,
         IPasswordGenerator passwordGenerator,
         IPasswordHasher passwordHasher
     ) : IStartupInitialization
     {
         public async Task InitializeAsync(CancellationToken cancellationToken)
         {
+            await
+                databasePrepopulator
+                    .PopulatePageTemplatesAsync(cancellationToken);
+
             logger
                 .LogInformation("Checking first-start initialization...");
 
