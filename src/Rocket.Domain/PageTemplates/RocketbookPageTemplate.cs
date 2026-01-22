@@ -2,7 +2,7 @@
 
 namespace Rocket.Domain.PageTemplates
 {
-    public class PageTemplate
+    public class RocketbookPageTemplate
     {
         [BsonId]
         public string QrCode { get; set; }

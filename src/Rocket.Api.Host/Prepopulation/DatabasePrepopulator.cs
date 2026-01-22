@@ -6,7 +6,7 @@ using Rocket.Interfaces;
 namespace Rocket.Api.Host.Prepopulation
 {
     public class DatabasePrepopulator(
-        IPageTemplateRepository pageTemplateRepository,
+        IRocketbookPageTemplateRepository rocketbookPageTemplateRepository,
         ILogger<DatabasePrepopulator> logger
     ) : IDatabasePrepopulator
     {
@@ -17,11 +17,11 @@ namespace Rocket.Api.Host.Prepopulation
 
             var recordsUpdated = 0L;
 
-            foreach (var pageTemplate in PageTemplates.GetTemplates())
+            foreach (var pageTemplate in PageTemplates.GetRocketbookTemplates())
             {
                 recordsUpdated +=
                     await
-                        pageTemplateRepository
+                        rocketbookPageTemplateRepository
                             .UpsertPageTemplateAsync(
                                 pageTemplate,
                                 cancellationToken

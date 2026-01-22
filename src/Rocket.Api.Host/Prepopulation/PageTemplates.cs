@@ -7,7 +7,7 @@ namespace Rocket.Api.Host.Prepopulation
 {
     internal static class PageTemplates
     {
-        public static IEnumerable<PageTemplate> GetTemplates()
+        public static IEnumerable<RocketbookPageTemplate> GetRocketbookTemplates()
         {
             foreach (var qrCodeOrientationType in Enum.GetValues<QrCodeOrientationTypeEnum>())
             {
@@ -23,7 +23,7 @@ namespace Rocket.Api.Host.Prepopulation
 
                         var qrCode = $"{pCode} {vCode} {tCode} S000";
                         yield return
-                            new PageTemplate
+                            new RocketbookPageTemplate
                             {
                                 QrCode = qrCode,
                                 PaperSizeType = (int)PaperSizeTypeEnum.A4,

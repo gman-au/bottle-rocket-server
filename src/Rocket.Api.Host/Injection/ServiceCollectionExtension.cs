@@ -133,7 +133,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IWorkflowRepository, MongoDbWorkflowRepository>()
                 .AddTransient<IWorkflowStepRepository, MongoDbWorkflowStepRepository>()
                 .AddTransient<IExecutionRepository, MongoDbExecutionRepository>()
-                .AddTransient<IPageTemplateRepository, MongoDbPageTemplateRepository>()
+                .AddTransient<IRocketbookPageTemplateRepository, MongoDbRocketbookPageTemplateRepository>()
                 .AddTransient<IUserRepository, MongoDbUserRepository>();
 
             return services;
