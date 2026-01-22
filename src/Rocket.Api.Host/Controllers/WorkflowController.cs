@@ -74,17 +74,16 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Workflows =
                         records
-                            .Select(
-                                o =>
-                                    new MyWorkflowSummary
-                                    {
-                                        Id = o.Id,
-                                        MatchingPageSymbol = o.MatchingPageSymbol,
-                                        Name = o.Name,
-                                        IsActive = o.IsActive,
-                                        CreatedAt = o.CreatedAt.ToLocalTime(),
-                                        LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
-                                    }
+                            .Select(o =>
+                                new MyWorkflowSummary
+                                {
+                                    Id = o.Id,
+                                    MatchingPageSymbol = o.MatchingPageSymbol,
+                                    Name = o.Name,
+                                    IsActive = o.IsActive,
+                                    CreatedAt = o.CreatedAt.ToLocalTime(),
+                                    LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
+                                }
                             ),
                     TotalRecords = (int)totalRecordCount
                 };
@@ -180,7 +179,7 @@ namespace Rocket.Api.Host.Controllers
 
             logger
                 .LogInformation(
-                    "Received (Dropbox) workflow creation request for username: {username}",
+                    "Received workflow creation request for username: {username}",
                     user.Username
                 );
 
@@ -188,24 +187,40 @@ namespace Rocket.Api.Host.Controllers
                 user
                     .Id;
 
+            if (string.IsNullOrEmpty(request.Name))
+                throw new RocketException(
+                    "No name was provided.",
+                    ApiStatusCodeEnum.ValidationError
+                );
+
             if (await
                 workflowRepository
-                    .WorkflowExistsForUserAsync(
+                    .WorkflowExistsForNameAsync(
                         userId,
                         request.Name,
                         cancellationToken
                     )
                )
                 throw new RocketException(
-                    "Workflow already exists",
+                    "Workflow already exists with this name.",
                     ApiStatusCodeEnum.RecordAlreadyExists
                 );
 
-            if (string.IsNullOrEmpty(request.Name))
-                throw new RocketException(
-                    "No name was provided.",
-                    ApiStatusCodeEnum.ValidationError
-                );
+            if (request.MatchingPageSymbol.HasValue)
+            {
+                if (await
+                    workflowRepository
+                        .WorkflowExistsForMatchingSymbolAsync(
+                            userId,
+                            request.MatchingPageSymbol.Value,
+                            cancellationToken
+                        )
+                   )
+                    throw new RocketException(
+                        "Workflow already exists with this matching page symbol.",
+                        ApiStatusCodeEnum.RecordAlreadyExists
+                    );
+            }
 
             var newWorkflow =
                 new Workflow
@@ -285,7 +300,7 @@ namespace Rocket.Api.Host.Controllers
             {
                 if (await
                     workflowRepository
-                        .WorkflowExistsForUserAsync(
+                        .WorkflowExistsForNameAsync(
                             userId,
                             request.Name,
                             cancellationToken
@@ -306,6 +321,33 @@ namespace Rocket.Api.Host.Controllers
                             o =>
                                 o.Name,
                             name,
+                            cancellationToken
+                        );
+            }
+
+            if (request.MatchingPageSymbol.HasValue)
+            {
+                if (await
+                    workflowRepository
+                        .WorkflowExistsForMatchingSymbolAsync(
+                            userId,
+                            request.MatchingPageSymbol.Value,
+                            cancellationToken
+                        )
+                   )
+                    throw new RocketException(
+                        "Workflow already exists with this matching page symbol.",
+                        ApiStatusCodeEnum.RecordAlreadyExists
+                    );
+
+                await
+                    workflowRepository
+                        .UpdateWorkflowFieldAsync(
+                            request.Id,
+                            userId,
+                            o =>
+                                o.MatchingPageSymbol,
+                            request.MatchingPageSymbol.Value,
                             cancellationToken
                         );
             }
@@ -410,8 +452,8 @@ namespace Rocket.Api.Host.Controllers
                                 var mapper =
                                     workflowStepModelMapperRegistry
                                         .GetMapperForDomain(o.GetType());
-                                
-                                return 
+
+                                return
                                     mapper
                                         .From(o);
                             }
