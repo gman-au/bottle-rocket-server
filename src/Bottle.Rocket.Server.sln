@@ -40,6 +40,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Jobs.Service", "Rock
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Mermaid", "Rocket.Infrastructure.Mermaid\Rocket.Infrastructure.Mermaid.csproj", "{D7EFC73F-34D7-4F9B-993A-9D248AFF624B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Detection", "Rocket.Infrastructure.Detection\Rocket.Infrastructure.Detection.csproj", "{0FD5BCBD-227F-41F9-81BB-FC0AE81A91EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -126,6 +128,10 @@ Global
 		{D7EFC73F-34D7-4F9B-993A-9D248AFF624B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7EFC73F-34D7-4F9B-993A-9D248AFF624B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7EFC73F-34D7-4F9B-993A-9D248AFF624B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FD5BCBD-227F-41F9-81BB-FC0AE81A91EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FD5BCBD-227F-41F9-81BB-FC0AE81A91EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FD5BCBD-227F-41F9-81BB-FC0AE81A91EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FD5BCBD-227F-41F9-81BB-FC0AE81A91EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{121393B8-1E90-4620-A200-444315FFB75D} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
