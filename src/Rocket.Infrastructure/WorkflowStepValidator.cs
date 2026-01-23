@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
@@ -14,7 +15,7 @@ namespace Rocket.Infrastructure
             string workflowId,
             string parentStepId,
             string userId,
-            int childInputType,
+            int[ ]childInputTypes,
             CancellationToken cancellationToken
         )
         {
@@ -62,14 +63,14 @@ namespace Rocket.Infrastructure
                     );
             }
 
-            if (childInputType == (int)WorkflowFormatTypeEnum.Void)
+            if (childInputTypes.Any(o => o == (int)WorkflowFormatTypeEnum.Void))
                 throw new RocketException(
                     "This workflow step has been incorrectly configured." +
                     "This is a developer error and should be reported.",
                     ApiStatusCodeEnum.DeveloperError
                 );
 
-            if (parentOutputType != childInputType)
+            if (childInputTypes.All(o => o != parentOutputType))
                 throw new RocketException(
                     "The workflow step cannot be added as the expected input is not produced by the parent step.",
                     ApiStatusCodeEnum.ValidationError

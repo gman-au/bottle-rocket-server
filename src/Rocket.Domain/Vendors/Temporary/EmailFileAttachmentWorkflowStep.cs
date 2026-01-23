@@ -5,7 +5,7 @@ namespace Rocket.Domain.Vendors.Temporary
 {
     public record EmailFileAttachmentWorkflowStep : BaseWorkflowStep
     {
-        public override int InputType { get; set; } = (int)WorkflowFormatTypeEnum.File;
+        public override int[] InputTypes { get; set; } = [(int)WorkflowFormatTypeEnum.File];
 
         public override int OutputType { get; set; } = (int)WorkflowFormatTypeEnum.Void;
 

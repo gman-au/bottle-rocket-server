@@ -58,7 +58,7 @@ namespace Rocket.Infrastructure.Detection
                     .Add(
                         new LineRegion
                         {
-                            SymbolIndex = i,
+                            SymbolIndex = i + 1, // must correspond to page symbol enum
                             Start = i * segmentSize + lineStart.X,
                             End = i * segmentSize + singleRegionSize + lineStart.X
                         }

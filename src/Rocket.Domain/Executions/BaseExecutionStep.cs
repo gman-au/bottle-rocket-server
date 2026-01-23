@@ -15,7 +15,7 @@ namespace Rocket.Domain.Executions
         
         public string ConnectorId { get; set; }
 
-        public int InputType { get; set; }
+        public int[] InputTypes { get; set; }
         
         public int OutputType { get; set; }
         

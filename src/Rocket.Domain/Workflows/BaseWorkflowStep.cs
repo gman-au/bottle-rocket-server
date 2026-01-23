@@ -14,7 +14,7 @@ namespace Rocket.Domain.Workflows
 
         public string ConnectorId { get; set; }
 
-        public abstract int InputType { get; set; }
+        public abstract int[] InputTypes { get; set; }
 
         public abstract int OutputType { get; set; }
 

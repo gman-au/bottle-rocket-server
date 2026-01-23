@@ -214,7 +214,7 @@ namespace Rocket.Api.Host.Controllers
                         request.WorkflowId,
                         request.ParentStepId,
                         userId,
-                        newWorkflowStep.InputType,
+                        newWorkflowStep.InputTypes,
                         cancellationToken
                     );
 

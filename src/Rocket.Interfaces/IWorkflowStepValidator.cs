@@ -9,7 +9,7 @@ namespace Rocket.Interfaces
             string workflowId,
             string parentStepId,
             string userId,
-            int childInputType,
+            int[] childInputTypes,
             CancellationToken cancellationToken
         );
     }
