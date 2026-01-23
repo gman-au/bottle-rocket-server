@@ -7,6 +7,13 @@ namespace Rocket.Api.Host.Prepopulation
 {
     internal static class PageTemplates
     {
+        private const string BottomLeftDetectionLineTransform  = "1.3,0.275,8.5,0.275";
+
+        private static readonly Dictionary<int, string> DetectionLines = new()
+        {
+            { (int)QrCodeOrientationTypeEnum.BottomLeft, BottomLeftDetectionLineTransform }
+        };
+
         public static IEnumerable<RocketbookPageTemplate> GetRocketbookTemplates()
         {
             foreach (var qrCodeOrientationType in Enum.GetValues<QrCodeOrientationTypeEnum>())
@@ -22,6 +29,9 @@ namespace Rocket.Api.Host.Prepopulation
                         var tCode = $"T{((int)rocketbookPageTemplateType).ToString().PadLeft(2, '0')}";
 
                         var qrCode = $"{pCode} {vCode} {tCode} S000";
+
+                        DetectionLines.TryGetValue((int)qrCodeOrientationType, out var symbolsDetectionLine);
+                        
                         yield return
                             new RocketbookPageTemplate
                             {
@@ -29,7 +39,7 @@ namespace Rocket.Api.Host.Prepopulation
                                 PaperSizeType = (int)PaperSizeTypeEnum.A4,
                                 QrCodeOrientationType = (int)qrCodeOrientationType,
                                 RocketbookPageTemplateType = (int)rocketbookPageTemplateType,
-                                SymbolsBoundingBox = null
+                                SymbolsDetectionLine = symbolsDetectionLine
                             };
                     }
                 }

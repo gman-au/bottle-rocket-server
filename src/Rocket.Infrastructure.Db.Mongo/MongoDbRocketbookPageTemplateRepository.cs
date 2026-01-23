@@ -50,8 +50,8 @@ namespace Rocket.Infrastructure.Db.Mongo
                             rocketbookPageTemplate.RocketbookPageTemplateType
                         )
                         .Set(
-                            o => o.SymbolsBoundingBox,
-                            rocketbookPageTemplate.SymbolsBoundingBox
+                            o => o.SymbolsDetectionLine,
+                            rocketbookPageTemplate.SymbolsDetectionLine
                         );
 
                 var result =

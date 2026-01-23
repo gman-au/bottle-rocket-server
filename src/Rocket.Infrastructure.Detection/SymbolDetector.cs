@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Rocket.Infrastructure.Detection.Extensions;
 using Rocket.Interfaces;
@@ -15,22 +15,12 @@ using SixLabors.ImageSharp.Processing;
 namespace Rocket.Infrastructure.Detection
 {
     public class SymbolDetector(
+        IConfiguration configuration,
         IRocketbookPageTemplateRepository pageTemplateRepository,
         ILogger<SymbolDetector> logger
     ) : ISymbolDetector
     {
-        private readonly PointF _lineStart = new(
-            1.3f,
-            0.275f
-        ); // Adjust based on your layout
-
-        private readonly PointF _lineEnd = new(
-            8.5f,
-            0.275f
-        ); // Adjust based on your layout
-
         private const int NumSymbols = 7;
-
 
         public async Task<int[]> DetectSymbolMarksAsync(
             string qrCode,
@@ -60,6 +50,17 @@ namespace Rocket.Infrastructure.Detection
 
             if (matchingTemplate == null)
                 return null;
+
+            var symbolDetectionLine = matchingTemplate.SymbolsDetectionLine;
+            if (string.IsNullOrEmpty(symbolDetectionLine))
+            {
+                logger
+                    .LogWarning(
+                        "The matched template for QR code: {qrCode} has no detection line configured, detection skipped...",
+                        qrCode
+                    );
+                return null;
+            }
 
             logger
                 .LogInformation(
@@ -111,11 +112,23 @@ namespace Rocket.Infrastructure.Detection
                         )
                     };
 
+                    var detectionLineElements =
+                        symbolDetectionLine
+                            .Split(',')
+                            .Select(float.Parse)
+                            .ToArray();
+
+                    if (detectionLineElements.Length != 4)
+                        throw new FormatException();
+                    
+                    var detectionLineStart = new PointF(detectionLineElements[0], detectionLineElements[1]);
+                    var detectionLineEnd = new PointF(detectionLineElements[2], detectionLineElements[3]);
+
                     var (lineStart, lineEnd) =
                         qrPoints
                             .GetDetectionLine(
-                                _lineStart,
-                                _lineEnd
+                                detectionLineStart,
+                                detectionLineEnd
                             );
 
                     var conceptualLineRegions =
@@ -184,21 +197,29 @@ namespace Rocket.Infrastructure.Detection
                             }
                         );
 
-                    // Save the image
-                    await
-                        image
-                            .SaveAsync(
-                                "D:\\AZURE_STORAGE_TEST\\BOTTLE_ROCKET\\output_box_outline.png",
-                                cancellationToken
-                            );
+                    var diagnosticFilePath = configuration["SymbolDetectionDiagnosticFilePath"];
+
+                    if (!string.IsNullOrEmpty(diagnosticFilePath))
+                    {
+                        // Save the image
+                        await
+                            image
+                                .SaveAsync(
+                                    diagnosticFilePath,
+                                    cancellationToken
+                                );
+                    }
 
                     if (markedSymbols.Length != 0)
                     {
                         logger
                             .LogInformation(
-                            "Detected marks on symbols {symbolIndex}",
-                            string.Join(",", markedSymbols)
-                        );
+                                "Detected marks on symbols {symbolIndex}",
+                                string.Join(
+                                    ",",
+                                    markedSymbols
+                                )
+                            );
                     }
                     else
                     {
