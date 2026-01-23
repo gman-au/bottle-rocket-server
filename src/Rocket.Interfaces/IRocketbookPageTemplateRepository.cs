@@ -13,5 +13,7 @@ namespace Rocket.Interfaces
         );
 
         Task<IEnumerable<RocketbookPageTemplate>> FetchAllAsync(CancellationToken cancellationToken);
+        
+        Task<RocketbookPageTemplate> GetTemplateByQrCodeAsync(string qrCode, CancellationToken cancellationToken);
     }
 }

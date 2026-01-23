@@ -32,18 +32,18 @@ namespace Rocket.Infrastructure.Mapping
                 ConnectorId = value.ConnectorId,
                 ChildSteps =
                     (value.ChildSteps ?? [])
-                        .Select(
-                            child =>
-                            {
-                                var mapper = 
-                                    MapperRegistry
-                                        .GetMapperForView(child.GetType());
-                                
-                                return 
-                                    mapper
-                                        .For(child);
-                            }
-                        )
+                    .Select(
+                        child =>
+                        {
+                            var mapper =
+                                MapperRegistry
+                                    .GetMapperForView(child.GetType());
+
+                            return
+                                mapper
+                                    .For(child);
+                        }
+                    )
             };
         }
 
@@ -57,12 +57,18 @@ namespace Rocket.Infrastructure.Mapping
                 ExecutionStatus = value.ExecutionStatus,
                 RunDate = value.RunDate,
                 InputTypeName =
-                    DomainConstants
-                        .WorkflowFormatTypes
-                        .GetValueOrDefault(
-                            value.InputType,
-                            DomainConstants.UnknownType
-                        ),
+                    string.Join(
+                        ", ",
+                        value.InputTypes.Select(
+                            x =>
+                                DomainConstants
+                                    .WorkflowFormatTypes
+                                    .GetValueOrDefault(
+                                        x,
+                                        DomainConstants.UnknownType
+                                    )
+                        )
+                    ),
                 OutputTypeName =
                     DomainConstants
                         .WorkflowFormatTypes
@@ -70,18 +76,20 @@ namespace Rocket.Infrastructure.Mapping
                             value.OutputType,
                             DomainConstants.UnknownType
                         ),
-                ChildSteps = 
+                ChildSteps =
                     (value.ChildSteps ?? [])
-                    .Select(child =>
-                    {
-                        var mapper = 
-                            MapperRegistry
-                                .GetMapperForDomain(child.GetType());
-                        
-                        return 
-                            mapper
-                                .From(child);
-                    })
+                    .Select(
+                        child =>
+                        {
+                            var mapper =
+                                MapperRegistry
+                                    .GetMapperForDomain(child.GetType());
+
+                            return
+                                mapper
+                                    .From(child);
+                        }
+                    )
                     .ToList()
             };
         }

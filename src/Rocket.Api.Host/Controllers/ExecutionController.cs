@@ -22,10 +22,8 @@ namespace Rocket.Api.Host.Controllers
     public class ExecutionController(
         ILogger<ExecutionController> logger,
         IUserManager userManager,
-        IWorkflowRepository workflowRepository,
-        IWorkflowCloner workflowCloner,
+        IExecutionScheduler executionScheduler,
         IWorkflowExecutionManager workflowExecutionManager,
-        IScannedImageRepository scannedImageRepository,
         IExecutionRepository executionRepository,
         IExecutionStepModelMapperRegistry executionStepModelMapperRegistry
     ) : RocketControllerBase(userManager)
@@ -191,85 +189,26 @@ namespace Rocket.Api.Host.Controllers
                     user.Username
                 );
 
-            if (string.IsNullOrEmpty(request.ScanId))
-                throw new RocketException(
-                    "No scan ID was provided.",
-                    ApiStatusCodeEnum.ValidationError
-                );
-
             var userId =
                 user
                     .Id;
 
-            var workflow =
+            var executionId =
                 await
-                    workflowRepository
-                        .GetWorkflowByIdAsync(
-                            userId,
+                    executionScheduler
+                        .ScheduleExecutionAsync(
                             request.WorkflowId,
-                            cancellationToken
-                        );
-
-            if (workflow == null)
-                throw new RocketException(
-                    "Workflow does not exist for this user.",
-                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
-                );
-
-            var scan =
-                await
-                    scannedImageRepository
-                        .GetScanByIdAsync(
-                            userId,
                             request.ScanId,
-                            cancellationToken
-                        );
-
-            if (scan == null)
-                throw new RocketException(
-                    "Scan does not exist for this user.",
-                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
-                );
-
-            var newExecution =
-                workflowCloner
-                    .Clone(
-                        workflow,
-                        scan.Id,
-                        scan.ThumbnailBase64,
-                        scan.ContentType
-                    );
-
-            var result =
-                await
-                    executionRepository
-                        .InsertExecutionAsync(
-                            newExecution,
-                            cancellationToken
-                        );
-
-            if (result == null)
-                throw new RocketException(
-                    "Failed to create execution",
-                    ApiStatusCodeEnum.ServerError
-                );
-
-            var response = new CreateExecutionResponse
-            {
-                Id = result.Id
-            };
-
-            // trigger background queue job
-            if (request.RunImmediately.GetValueOrDefault())
-            {
-                await
-                    workflowExecutionManager
-                        .StartExecutionAsync(
-                            result.Id,
                             userId,
+                            request.RunImmediately ?? false,
                             cancellationToken
                         );
-            }
+
+            var response =
+                new CreateExecutionResponse
+                {
+                    Id = executionId
+                };
 
             return
                 response

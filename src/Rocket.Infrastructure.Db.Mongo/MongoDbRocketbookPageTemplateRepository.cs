@@ -12,28 +12,47 @@ namespace Rocket.Infrastructure.Db.Mongo
     public class MongoDbRocketbookPageTemplateRepository(
         ILogger<MongoDbRocketbookPageTemplateRepository> logger,
         IMongoDbClient mongoDbClient
-    ) : MongoDbRepositoryBase<RocketbookPageTemplate>(mongoDbClient, logger), IRocketbookPageTemplateRepository
+    ) : MongoDbRepositoryBase<RocketbookPageTemplate>(
+        mongoDbClient,
+        logger
+    ), IRocketbookPageTemplateRepository
     {
         protected override string CollectionName => MongoConstants.RocketbookPageTemplateCollection;
 
         public async Task<long> UpsertPageTemplateAsync(
             RocketbookPageTemplate rocketbookPageTemplate,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken
+        )
         {
             try
             {
                 var filter =
                     Builders<RocketbookPageTemplate>
                         .Filter
-                        .Eq(o => o.QrCode, rocketbookPageTemplate.QrCode);
+                        .Eq(
+                            o => o.QrCode,
+                            rocketbookPageTemplate.QrCode
+                        );
 
                 var update =
                     Builders<RocketbookPageTemplate>
                         .Update
-                        .Set(o => o.PaperSizeType, rocketbookPageTemplate.PaperSizeType)
-                        .Set(o => o.QrCodeOrientationType, rocketbookPageTemplate.QrCodeOrientationType)
-                        .Set(o => o.RocketbookPageTemplateType, rocketbookPageTemplate.RocketbookPageTemplateType)
-                        .Set(o => o.SymbolsBoundingBox, rocketbookPageTemplate.SymbolsBoundingBox);
+                        .Set(
+                            o => o.PaperSizeType,
+                            rocketbookPageTemplate.PaperSizeType
+                        )
+                        .Set(
+                            o => o.QrCodeOrientationType,
+                            rocketbookPageTemplate.QrCodeOrientationType
+                        )
+                        .Set(
+                            o => o.RocketbookPageTemplateType,
+                            rocketbookPageTemplate.RocketbookPageTemplateType
+                        )
+                        .Set(
+                            o => o.SymbolsDetectionLine,
+                            rocketbookPageTemplate.SymbolsDetectionLine
+                        );
 
                 var result =
                     await
@@ -67,10 +86,10 @@ namespace Rocket.Infrastructure.Db.Mongo
                 Builders<RocketbookPageTemplate>
                     .Filter
                     .Empty;
-            
+
             var collection =
                 GetMongoCollection();
-            
+
             var allRecords =
                 await
                     collection
@@ -79,5 +98,18 @@ namespace Rocket.Infrastructure.Db.Mongo
 
             return allRecords;
         }
+
+        public async Task<RocketbookPageTemplate> GetTemplateByQrCodeAsync(string qrCode, CancellationToken cancellationToken)
+            =>
+                await
+                    FetchFirstFilteredRecordAsync(
+                        Builders<RocketbookPageTemplate>
+                            .Filter
+                            .Eq(
+                                o => o.QrCode,
+                                qrCode
+                            ),
+                        cancellationToken
+                    );
     }
 }

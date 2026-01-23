@@ -20,6 +20,7 @@ namespace Rocket.Api.Host.Controllers
     public class CaptureController(
         IScannedImageHandler scannedImageHandler,
         ICaptureNotifier captureNotifier,
+        IWorkflowDetector workflowDetector,
         ILogger<CaptureController> logger
     ) : ControllerBase
     {
@@ -27,9 +28,16 @@ namespace Rocket.Api.Host.Controllers
         [EndpointSummary("Process captured image(s)")]
         [EndpointGroupName("Manage captures / scans")]
         [EndpointDescription(
-            "Process uploaded images via this endpoint. Use the url-encoded multipart form schema to POST the image data.")]
-        [ProducesResponseType(typeof(ProcessCaptureResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+            "Process uploaded images via this endpoint. Use the url-encoded multipart form schema to POST the image data."
+        )]
+        [ProducesResponseType(
+            typeof(ProcessCaptureResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> ProcessCaptureAsync(
             [FromForm] ImageUploadModel model,
@@ -107,6 +115,17 @@ namespace Rocket.Api.Host.Controllers
                 scanId = result.Id;
 
                 await
+                    workflowDetector
+                        .DetectAndScheduleWorkflowAsync(
+                            scanId,
+                            userId,
+                            model.QrCode,
+                            model.QrBoundingBox,
+                            ms.ToArray(),
+                            cancellationToken
+                        );
+
+                await
                     captureNotifier
                         .NotifyNewCaptureAsync(
                             userId,
@@ -129,9 +148,11 @@ namespace Rocket.Api.Host.Controllers
         {
             public IFormCollection Form { get; set; }
 
-            [FromForm(Name = "qr_code")] public string QrCode { get; set; }
+            [FromForm(Name = "qr_code")]
+            public string QrCode { get; set; }
 
-            [FromForm(Name = "qr_bounding_box")] public string QrBoundingBox { get; set; }
+            [FromForm(Name = "qr_bounding_box")]
+            public string QrBoundingBox { get; set; }
         }
     }
 }

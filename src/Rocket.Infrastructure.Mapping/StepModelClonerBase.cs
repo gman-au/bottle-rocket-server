@@ -23,7 +23,7 @@ namespace Rocket.Infrastructure.Mapping
             {
                 Id = ObjectId.GenerateNewId().ToString(),
                 ConnectorId = value.ConnectorId,
-                InputType = value.InputType,
+                InputTypes = value.InputTypes,
                 OutputType = value.OutputType,
                 StepName = value.StepName,
                 RunDate = null,

@@ -50,7 +50,7 @@ namespace Rocket.Infrastructure.Mermaid
                 styleBuilder,
                 workflow.Steps,
                 aliasEnumerator,
-                null,
+                DomainConstants.WorkflowFormatTypes[(int)WorkflowFormatTypeEnum.ImageData],
                 null
             );
 
@@ -128,7 +128,7 @@ namespace Rocket.Infrastructure.Mermaid
                 entityLine += "\")";
 
                 linksBuilder
-                    .AppendLine($"{currentParentAlias} --> |{step.InputTypeName}| {currentChildAlias}");
+                    .AppendLine($"{currentParentAlias} --> |{currentParentOutputTypeName}| {currentChildAlias}");
 
                 var route = string.Empty;
                 if (step is DropboxUploadWorkflowStepSpecifics dropboxUploadStep)

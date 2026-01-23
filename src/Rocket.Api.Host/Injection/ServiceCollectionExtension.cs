@@ -15,6 +15,7 @@ using Rocket.Infrastructure.Blob.Local;
 using Rocket.Infrastructure.Blob.Local.Options;
 using Rocket.Infrastructure.Db.Mongo;
 using Rocket.Infrastructure.Db.Mongo.Options;
+using Rocket.Infrastructure.Detection;
 using Rocket.Infrastructure.Hashing;
 using Rocket.Infrastructure.Mapping;
 using Rocket.Infrastructure.Thumbnails;
@@ -78,6 +79,9 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IWorkflowStepValidator, WorkflowStepValidator>()
                 .AddTransient<IEmailAddressValidator, EmailAddressValidator>()
                 .AddTransient<IPasswordHasher, PasswordHasher>()
+                .AddTransient<IExecutionScheduler, ExecutionScheduler>()
+                .AddTransient<ISymbolDetector, SymbolDetector>()
+                .AddTransient<IWorkflowDetector, WorkflowDetector>()
                 .AddTransient<IActiveAdminChecker, ActiveAdminChecker>()
                 .AddTransient<IThumbnailer, Thumbnailer>()
                 .AddTransient<IUserManager, UserManager>()

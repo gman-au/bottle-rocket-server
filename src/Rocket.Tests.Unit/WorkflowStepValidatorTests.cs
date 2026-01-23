@@ -119,7 +119,7 @@ namespace Rocket.Tests.Unit
             private readonly IFixture _fixture;
             private readonly IWorkflowStepRepository _workflowStepRepository;
             private string _parentStepId;
-            private int _childInputType;
+            private int[] _childInputTypes;
             private RocketException _exception;
 
             public TestContext()
@@ -172,7 +172,7 @@ namespace Rocket.Tests.Unit
             public void ArrangeParentStepIsProvided() => _parentStepId = "12345";
             public void ArrangeParentStepIsNotProvided() => _parentStepId = null;
 
-            private void ArrangeChildStepWithInput(int inputType) => _childInputType = inputType;
+            private void ArrangeChildStepWithInput(int inputType) => _childInputTypes = [inputType];
 
             public void ArrangeNoParentStepReturned()
             {
@@ -212,7 +212,7 @@ namespace Rocket.Tests.Unit
                             "12345",
                             _parentStepId,
                             "12345",
-                            _childInputType,
+                            _childInputTypes,
                             CancellationToken.None
                         );
             }
@@ -239,7 +239,7 @@ namespace Rocket.Tests.Unit
 
             private record DummyStep : BaseWorkflowStep
             {
-                public override int InputType { get; set; }
+                public override int[] InputTypes { get; set; }
                 public override int OutputType { get; set; }
                 public override string StepName { get; set; }
                 public override string RequiresConnectorCode { get; set; }

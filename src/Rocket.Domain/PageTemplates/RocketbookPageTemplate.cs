@@ -13,6 +13,6 @@ namespace Rocket.Domain.PageTemplates
 
         public int? RocketbookPageTemplateType { get; set; }
 
-        public string SymbolsBoundingBox { get; set; }
+        public string SymbolsDetectionLine { get; set; }
     }
 }

@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 
 namespace Rocket.Interfaces
 {
-    public interface IWorkflowStepValidator
+    public interface IExecutionScheduler
     {
-        Task ValidateAsync(
+        Task<string> ScheduleExecutionAsync(
             string workflowId,
-            string parentStepId,
+            string scanId,
             string userId,
-            int[] childInputTypes,
+            bool runImmediately,
             CancellationToken cancellationToken
         );
     }
