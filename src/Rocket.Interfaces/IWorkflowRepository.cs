@@ -21,6 +21,12 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
+        Task<Workflow> GetWorkflowByMatchingPageSymbolAsync(
+            string userId,
+            int matchingPageSymbol,
+            CancellationToken cancellationToken
+        );
+
         Task<Workflow> GetWorkflowByIdAsync(
             string userId,
             string id,

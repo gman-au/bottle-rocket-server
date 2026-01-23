@@ -166,7 +166,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 );
 
-        private async Task<Workflow> GetWorkflowByMatchingPageSymbolAsync(
+        public async Task<Workflow> GetWorkflowByMatchingPageSymbolAsync(
             string userId,
             int matchingPageSymbol,
             CancellationToken cancellationToken

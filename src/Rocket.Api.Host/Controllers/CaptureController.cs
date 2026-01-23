@@ -20,7 +20,7 @@ namespace Rocket.Api.Host.Controllers
     public class CaptureController(
         IScannedImageHandler scannedImageHandler,
         ICaptureNotifier captureNotifier,
-        ISymbolDetector symbolDetector,
+        IWorkflowDetector workflowDetector,
         ILogger<CaptureController> logger
     ) : ControllerBase
     {
@@ -114,11 +114,11 @@ namespace Rocket.Api.Host.Controllers
 
                 scanId = result.Id;
 
-                // check detection
-                // TODO: fire off workflow (move to separate manager)
                 await
-                    symbolDetector
-                        .DetectSymbolMarksAsync(
+                    workflowDetector
+                        .DetectAndScheduleWorkflowAsync(
+                            scanId,
+                            userId,
                             model.QrCode,
                             model.QrBoundingBox,
                             ms.ToArray(),
