@@ -14,7 +14,8 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger.LogInformation("Received Patch (Dropbox) Connector request");
+            logger
+                .LogInformation("Received Patch (Dropbox) Connector request");
 
             var response =
                 await

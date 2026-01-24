@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Rocket.Domain.Core;
-using Rocket.Domain.Core.Enum;
+using Rocket.Domain;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Executions;
 using Rocket.Interfaces;
 
 namespace Rocket.Jobs.Service
@@ -10,11 +11,11 @@ namespace Rocket.Jobs.Service
     public static class WorkflowExecutionTask
     {
         public static async Task AsTask(
-            this CoreExecutionStep step,
+            this BaseExecutionStep step,
             string userId,
             string executionId,
             IWorkflowExecutionContext context,
-            Func<string, string, int, CoreExecutionStep, Task> updateExecutionStepCallbackFunc,
+            Func<string, string, int, BaseExecutionStep, Task> updateExecutionStepCallbackFunc,
             CancellationToken cancellationToken
         )
         {

@@ -1,9 +1,9 @@
-﻿using Rocket.Domain.Core;
-using Rocket.Domain.Core.Enum;
+﻿using Rocket.Domain.Connectors;
+using Rocket.Domain.Enum;
 
 namespace Rocket.MaxOcr.Domain
 {
-    public record MaxOcrConnector : CoreConnector
+    public record MaxOcrConnector : BaseConnector
     {
         public override int ConnectorType { get; set; } = (int)ConnectorTypeEnum.OcrExtraction;
 

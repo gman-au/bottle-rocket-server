@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Rocket.Domain.Core.Enum;
+using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Interfaces;
 

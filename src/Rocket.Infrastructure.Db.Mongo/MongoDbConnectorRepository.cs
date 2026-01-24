@@ -5,7 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using Rocket.Domain.Core;
+using Rocket.Domain;
+using Rocket.Domain.Connectors;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Db.Mongo
@@ -13,24 +14,24 @@ namespace Rocket.Infrastructure.Db.Mongo
     public class MongoDbConnectorRepository(
         ILogger<MongoDbConnectorRepository> logger,
         IMongoDbClient mongoDbClient
-    ) : MongoDbRepositoryBase<CoreConnector>(
+    ) : MongoDbRepositoryBase<BaseConnector>(
         mongoDbClient,
         logger
     ), IConnectorRepository
     {
         protected override string CollectionName => MongoConstants.ConnectorsCollection;
 
-        public async Task<CoreConnector> InsertConnectorAsync(
-            CoreConnector coreConnector,
+        public async Task<BaseConnector> InsertConnectorAsync(
+            BaseConnector baseConnector,
             CancellationToken cancellationToken
         ) =>
             await
                 InsertRecordAsync(
-                    coreConnector,
+                    baseConnector,
                     cancellationToken
                 );
 
-        public async Task<(IEnumerable<CoreConnector> records, long totalRecordCount)> FetchConnectorsAsync(
+        public async Task<(IEnumerable<BaseConnector> records, long totalRecordCount)> FetchConnectorsAsync(
             string userId,
             int startIndex,
             int recordCount,
@@ -40,7 +41,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                 FetchAllPagedAndFilteredRecordsAsync(
                     startIndex,
                     recordCount,
-                    Builders<CoreConnector>
+                    Builders<BaseConnector>
                         .Filter
                         .Eq(
                             u => u.UserId,
@@ -50,7 +51,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 );
 
-        public async Task<(IEnumerable<CoreConnector> records, long totalRecordCount)> FetchConnectorsByCodeAndUserAsync(
+        public async Task<(IEnumerable<BaseConnector> records, long totalRecordCount)> FetchConnectorsByCodeAndUserAsync(
             string userId,
             int? startIndex,
             int? recordCount,
@@ -61,13 +62,13 @@ namespace Rocket.Infrastructure.Db.Mongo
                 FetchAllPagedAndFilteredRecordsAsync(
                     startIndex,
                     recordCount,
-                    Builders<CoreConnector>
+                    Builders<BaseConnector>
                         .Filter
                         .Eq(
                             u => u.UserId,
                             userId
                         ) &
-                    Builders<CoreConnector>
+                    Builders<BaseConnector>
                         .Filter
                         .Eq(
                             o => o.ConnectorCode,
@@ -81,16 +82,16 @@ namespace Rocket.Infrastructure.Db.Mongo
             string userId,
             string id,
             CancellationToken cancellationToken
-        ) where T : CoreConnector =>
+        ) where T : BaseConnector =>
             await
                 FetchFirstFilteredRecordAsync(
-                    Builders<CoreConnector>
+                    Builders<BaseConnector>
                         .Filter
                         .Eq(
                             o => o.UserId,
                             userId
                         ) &
-                    Builders<CoreConnector>
+                    Builders<BaseConnector>
                         .Filter
                         .Eq(
                             o => o.Id,
@@ -103,16 +104,16 @@ namespace Rocket.Infrastructure.Db.Mongo
             string userId,
             string name,
             CancellationToken cancellationToken
-        ) where T : CoreConnector =>
+        ) where T : BaseConnector =>
             await
                 FetchFirstFilteredRecordAsync(
-                    Builders<CoreConnector>
+                    Builders<BaseConnector>
                         .Filter
                         .Eq(
                             o => o.UserId,
                             userId
                         ) &
-                    Builders<CoreConnector>
+                    Builders<BaseConnector>
                         .Filter
                         .Eq(
                             o => o.ConnectorName,
@@ -128,13 +129,13 @@ namespace Rocket.Infrastructure.Db.Mongo
         ) =>
             await
                 DeleteFirstFilteredRecordAsync(
-                    Builders<CoreConnector>
+                    Builders<BaseConnector>
                         .Filter
                         .Eq(
                             o => o.UserId,
                             userId
                         ) &
-                    Builders<CoreConnector>
+                    Builders<BaseConnector>
                         .Filter
                         .Eq(
                             o => o.Id,
@@ -149,7 +150,7 @@ namespace Rocket.Infrastructure.Db.Mongo
             Expression<Func<TConnector, TField>> setter,
             TField value,
             CancellationToken cancellationToken
-        ) where TConnector : CoreConnector
+        ) where TConnector : BaseConnector
         {
             try
             {
@@ -206,7 +207,7 @@ namespace Rocket.Infrastructure.Db.Mongo
         {
             var result =
                 await
-                    GetConnectorByNameAsync<CoreConnector>(
+                    GetConnectorByNameAsync<BaseConnector>(
                         userId,
                         connectorName,
                         cancellationToken
@@ -219,7 +220,7 @@ namespace Rocket.Infrastructure.Db.Mongo
             FilterDefinition<T> filter,
             UpdateDefinition<T> update,
             CancellationToken cancellationToken
-        ) where T : CoreConnector
+        ) where T : BaseConnector
         {
             await
                 GetMongoCollection<T>()

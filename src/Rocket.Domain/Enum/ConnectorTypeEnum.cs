@@ -1,4 +1,4 @@
-﻿namespace Rocket.Domain.Core.Enum
+﻿namespace Rocket.Domain.Enum
 {
     public enum ConnectorTypeEnum
     {

@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Rocket.Domain.Core;
+using Rocket.Domain;
 using Rocket.Domain.Workflows;
 
 namespace Rocket.Interfaces
@@ -13,15 +13,15 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
-        Task<CoreWorkflowStep> GetWorkflowStepByIdAsync(
+        Task<BaseWorkflowStep> GetWorkflowStepByIdAsync(
             string workflowStepId,
             string workflowId,
             string userId,
             CancellationToken cancellationToken = default
         );
 
-        Task<CoreWorkflowStep> InsertWorkflowStepAsync(
-            CoreWorkflowStep workflowStep,
+        Task<BaseWorkflowStep> InsertWorkflowStepAsync(
+            BaseWorkflowStep workflowStep,
             string userId,
             string workflowId,
             string parentStepId,
@@ -34,7 +34,7 @@ namespace Rocket.Interfaces
             string userId,
             TWorkflowStep updatedWorkflowStep,
             CancellationToken cancellationToken
-        ) where TWorkflowStep : CoreWorkflowStep;
+        ) where TWorkflowStep : BaseWorkflowStep;
 
         Task<bool> DeleteWorkflowStepAsync(
             string userId,

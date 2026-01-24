@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Rocket.Domain.Core;
+using Rocket.Domain;
+using Rocket.Domain.Executions;
 
 namespace Rocket.Infrastructure.Db.Mongo.Extensions
 {
-    public static class CoreExecutionStepEx
+    public static class BaseExecutionStepEx
     {
         public static bool UpdateStepById(
-            IEnumerable<CoreExecutionStep> steps,
+            IEnumerable<BaseExecutionStep> steps,
             string stepId,
-            CoreExecutionStep updatedStep,
-            out IEnumerable<CoreExecutionStep> modifiedSteps
+            BaseExecutionStep updatedStep,
+            out IEnumerable<BaseExecutionStep> modifiedSteps
         )
         {
             modifiedSteps = steps;

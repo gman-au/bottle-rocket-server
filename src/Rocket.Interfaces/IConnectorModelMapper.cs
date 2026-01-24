@@ -2,7 +2,8 @@
 using System.Threading.Tasks;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Connectors;
-using Rocket.Domain.Core;
+using Rocket.Domain;
+using Rocket.Domain.Connectors;
 
 namespace Rocket.Interfaces
 {
@@ -10,7 +11,7 @@ namespace Rocket.Interfaces
     {
         Type DomainType { get; }
         Type ViewType { get; }
-        CoreConnector For(object value);
+        BaseConnector For(object value);
         ConnectorSummary From(object value);
 
         Task PreUpdateAsync(object value);
@@ -20,7 +21,7 @@ namespace Rocket.Interfaces
     
     public interface IConnectorModelMapper<TDomain, TView> 
         : IConnectorModelMapper
-        where TDomain : CoreConnector, new()
+        where TDomain : BaseConnector, new()
         where TView : ConnectorSummary, new()
     {
         bool AppliesFor(Type type);

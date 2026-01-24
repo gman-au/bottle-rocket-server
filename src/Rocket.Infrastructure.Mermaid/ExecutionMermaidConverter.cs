@@ -2,7 +2,7 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts.Executions;
-using Rocket.Domain.Core.Enum;
+using Rocket.Domain.Enum;
 using Rocket.Infrastructure.Mermaid.Extensions;
 using Rocket.Interfaces;
 

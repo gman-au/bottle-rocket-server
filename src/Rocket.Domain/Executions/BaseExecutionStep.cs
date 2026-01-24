@@ -1,14 +1,24 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-using Rocket.Domain.Core;
-using Rocket.Domain.Vendors.Temporary;
-using Rocket.Dropbox.Domain;
-using Rocket.MaxOcr.Domain;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Rocket.Domain.Executions
 {
-    [BsonDiscriminator(RootClass = true)]
-    [BsonKnownTypes(typeof(DropboxUploadExecutionStep))]
-    [BsonKnownTypes(typeof(MaxOcrExtractExecutionStep))]
-    [BsonKnownTypes(typeof(EmailFileAttachmentExecutionStep))]
-    public abstract record BaseExecutionStep : CoreExecutionStep;
+    public abstract record BaseExecutionStep
+    {
+        public string Id { get; set; }
+        
+        public string ConnectorId { get; set; }
+
+        public int[] InputTypes { get; set; }
+        
+        public int OutputType { get; set; }
+        
+        public string StepName { get; set; }
+        
+        public DateTime? RunDate { get; set; }
+        
+        public int ExecutionStatus { get; set; }
+        
+        public IEnumerable<BaseExecutionStep> ChildSteps { get; set; }
+    }
 }

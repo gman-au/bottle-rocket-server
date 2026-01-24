@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using Rocket.Domain.Core;
 
 namespace Rocket.Domain.Workflows
 {
@@ -24,6 +23,6 @@ namespace Rocket.Domain.Workflows
         
         public bool IsActive { get; set; }
         
-        public IEnumerable<CoreWorkflowStep> Steps { get; set; }
+        public IEnumerable<BaseWorkflowStep> Steps { get; set; }
     }
 }

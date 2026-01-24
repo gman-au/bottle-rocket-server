@@ -1,9 +1,9 @@
-﻿using Rocket.Domain.Core;
-using Rocket.Domain.Core.Enum;
+﻿using Rocket.Domain.Connectors;
+using Rocket.Domain.Enum;
 
 namespace Rocket.Dropbox.Domain
 {
-    public record DropboxConnector : CoreConnector
+    public record DropboxConnector : BaseConnector
     {
         public override int ConnectorType { get; set; } = (int)ConnectorTypeEnum.FileForwarding;
 

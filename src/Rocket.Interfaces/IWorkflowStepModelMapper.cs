@@ -1,6 +1,7 @@
 ﻿using System;
 using Rocket.Api.Contracts.Workflows;
-using Rocket.Domain.Core;
+using Rocket.Domain;
+using Rocket.Domain.Workflows;
 
 namespace Rocket.Interfaces
 {
@@ -8,13 +9,13 @@ namespace Rocket.Interfaces
     {
         Type DomainType { get; }
         Type ViewType { get; }
-        CoreWorkflowStep For(object value);
+        BaseWorkflowStep For(object value);
         WorkflowStepSummary From(object value);
     }
     
     public interface IWorkflowStepModelMapper<TDomain, TView> 
         : IWorkflowStepModelMapper
-        where TDomain : CoreWorkflowStep, new()
+        where TDomain : BaseWorkflowStep, new()
         where TView : WorkflowStepSummary, new()
     {
         bool AppliesFor(Type type);

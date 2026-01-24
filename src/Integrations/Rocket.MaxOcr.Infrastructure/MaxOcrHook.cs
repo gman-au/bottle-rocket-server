@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Rocket.Domain.Core;
+using Rocket.Domain;
+using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Interfaces;
 using Rocket.MaxOcr.Domain;
@@ -9,11 +10,11 @@ namespace Rocket.MaxOcr.Infrastructure
 {
     public class MaxOcrHook() : IIntegrationHook
     {
-        public bool IsApplicable(CoreExecutionStep step) => step is MaxOcrExtractExecutionStep;
+        public bool IsApplicable(BaseExecutionStep step) => step is MaxOcrExtractExecutionStep;
 
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
-            CoreExecutionStep step,
+            BaseExecutionStep step,
             string userId,
             CancellationToken cancellationToken
         )

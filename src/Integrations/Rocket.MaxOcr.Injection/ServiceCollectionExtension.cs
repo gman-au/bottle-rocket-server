@@ -13,7 +13,8 @@ namespace Rocket.MaxOcr.Injection
                 .AddTransient<IWorkflowStepModelMapper, MaxOcrExtractWorkflowStepMapper>()
                 .AddTransient<IExecutionStepModelMapper, MaxOcrExtractExecutionStepMapper>()
                 .AddTransient<IConnectorModelMapper, MaxOcrConnectorMapper>()
-                .AddTransient<IStepModelCloner, MaxOcrExtractStepCloner>();
+                .AddTransient<IStepModelCloner, MaxOcrExtractStepCloner>()
+                .AddTransient<IBsonMapper, MacOcrBsonMapper>();
 
             return services;
         }

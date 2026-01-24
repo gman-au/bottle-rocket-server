@@ -5,7 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Rocket.Domain.Core\Rocket.Domain.Core.csproj" />
+      <ProjectReference Include="..\..\Rocket.Domain\Rocket.Domain.csproj" />
     </ItemGroup>
 
 </Project>

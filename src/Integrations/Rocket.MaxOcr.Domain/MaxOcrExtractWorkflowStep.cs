@@ -1,9 +1,9 @@
-﻿using Rocket.Domain.Core;
-using Rocket.Domain.Core.Enum;
+﻿using Rocket.Domain.Enum;
+using Rocket.Domain.Workflows;
 
 namespace Rocket.MaxOcr.Domain
 {
-    public record MaxOcrExtractWorkflowStep : CoreWorkflowStep
+    public record MaxOcrExtractWorkflowStep : BaseWorkflowStep
     {
         public override int[] InputTypes { get; set; } = [(int)WorkflowFormatTypeEnum.ImageData];
 

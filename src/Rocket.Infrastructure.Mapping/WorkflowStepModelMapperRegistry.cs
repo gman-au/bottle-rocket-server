@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rocket.Domain.Core.Enum;
+using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Interfaces;
 

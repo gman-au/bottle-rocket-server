@@ -11,7 +11,7 @@ using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Users;
 using Rocket.Api.Contracts.Workflows;
 using Rocket.Api.Host.Extensions;
-using Rocket.Domain.Core.Enum;
+using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Workflows;
 using Rocket.Interfaces;

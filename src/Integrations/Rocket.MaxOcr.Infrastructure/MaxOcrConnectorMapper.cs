@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Rocket.Domain.Core.Enum;
+using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Infrastructure.Mapping;
 using Rocket.MaxOcr.Contracts;

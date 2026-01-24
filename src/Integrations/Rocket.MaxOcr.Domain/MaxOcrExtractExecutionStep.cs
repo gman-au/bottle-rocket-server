@@ -1,8 +1,8 @@
-﻿using Rocket.Domain.Core;
+﻿using Rocket.Domain.Executions;
 
 namespace Rocket.MaxOcr.Domain
 {
-    public record MaxOcrExtractExecutionStep : CoreExecutionStep
+    public record MaxOcrExtractExecutionStep : BaseExecutionStep
     {
     }
 }

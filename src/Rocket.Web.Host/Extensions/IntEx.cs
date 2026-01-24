@@ -1,5 +1,5 @@
 ﻿using MudBlazor;
-using Rocket.Domain.Core.Enum;
+using Rocket.Domain.Enum;
 
 namespace Rocket.Web.Host.Extensions
 {

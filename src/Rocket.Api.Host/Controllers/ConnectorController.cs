@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Connectors;
 using Rocket.Api.Host.Extensions;
-using Rocket.Domain.Core.Enum;
+using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Utils;
 using Rocket.Interfaces;
@@ -85,22 +85,34 @@ namespace Rocket.Api.Host.Controllers
                         records
                             .Select(
                                 o =>
-                                    new ConnectorSummary
-                                    {
-                                        Id = o.Id,
-                                        ConnectorType =
-                                            DomainConstants
-                                                .ConnectorTypes
-                                                .GetValueOrDefault(
-                                                    o.ConnectorType,
-                                                    DomainConstants.UnknownType
-                                                ),
-                                        ConnectorName = o.ConnectorName,
-                                        CreatedAt = o.CreatedAt.ToLocalTime(),
-                                        LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
-                                        Status = (int)o.DetermineStatus()
-                                    }
-                            ),
+                                {
+                                    var mapper =
+                                        connectorModelMapperRegistry
+                                            .GetMapperForDomain(o.GetType());
+
+                                    return
+                                        mapper
+                                            .From(o);
+                                }
+                            )
+                    /*.Select(
+                        o =>
+                            new ConnectorSummary
+                            {
+                                Id = o.Id,
+                                ConnectorType =
+                                    DomainConstants
+                                        .ConnectorTypes
+                                        .GetValueOrDefault(
+                                            o.ConnectorType,
+                                            DomainConstants.UnknownType
+                                        ),
+                                ConnectorName = o.ConnectorName,
+                                CreatedAt = o.CreatedAt.ToLocalTime(),
+                                LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
+                                Status = (int)o.DetermineStatus()
+                            }
+                    ),*/,
                     TotalRecords = (int)totalRecordCount
                 };
 

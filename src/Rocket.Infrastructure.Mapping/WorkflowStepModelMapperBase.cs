@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Api.Contracts.Workflows;
-using Rocket.Domain.Core;
+using Rocket.Domain;
 using Rocket.Domain.Utils;
+using Rocket.Domain.Workflows;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Mapping
 {
     public abstract class WorkflowStepModelMapperBase<TDomain, TView>(IServiceProvider serviceProvider)
         : IWorkflowStepModelMapper<TDomain, TView>
-        where TDomain : CoreWorkflowStep, new()
+        where TDomain : BaseWorkflowStep, new()
         where TView : WorkflowStepSummary, new()
     {
         public bool AppliesFor(Type type) => type == typeof(TView);
@@ -96,7 +97,7 @@ namespace Rocket.Infrastructure.Mapping
         public Type DomainType => typeof(TDomain);
         public Type ViewType => typeof(TView);
 
-        public CoreWorkflowStep For(object value) => For((TView)value);
+        public BaseWorkflowStep For(object value) => For((TView)value);
         public WorkflowStepSummary From(object value) => From((TDomain)value);
     }
 }

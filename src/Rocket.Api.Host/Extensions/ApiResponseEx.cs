@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Rocket.Api.Contracts;
-using Rocket.Domain.Core.Enum;
+using Rocket.Domain.Enum;
 
 namespace Rocket.Api.Host.Extensions
 {

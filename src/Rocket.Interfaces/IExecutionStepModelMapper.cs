@@ -1,6 +1,7 @@
 ﻿using System;
 using Rocket.Api.Contracts.Executions;
-using Rocket.Domain.Core;
+using Rocket.Domain;
+using Rocket.Domain.Executions;
 
 namespace Rocket.Interfaces
 {
@@ -8,13 +9,13 @@ namespace Rocket.Interfaces
     {
         Type DomainType { get; }
         Type ViewType { get; }
-        CoreExecutionStep For(object value);
+        BaseExecutionStep For(object value);
         ExecutionStepSummary From(object value);
     }
     
     public interface IExecutionStepModelMapper<TDomain, TView> 
         : IExecutionStepModelMapper
-        where TDomain : CoreExecutionStep, new()
+        where TDomain : BaseExecutionStep, new()
         where TView : ExecutionStepSummary, new()
     {
         bool AppliesFor(Type type);

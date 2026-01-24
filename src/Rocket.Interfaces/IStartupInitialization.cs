@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Rocket.Domain.Core.Enum;
+using Rocket.Domain.Enum;
 
 namespace Rocket.Interfaces
 {

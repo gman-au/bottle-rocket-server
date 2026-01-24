@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using AutoFixture;
 using NSubstitute;
-using Rocket.Domain.Core;
-using Rocket.Domain.Core.Enum;
+using Rocket.Domain;
+using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Workflows;
 using Rocket.Infrastructure;
@@ -185,7 +185,7 @@ namespace Rocket.Tests.Unit
                         CancellationToken.None
                     )
                     .ReturnsForAnyArgs(
-                        Task.FromResult<CoreWorkflowStep>(null)
+                        Task.FromResult<BaseWorkflowStep>(null)
                     );
             }
 

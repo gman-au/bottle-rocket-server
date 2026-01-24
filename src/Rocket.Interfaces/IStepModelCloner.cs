@@ -1,5 +1,7 @@
 ﻿using System;
-using Rocket.Domain.Core;
+using Rocket.Domain;
+using Rocket.Domain.Executions;
+using Rocket.Domain.Workflows;
 
 namespace Rocket.Interfaces
 {
@@ -7,13 +9,13 @@ namespace Rocket.Interfaces
     {
         Type WorkflowType { get; }
         Type ExecutionType { get; }
-        CoreExecutionStep Clone(object value);
+        BaseExecutionStep Clone(object value);
     }
 
     public interface IStepModelCloner<TWorkflow, TExecution>
         : IStepModelCloner
-        where TWorkflow : CoreWorkflowStep, new()
-        where TExecution : CoreExecutionStep, new()
+        where TWorkflow : BaseWorkflowStep, new()
+        where TExecution : BaseExecutionStep, new()
     {
         bool AppliesFor(Type type);
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Rocket.Domain.Core.Enum;
+using Rocket.Domain.Enum;
 using Rocket.Domain.PageTemplates;
 
 namespace Rocket.Api.Host.Prepopulation
