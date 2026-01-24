@@ -8,10 +8,12 @@ namespace Rocket.Api.Host.Prepopulation
     internal static class PageTemplates
     {
         private const string BottomLeftDetectionLineTransform  = "1.3,0.275,8.5,0.275";
+        private const string BottomRightDetectionLineTransform  = "-7.75,0.275,-0.85,0.275";
 
         private static readonly Dictionary<int, string> DetectionLines = new()
         {
-            { (int)QrCodeOrientationTypeEnum.BottomLeft, BottomLeftDetectionLineTransform }
+            { (int)QrCodeOrientationTypeEnum.BottomLeft, BottomLeftDetectionLineTransform },
+            { (int)QrCodeOrientationTypeEnum.BottomRight, BottomRightDetectionLineTransform }
         };
 
         public static IEnumerable<RocketbookPageTemplate> GetRocketbookTemplates()
