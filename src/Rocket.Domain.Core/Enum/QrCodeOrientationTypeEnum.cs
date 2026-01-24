@@ -1,4 +1,4 @@
-﻿namespace Rocket.Domain.Enum
+﻿namespace Rocket.Domain.Core.Enum
 {
     public enum QrCodeOrientationTypeEnum
     {

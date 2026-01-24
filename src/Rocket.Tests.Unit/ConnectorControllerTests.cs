@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Rocket.Api.Host.Controllers;
 using Rocket.Domain.Connectors;
-using Rocket.Domain.Enum;
+using Rocket.Domain.Core.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Interfaces;
 using Rocket.Tests.Unit.Utility;

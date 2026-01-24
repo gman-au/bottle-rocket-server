@@ -1,5 +1,5 @@
 ﻿using System;
-using Rocket.Domain.Vendors.Dropbox;
+using Rocket.Dropbox.Domain;
 using Rocket.Infrastructure.Mapping;
 
 namespace Rocket.Dropbox.Infrastructure

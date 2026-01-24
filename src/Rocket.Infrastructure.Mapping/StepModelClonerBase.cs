@@ -2,17 +2,16 @@
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
-using Rocket.Domain.Enum;
-using Rocket.Domain.Executions;
-using Rocket.Domain.Workflows;
+using Rocket.Domain.Core;
+using Rocket.Domain.Core.Enum;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Mapping
 {
     public abstract class StepModelClonerBase<TWorkflowStep, TExecutionStep>(IServiceProvider serviceProvider)
         : IStepModelCloner<TWorkflowStep, TExecutionStep>
-        where TWorkflowStep : BaseWorkflowStep, new()
-        where TExecutionStep : BaseExecutionStep, new()
+        where TWorkflowStep : CoreWorkflowStep, new()
+        where TExecutionStep : CoreExecutionStep, new()
     {
         public bool AppliesFor(Type type) => type == typeof(TExecutionStep);
         public bool AppliesFrom(Type type) => type == typeof(TWorkflowStep);
@@ -56,6 +55,6 @@ namespace Rocket.Infrastructure.Mapping
         public Type WorkflowType => typeof(TWorkflowStep);
         public Type ExecutionType => typeof(TExecutionStep);
 
-        public BaseExecutionStep Clone(object value) => Clone((TWorkflowStep)value);
+        public CoreExecutionStep Clone(object value) => Clone((TWorkflowStep)value);
     }
 }

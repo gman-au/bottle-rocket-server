@@ -1,5 +1,5 @@
-﻿using Rocket.Domain.Enum;
-using Rocket.Domain.Utils;
+﻿using Rocket.Domain.Core.Enum;
+using Rocket.Domain.Core.Utils;
 
 namespace Rocket.Domain.Connectors
 {

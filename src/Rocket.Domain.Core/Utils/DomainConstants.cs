@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Rocket.Domain.Enum;
+using Rocket.Domain.Core.Enum;
 
-namespace Rocket.Domain.Utils
+namespace Rocket.Domain.Core.Utils
 {
     public static class DomainConstants
     {

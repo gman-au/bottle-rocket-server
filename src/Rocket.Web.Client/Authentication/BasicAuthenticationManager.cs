@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rocket.Api.Contracts;
-using Rocket.Domain.Utils;
+using Rocket.Domain.Core.Utils;
 using Rocket.Interfaces;
 using Rocket.Web.Client.Extensions;
 using Rocket.Web.Client.Options;

@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain.Connectors;
+using Rocket.Domain.Core;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 
@@ -8,7 +9,7 @@ namespace Rocket.Interfaces
 {
     public interface IWorkflowExecutionContext
     {
-        IIntegrationHook GetApplicableHook(BaseExecutionStep step);
+        IIntegrationHook GetApplicableHook(CoreExecutionStep step);
 
         ExecutionStepArtifact GetInputArtifact();
 
@@ -22,7 +23,7 @@ namespace Rocket.Interfaces
 
         Task<T> GetConnectorAsync<T>(
             string userId,
-            BaseExecutionStep step,
+            CoreExecutionStep step,
             CancellationToken cancellationToken
         ) where T : BaseConnector;
     }

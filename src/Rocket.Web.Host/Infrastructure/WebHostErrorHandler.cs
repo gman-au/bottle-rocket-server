@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using MudBlazor;
-using Rocket.Domain.Enum;
+using Rocket.Domain.Core.Enum;
 using Rocket.Domain.Exceptions;
 
 namespace Rocket.Web.Host.Infrastructure

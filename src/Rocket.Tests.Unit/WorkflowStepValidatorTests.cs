@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using AutoFixture;
 using NSubstitute;
-using Rocket.Domain.Enum;
+using Rocket.Domain.Core.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Workflows;
 using Rocket.Infrastructure;

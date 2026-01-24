@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Rocket.Domain.Core;
 using Rocket.Domain.Workflows;
 
 namespace Rocket.Infrastructure.Db.Mongo.Extensions
 {
-    internal static class BaseWorkflowStepEx
+    internal static class CoreWorkflowStepEx
     {
-        public static BaseWorkflowStep FindStepById(
-            this IEnumerable<BaseWorkflowStep> steps,
+        public static CoreWorkflowStep FindStepById(
+            this IEnumerable<CoreWorkflowStep> steps,
             string stepId
         )
         {
@@ -33,8 +34,8 @@ namespace Rocket.Infrastructure.Db.Mongo.Extensions
         }
 
         public static bool AddChildToParent(
-            this IEnumerable<BaseWorkflowStep> steps,
-            BaseWorkflowStep workflowStep,
+            this IEnumerable<CoreWorkflowStep> steps,
+            CoreWorkflowStep workflowStep,
             ref string parentStepId
         )
         {
@@ -68,10 +69,10 @@ namespace Rocket.Infrastructure.Db.Mongo.Extensions
         }
 
         public static bool UpdateStepById(
-            IEnumerable<BaseWorkflowStep> steps,
+            IEnumerable<CoreWorkflowStep> steps,
             string stepId,
-            BaseWorkflowStep updatedStep,
-            out IEnumerable<BaseWorkflowStep> modifiedSteps
+            CoreWorkflowStep updatedStep,
+            out IEnumerable<CoreWorkflowStep> modifiedSteps
         )
         {
             modifiedSteps = steps;
@@ -152,7 +153,7 @@ namespace Rocket.Infrastructure.Db.Mongo.Extensions
         }
 
         private static bool DeleteStepFromChildren(
-            this BaseWorkflowStep parentStep,
+            this CoreWorkflowStep parentStep,
             string stepId
         )
         {

@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Rocket.Domain.Core;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 
@@ -7,11 +8,11 @@ namespace Rocket.Interfaces
 {
     public interface IIntegrationHook
     {
-        bool IsApplicable(BaseExecutionStep step);
+        bool IsApplicable(CoreExecutionStep step);
 
         Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
-            BaseExecutionStep step,
+            CoreExecutionStep step,
             string userId,
             CancellationToken cancellationToken
         );

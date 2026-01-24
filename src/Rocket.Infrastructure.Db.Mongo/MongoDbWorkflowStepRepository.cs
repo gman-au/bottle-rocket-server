@@ -4,7 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using Rocket.Domain.Enum;
+using Rocket.Domain.Core;
+using Rocket.Domain.Core.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Workflows;
 using Rocket.Infrastructure.Db.Mongo.Extensions;
@@ -22,8 +23,8 @@ namespace Rocket.Infrastructure.Db.Mongo
     {
         protected override string CollectionName => MongoConstants.WorkflowsCollection;
 
-        public async Task<BaseWorkflowStep> InsertWorkflowStepAsync(
-            BaseWorkflowStep workflowStep,
+        public async Task<CoreWorkflowStep> InsertWorkflowStepAsync(
+            CoreWorkflowStep workflowStep,
             string userId,
             string workflowId,
             string parentStepId,
@@ -101,7 +102,7 @@ namespace Rocket.Infrastructure.Db.Mongo
             return workflowStep;
         }
 
-        public async Task<BaseWorkflowStep> GetWorkflowStepByIdAsync(
+        public async Task<CoreWorkflowStep> GetWorkflowStepByIdAsync(
             string workflowStepId,
             string workflowId,
             string userId,
@@ -203,7 +204,7 @@ namespace Rocket.Infrastructure.Db.Mongo
             string userId,
             TWorkflowStep updatedWorkflowStep,
             CancellationToken cancellationToken
-        ) where TWorkflowStep : BaseWorkflowStep
+        ) where TWorkflowStep : CoreWorkflowStep
         {
             var filter =
                 Builders<Workflow>
@@ -233,7 +234,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                     ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                 );
 
-            if (!BaseWorkflowStepEx.UpdateStepById(
+            if (!CoreWorkflowStepEx.UpdateStepById(
                     workflow.Steps,
                     workflowStepId,
                     updatedWorkflowStep, 

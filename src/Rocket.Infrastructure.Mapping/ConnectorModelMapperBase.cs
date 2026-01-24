@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Connectors;
 using Rocket.Domain.Connectors;
-using Rocket.Domain.Utils;
+using Rocket.Domain.Core.Utils;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Mapping

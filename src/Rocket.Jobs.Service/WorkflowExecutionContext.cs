@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain.Connectors;
-using Rocket.Domain.Enum;
+using Rocket.Domain.Core;
+using Rocket.Domain.Core.Enum;
 using Rocket.Domain.Exceptions;
-using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Interfaces;
 
@@ -50,7 +50,7 @@ namespace Rocket.Jobs.Service
 
         public async Task<T> GetConnectorAsync<T>(
             string userId,
-            BaseExecutionStep step,
+            CoreExecutionStep step,
             CancellationToken cancellationToken
         ) where T : BaseConnector
         {
@@ -76,7 +76,7 @@ namespace Rocket.Jobs.Service
 
         public ExecutionStepArtifact GetInputArtifact() => _currentArtifact;
 
-        public IIntegrationHook GetApplicableHook(BaseExecutionStep step)
+        public IIntegrationHook GetApplicableHook(CoreExecutionStep step)
         {
             return
                 hooks

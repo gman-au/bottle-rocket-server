@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Host.Extensions;
-using Rocket.Domain.Utils;
+using Rocket.Domain.Core.Utils;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers

@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Api.Contracts.Executions;
+using Rocket.Domain.Core;
+using Rocket.Domain.Core.Utils;
 using Rocket.Domain.Executions;
-using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Mapping
 {
     public abstract class ExecutionStepModelMapperBase<TDomain, TView>(IServiceProvider serviceProvider)
         : IExecutionStepModelMapper<TDomain, TView>
-        where TDomain : BaseExecutionStep, new()
+        where TDomain : CoreExecutionStep, new()
         where TView : ExecutionStepSummary, new()
     {
         public bool AppliesFor(Type type) => type == typeof(TView);
@@ -97,7 +98,7 @@ namespace Rocket.Infrastructure.Mapping
         public Type DomainType => typeof(TDomain);
         public Type ViewType => typeof(TView);
 
-        public BaseExecutionStep For(object value) => For((TView)value);
+        public CoreExecutionStep For(object value) => For((TView)value);
         public ExecutionStepSummary From(object value) => From((TDomain)value);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using Rocket.Domain.Enum;
+using Rocket.Domain.Core.Enum;
 
 namespace Rocket.Domain.Connectors
 {

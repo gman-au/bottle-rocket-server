@@ -5,7 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using Rocket.Domain.Enum;
+using Rocket.Domain.Core;
+using Rocket.Domain.Core.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Infrastructure.Db.Mongo.Extensions;
@@ -133,7 +134,7 @@ namespace Rocket.Infrastructure.Db.Mongo
             string userId,
             TExecutionStep updatedExecutionStep,
             CancellationToken cancellationToken
-        ) where TExecutionStep : BaseExecutionStep
+        ) where TExecutionStep : CoreExecutionStep
         {
             var filter =
                 Builders<Execution>
@@ -163,7 +164,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                     ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                 );
 
-            if (!BaseExecutionStepEx.UpdateStepById(
+            if (!CoreExecutionStepEx.UpdateStepById(
                     execution.Steps,
                     executionStepId,
                     updatedExecutionStep,

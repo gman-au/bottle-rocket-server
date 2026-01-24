@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Rocket.Domain.Core;
 
 namespace Rocket.Domain.Executions
 {
@@ -31,6 +32,6 @@ namespace Rocket.Domain.Executions
         
         public string ContentType { get; set; }
         
-        public IEnumerable<BaseExecutionStep> Steps { get; set; }
+        public IEnumerable<CoreExecutionStep> Steps { get; set; }
     }
 }

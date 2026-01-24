@@ -1,20 +1,20 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain.Connectors;
-using Rocket.Domain.Executions;
+using Rocket.Domain.Core;
 using Rocket.Domain.Jobs;
-using Rocket.Domain.Vendors.Dropbox;
+using Rocket.Dropbox.Domain;
 using Rocket.Interfaces;
 
 namespace Rocket.Dropbox.Infrastructure
 {
     public class DropboxHook(IDropboxClientManager dropboxClientManager) : IIntegrationHook
     {
-        public bool IsApplicable(BaseExecutionStep step) => step is DropboxUploadExecutionStep;
+        public bool IsApplicable(CoreExecutionStep step) => step is DropboxUploadExecutionStep;
 
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
-            BaseExecutionStep step,
+            CoreExecutionStep step,
             string userId,
             CancellationToken cancellationToken
         )

@@ -7,7 +7,7 @@ using Rocket.Api.Host.Filters;
 using Rocket.Api.Host.Handlers;
 using Rocket.Api.Host.Hubs;
 using Rocket.Api.Host.Injection;
-using Rocket.Domain.Utils;
+using Rocket.Domain.Core.Utils;
 using Rocket.Dropbox.Injection;
 using Rocket.Infrastructure.Json;
 

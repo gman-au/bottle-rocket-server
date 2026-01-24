@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Connectors;
 using Rocket.Domain.Connectors;
-using Rocket.Domain.Enum;
+using Rocket.Domain.Core.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Dropbox.Contracts;
 using Rocket.Infrastructure.Mapping;

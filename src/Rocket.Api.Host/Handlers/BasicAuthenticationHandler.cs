@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Rocket.Domain.Utils;
+using Rocket.Domain.Core.Utils;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Handlers

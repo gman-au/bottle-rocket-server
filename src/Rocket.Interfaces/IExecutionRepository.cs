@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Rocket.Domain.Core;
 using Rocket.Domain.Executions;
 
 namespace Rocket.Interfaces
@@ -49,6 +50,6 @@ namespace Rocket.Interfaces
             string userId,
             TExecutionStep updatedExecutionStep,
             CancellationToken cancellationToken
-        ) where TExecutionStep : BaseExecutionStep;
+        ) where TExecutionStep : CoreExecutionStep;
     }
 }

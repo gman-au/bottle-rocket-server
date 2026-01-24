@@ -1,27 +1,12 @@
-﻿using System.Collections.Generic;
-using MongoDB.Bson.Serialization.Attributes;
-using Rocket.Domain.Vendors.Dropbox;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using Rocket.Domain.Core;
 using Rocket.Domain.Vendors.Temporary;
+using Rocket.Dropbox.Domain;
 
 namespace Rocket.Domain.Workflows
 {
     [BsonDiscriminator(RootClass = true)]
     [BsonKnownTypes(typeof(DropboxUploadWorkflowStep))]
     [BsonKnownTypes(typeof(EmailFileAttachmentWorkflowStep))]
-    public abstract record BaseWorkflowStep
-    {
-        public string Id { get; set; }
-
-        public string ConnectorId { get; set; }
-
-        public abstract int[] InputTypes { get; set; }
-
-        public abstract int OutputType { get; set; }
-
-        public abstract string StepName { get; set; }
-
-        public abstract string RequiresConnectorCode { get; set; }
-
-        public IEnumerable<BaseWorkflowStep> ChildSteps { get; set; }
-    }
+    public abstract record BaseWorkflowStep : CoreWorkflowStep;
 }

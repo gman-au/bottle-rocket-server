@@ -5,7 +5,7 @@ using AutoFixture;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Rocket.Domain;
-using Rocket.Domain.Enum;
+using Rocket.Domain.Core.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Infrastructure;
 using Rocket.Interfaces;

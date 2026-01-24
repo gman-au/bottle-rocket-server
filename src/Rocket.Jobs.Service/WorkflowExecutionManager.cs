@@ -4,7 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Rocket.Domain.Enum;
+using Rocket.Domain.Core;
+using Rocket.Domain.Core.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Interfaces;
@@ -195,7 +196,7 @@ namespace Rocket.Jobs.Service
             string userId,
             string executionId,
             int executionStatus,
-            BaseExecutionStep executionStep
+            CoreExecutionStep executionStep
         )
         {
             executionStep.ExecutionStatus = executionStatus;

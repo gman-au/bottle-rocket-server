@@ -42,6 +42,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Merma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Detection", "Rocket.Infrastructure.Detection\Rocket.Infrastructure.Detection.csproj", "{0FD5BCBD-227F-41F9-81BB-FC0AE81A91EF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Domain.Core", "Rocket.Domain.Core\Rocket.Domain.Core.csproj", "{093BFC97-78E2-4D1E-A2A0-0DCD12F8B777}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Dropbox.Domain", "Rocket.Dropbox.Domain\Rocket.Dropbox.Domain.csproj", "{CC415B91-1DE4-46AC-BAF3-6B85DAA154C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -132,10 +136,19 @@ Global
 		{0FD5BCBD-227F-41F9-81BB-FC0AE81A91EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FD5BCBD-227F-41F9-81BB-FC0AE81A91EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0FD5BCBD-227F-41F9-81BB-FC0AE81A91EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{093BFC97-78E2-4D1E-A2A0-0DCD12F8B777}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{093BFC97-78E2-4D1E-A2A0-0DCD12F8B777}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{093BFC97-78E2-4D1E-A2A0-0DCD12F8B777}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{093BFC97-78E2-4D1E-A2A0-0DCD12F8B777}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC415B91-1DE4-46AC-BAF3-6B85DAA154C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC415B91-1DE4-46AC-BAF3-6B85DAA154C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC415B91-1DE4-46AC-BAF3-6B85DAA154C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC415B91-1DE4-46AC-BAF3-6B85DAA154C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{121393B8-1E90-4620-A200-444315FFB75D} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
 		{24A4F6B2-5761-4888-9B25-1E79A23E8572} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
 		{F46B0519-54A9-4F29-BB69-B5D23B8E1360} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
+		{CC415B91-1DE4-46AC-BAF3-6B85DAA154C9} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
 	EndGlobalSection
 EndGlobal

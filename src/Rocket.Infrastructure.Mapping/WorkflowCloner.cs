@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Rocket.Domain.Enum;
+using Rocket.Domain.Core.Enum;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Workflows;
 using Rocket.Interfaces;

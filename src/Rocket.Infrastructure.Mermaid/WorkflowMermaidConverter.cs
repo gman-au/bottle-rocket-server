@@ -2,8 +2,8 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts.Workflows;
-using Rocket.Domain.Enum;
-using Rocket.Domain.Utils;
+using Rocket.Domain.Core.Enum;
+using Rocket.Domain.Core.Utils;
 using Rocket.Dropbox.Contracts;
 using Rocket.Infrastructure.Mermaid.Extensions;
 using Rocket.Interfaces;

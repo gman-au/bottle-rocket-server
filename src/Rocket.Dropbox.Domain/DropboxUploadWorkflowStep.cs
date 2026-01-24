@@ -1,10 +1,10 @@
-﻿using Rocket.Domain.Enum;
-using Rocket.Domain.Utils;
-using Rocket.Domain.Workflows;
+﻿using Rocket.Domain.Core;
+using Rocket.Domain.Core.Enum;
+using Rocket.Domain.Core.Utils;
 
-namespace Rocket.Domain.Vendors.Dropbox
+namespace Rocket.Dropbox.Domain
 {
-    public record DropboxUploadWorkflowStep : BaseWorkflowStep
+    public record DropboxUploadWorkflowStep : CoreWorkflowStep
     {
         public override int[] InputTypes { get; set; } = [(int)WorkflowFormatTypeEnum.File, (int)WorkflowFormatTypeEnum.ImageData];
 

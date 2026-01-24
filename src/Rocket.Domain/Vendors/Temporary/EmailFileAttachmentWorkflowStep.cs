@@ -1,4 +1,4 @@
-﻿using Rocket.Domain.Enum;
+﻿using Rocket.Domain.Core.Enum;
 using Rocket.Domain.Workflows;
 
 namespace Rocket.Domain.Vendors.Temporary

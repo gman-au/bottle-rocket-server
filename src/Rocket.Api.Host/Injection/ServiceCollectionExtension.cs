@@ -9,7 +9,7 @@ using Microsoft.OpenApi.Models;
 using Rocket.Api.Host.Exceptions;
 using Rocket.Api.Host.Notifiers;
 using Rocket.Api.Host.Prepopulation;
-using Rocket.Domain.Utils;
+using Rocket.Domain.Core.Utils;
 using Rocket.Infrastructure;
 using Rocket.Infrastructure.Blob.Local;
 using Rocket.Infrastructure.Blob.Local.Options;
