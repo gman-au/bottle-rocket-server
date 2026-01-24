@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain.Core;
-using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 
 namespace Rocket.Interfaces

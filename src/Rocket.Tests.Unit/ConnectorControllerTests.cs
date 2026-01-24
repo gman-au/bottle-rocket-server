@@ -6,9 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Rocket.Api.Host.Controllers;
-using Rocket.Domain.Connectors;
+using Rocket.Domain.Core;
 using Rocket.Domain.Core.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Dropbox.Domain;
 using Rocket.Interfaces;
 using Rocket.Tests.Unit.Utility;
 using Xunit;
@@ -94,7 +95,7 @@ namespace Rocket.Tests.Unit
                 );
             }
 
-            private record UnknownConnector : BaseConnector
+            private record UnknownConnector : CoreConnector
             {
                 public override int ConnectorType { get; set; } = (int)ConnectorTypeEnum.FileForwarding;
                 public override string ConnectorName { get; set; } = "UNKNOWN";

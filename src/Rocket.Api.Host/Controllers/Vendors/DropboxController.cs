@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Host.Extensions;
-using Rocket.Domain.Connectors;
 using Rocket.Domain.Core.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Dropbox.Contracts;
+using Rocket.Dropbox.Domain;
 using Rocket.Dropbox.Infrastructure;
 using Rocket.Interfaces;
 

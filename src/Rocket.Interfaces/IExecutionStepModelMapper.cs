@@ -1,7 +1,6 @@
 ﻿using System;
 using Rocket.Api.Contracts.Executions;
 using Rocket.Domain.Core;
-using Rocket.Domain.Executions;
 
 namespace Rocket.Interfaces
 {

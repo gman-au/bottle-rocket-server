@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Rocket.Domain.Core;
 using Rocket.Domain.Core.Enum;
 using Rocket.Domain.Exceptions;
-using Rocket.Domain.Executions;
 using Rocket.Interfaces;
 
 namespace Rocket.Jobs.Service

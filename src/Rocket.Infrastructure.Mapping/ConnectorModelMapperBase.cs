@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Connectors;
-using Rocket.Domain.Connectors;
+using Rocket.Domain.Core;
 using Rocket.Domain.Core.Utils;
 using Rocket.Interfaces;
 
@@ -12,7 +12,7 @@ namespace Rocket.Infrastructure.Mapping
 {
     public abstract class ConnectorModelMapperBase<TDomain, TView>(IServiceProvider serviceProvider)
         : IConnectorModelMapper<TDomain, TView>
-        where TDomain : BaseConnector, new()
+        where TDomain : CoreConnector, new()
         where TView : ConnectorSummary, new()
     {
         public bool AppliesFor(Type type) => type == typeof(TView);
@@ -66,7 +66,7 @@ namespace Rocket.Infrastructure.Mapping
         public Type DomainType => typeof(TDomain);
         public Type ViewType => typeof(TView);
 
-        public BaseConnector For(object value) => For((TView)value);
+        public CoreConnector For(object value) => For((TView)value);
         public ConnectorSummary From(object value) => From((TDomain)value);
     }
 }

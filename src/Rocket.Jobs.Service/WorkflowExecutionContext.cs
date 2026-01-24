@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Rocket.Domain.Connectors;
 using Rocket.Domain.Core;
 using Rocket.Domain.Core.Enum;
 using Rocket.Domain.Exceptions;
@@ -15,8 +14,7 @@ namespace Rocket.Jobs.Service
         IEnumerable<IIntegrationHook> hooks,
         IScannedImageHandler scannedImageHandler,
         IConnectorRepository connectorRepository
-    )
-        : IWorkflowExecutionContext
+    ) : IWorkflowExecutionContext
     {
         private ExecutionStepArtifact _currentArtifact;
 
@@ -52,7 +50,7 @@ namespace Rocket.Jobs.Service
             string userId,
             CoreExecutionStep step,
             CancellationToken cancellationToken
-        ) where T : BaseConnector
+        ) where T : CoreConnector
         {
             var connector =
                 await

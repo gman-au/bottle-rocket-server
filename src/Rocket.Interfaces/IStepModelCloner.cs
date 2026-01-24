@@ -1,7 +1,5 @@
 ﻿using System;
 using Rocket.Domain.Core;
-using Rocket.Domain.Executions;
-using Rocket.Domain.Workflows;
 
 namespace Rocket.Interfaces
 {

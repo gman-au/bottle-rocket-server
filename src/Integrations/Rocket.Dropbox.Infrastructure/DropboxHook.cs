@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Rocket.Domain.Connectors;
 using Rocket.Domain.Core;
 using Rocket.Domain.Jobs;
 using Rocket.Dropbox.Domain;

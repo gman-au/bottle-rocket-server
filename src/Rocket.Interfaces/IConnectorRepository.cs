@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Rocket.Domain.Connectors;
+using Rocket.Domain.Core;
 
 namespace Rocket.Interfaces
 {
@@ -19,22 +19,22 @@ namespace Rocket.Interfaces
             string userId,
             string id,
             CancellationToken cancellationToken
-        ) where T : BaseConnector;
+        ) where T : CoreConnector;
 
         Task<T> GetConnectorByNameAsync<T>(
             string userId,
             string name,
             CancellationToken cancellationToken
-        ) where T : BaseConnector;
+        ) where T : CoreConnector;
 
-        Task<(IEnumerable<BaseConnector> records, long totalRecordCount)> FetchConnectorsAsync(
+        Task<(IEnumerable<CoreConnector> records, long totalRecordCount)> FetchConnectorsAsync(
             string userId,
             int startIndex,
             int recordCount,
             CancellationToken cancellationToken
         );
 
-        Task<(IEnumerable<BaseConnector> records, long totalRecordCount)> FetchConnectorsByCodeAndUserAsync(
+        Task<(IEnumerable<CoreConnector> records, long totalRecordCount)> FetchConnectorsByCodeAndUserAsync(
             string userId,
             int? startIndex,
             int? recordCount,
@@ -42,8 +42,8 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
-        Task<BaseConnector> InsertConnectorAsync(
-            BaseConnector baseConnector,
+        Task<CoreConnector> InsertConnectorAsync(
+            CoreConnector coreConnector,
             CancellationToken cancellationToken
         );
 
@@ -53,7 +53,7 @@ namespace Rocket.Interfaces
             Expression<Func<TConnector, TField>> setter,
             TField value,
             CancellationToken cancellationToken
-        ) where TConnector : BaseConnector;
+        ) where TConnector : CoreConnector;
 
         Task<bool> DeleteConnectorAsync(
             string userId,

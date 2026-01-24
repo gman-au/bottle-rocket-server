@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain.Core;
 using Rocket.Domain.Core.Enum;
-using Rocket.Domain.Executions;
 using Rocket.Interfaces;
 
 namespace Rocket.Jobs.Service

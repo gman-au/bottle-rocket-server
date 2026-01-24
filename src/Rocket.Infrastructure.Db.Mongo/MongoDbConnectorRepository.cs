@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using Rocket.Domain.Connectors;
+using Rocket.Domain.Core;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Db.Mongo
@@ -13,24 +13,24 @@ namespace Rocket.Infrastructure.Db.Mongo
     public class MongoDbConnectorRepository(
         ILogger<MongoDbConnectorRepository> logger,
         IMongoDbClient mongoDbClient
-    ) : MongoDbRepositoryBase<BaseConnector>(
+    ) : MongoDbRepositoryBase<CoreConnector>(
         mongoDbClient,
         logger
     ), IConnectorRepository
     {
         protected override string CollectionName => MongoConstants.ConnectorsCollection;
 
-        public async Task<BaseConnector> InsertConnectorAsync(
-            BaseConnector baseConnector,
+        public async Task<CoreConnector> InsertConnectorAsync(
+            CoreConnector coreConnector,
             CancellationToken cancellationToken
         ) =>
             await
                 InsertRecordAsync(
-                    baseConnector,
+                    coreConnector,
                     cancellationToken
                 );
 
-        public async Task<(IEnumerable<BaseConnector> records, long totalRecordCount)> FetchConnectorsAsync(
+        public async Task<(IEnumerable<CoreConnector> records, long totalRecordCount)> FetchConnectorsAsync(
             string userId,
             int startIndex,
             int recordCount,
@@ -40,7 +40,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                 FetchAllPagedAndFilteredRecordsAsync(
                     startIndex,
                     recordCount,
-                    Builders<BaseConnector>
+                    Builders<CoreConnector>
                         .Filter
                         .Eq(
                             u => u.UserId,
@@ -50,7 +50,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 );
 
-        public async Task<(IEnumerable<BaseConnector> records, long totalRecordCount)> FetchConnectorsByCodeAndUserAsync(
+        public async Task<(IEnumerable<CoreConnector> records, long totalRecordCount)> FetchConnectorsByCodeAndUserAsync(
             string userId,
             int? startIndex,
             int? recordCount,
@@ -61,13 +61,13 @@ namespace Rocket.Infrastructure.Db.Mongo
                 FetchAllPagedAndFilteredRecordsAsync(
                     startIndex,
                     recordCount,
-                    Builders<BaseConnector>
+                    Builders<CoreConnector>
                         .Filter
                         .Eq(
                             u => u.UserId,
                             userId
                         ) &
-                    Builders<BaseConnector>
+                    Builders<CoreConnector>
                         .Filter
                         .Eq(
                             o => o.ConnectorCode,
@@ -81,16 +81,16 @@ namespace Rocket.Infrastructure.Db.Mongo
             string userId,
             string id,
             CancellationToken cancellationToken
-        ) where T : BaseConnector =>
+        ) where T : CoreConnector =>
             await
                 FetchFirstFilteredRecordAsync(
-                    Builders<BaseConnector>
+                    Builders<CoreConnector>
                         .Filter
                         .Eq(
                             o => o.UserId,
                             userId
                         ) &
-                    Builders<BaseConnector>
+                    Builders<CoreConnector>
                         .Filter
                         .Eq(
                             o => o.Id,
@@ -103,16 +103,16 @@ namespace Rocket.Infrastructure.Db.Mongo
             string userId,
             string name,
             CancellationToken cancellationToken
-        ) where T : BaseConnector =>
+        ) where T : CoreConnector =>
             await
                 FetchFirstFilteredRecordAsync(
-                    Builders<BaseConnector>
+                    Builders<CoreConnector>
                         .Filter
                         .Eq(
                             o => o.UserId,
                             userId
                         ) &
-                    Builders<BaseConnector>
+                    Builders<CoreConnector>
                         .Filter
                         .Eq(
                             o => o.ConnectorName,
@@ -128,13 +128,13 @@ namespace Rocket.Infrastructure.Db.Mongo
         ) =>
             await
                 DeleteFirstFilteredRecordAsync(
-                    Builders<BaseConnector>
+                    Builders<CoreConnector>
                         .Filter
                         .Eq(
                             o => o.UserId,
                             userId
                         ) &
-                    Builders<BaseConnector>
+                    Builders<CoreConnector>
                         .Filter
                         .Eq(
                             o => o.Id,
@@ -149,7 +149,7 @@ namespace Rocket.Infrastructure.Db.Mongo
             Expression<Func<TConnector, TField>> setter,
             TField value,
             CancellationToken cancellationToken
-        ) where TConnector : BaseConnector
+        ) where TConnector : CoreConnector
         {
             try
             {
@@ -206,7 +206,7 @@ namespace Rocket.Infrastructure.Db.Mongo
         {
             var result =
                 await
-                    GetConnectorByNameAsync<BaseConnector>(
+                    GetConnectorByNameAsync<CoreConnector>(
                         userId,
                         connectorName,
                         cancellationToken
@@ -219,7 +219,7 @@ namespace Rocket.Infrastructure.Db.Mongo
             FilterDefinition<T> filter,
             UpdateDefinition<T> update,
             CancellationToken cancellationToken
-        ) where T : BaseConnector
+        ) where T : CoreConnector
         {
             await
                 GetMongoCollection<T>()
