@@ -2,7 +2,7 @@
 {
     public enum ConnectorTypeEnum
     {
-        FileForwarding,
+        FileForwarding = 1,
         FileConversion,
         OcrExtraction
     }

@@ -79,10 +79,10 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         );
 
-        Task<CreateDropboxConnectorResponse> CreateDropboxConnectorAsync(
-            CreateDropboxConnectorRequest connector,
+        public Task<CreateConnectorResponse<T>> CreateConnectorAsync<T>(
+            CreateConnectorRequest<T> request,
             CancellationToken cancellationToken
-        );
+        ) where T : ConnectorSummary;
 
         public Task<ApiResponse> FinalizeDropboxConnectorAsync(
             FinalizeDropboxConnectorRequest request,

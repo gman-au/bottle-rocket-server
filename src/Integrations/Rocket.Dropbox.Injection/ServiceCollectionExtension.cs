@@ -13,6 +13,7 @@ namespace Rocket.Dropbox.Injection
                 .AddTransient<IDropboxClientManager, DropboxClientManager>()
                 .AddTransient<IWorkflowStepModelMapper, DropboxUploadWorkflowStepMapper>()
                 .AddTransient<IExecutionStepModelMapper, DropboxUploadExecutionStepMapper>()
+                .AddTransient<IConnectorModelMapper, DropboxConnectorMapper>()
                 .AddTransient<IStepModelCloner, DropboxUploadStepCloner>();
 
             return services;

@@ -11,7 +11,6 @@ using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Connectors;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
-using Rocket.Domain.Utils;
 using Rocket.Dropbox.Contracts;
 using Rocket.Dropbox.Infrastructure;
 using Rocket.Interfaces;
@@ -27,108 +26,6 @@ namespace Rocket.Api.Host.Controllers.Vendors
         IConnectorRepository connectorRepository
     ) : RocketControllerBase(userManager)
     {
-        [HttpPost, Route("/api/dropbox/connectors/create")]
-        [EndpointSummary("Add a new Dropbox connector")]
-        [EndpointGroupName("Manage connectors")]
-        [EndpointDescription(
-            """
-            Creates a new Dropbox connector for the given user. Will return an error if the same named
-            connector already exists for the given user.
-            """
-        )]
-        [ProducesResponseType(
-            typeof(CreateDropboxConnectorResponse),
-            StatusCodes.Status200OK
-        )]
-        [ProducesResponseType(
-            typeof(ApiResponse),
-            StatusCodes.Status500InternalServerError
-        )]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> CreateConnectorAsync(
-            [FromBody] CreateDropboxConnectorRequest request,
-            CancellationToken cancellationToken
-        )
-        {
-            var user =
-                await
-                    ThrowIfNotActiveUserAsync(cancellationToken);
-
-            logger
-                .LogInformation(
-                    "Received (Dropbox) connector creation request for username: {username}",
-                    user.Username
-                );
-
-            var userId =
-                user
-                    .Id;
-
-            if (await
-                connectorRepository
-                    .ConnectorExistsForUserAsync(
-                        userId,
-                        DomainConstants.ConnectorNameDropboxApi,
-                        cancellationToken
-                    )
-               )
-                throw new RocketException(
-                    "Dropbox connector already exists",
-                    ApiStatusCodeEnum.RecordAlreadyExists
-                );
-
-            if (string.IsNullOrEmpty(request.AppKey))
-                throw new RocketException(
-                    "No app key was provided.",
-                    ApiStatusCodeEnum.ValidationError
-                );
-
-            if (string.IsNullOrEmpty(request.AppSecret))
-                throw new RocketException(
-                    "No app secret was provided.",
-                    ApiStatusCodeEnum.ValidationError
-                );
-
-            var newConnector =
-                new DropboxConnector
-                {
-                    UserId = userId,
-                    CreatedAt = DateTime.UtcNow,
-                    LastUpdatedAt = DateTime.UtcNow,
-                    AppKey = request.AppKey,
-                    AppSecret = request.AppSecret
-                };
-
-            var result =
-                await
-                    connectorRepository
-                        .InsertConnectorAsync(
-                            newConnector,
-                            cancellationToken
-                        );
-
-            if (result == null)
-                throw new RocketException(
-                    "Failed to create Dropbox connector",
-                    ApiStatusCodeEnum.ServerError
-                );
-
-            var authorizeUri =
-                dropboxClientManager
-                    .GetAuthorizeUrl(request.AppKey);
-
-            var response =
-                new CreateDropboxConnectorResponse
-                {
-                    Id = result.Id,
-                    AuthorizeUri = authorizeUri
-                };
-
-            return
-                response
-                    .AsApiSuccess();
-        }
-
         [HttpPatch, Route("/api/dropbox/connectors/finalize")]
         [EndpointSummary("Finalize a Dropbox connector")]
         [EndpointGroupName("Manage connectors")]

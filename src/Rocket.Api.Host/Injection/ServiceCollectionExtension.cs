@@ -87,7 +87,9 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IUserManager, UserManager>()
                 .AddTransient<IWorkflowStepModelMapperRegistry, WorkflowStepModelMapperRegistry>()
                 .AddTransient<IExecutionStepModelMapperRegistry, ExecutionStepModelMapperRegistry>()
+                .AddTransient<IConnectorModelMapperRegistry, ConnectorModelMapperRegistry>()
                 .AddTransient<IStepModelClonerRegistry, StepModelClonerRegistry>()
+                .AddTransient<IObfuscator, Obfuscator>()
                 .AddTransient<IWorkflowCloner, WorkflowCloner>();
 
             if (environment.IsDevelopment())

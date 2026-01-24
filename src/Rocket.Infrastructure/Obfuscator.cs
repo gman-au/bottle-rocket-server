@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using Rocket.Interfaces;
 
-namespace Rocket.Infrastructure.Extensions
+namespace Rocket.Infrastructure
 {
-    public static class StringEx
+    public class Obfuscator : IObfuscator
     {
-        public static string Obfuscate(
-            this string input,
+        public string Obfuscate(
+            string input,
             int displayLastCharacters = 4,
             int dummyCharacters = 4,
             char obfuscationCharacter = '*'
@@ -23,9 +24,9 @@ namespace Rocket.Infrastructure.Extensions
                     );
 
             var substr =
-                input
-                    .ReverseString()[..index]
-                    .ReverseString();
+                ReverseString(
+                    ReverseString(input)[..index]
+                );
 
             var stringBuilder = new StringBuilder();
             for (var i = 0; i < dummyCharacters; i++)
@@ -40,6 +41,6 @@ namespace Rocket.Infrastructure.Extensions
                     .ToString();
         }
 
-        public static string ReverseString(this string input) => new(input.Reverse().ToArray());
+        private static string ReverseString(string input) => new(input.Reverse().ToArray());
     }
 }

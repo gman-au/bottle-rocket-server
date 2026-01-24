@@ -33,6 +33,7 @@ namespace Rocket.Tests.Unit
                     new ConnectorController(
                         Fixture.Freeze<ILogger<ConnectorController>>(),
                         UserManager,
+                        Fixture.Freeze<IConnectorModelMapperRegistry>(),
                         _connectorRepository
                     );
 

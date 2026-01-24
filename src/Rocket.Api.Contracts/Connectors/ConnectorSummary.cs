@@ -8,6 +8,9 @@ namespace Rocket.Api.Contracts.Connectors
         [JsonPropertyName("id")]
         public string Id { get; set; }
         
+        [JsonPropertyName("user_id")]
+        public string UserId { get; set; }
+        
         [JsonPropertyName("connector_type")]
         public string ConnectorType { get; set; }
         
