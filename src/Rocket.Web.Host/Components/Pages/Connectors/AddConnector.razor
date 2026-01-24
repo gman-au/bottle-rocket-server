@@ -1,5 +1,6 @@
 ﻿@page "/MyConnectors/Add"
-@using Rocket.Domain.Core.Utils
+@using Rocket.Dropbox.Domain
+@using Rocket.MaxOcr.Domain
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <MudPaper Class="p-4" elevation="2">
@@ -36,9 +37,15 @@
     [
         new()
         {
-            Name = DomainConstants.ConnectorNameDropboxApi,
+            Name = DropboxDomainConstants.ConnectorName,
             Href = "/MyConnector/Dropbox/Add",
             ImagePath = "/img/dropbox-logo.webp"
+        },
+        new()
+        {
+            Name = MaxOcrDomainConstants.ConnectorName,
+            Href = "/MyConnector/MaxOcr/Add",
+            ImagePath = "/img/ibm-logo.svg"
         }
     ];
 

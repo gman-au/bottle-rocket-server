@@ -9,7 +9,7 @@ using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.PageTemplates;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Core.Enum;
-using Rocket.Domain.Core.Utils;
+using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers

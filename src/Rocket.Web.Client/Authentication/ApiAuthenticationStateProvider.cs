@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
-using Rocket.Domain.Core.Utils;
+using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 
 namespace Rocket.Web.Client.Authentication

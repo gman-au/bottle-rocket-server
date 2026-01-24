@@ -1,6 +1,5 @@
 ﻿using Rocket.Domain.Core;
 using Rocket.Domain.Core.Enum;
-using Rocket.Domain.Core.Utils;
 
 namespace Rocket.Dropbox.Domain
 {
@@ -12,7 +11,7 @@ namespace Rocket.Dropbox.Domain
 
         public override string StepName { get; set; } = "Upload file to Dropbox";
 
-        public override string RequiresConnectorCode { get; set; } = DomainConstants.ConnectorCodeDropboxApi;
+        public override string RequiresConnectorCode { get; set; } = DropboxDomainConstants.ConnectorCode;
 
         public string Subfolder { get; set; }
     }

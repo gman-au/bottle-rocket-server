@@ -9,8 +9,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Integrations\Rocket.Dropbox.Domain\Rocket.Dropbox.Domain.csproj" />
+      <ProjectReference Include="..\Integrations\Rocket.MaxOcr.Domain\Rocket.MaxOcr.Domain.csproj" />
       <ProjectReference Include="..\Rocket.Domain.Core\Rocket.Domain.Core.csproj" />
-      <ProjectReference Include="..\Rocket.Dropbox.Domain\Rocket.Dropbox.Domain.csproj" />
+      <ProjectReference Include="..\Integrations\Rocket.Dropbox.Domain\Rocket.Dropbox.Domain.csproj" />
     </ItemGroup>
 
 </Project>

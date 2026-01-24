@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Rocket.Api.Contracts.Workflows;
 using Rocket.Dropbox.Contracts;
+using Rocket.MaxOcr.Contracts;
 
 namespace Rocket.Infrastructure.Json
 {
@@ -10,6 +11,7 @@ namespace Rocket.Infrastructure.Json
         public static readonly Dictionary<Type, string> TypeDiscriminatorMap = new()
         {
             { typeof(DropboxUploadWorkflowStepSpecifics), "dropbox_upload_workflow" },
+            { typeof(MaxOcrExtractWorkflowStepSpecifics), "maxocr_extract_workflow" },
             { typeof(EmailFileAttachmentStepSpecifics), "email_file_attachment" }
         };
 

@@ -1,6 +1,5 @@
 ﻿using Rocket.Domain.Core;
 using Rocket.Domain.Core.Enum;
-using Rocket.Domain.Core.Utils;
 
 namespace Rocket.Dropbox.Domain
 {
@@ -8,9 +7,9 @@ namespace Rocket.Dropbox.Domain
     {
         public override int ConnectorType { get; set; } = (int)ConnectorTypeEnum.FileForwarding;
 
-        public override string ConnectorName { get; set; } = DomainConstants.ConnectorNameDropboxApi;
+        public override string ConnectorName { get; set; } = DropboxDomainConstants.ConnectorName;
         
-        public override string ConnectorCode { get; set; } = DomainConstants.ConnectorCodeDropboxApi;
+        public override string ConnectorCode { get; set; } = DropboxDomainConstants.ConnectorCode;
 
         public string AppKey { get; set; }
 

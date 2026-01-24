@@ -25,6 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Integrations\Rocket.Dropbox.Domain\Rocket.Dropbox.Domain.csproj" />
         <ProjectReference Include="..\Rocket.Api.Host\Rocket.Api.Host.csproj"/>
         <ProjectReference Include="..\Rocket.Web.Host\Rocket.Web.Host.csproj"/>
     </ItemGroup>

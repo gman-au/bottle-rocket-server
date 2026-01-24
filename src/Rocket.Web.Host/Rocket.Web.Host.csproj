@@ -6,6 +6,9 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Integrations\Rocket.Dropbox.Contracts\Rocket.Dropbox.Contracts.csproj" />
+        <ProjectReference Include="..\Integrations\Rocket.Dropbox.Domain\Rocket.Dropbox.Domain.csproj" />
+        <ProjectReference Include="..\Integrations\Rocket.MaxOcr.Contracts\Rocket.MaxOcr.Contracts.csproj" />
+        <ProjectReference Include="..\Integrations\Rocket.MaxOcr.Domain\Rocket.MaxOcr.Domain.csproj" />
         <ProjectReference Include="..\Rocket.Api.Contracts\Rocket.Api.Contracts.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Json\Rocket.Infrastructure.Json.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Mermaid\Rocket.Infrastructure.Mermaid.csproj" />

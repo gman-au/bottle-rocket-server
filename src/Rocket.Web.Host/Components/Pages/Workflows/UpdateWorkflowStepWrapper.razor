@@ -43,7 +43,10 @@
                     </MudItem>
                 </MudGrid>
 
-                @ChildContent(StepSpecifics)
+                @if (ChildContent != null)
+                {
+                    @ChildContent(StepSpecifics)
+                }
 
                 <MudGrid Class="align-start mt-4" Justify="Justify.FlexEnd">
                     <MudItem>

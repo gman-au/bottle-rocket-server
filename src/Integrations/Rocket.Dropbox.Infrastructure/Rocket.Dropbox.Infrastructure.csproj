@@ -8,6 +8,7 @@
       <ProjectReference Include="..\..\Rocket.Infrastructure.Mapping\Rocket.Infrastructure.Mapping.csproj" />
       <ProjectReference Include="..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
       <ProjectReference Include="..\Rocket.Dropbox.Contracts\Rocket.Dropbox.Contracts.csproj" />
+      <ProjectReference Include="..\Rocket.Dropbox.Domain\Rocket.Dropbox.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>

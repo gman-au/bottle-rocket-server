@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Rocket.Domain.Core.Enum;
 
-namespace Rocket.Domain.Core.Utils
+namespace Rocket.Domain.Utils
 {
     public static class DomainConstants
     {
@@ -16,9 +16,6 @@ namespace Rocket.Domain.Core.Utils
         public const string AuthHeaderKey = "authHeader";
         public const string UsernameKey = "userName";
         public const string RoleKey = "userRole";
-
-        public const string ConnectorNameDropboxApi = "Dropbox App Connector";
-        public const string ConnectorCodeDropboxApi = "DROPBOX_APP";
         
         public const string UnknownType = "Unknown";
 

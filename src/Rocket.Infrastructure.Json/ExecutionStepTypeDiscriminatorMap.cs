@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Rocket.Dropbox.Contracts;
+using Rocket.MaxOcr.Contracts;
 
 namespace Rocket.Infrastructure.Json
 {
@@ -8,7 +9,8 @@ namespace Rocket.Infrastructure.Json
     {
         public static readonly Dictionary<Type, string> TypeDiscriminatorMap = new()
         {
-            { typeof(DropboxUploadExecutionStepSpecifics), "dropbox_upload_execution" }
+            { typeof(DropboxUploadExecutionStepSpecifics), "dropbox_upload_execution" },
+            { typeof(MaxOcrExtractExecutionStepSpecifics), "maxocr_extract_execution" }
         };
 
         public static string GetExecutionStepTypeDiscriminator(this Type type)

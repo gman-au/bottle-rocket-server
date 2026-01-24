@@ -6,6 +6,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Integrations\Rocket.Dropbox.Contracts\Rocket.Dropbox.Contracts.csproj" />
+      <ProjectReference Include="..\Integrations\Rocket.MaxOcr.Contracts\Rocket.MaxOcr.Contracts.csproj" />
     </ItemGroup>
 
 </Project>
