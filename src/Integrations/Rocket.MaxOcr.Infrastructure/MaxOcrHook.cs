@@ -1,6 +1,12 @@
-﻿using System.Threading;
+﻿using System;
+using System.Configuration;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain;
+using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Interfaces;
@@ -32,12 +38,62 @@ namespace Rocket.MaxOcr.Infrastructure
                             cancellationToken
                         );
 
-           
-            // do the stuff here for maxocr
-            
+            var imageBytes = artifact.Artifact;
+            var fileName = $"{Guid.NewGuid()}{artifact.FileExtension}";
 
-            // TODO: create a static .Empty artifact
-            return artifact;
+            using var httpClient = new HttpClient();
+
+            httpClient.BaseAddress =
+                new Uri(
+                    connector.Endpoint ??
+                    throw new ConfigurationErrorsException(
+                        nameof(connector.Endpoint)
+                    )
+                );
+
+            var response =
+                await
+                    httpClient
+                        .PostAsync(
+                            "model/predict",
+                            new MultipartFormDataContent
+                            {
+                                {
+                                    new ByteArrayContent(imageBytes),
+                                    "image",
+                                    fileName
+                                }
+                            },
+                            cancellationToken
+                        );
+
+            response
+                .EnsureSuccessStatusCode();
+
+            var ocrResponse =
+                await
+                    response
+                        .Content
+                        .ReadFromJsonAsync<MaxOcrResponse>(cancellationToken);
+
+            var resultArtifact =
+                new ExecutionStepArtifact
+                {
+                    Result = (int)ExecutionStatusEnum.Completed,
+                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
+                    Artifact =
+                        Encoding
+                            .Default
+                            .GetBytes(
+                                string.Join(
+                                    "\n",
+                                    ocrResponse?.Text ?? []
+                                )
+                            ),
+                    FileExtension = ".txt"
+                };
+
+            return resultArtifact;
         }
     }
 }
