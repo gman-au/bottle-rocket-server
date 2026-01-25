@@ -50,5 +50,13 @@ namespace Rocket.Interfaces
             TExecutionStep updatedExecutionStep,
             CancellationToken cancellationToken
         ) where TExecutionStep : BaseExecutionStep;
+
+        Task<Execution> AppendLogMessageToStepAsync(
+            string executionStepId,
+            string executionId,
+            string userId,
+            string logMessage,
+            CancellationToken cancellationToken
+        );
     }
 }

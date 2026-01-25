@@ -5,8 +5,6 @@ using Rocket.Domain.Enum;
 
 namespace Rocket.Domain.Connectors
 {
-    [BsonDiscriminator(RootClass = true)]
-    [BsonKnownTypes(typeof(DropboxConnector))]
     public abstract record BaseConnector
     {
         [BsonId]

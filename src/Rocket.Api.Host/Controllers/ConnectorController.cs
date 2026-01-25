@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +9,8 @@ using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Connectors;
 using Rocket.Api.Host.Extensions;
-using Rocket.Domain.Utils;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers
@@ -21,6 +21,7 @@ namespace Rocket.Api.Host.Controllers
     public class ConnectorController(
         ILogger<ConnectorController> logger,
         IUserManager userManager,
+        IConnectorModelMapperRegistry connectorModelMapperRegistry,
         IConnectorRepository connectorRepository
     ) : RocketControllerBase(userManager)
     {
@@ -80,23 +81,36 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Connectors =
                         records
-                            .Select(o =>
-                                new ConnectorSummary
+                            .Select(
+                                o =>
                                 {
-                                    Id = o.Id,
-                                    ConnectorType =
-                                        DomainConstants
-                                            .ConnectorTypes
-                                            .GetValueOrDefault(
-                                                o.ConnectorType,
-                                                DomainConstants.UnknownType
-                                            ),
-                                    ConnectorName = o.ConnectorName,
-                                    CreatedAt = o.CreatedAt.ToLocalTime(),
-                                    LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
-                                    Status = (int)o.DetermineStatus()
+                                    var mapper =
+                                        connectorModelMapperRegistry
+                                            .GetMapperForDomain(o.GetType());
+
+                                    return
+                                        mapper
+                                            .From(o);
                                 }
-                            ),
+                            )
+                    /*.Select(
+                        o =>
+                            new ConnectorSummary
+                            {
+                                Id = o.Id,
+                                ConnectorType =
+                                    DomainConstants
+                                        .ConnectorTypes
+                                        .GetValueOrDefault(
+                                            o.ConnectorType,
+                                            DomainConstants.UnknownType
+                                        ),
+                                ConnectorName = o.ConnectorName,
+                                CreatedAt = o.CreatedAt.ToLocalTime(),
+                                LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
+                                Status = (int)o.DetermineStatus()
+                            }
+                    ),*/,
                     TotalRecords = (int)totalRecordCount
                 };
 
@@ -156,6 +170,104 @@ namespace Rocket.Api.Host.Controllers
                 {
                     IsDeleted = result
                 };
+
+            return
+                response
+                    .AsApiSuccess();
+        }
+
+        [HttpPost, Route("/api/connectors/create")]
+        [EndpointSummary("Add a new connector")]
+        [EndpointGroupName("Manage connectors")]
+        [EndpointDescription(
+            """
+            Creates a new connector for the given user. Will return an error if the same named
+            connector already exists for the given user.
+            """
+        )]
+        [ProducesResponseType(
+            typeof(CreateConnectorResponse<ConnectorSummary>),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CreateConnectorAsync(
+            [FromBody] CreateConnectorRequest<ConnectorSummary> request,
+            CancellationToken cancellationToken
+        )
+        {
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
+
+            logger
+                .LogInformation(
+                    "Received connector creation request for username: {username}",
+                    user.Username
+                );
+
+            var userId =
+                user
+                    .Id;
+
+            if (request.Connector == null)
+                throw new RocketException(
+                    "Could not determine connector from request",
+                    ApiStatusCodeEnum.ValidationError
+                );
+
+            var connector =
+                request
+                    .Connector;
+
+            connector.UserId = userId;
+
+            var mapper =
+                connectorModelMapperRegistry
+                    .GetMapperForView(connector.GetType());
+
+            var newConnector =
+                mapper
+                    .For(connector);
+
+            if (await
+                connectorRepository
+                    .ConnectorExistsForUserAsync(
+                        userId,
+                        newConnector.ConnectorName,
+                        cancellationToken
+                    )
+               )
+                throw new RocketException(
+                    $"Connector with name {newConnector.ConnectorName} already exists",
+                    ApiStatusCodeEnum.RecordAlreadyExists
+                );
+
+            await
+                mapper
+                    .PreUpdateAsync(request.Connector);
+
+            var result =
+                await
+                    connectorRepository
+                        .InsertConnectorAsync(
+                            newConnector,
+                            cancellationToken
+                        );
+
+            if (result == null)
+                throw new RocketException(
+                    "Failed to create connector",
+                    ApiStatusCodeEnum.ServerError
+                );
+
+            var response =
+                await
+                    mapper
+                        .PostUpdateAsync(result);
 
             return
                 response

@@ -127,6 +127,67 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 );
 
+
+        public async Task<Execution> AppendLogMessageToStepAsync(
+            string executionStepId,
+            string executionId,
+            string userId,
+            string logMessage,
+            CancellationToken cancellationToken
+        )
+        {
+            var filter =
+                Builders<Execution>
+                    .Filter
+                    .Eq(
+                        u => u.UserId,
+                        userId
+                    );
+
+            filter &=
+                Builders<Execution>
+                    .Filter
+                    .Eq(
+                        o => o.Id,
+                        executionId
+                    );
+
+            var execution =
+                await
+                    GetMongoCollection()
+                        .Find(filter)
+                        .FirstOrDefaultAsync(cancellationToken);
+
+            if (execution == null)
+                throw new RocketException(
+                    $"Could not find execution record with id [{executionId}]",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
+            if (!BaseExecutionStepEx.AppendLogMessageForStepId(
+                    execution.Steps,
+                    executionStepId,
+                    logMessage,
+                    out var modifiedSteps
+                ))
+                throw new RocketException(
+                    $"Could not find execution step record with id [{executionStepId}]",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
+            execution.Steps = modifiedSteps;
+
+            await
+                GetMongoCollection()
+                    .ReplaceOneAsync(
+                        filter,
+                        execution,
+                        cancellationToken: cancellationToken
+                    );
+
+            return execution;
+        }
+
         public async Task<Execution> UpdateExecutionStepAsync<TExecutionStep>(
             string executionStepId,
             string executionId,
@@ -186,7 +247,7 @@ namespace Rocket.Infrastructure.Db.Mongo
 
             return execution;
         }
-        
+
         public async Task UpdateExecutionFieldAsync<TField>(
             string executionId,
             string userId,

@@ -1,0 +1,23 @@
+﻿using Rocket.Domain.Connectors;
+using Rocket.Domain.Enum;
+
+namespace Rocket.MaxOcr.Domain
+{
+    public record MaxOcrConnector : BaseConnector
+    {
+        public override int ConnectorType { get; set; } = (int)ConnectorTypeEnum.OcrExtraction;
+
+        public override string ConnectorName { get; set; } = MaxOcrDomainConstants.ConnectorName;
+        
+        public override string ConnectorCode { get; set; } = MaxOcrDomainConstants.ConnectorCode;
+
+        public string Endpoint { get; set; }
+
+        public override ConnectorStatusEnum DetermineStatus()
+        {
+            return !string.IsNullOrEmpty(Endpoint)
+                ? ConnectorStatusEnum.Active
+                : ConnectorStatusEnum.Pending;
+        }
+    }
+}

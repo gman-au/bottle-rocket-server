@@ -1,8 +1,8 @@
 ﻿@page "/MyWorkflow/Dropbox/{workflowId}/AddStep"
 @page "/MyWorkflow/Dropbox/{workflowId}/Steps/{parentStepId}/AddStep"
 @page "/MyWorkflow/Dropbox/{workflowId}/Steps/{stepId}/UpdateStep"
-@using Rocket.Domain.Utils
 @using Rocket.Dropbox.Contracts
+@using Rocket.Dropbox.Domain
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <UpdateWorkflowStepWrapper
@@ -10,7 +10,7 @@
     WorkflowStepName="Upload file to Dropbox"
     WorkflowId="@WorkflowId"
     ParentStepId="@ParentStepId"
-    RequiresConnectorCode="@DomainConstants.ConnectorCodeDropboxApi"
+    RequiresConnectorCode="@DropboxDomainConstants.ConnectorCode"
     StepId="@StepId"
     Context="stepSpecifics">
     <MudGrid>

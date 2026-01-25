@@ -7,6 +7,7 @@ using Rocket.Domain.Utils;
 using Rocket.Dropbox.Contracts;
 using Rocket.Infrastructure.Mermaid.Extensions;
 using Rocket.Interfaces;
+using Rocket.Ollama.Contracts;
 
 namespace Rocket.Infrastructure.Mermaid
 {
@@ -131,9 +132,13 @@ namespace Rocket.Infrastructure.Mermaid
                     .AppendLine($"{currentParentAlias} --> |{currentParentOutputTypeName}| {currentChildAlias}");
 
                 var route = string.Empty;
-                if (step is DropboxUploadWorkflowStepSpecifics dropboxUploadStep)
+                if (step is DropboxUploadWorkflowStepSpecifics)
                 {
                     route = $"/MyWorkflow/Dropbox/{workflowId}/Steps/{step.Id}/UpdateStep";
+                }
+                if (step is OllamaExtractWorkflowStepSpecifics)
+                {
+                    route = $"/MyWorkflow/Ollama/{workflowId}/Steps/{step.Id}/UpdateStep";
                 }
 
                 if (!string.IsNullOrEmpty(route))

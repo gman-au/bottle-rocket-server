@@ -5,12 +5,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Integrations\Rocket.Dropbox.Contracts\Rocket.Dropbox.Contracts.csproj" />
+        <ProjectReference Include="..\Integrations\Dropbox\Rocket.Dropbox.Contracts\Rocket.Dropbox.Contracts.csproj" />
+        <ProjectReference Include="..\Integrations\Dropbox\Rocket.Dropbox.Domain\Rocket.Dropbox.Domain.csproj" />
+        <ProjectReference Include="..\Integrations\MaxOcr\Rocket.MaxOcr.Contracts\Rocket.MaxOcr.Contracts.csproj" />
+        <ProjectReference Include="..\Integrations\MaxOcr\Rocket.MaxOcr.Domain\Rocket.MaxOcr.Domain.csproj" />
         <ProjectReference Include="..\Rocket.Api.Contracts\Rocket.Api.Contracts.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Json\Rocket.Infrastructure.Json.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Mermaid\Rocket.Infrastructure.Mermaid.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure\Rocket.Infrastructure.csproj" />
         <ProjectReference Include="..\Rocket.Interfaces\Rocket.Interfaces.csproj"/>
+        <ProjectReference Include="..\Rocket.Ollama.Domain\Rocket.Ollama.Domain.csproj" />
         <ProjectReference Include="..\Rocket.Web.Client\Rocket.Web.Client.csproj" />
     </ItemGroup>
 

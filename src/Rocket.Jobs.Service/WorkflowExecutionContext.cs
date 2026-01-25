@@ -15,8 +15,7 @@ namespace Rocket.Jobs.Service
         IEnumerable<IIntegrationHook> hooks,
         IScannedImageHandler scannedImageHandler,
         IConnectorRepository connectorRepository
-    )
-        : IWorkflowExecutionContext
+    ) : IWorkflowExecutionContext
     {
         private ExecutionStepArtifact _currentArtifact;
 

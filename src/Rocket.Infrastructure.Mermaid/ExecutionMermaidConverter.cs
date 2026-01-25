@@ -51,6 +51,7 @@ namespace Rocket.Infrastructure.Mermaid
                 parent,
                 entitiesBuilder,
                 linksBuilder,
+                clicksBuilder,
                 styleBuilder,
                 execution.Steps,
                 aliasEnumerator
@@ -78,6 +79,7 @@ namespace Rocket.Infrastructure.Mermaid
             string currentParentAlias,
             StringBuilder entitiesBuilder,
             StringBuilder linksBuilder,
+            StringBuilder clicksBuilder,
             StringBuilder styleBuilder,
             IEnumerable<ExecutionStepSummary> steps,
             IEnumerator<string> aliasEnumerator
@@ -124,6 +126,13 @@ namespace Rocket.Infrastructure.Mermaid
 
                 linksBuilder
                     .AppendLine($"{currentParentAlias} --> {currentChildAlias}");
+                
+                entityLine += ":::clickable";
+
+                clicksBuilder
+                    .AppendLine(
+                        $"click {currentChildAlias} call displayLogMessages(\"{step.Id}\")"
+                    );
 
                 entitiesBuilder
                     .AppendLine(entityLine);
@@ -132,6 +141,7 @@ namespace Rocket.Infrastructure.Mermaid
                     currentChildAlias,
                     entitiesBuilder,
                     linksBuilder,
+                    clicksBuilder,
                     styleBuilder,
                     step.ChildSteps,
                     aliasEnumerator

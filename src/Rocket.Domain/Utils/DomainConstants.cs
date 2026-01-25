@@ -16,9 +16,6 @@ namespace Rocket.Domain.Utils
         public const string AuthHeaderKey = "authHeader";
         public const string UsernameKey = "userName";
         public const string RoleKey = "userRole";
-
-        public const string ConnectorNameDropboxApi = "Dropbox App Connector";
-        public const string ConnectorCodeDropboxApi = "DROPBOX_APP";
         
         public const string UnknownType = "Unknown";
 

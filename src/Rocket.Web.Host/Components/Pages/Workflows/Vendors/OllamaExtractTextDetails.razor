@@ -1,0 +1,41 @@
+﻿@page "/MyWorkflow/Ollama/{workflowId}/AddStep"
+@page "/MyWorkflow/Ollama/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/Ollama/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.Ollama.Contracts
+@using Rocket.Ollama.Domain
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<UpdateWorkflowStepWrapper
+    T="OllamaExtractWorkflowStepSpecifics"
+    WorkflowStepName="Extract text from image"
+    WorkflowId="@WorkflowId"
+    ParentStepId="@ParentStepId"
+    RequiresConnectorCode="@OllamaDomainConstants.ConnectorCode"
+    StepId="@StepId"
+    Context="stepSpecifics">
+    <MudGrid>
+        <MudItem sm="12" lg="6">
+            <MudTextField
+                T="string"
+                Label="Model Name"
+                Required="true"
+                RequiredError="Model name is required"
+                HelperText="Enter the Ollama model name to use for OCR extraction"
+                @bind-Value="stepSpecifics.ModelName"
+                For="@(() => stepSpecifics.ModelName)"/>
+        </MudItem>
+    </MudGrid>
+</UpdateWorkflowStepWrapper>
+
+@code {
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+}

@@ -43,7 +43,10 @@
                     </MudItem>
                 </MudGrid>
 
-                @ChildContent(StepSpecifics)
+                @if (ChildContent != null)
+                {
+                    @ChildContent(StepSpecifics)
+                }
 
                 <MudGrid Class="align-start mt-4" Justify="Justify.FlexEnd">
                     <MudItem>
@@ -181,7 +184,7 @@
                         new CreateWorkflowStepRequest<T>
                         {
                             WorkflowId = WorkflowId,
-                            ParentStepId = StepId,
+                            ParentStepId = ParentStepId,
                             Step = StepSpecifics
                         };
 

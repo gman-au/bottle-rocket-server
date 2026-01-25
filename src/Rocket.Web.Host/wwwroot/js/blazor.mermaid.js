@@ -13,6 +13,12 @@ window.blazorNavigateToRoute = (route) => {
     }
 };
 
+window.displayLogMessages = (stepId) => {
+    if (window.blazorDotNetRef) {
+        window.blazorDotNetRef.invokeMethodAsync('DisplayLogMessages', stepId);
+    }
+};
+
 window.refreshMermaidDiagram = async () => {
     try {
         // Just remove the processed markers - Blazor has recreated the element

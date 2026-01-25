@@ -30,6 +30,11 @@ namespace Rocket.Infrastructure.Db.Mongo.Extensions
                     updatedStep.ChildSteps =
                         stepsList[i]
                             .ChildSteps;
+                    
+                    // Preserve log messages from original
+                    updatedStep.LogMessages =
+                        stepsList[i]
+                            .LogMessages;
 
                     stepsList[i] = updatedStep;
                     modifiedSteps = stepsList;
@@ -51,6 +56,48 @@ namespace Rocket.Infrastructure.Db.Mongo.Extensions
 
             return false;
         }
-        
+
+        public static bool AppendLogMessageForStepId(
+            IEnumerable<BaseExecutionStep> steps,
+            string stepId,
+            string logMessage,
+            out IEnumerable<BaseExecutionStep> modifiedSteps
+        )
+        {
+            modifiedSteps = steps;
+
+            if (steps == null)
+                return false;
+
+            var stepsList =
+                steps
+                    .ToList();
+
+            for (var i = 0; i < stepsList.Count; i++)
+            {
+                if (stepsList[i].Id == stepId)
+                {
+                    var logMessages = (stepsList[i].LogMessages ?? []).ToList();
+                    logMessages.Add(logMessage);
+                    stepsList[i].LogMessages = logMessages.ToArray();
+                    modifiedSteps = stepsList;
+                    return true;
+                }
+
+                if (AppendLogMessageForStepId(
+                        stepsList[i].ChildSteps,
+                        stepId,
+                        logMessage,
+                        out var modifiedChildren
+                    ))
+                {
+                    stepsList[i].ChildSteps = modifiedChildren;
+                    modifiedSteps = stepsList;
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

@@ -1,0 +1,79 @@
+﻿<MudDialog Class="p-2">
+    <TitleContent>
+        <MudText
+            Color="Color.Primary"
+            GutterBottom
+            Typo="Typo.h5">
+            Log Messages
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (LogMessages.Any())
+        {
+            <MudSimpleTable
+                Style="width:100%;"
+                Dense>
+                <thead>
+                <tr>
+                    <th>Message</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var message in LogMessages)
+                {
+                    <tr>
+                        <td>
+                            <MudText Class="code-text">
+                                @message
+                            </MudText>
+                        </td>
+                    </tr>
+                }
+            
+                </tbody>
+            </MudSimpleTable>
+        }
+        else
+        {
+            <MudText
+                Align="Align.Center"
+                Typo="Typo.body2"
+                Color="Color.Default">
+                No log messages found
+            </MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton
+            Variant="Variant.Outlined"
+            OnClick="Cancel">
+            Close
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public IEnumerable<string> LogMessages { get; set; }
+
+    private void Cancel() => MudDialog.Close();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await
+            MudDialog
+                .SetOptionsAsync(
+                    new DialogOptions
+                    {
+                        FullWidth = true,
+                        MaxWidth = MaxWidth.Medium,
+                        BackgroundClass = "dialog-blur-backdrop"
+                    }
+                );
+    }
+
+}

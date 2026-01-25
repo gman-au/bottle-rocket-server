@@ -1,4 +1,5 @@
 ﻿@page "/MyConnector/Dropbox/Add"
+@using Rocket.Api.Contracts.Connectors
 @using Rocket.Dropbox.Contracts
 @using Rocket.Web.Client
 @using Rocket.Web.Host.Infrastructure
@@ -35,7 +36,9 @@
                             <ul>
                                 <li>Follow the instructions to set up a Dropbox App.</li>
                                 <li>Ensure that the correct permissions / scopes are set.</li>
-                                <li>When completed, you should receive an <b>App Key</b> and <b>App Secret</b>, which needs to be entered below.</li>
+                                <li>When completed, you should receive an <b>App Key</b> and <b>App Secret</b>, which needs to be entered
+                                    below.
+                                </li>
                             </ul>
                         </MudText>
                     </MudItem>
@@ -185,18 +188,21 @@
                 var response =
                     await
                         ApiRequestManager
-                            .CreateDropboxConnectorAsync(
-                                new CreateDropboxConnectorRequest
+                            .CreateConnectorAsync(
+                                new CreateConnectorRequest<DropboxConnectorSpecifics>
                                 {
-                                    AppKey = appKey,
-                                    AppSecret = appSecret
+                                    Connector = new DropboxConnectorSpecifics
+                                    {
+                                        AppKey = appKey,
+                                        AppSecret = appSecret
+                                    }
                                 },
                                 BaseCancellationToken
                             );
 
-                var authorizeUrl = response.AuthorizeUri;
+                var authorizeUrl = response?.Connector?.AuthorizeUri;
 
-                _connectorId = response.Id;
+                _connectorId = response?.Id;
 
                 if (string.IsNullOrEmpty(authorizeUrl))
                     throw new Exception("There was a connection error.");
@@ -238,17 +244,16 @@
             {
                 var accessCode = _accessCode;
 
-                var response =
-                    await
-                        ApiRequestManager
-                            .FinalizeDropboxConnectorAsync(
-                                new FinalizeDropboxConnectorRequest
-                                {
-                                    Id = _connectorId,
-                                    AccessCode = accessCode
-                                },
-                                BaseCancellationToken
-                            );
+                await
+                    ApiRequestManager
+                        .FinalizeDropboxConnectorAsync(
+                            new FinalizeDropboxConnectorRequest
+                            {
+                                Id = _connectorId,
+                                AccessCode = accessCode
+                            },
+                            BaseCancellationToken
+                        );
 
                 Snackbar
                     .Add(

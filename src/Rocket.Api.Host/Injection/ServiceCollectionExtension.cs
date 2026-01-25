@@ -6,10 +6,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MongoDB.Bson.Serialization;
 using Rocket.Api.Host.Exceptions;
 using Rocket.Api.Host.Notifiers;
 using Rocket.Api.Host.Prepopulation;
+using Rocket.Domain.Connectors;
+using Rocket.Domain.Executions;
 using Rocket.Domain.Utils;
+using Rocket.Domain.Workflows;
 using Rocket.Infrastructure;
 using Rocket.Infrastructure.Blob.Local;
 using Rocket.Infrastructure.Blob.Local.Options;
@@ -26,6 +30,50 @@ namespace Rocket.Api.Host.Injection
 {
     public static class ServiceCollectionExtension
     {
+        public static void RegisterBsonDomainMappings(this IServiceCollection services)
+        {
+            if (!BsonClassMap.IsClassMapRegistered(typeof(BaseConnector)))
+            {
+                BsonClassMap.RegisterClassMap<BaseConnector>(cm =>
+                {
+                    cm.AutoMap();
+                    cm.SetIsRootClass(true);
+                });
+            }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(BaseWorkflowStep)))
+            {
+                BsonClassMap.RegisterClassMap<BaseWorkflowStep>(cm =>
+                {
+                    cm.AutoMap();
+                    cm.SetIsRootClass(true);
+                });
+            }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(BaseExecutionStep)))
+            {
+                BsonClassMap.RegisterClassMap<BaseExecutionStep>(cm =>
+                {
+                    cm.AutoMap();
+                    cm.SetIsRootClass(true);
+                });
+            }
+            
+            var provider =
+                services
+                    .BuildServiceProvider();
+
+            var bsonMappers = 
+                provider
+                    .GetServices<IBsonMapper>();
+
+            foreach (var bsonMapper in bsonMappers)
+            {
+                bsonMapper
+                    .MapApplicableBsonTypes();
+            }
+        }
+        
         public static IServiceCollection AddSignalRServerServices(
             this IServiceCollection services,
             IConfigurationRoot configuration
@@ -85,9 +133,12 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IActiveAdminChecker, ActiveAdminChecker>()
                 .AddTransient<IThumbnailer, Thumbnailer>()
                 .AddTransient<IUserManager, UserManager>()
+                .AddTransient<IImageBase64Converter, ImageBase64Converter>()
                 .AddTransient<IWorkflowStepModelMapperRegistry, WorkflowStepModelMapperRegistry>()
                 .AddTransient<IExecutionStepModelMapperRegistry, ExecutionStepModelMapperRegistry>()
+                .AddTransient<IConnectorModelMapperRegistry, ConnectorModelMapperRegistry>()
                 .AddTransient<IStepModelClonerRegistry, StepModelClonerRegistry>()
+                .AddTransient<IObfuscator, Obfuscator>()
                 .AddTransient<IWorkflowCloner, WorkflowCloner>();
 
             if (environment.IsDevelopment())

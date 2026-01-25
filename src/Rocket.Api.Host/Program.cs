@@ -10,6 +10,8 @@ using Rocket.Api.Host.Injection;
 using Rocket.Domain.Utils;
 using Rocket.Dropbox.Injection;
 using Rocket.Infrastructure.Json;
+using Rocket.MaxOcr.Injection;
+using Rocket.Ollama.Injection;
 
 var builder =
     WebApplication
@@ -67,10 +69,19 @@ services
 
 services
     .AddDropboxIntegration()
+    .AddMaxOcrIntegration()
+    .AddOllamaIntegration()
     .AddWorkflowBackgroundJob();
 
 services
     .AddHostedService<StartupInitializationHostedService>();
+
+// call this after all of the integrations
+services
+    .RegisterBsonDomainMappings();
+
+//MongoBsonClassMapping
+//    .RegisterBaseConnectors();
 
 var app =
     builder

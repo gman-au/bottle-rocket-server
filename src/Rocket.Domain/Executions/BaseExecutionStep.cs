@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using MongoDB.Bson.Serialization.Attributes;
-using Rocket.Domain.Vendors.Dropbox;
-using Rocket.Domain.Vendors.Temporary;
 
 namespace Rocket.Domain.Executions
 {
-    [BsonDiscriminator(RootClass = true)] 
-    [BsonKnownTypes(typeof(DropboxUploadExecutionStep))]
-    [BsonKnownTypes(typeof(EmailFileAttachmentExecutionStep))]
     public abstract record BaseExecutionStep
     {
         public string Id { get; set; }
@@ -24,6 +18,8 @@ namespace Rocket.Domain.Executions
         public DateTime? RunDate { get; set; }
         
         public int ExecutionStatus { get; set; }
+        
+        public string[] LogMessages { get; set; }
         
         public IEnumerable<BaseExecutionStep> ChildSteps { get; set; }
     }

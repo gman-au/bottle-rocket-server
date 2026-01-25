@@ -9,6 +9,7 @@ using Rocket.Api.Host.Controllers;
 using Rocket.Domain.Connectors;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Dropbox.Domain;
 using Rocket.Interfaces;
 using Rocket.Tests.Unit.Utility;
 using Xunit;
@@ -33,6 +34,7 @@ namespace Rocket.Tests.Unit
                     new ConnectorController(
                         Fixture.Freeze<ILogger<ConnectorController>>(),
                         UserManager,
+                        Fixture.Freeze<IConnectorModelMapperRegistry>(),
                         _connectorRepository
                     );
 
