@@ -11,7 +11,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Rocket.Dropbox.Contracts\Rocket.Dropbox.Contracts.csproj" />
       <ProjectReference Include="..\Rocket.Dropbox.Infrastructure\Rocket.Dropbox.Infrastructure.csproj" />
-      <ProjectReference Include="..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
+      <ProjectReference Include="..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
     </ItemGroup>
 
 </Project>

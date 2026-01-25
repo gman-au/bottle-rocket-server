@@ -5,7 +5,6 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Rocket.Domain;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
@@ -14,7 +13,7 @@ using Rocket.MaxOcr.Domain;
 
 namespace Rocket.MaxOcr.Infrastructure
 {
-    public class MaxOcrHook() : IIntegrationHook
+    public class MaxOcrHook : IIntegrationHook
     {
         public bool IsApplicable(BaseExecutionStep step) => step is MaxOcrExtractExecutionStep;
 
@@ -85,10 +84,13 @@ namespace Rocket.MaxOcr.Infrastructure
                         Encoding
                             .Default
                             .GetBytes(
-                                string.Join(
+                                "Meet the flintstones!"
+                                /*
+                        string.Join(
                                     "\n",
                                     ocrResponse?.Text ?? []
                                 )
+                                */
                             ),
                     FileExtension = ".txt"
                 };

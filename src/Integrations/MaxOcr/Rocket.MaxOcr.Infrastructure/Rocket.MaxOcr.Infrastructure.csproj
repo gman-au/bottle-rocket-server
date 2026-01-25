@@ -5,7 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Rocket.Infrastructure.Mapping\Rocket.Infrastructure.Mapping.csproj" />
+      <ProjectReference Include="..\..\..\Rocket.Infrastructure.Mapping\Rocket.Infrastructure.Mapping.csproj" />
       <ProjectReference Include="..\Rocket.MaxOcr.Contracts\Rocket.MaxOcr.Contracts.csproj" />
       <ProjectReference Include="..\Rocket.MaxOcr.Domain\Rocket.MaxOcr.Domain.csproj" />
     </ItemGroup>
