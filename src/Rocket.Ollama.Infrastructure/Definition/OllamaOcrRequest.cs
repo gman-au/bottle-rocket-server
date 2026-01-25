@@ -10,5 +10,8 @@ namespace Rocket.Ollama.Infrastructure.Definition
         
         [JsonPropertyName("messages")] 
         public IEnumerable<OllamaOcrRequestMessage> Messages { get; set; }
+        
+        [JsonPropertyName("stream")]
+        public bool Stream { get; set; }
     }
 }

@@ -44,7 +44,6 @@ namespace Rocket.Ollama.Infrastructure
                         );
 
             var imageBytes = artifact.Artifact;
-            var fileName = $"{Guid.NewGuid()}{artifact.FileExtension}";
 
             var base64Image = 
                 imageBase64Converter
@@ -70,9 +69,6 @@ namespace Rocket.Ollama.Infrastructure
                 TimeSpan
                     .FromMinutes(10);
 
-            logger
-                .LogDebug("Sending OCR request to Ollama server");
-
             var request = new OllamaOcrRequest
             {
                 Model = ollamaStep.ModelName,
@@ -84,7 +80,8 @@ namespace Rocket.Ollama.Infrastructure
                         Content = "Perform OCR on this image and return only the text.",
                         Images = [base64Image]
                     }
-                ]
+                ],
+                Stream = false
             };
 
             var response =
