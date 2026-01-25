@@ -293,6 +293,38 @@
                 .DisposeAsync();
     }
 
+    [JSInvokable]
+    public async Task DisplayLogMessages(string executionStepId)
+    {
+        var step =
+            Flatten(_currentModel.Steps)
+                .FirstOrDefault(o => o.Id == executionStepId);
+
+        if (step == null) return;
+
+        var logMessages = step.LogMessages;
+
+        await
+            DialogService
+                .ShowAsync<ExecutionStepMessageDialog>(
+                    null,
+                    new DialogParameters
+                    {
+                        { "LogMessages", logMessages }
+                    }
+                );
+    }
+
+    private static IEnumerable<ExecutionStepSummary> Flatten(IEnumerable<ExecutionStepSummary> source)
+    {
+        foreach (var item in source)
+        {
+            yield return item;
+            foreach (var child in Flatten(item.ChildSteps))
+                yield return child;
+        }
+    }
+
     private async Task ConfirmCancelAsync()
     {
         var dialog =
