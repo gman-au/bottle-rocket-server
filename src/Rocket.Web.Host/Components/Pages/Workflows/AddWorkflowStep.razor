@@ -14,7 +14,7 @@
         @foreach (var template in WorkflowStepTemplates)
         {
             <MudItem xs="12" sm="12" md="6" lg="4" xl="3">
-                <MudCard Outlined>
+                <MudCard Style="height:100%" Outlined>
                     <MudCardMedia
                         Image="@Assets[template.ImagePath]"
                         Height="100"
@@ -66,13 +66,13 @@
             HrefChild = "/MyWorkflow/Dropbox/{0}/Steps/{1}/AddStep",
             ImagePath = "/img/dropbox-logo.webp"
         },
-        new()
+        /*new()
         {
             Name = "Extract text from image (Max OCR)",
             HrefBase = "/MyWorkflow/MaxOcr/{0}/AddStep",
             HrefChild = "/MyWorkflow/MaxOcr/{0}/Steps/{1}/AddStep",
             ImagePath = "/img/ibm-logo.svg"
-        },
+        },*/
         new()
         {
             Name = "Extract text from image (Ollama)",

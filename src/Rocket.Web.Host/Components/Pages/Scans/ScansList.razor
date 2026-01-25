@@ -24,7 +24,7 @@
             @foreach (var scan in _scans)
             {
                 <MudItem xs="12" sm="6" md="4" lg="3" xl="2">
-                    <MudCard Outlined>
+                    <MudCard Style="height:100%;" Outlined>
                         <MudCardMedia
                             Image=@($"data:{scan.ContentType};base64,{scan.ThumbnailBase64}") Width="200" Height="200"/>
                         <MudCardContent>

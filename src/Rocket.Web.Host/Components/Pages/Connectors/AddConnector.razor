@@ -15,17 +15,26 @@
     <MudGrid Justify="Justify.FlexStart" Class="pa-4">
         @foreach (var connectorTemplate in ConnectorTemplates)
         {
-            <MudItem xs="12" sm="12" md="6" lg="6" xl="6">
-                <MudNavLink
-                    Href="@connectorTemplate.Href">
-                    <div class="connector-item-container">
-                        <MudImage
-                            Fluid
-                            Alt="@connectorTemplate.Name"
-                            Src="@Assets[connectorTemplate.ImagePath]"
-                            Class="connector-item"/>
-                    </div>
-                </MudNavLink>
+            <MudItem xs="12" sm="12" md="6" lg="4" xl="3">
+                <MudCard Style="height:100%" Outlined>
+                    <MudCardMedia
+                        Image="@Assets[connectorTemplate.ImagePath]"
+                        Height="100"
+                    />
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">
+                            @connectorTemplate.Name
+                        </MudText>
+                    </MudCardContent>
+                    <MudCardActions Class="justify-end">
+                        <MudButton
+                            Variant="Variant.Text"
+                            Color="Color.Success"
+                            OnClick="@(() => NavigateToAddAsync(connectorTemplate.Href))">
+                            + Add connector
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
             </MudItem>
         }
     </MudGrid>
@@ -55,6 +64,12 @@
             ImagePath = "/img/ollama-icon.svg"
         }
     ];
+
+    private async Task NavigateToAddAsync(string href)
+    {
+        NavigationManager
+            .NavigateTo(href);
+    }
 
     private class ConnectorTemplate
     {
