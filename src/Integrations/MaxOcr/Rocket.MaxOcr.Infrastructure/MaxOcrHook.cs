@@ -21,6 +21,7 @@ namespace Rocket.MaxOcr.Infrastructure
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
+            Func<string, string, Task> appendLogMessageCallback,
             CancellationToken cancellationToken
         )
         {

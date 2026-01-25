@@ -302,7 +302,7 @@
 
         if (step == null) return;
 
-        var logMessages = step.LogMessages;
+        var logMessages = step.LogMessages ?? [];
 
         await
             DialogService

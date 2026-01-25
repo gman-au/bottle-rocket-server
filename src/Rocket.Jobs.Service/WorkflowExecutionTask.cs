@@ -14,6 +14,7 @@ namespace Rocket.Jobs.Service
             string userId,
             string executionId,
             IWorkflowExecutionContext context,
+            Func<string, string, Task> appendLogMessageCallback,
             Func<string, string, int, BaseExecutionStep, Exception, Task> updateExecutionStepCallbackFunc,
             CancellationToken cancellationToken
         )
@@ -33,6 +34,7 @@ namespace Rocket.Jobs.Service
                                 context,
                                 step,
                                 userId,
+                                appendLogMessageCallback,
                                 cancellationToken
                             );
 
@@ -50,6 +52,7 @@ namespace Rocket.Jobs.Service
                                 userId,
                                 executionId,
                                 context,
+                                appendLogMessageCallback,
                                 updateExecutionStepCallbackFunc,
                                 cancellationToken
                             );

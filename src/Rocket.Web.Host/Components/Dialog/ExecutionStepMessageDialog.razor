@@ -8,27 +8,40 @@
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudSimpleTable
-            Style="width:100%;"
-            Dense>
-            <thead>
-            <tr>
-                <th>Message</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach (var message in LogMessages)
-            {
+        @if (LogMessages.Any())
+        {
+            <MudSimpleTable
+                Style="width:100%;"
+                Dense>
+                <thead>
                 <tr>
-                    <td>
-                        <MudText Class="code-text">
-                            @message
-                        </MudText>
-                    </td>
+                    <th>Message</th>
                 </tr>
-            }
-            </tbody>
-        </MudSimpleTable>
+                </thead>
+                <tbody>
+                @foreach (var message in LogMessages)
+                {
+                    <tr>
+                        <td>
+                            <MudText Class="code-text">
+                                @message
+                            </MudText>
+                        </td>
+                    </tr>
+                }
+            
+                </tbody>
+            </MudSimpleTable>
+        }
+        else
+        {
+            <MudText
+                Align="Align.Center"
+                Typo="Typo.body2"
+                Color="Color.Default">
+                No log messages found
+            </MudText>
+        }
     </DialogContent>
     <DialogActions>
         <MudButton

@@ -30,6 +30,11 @@ namespace Rocket.Infrastructure.Db.Mongo.Extensions
                     updatedStep.ChildSteps =
                         stepsList[i]
                             .ChildSteps;
+                    
+                    // Preserve log messages from original
+                    updatedStep.LogMessages =
+                        stepsList[i]
+                            .LogMessages;
 
                     stepsList[i] = updatedStep;
                     modifiedSteps = stepsList;

@@ -27,6 +27,7 @@ namespace Rocket.Ollama.Infrastructure
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
+            Func<string, string, Task> appendLogMessageCallback,
             CancellationToken cancellationToken
         )
         {
@@ -45,7 +46,7 @@ namespace Rocket.Ollama.Infrastructure
 
             var imageBytes = artifact.Artifact;
 
-            var base64Image = 
+            var base64Image =
                 imageBase64Converter
                     .Perform(imageBytes);
 
@@ -106,6 +107,12 @@ namespace Rocket.Ollama.Infrastructure
                 throw new RocketException(
                     "No OCR data was extracted from the image.",
                     ApiStatusCodeEnum.ThirdPartyServiceError
+                );
+
+            await
+                appendLogMessageCallback(
+                    step.Id,
+                    ocrResponse.Message.Content
                 );
 
             var resultArtifact =

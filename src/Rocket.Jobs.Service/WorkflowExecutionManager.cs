@@ -29,6 +29,21 @@ namespace Rocket.Jobs.Service
         {
             var cts = new CancellationTokenSource();
 
+            var appendLogTask = new Func<string, string, Task>(
+                async (executionStepId, logMessage) =>
+                {
+                    await
+                        executionRepository
+                            .AppendLogMessageToStepAsync(
+                                executionStepId,
+                                executionId,
+                                userId,
+                                logMessage,
+                                CancellationToken.None
+                            );
+                }
+            );
+            
             if (_cancellationTokenSources.ContainsKey(executionId))
                 throw new RocketException(
                     "This task is already running.",
@@ -108,6 +123,7 @@ namespace Rocket.Jobs.Service
                                             userId,
                                             executionId,
                                             context,
+                                            appendLogTask,
                                             UpdateExecutionStepStatusCallback,
                                             linkedCts.Token
                                         );
@@ -190,7 +206,7 @@ namespace Rocket.Jobs.Service
 
             return true;
         }
-
+        
         private async Task UpdateExecutionStepStatusCallback(
             string userId,
             string executionId,
