@@ -195,7 +195,8 @@ namespace Rocket.Jobs.Service
             string userId,
             string executionId,
             int executionStatus,
-            BaseExecutionStep executionStep
+            BaseExecutionStep executionStep,
+            Exception exception = null
         )
         {
             executionStep.ExecutionStatus = executionStatus;
@@ -210,6 +211,21 @@ namespace Rocket.Jobs.Service
                         executionStep,
                         CancellationToken.None
                     );
+
+            if (exception != null)
+            {
+                var logMessage = exception.Message;
+
+                await
+                    executionRepository
+                        .AppendLogMessageToStepAsync(
+                            executionStep.Id,
+                            executionId,
+                            userId,
+                            logMessage,
+                            CancellationToken.None
+                        );
+            }
 
             await
                 captureNotifier

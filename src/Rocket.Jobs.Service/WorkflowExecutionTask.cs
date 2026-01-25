@@ -14,7 +14,7 @@ namespace Rocket.Jobs.Service
             string userId,
             string executionId,
             IWorkflowExecutionContext context,
-            Func<string, string, int, BaseExecutionStep, Task> updateExecutionStepCallbackFunc,
+            Func<string, string, int, BaseExecutionStep, Exception, Task> updateExecutionStepCallbackFunc,
             CancellationToken cancellationToken
         )
         {
@@ -60,7 +60,8 @@ namespace Rocket.Jobs.Service
                         userId,
                         executionId,
                         (int)ExecutionStatusEnum.Completed,
-                        step
+                        step,
+                        null
                     );
             }
             catch (OperationCanceledException)
@@ -70,19 +71,21 @@ namespace Rocket.Jobs.Service
                         userId,
                         executionId,
                         (int)ExecutionStatusEnum.Cancelled,
-                        step
+                        step,
+                        null
                     );
                 
                 throw;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await
                     updateExecutionStepCallbackFunc(
                         userId,
                         executionId,
                         (int)ExecutionStatusEnum.Errored,
-                        step
+                        step,
+                        ex
                     );
 
                 throw;

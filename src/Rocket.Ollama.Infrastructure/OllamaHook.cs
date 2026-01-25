@@ -16,7 +16,10 @@ using Rocket.Ollama.Infrastructure.Definition;
 
 namespace Rocket.Ollama.Infrastructure
 {
-    public class OllamaHook(ILogger<OllamaHook> logger) : IIntegrationHook
+    public class OllamaHook(
+        ILogger<OllamaHook> logger,
+        IImageBase64Converter imageBase64Converter
+    ) : IIntegrationHook
     {
         public bool IsApplicable(BaseExecutionStep step) => step is OllamaExtractExecutionStep;
 
@@ -42,6 +45,10 @@ namespace Rocket.Ollama.Infrastructure
 
             var imageBytes = artifact.Artifact;
             var fileName = $"{Guid.NewGuid()}{artifact.FileExtension}";
+
+            var base64Image = 
+                imageBase64Converter
+                    .Perform(imageBytes);
 
             if (step is not OllamaExtractExecutionStep ollamaStep)
                 throw new RocketException(
@@ -75,7 +82,7 @@ namespace Rocket.Ollama.Infrastructure
                     {
                         Role = "user",
                         Content = "Perform OCR on this image and return only the text.",
-                        Images = [Encoding.Default.GetString(imageBytes)]
+                        Images = [base64Image]
                     }
                 ]
             };

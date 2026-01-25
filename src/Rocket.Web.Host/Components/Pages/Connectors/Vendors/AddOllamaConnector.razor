@@ -41,8 +41,8 @@
                             Required
                             Label="Network endpoint"
                             HelperText="Enter the network endpoint here"
-                            @bind-Value="_endpoint"
-                            For="@(() => _endpoint)"
+                            @bind-Value="_createRequest.Endpoint"
+                            For="@(() => _createRequest.Endpoint)"
                             RequiredError="Network endpoint is required."/>
                     </MudItem>
                 </MudGrid>

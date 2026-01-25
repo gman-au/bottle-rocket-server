@@ -15,11 +15,14 @@
     Context="stepSpecifics">
     <MudGrid>
         <MudItem sm="12" lg="6">
-            <MudText
-                type="hidden"
+            <MudTextField
                 T="string"
-                @bind-Value="stepSpecifics.InputTypeName"
-                For="@(() => stepSpecifics.InputTypeName)"/>
+                Label="Model Name"
+                Required="true"
+                RequiredError="Model name is required"
+                HelperText="Enter the Ollama model name to use for OCR extraction"
+                @bind-Value="stepSpecifics.ModelName"
+                For="@(() => stepSpecifics.ModelName)"/>
         </MudItem>
     </MudGrid>
 </UpdateWorkflowStepWrapper>

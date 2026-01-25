@@ -13,6 +13,8 @@ namespace Rocket.Ollama.Infrastructure
                 base
                     .Clone(value);
 
+            result.ModelName = value.ModelName;
+
             return result;
         }
     }

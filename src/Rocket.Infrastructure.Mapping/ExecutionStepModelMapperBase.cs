@@ -76,6 +76,9 @@ namespace Rocket.Infrastructure.Mapping
                             value.OutputType,
                             DomainConstants.UnknownType
                         ),
+                LogMessages = 
+                    value
+                        .LogMessages,
                 ChildSteps =
                     (value.ChildSteps ?? [])
                     .Select(

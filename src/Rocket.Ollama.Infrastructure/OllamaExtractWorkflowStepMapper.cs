@@ -14,6 +14,8 @@ namespace Rocket.Ollama.Infrastructure
                 base
                     .For(value);
 
+            result.ModelName = value.ModelName;
+
             return result;
         }
 
@@ -22,6 +24,8 @@ namespace Rocket.Ollama.Infrastructure
             var result =
                 base
                     .From(value);
+
+            result.ModelName = value.ModelName;
 
             return result;
         }

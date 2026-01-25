@@ -33,6 +33,9 @@ namespace Rocket.Api.Contracts.Executions
         [JsonPropertyName("execution_status")]
         public int? ExecutionStatus { get; set; }
 
+        [JsonPropertyName("log_messages")]
+        public string[] LogMessages { get; set; }
+
         [JsonPropertyName("child_steps")]
         public IEnumerable<ExecutionStepSummary> ChildSteps { get; set; }
     }
