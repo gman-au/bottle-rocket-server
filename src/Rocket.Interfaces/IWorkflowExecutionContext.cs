@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Rocket.Domain;
 using Rocket.Domain.Connectors;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;

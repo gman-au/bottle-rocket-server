@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Api.Contracts.Executions;
-using Rocket.Domain;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Utils;
 using Rocket.Interfaces;

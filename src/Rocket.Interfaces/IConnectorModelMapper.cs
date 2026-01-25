@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Connectors;
-using Rocket.Domain;
 using Rocket.Domain.Connectors;
 
 namespace Rocket.Interfaces

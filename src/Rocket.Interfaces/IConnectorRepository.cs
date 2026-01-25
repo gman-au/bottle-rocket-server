@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Rocket.Domain;
 using Rocket.Domain.Connectors;
 
 namespace Rocket.Interfaces

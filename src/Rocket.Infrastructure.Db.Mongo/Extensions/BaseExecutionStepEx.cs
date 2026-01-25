@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Rocket.Domain;
 using Rocket.Domain.Executions;
 
 namespace Rocket.Infrastructure.Db.Mongo.Extensions

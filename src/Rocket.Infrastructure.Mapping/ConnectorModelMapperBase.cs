@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Connectors;
-using Rocket.Domain;
 using Rocket.Domain.Connectors;
 using Rocket.Domain.Utils;
 using Rocket.Interfaces;

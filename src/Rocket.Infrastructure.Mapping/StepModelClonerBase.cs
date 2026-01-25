@@ -2,7 +2,6 @@
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
-using Rocket.Domain;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Workflows;

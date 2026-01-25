@@ -1,6 +1,5 @@
 ﻿using System;
 using Rocket.Api.Contracts.Workflows;
-using Rocket.Domain;
 using Rocket.Domain.Workflows;
 
 namespace Rocket.Interfaces

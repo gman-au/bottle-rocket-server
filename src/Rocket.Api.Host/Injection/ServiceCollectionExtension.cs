@@ -10,7 +10,6 @@ using MongoDB.Bson.Serialization;
 using Rocket.Api.Host.Exceptions;
 using Rocket.Api.Host.Notifiers;
 using Rocket.Api.Host.Prepopulation;
-using Rocket.Domain;
 using Rocket.Domain.Connectors;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Utils;
