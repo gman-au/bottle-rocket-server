@@ -4,7 +4,7 @@ using Rocket.MaxOcr.Domain;
 
 namespace Rocket.MaxOcr.Infrastructure
 {
-    public class MacOcrBsonMapper : IBsonMapper
+    public class MaxOcrBsonMapper : IBsonMapper
     {
         public void MapApplicableBsonTypes()
         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Rocket.Api.Contracts.Workflows;
 using Rocket.Dropbox.Contracts;
 using Rocket.MaxOcr.Contracts;
+using Rocket.Ollama.Contracts;
 
 namespace Rocket.Infrastructure.Json
 {
@@ -12,6 +13,7 @@ namespace Rocket.Infrastructure.Json
         {
             { typeof(DropboxUploadWorkflowStepSpecifics), "dropbox_upload_workflow" },
             { typeof(MaxOcrExtractWorkflowStepSpecifics), "maxocr_extract_workflow" },
+            { typeof(OllamaExtractWorkflowStepSpecifics), "ollama_extract_workflow" },
             { typeof(EmailFileAttachmentStepSpecifics), "email_file_attachment" }
         };
 
