@@ -1,6 +1,7 @@
-﻿@page "/MyConnector/MaxOcr/Add"
+﻿@page "/MyConnector/Ollama/Add"
 @using Rocket.Api.Contracts.Connectors
 @using Rocket.MaxOcr.Contracts
+@using Rocket.Ollama.Contracts
 @using Rocket.Web.Client
 @using Rocket.Web.Host.Infrastructure
 @inject IApiRequestManager ApiRequestManager
@@ -20,7 +21,7 @@
                     Typo="Typo.h4"
                     Color="Color.Primary"
                     Class="mb-4">
-                    Add a MaxOCR connector
+                    Add an Ollama connector
                 </MudText>
 
                 <MudGrid>
@@ -29,10 +30,10 @@
                             Color="Color.Secondary"
                             Typo="Typo.h5"
                         >
-                            Step 1: Enter the hosted MaxOCR endpoint
+                            Step 1: Enter the hosted Ollama endpoint
                         </MudText>
                         <MudText>
-                            The MaxOCR server should be hosted on an accessible network. Enter the endpoint here.
+                            The Ollama server should be hosted on an accessible network. Enter the endpoint here.
                         </MudText>
                     </MudItem>
                     <MudItem sm="12" lg="6">
@@ -70,7 +71,7 @@
     MudForm _form;
 
     private bool _isLoading;
-    private CreateMaxOcrConnectorRequest _createRequest;
+    private CreateOllamaConnectorRequest _createRequest;
 
     private string _endpoint = null;
 
@@ -88,7 +89,7 @@
             _isLoading = true;
             StateHasChanged();
 
-            _createRequest = new CreateMaxOcrConnectorRequest();
+            _createRequest = new CreateOllamaConnectorRequest();
         }
         catch (Exception ex)
         {
@@ -121,9 +122,9 @@
                     await
                         ApiRequestManager
                             .CreateConnectorAsync(
-                                new CreateConnectorRequest<MaxOcrConnectorSpecifics>
+                                new CreateConnectorRequest<OllamaConnectorSpecifics>
                                 {
-                                    Connector = new MaxOcrConnectorSpecifics
+                                    Connector = new OllamaConnectorSpecifics
                                     {
                                         Endpoint = endpoint
                                     }

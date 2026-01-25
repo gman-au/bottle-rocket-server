@@ -19,6 +19,8 @@ namespace Rocket.Domain.Executions
         
         public int ExecutionStatus { get; set; }
         
+        public string[] LogMessages { get; set; }
+        
         public IEnumerable<BaseExecutionStep> ChildSteps { get; set; }
     }
 }

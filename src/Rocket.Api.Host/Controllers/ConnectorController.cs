@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +11,6 @@ using Rocket.Api.Contracts.Connectors;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
-using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers

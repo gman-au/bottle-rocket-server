@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Rocket.Domain;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
 using Rocket.Interfaces;

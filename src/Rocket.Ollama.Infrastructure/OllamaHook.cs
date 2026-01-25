@@ -5,15 +5,18 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Interfaces;
 using Rocket.Ollama.Domain;
+using Rocket.Ollama.Infrastructure.Definition;
 
 namespace Rocket.Ollama.Infrastructure
 {
-    public class OllamaHook : IIntegrationHook
+    public class OllamaHook(ILogger<OllamaHook> logger) : IIntegrationHook
     {
         public bool IsApplicable(BaseExecutionStep step) => step is OllamaExtractExecutionStep;
 
@@ -40,6 +43,12 @@ namespace Rocket.Ollama.Infrastructure
             var imageBytes = artifact.Artifact;
             var fileName = $"{Guid.NewGuid()}{artifact.FileExtension}";
 
+            if (step is not OllamaExtractExecutionStep ollamaStep)
+                throw new RocketException(
+                    "Unexpected step format, please check configuration",
+                    ApiStatusCodeEnum.DeveloperError
+                );
+
             using var httpClient = new HttpClient();
 
             httpClient.BaseAddress =
@@ -50,19 +59,33 @@ namespace Rocket.Ollama.Infrastructure
                     )
                 );
 
+            httpClient.Timeout =
+                TimeSpan
+                    .FromMinutes(10);
+
+            logger
+                .LogDebug("Sending OCR request to Ollama server");
+
+            var request = new OllamaOcrRequest
+            {
+                Model = ollamaStep.ModelName,
+                Messages =
+                [
+                    new OllamaOcrRequestMessage
+                    {
+                        Role = "user",
+                        Content = "Perform OCR on this image and return only the text.",
+                        Images = [Encoding.Default.GetString(imageBytes)]
+                    }
+                ]
+            };
+
             var response =
                 await
                     httpClient
-                        .PostAsync(
-                            "model/predict",
-                            new MultipartFormDataContent
-                            {
-                                {
-                                    new ByteArrayContent(imageBytes),
-                                    "image",
-                                    fileName
-                                }
-                            },
+                        .PostAsJsonAsync(
+                            "api/chat",
+                            request,
                             cancellationToken
                         );
 
@@ -73,7 +96,13 @@ namespace Rocket.Ollama.Infrastructure
                 await
                     response
                         .Content
-                        .ReadFromJsonAsync<OllamaResponse>(cancellationToken);
+                        .ReadFromJsonAsync<OllamaOcrResponse>(cancellationToken);
+
+            if (string.IsNullOrEmpty(ocrResponse?.Message?.Content))
+                throw new RocketException(
+                    "No OCR data was extracted from the image.",
+                    ApiStatusCodeEnum.ThirdPartyServiceError
+                );
 
             var resultArtifact =
                 new ExecutionStepArtifact
@@ -84,13 +113,7 @@ namespace Rocket.Ollama.Infrastructure
                         Encoding
                             .Default
                             .GetBytes(
-                                "Meet the flintstones!"
-                                /*
-                        string.Join(
-                                    "\n",
-                                    ocrResponse?.Text ?? []
-                                )
-                                */
+                                ocrResponse.Message.Content
                             ),
                     FileExtension = ".txt"
                 };
