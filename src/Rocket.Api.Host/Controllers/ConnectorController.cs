@@ -31,7 +31,8 @@ namespace Rocket.Api.Host.Controllers
         [EndpointDescription(
             """
             Retrieves a subset of connectors belonging to the authenticated user.\n
-            Provide a zero-based start index and record count to retrieve paged results and minimise server load. 
+            Provide a zero-based start index and record count to retrieve paged results and minimise server load.\n
+            If required, a connector code can be supplied as an additional filter.
             """
         )]
         [ProducesResponseType(
@@ -92,25 +93,7 @@ namespace Rocket.Api.Host.Controllers
                                         mapper
                                             .From(o);
                                 }
-                            )
-                    /*.Select(
-                        o =>
-                            new ConnectorSummary
-                            {
-                                Id = o.Id,
-                                ConnectorType =
-                                    DomainConstants
-                                        .ConnectorTypes
-                                        .GetValueOrDefault(
-                                            o.ConnectorType,
-                                            DomainConstants.UnknownType
-                                        ),
-                                ConnectorName = o.ConnectorName,
-                                CreatedAt = o.CreatedAt.ToLocalTime(),
-                                LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
-                                Status = (int)o.DetermineStatus()
-                            }
-                    ),*/,
+                            ),
                     TotalRecords = (int)totalRecordCount
                 };
 
@@ -125,6 +108,7 @@ namespace Rocket.Api.Host.Controllers
         [EndpointDescription(
             """
             Deletes a user's connector by its unique ID.\n
+            Note: deleting a connector will remove all references to it from all associated workflows.
             """
         )]
         [ProducesResponseType(

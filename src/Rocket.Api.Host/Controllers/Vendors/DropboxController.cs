@@ -31,7 +31,10 @@ namespace Rocket.Api.Host.Controllers.Vendors
         [EndpointGroupName("Manage connectors")]
         [EndpointDescription(
             """
-            Finalizes a Dropbox connector for the given user.
+            Finalizes a Dropbox connector for the given user.\n
+            When this endpoint is called, it is assumed that the user has already supplied the app key and secret.\n
+            The Dropbox client will use these parameters to return a redirect URL, which, when opened in a browser,
+            allows a user to grant permission to the app, and receive an access token, which will be supplied here.
             """
         )]
         [ProducesResponseType(

@@ -61,9 +61,6 @@ namespace Rocket.Infrastructure
                                 cancellationToken
                             );
 
-                // poc hooks
-                // TODO: there is a layer in the middle here for workflows linked to connectors
-
                 scannedImage.UserId = userId;
                 scannedImage.BlobId = blobId;
                 scannedImage.CaptureDate = DateTime.UtcNow;

@@ -30,7 +30,8 @@ namespace Rocket.Api.Host.Controllers
         [EndpointGroupName("Manage workflows")]
         [EndpointDescription(
             """
-            Deletes a user's workflow step by its unique ID.
+            Deletes a user's workflow step by its unique ID.\n
+            Note: this will also delete all of the child steps of the deleted step, if any exist.
             """
         )]
         [ProducesResponseType(
@@ -88,7 +89,7 @@ namespace Rocket.Api.Host.Controllers
         [EndpointGroupName("Manage workflows")]
         [EndpointDescription(
             """
-            TODO
+            Retrieves the specific workflow step details for the given workflow and step ID.
             """
         )]
         [ProducesResponseType(
@@ -112,7 +113,7 @@ namespace Rocket.Api.Host.Controllers
 
             logger
                 .LogInformation(
-                    "Received workflow step creation request for username: {username}",
+                    "Received workflow step details request for username: {username}",
                     user.Username
                 );
 
@@ -152,7 +153,11 @@ namespace Rocket.Api.Host.Controllers
         [EndpointGroupName("Manage workflows")]
         [EndpointDescription(
             """
-            // TODO
+            Creates a new workflow step for the given workflow. If a parent step ID is provided,
+            the new step will be inserted as a child of the specified parent step; otherwise it will be 
+            inserted as a root-level child step.\n
+            The step parameter uses a type discriminator in order to correctly map the step-specific details to
+            the correct data store object dictionary; see the related documentation for details.
             """
         )]
         [ProducesResponseType(
@@ -251,7 +256,9 @@ namespace Rocket.Api.Host.Controllers
         [EndpointGroupName("Manage workflows")]
         [EndpointDescription(
             """
-            // TODO
+            Updates an existing workflow step for the given workflow.\n
+            The step parameter uses a type discriminator in order to correctly map the step-specific details to
+            the correct data store object dictionary; see the related documentation for details.
             """
         )]
         [ProducesResponseType(
