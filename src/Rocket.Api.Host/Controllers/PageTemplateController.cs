@@ -27,7 +27,9 @@ namespace Rocket.Api.Host.Controllers
         [EndpointGroupName("Manage page templates")]
         [EndpointDescription(
             """
-            // TODO
+            Retrieves all page template currently configured in the system.\n
+            Typically this would not be called regularly as it is used by client apps to know which QR codes to look out for.\n
+            If you have added custom page templates to your system, they will be returned here. 
             """
         )]
         [ProducesResponseType(

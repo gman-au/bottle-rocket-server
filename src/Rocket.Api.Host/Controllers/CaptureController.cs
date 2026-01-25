@@ -28,7 +28,12 @@ namespace Rocket.Api.Host.Controllers
         [EndpointSummary("Process captured image(s)")]
         [EndpointGroupName("Manage captures / scans")]
         [EndpointDescription(
-            "Process uploaded images via this endpoint. Use the url-encoded multipart form schema to POST the image data."
+            """
+            Process uploaded images via this endpoint. Use the url-encoded multipart form schema to POST the image data.\n
+            The app will automatically provide matched template information as part of automated workflow triggering, but
+            if you wish to simply upload a captured image to the system and trigger a manual workflow, the qr_code and qr_bounding_box
+            parameters can be omitted.
+            """
         )]
         [ProducesResponseType(
             typeof(ProcessCaptureResponse),

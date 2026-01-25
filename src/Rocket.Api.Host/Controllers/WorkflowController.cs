@@ -98,7 +98,7 @@ namespace Rocket.Api.Host.Controllers
         [EndpointGroupName("Manage workflows")]
         [EndpointDescription(
             """
-            Deletes a user's workflow by its unique ID.\n
+            Deletes a user's workflow by its unique ID.
             """
         )]
         [ProducesResponseType(
@@ -264,6 +264,8 @@ namespace Rocket.Api.Host.Controllers
         [EndpointDescription(
             """
             Updates one or more details of an existing workflow. A value not supplied will not be updated.
+            Where a matching page symbol is supplied, it will be checked against any existing workflow, and return
+            an error if already in use.
             """
         )]
         [ProducesResponseType(

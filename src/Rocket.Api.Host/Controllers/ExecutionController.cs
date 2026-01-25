@@ -33,7 +33,9 @@ namespace Rocket.Api.Host.Controllers
         [EndpointGroupName("Manage executions")]
         [EndpointDescription(
             """
-            // TODO 
+            Retrieves a subset of executions belonging to the authenticated user.\n
+            Provide a zero-based start index and record count to retrieve paged results and minimise server load.\n
+            Optionally, a workflow ID and scan ID can be supplied as additional filters.
             """
         )]
         [ProducesResponseType(
@@ -105,7 +107,7 @@ namespace Rocket.Api.Host.Controllers
         [EndpointGroupName("Manage executions")]
         [EndpointDescription(
             """
-            Deletes a user's workflow execution by its unique ID.\n
+            Deletes a user's workflow execution by its unique ID.
             """
         )]
         [ProducesResponseType(
@@ -162,7 +164,9 @@ namespace Rocket.Api.Host.Controllers
         [EndpointGroupName("Manage executions")]
         [EndpointDescription(
             """
-            Creates a new workflow execution for the given user. Throws an error if the workflow ID cannot be found for the given user.
+            Creates a new workflow execution for the given user, workflow ID, and captured scan ID.\n
+            Throws an error if the any of the related objects (user, scan, workflow) cannot be found for the given user.\n
+            If the run immediately flag is set to true, the execution will be scheduled to run immediately.\n
             """
         )]
         [ProducesResponseType(
@@ -283,7 +287,7 @@ namespace Rocket.Api.Host.Controllers
         [HttpPut("start/{id}")]
         [EndpointSummary("Start an inactive execution by ID")]
         [EndpointGroupName("Manage executions")]
-        [EndpointDescription("Attempts to start a running workflow execution by its unique identifier.")]
+        [EndpointDescription("Attempts to start an inactive workflow execution by its unique identifier.")]
         [ProducesResponseType(
             typeof(UserSpecifics),
             StatusCodes.Status200OK
