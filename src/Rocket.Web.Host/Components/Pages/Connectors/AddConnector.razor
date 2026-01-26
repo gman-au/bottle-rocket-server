@@ -1,6 +1,5 @@
 ﻿@page "/MyConnectors/Add"
 @using Rocket.Dropbox.Domain
-@using Rocket.MaxOcr.Domain
 @using Rocket.Ollama.Domain
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
@@ -51,17 +50,17 @@
             Href = "/MyConnector/Dropbox/Add",
             ImagePath = "/img/dropbox-logo.webp"
         },
-        new()
+        /*new()
         {
             Name = MaxOcrDomainConstants.ConnectorName,
             Href = "/MyConnector/MaxOcr/Add",
             ImagePath = "/img/ibm-logo.svg"
-        },
+        },*/
         new()
         {
             Name = OllamaDomainConstants.ConnectorName,
             Href = "/MyConnector/Ollama/Add",
-            ImagePath = "/img/ollama-icon.svg"
+            ImagePath = "/img/ollama-logo.png"
         }
     ];
 
