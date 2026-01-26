@@ -58,13 +58,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MaxOcr", "MaxOcr", "{57F974
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ollama", "Ollama", "{E02E9B38-E79C-4C27-8C1E-5E37705A72D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Ollama.Domain", "Rocket.Ollama.Domain\Rocket.Ollama.Domain.csproj", "{574C28CE-D24B-427C-B663-BDC41EB7255A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Ollama.Domain", "Integrations\Ollama\Rocket.Ollama.Domain\Rocket.Ollama.Domain.csproj", "{574C28CE-D24B-427C-B663-BDC41EB7255A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Ollama.Contracts", "Rocket.Ollama.Contracts\Rocket.Ollama.Contracts.csproj", "{CF21066E-11C9-4BCF-B21B-2D7CB17611A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Ollama.Contracts", "Integrations\Ollama\Rocket.Ollama.Contracts\Rocket.Ollama.Contracts.csproj", "{CF21066E-11C9-4BCF-B21B-2D7CB17611A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Ollama.Infrastructure", "Rocket.Ollama.Infrastructure\Rocket.Ollama.Infrastructure.csproj", "{B62D19C1-7ED0-4482-9836-2EBA884CF83F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Ollama.Infrastructure", "Integrations\Ollama\Rocket.Ollama.Infrastructure\Rocket.Ollama.Infrastructure.csproj", "{B62D19C1-7ED0-4482-9836-2EBA884CF83F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Ollama.Injection", "Rocket.Ollama.Injection\Rocket.Ollama.Injection.csproj", "{53D5CCFD-982C-477D-A8B8-B16D9F1CB08B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Ollama.Injection", "Integrations\Ollama\Rocket.Ollama.Injection\Rocket.Ollama.Injection.csproj", "{53D5CCFD-982C-477D-A8B8-B16D9F1CB08B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

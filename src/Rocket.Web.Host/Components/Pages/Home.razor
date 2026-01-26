@@ -36,12 +36,41 @@
         <MudCarouselItem
             Class="px-4 carousel-help-container"
             Transition="Transition.Slide"
+            Color="@Color.Tertiary">
+            <MudGrid Justify="Justify.FlexStart" Container="true">
+                <MudItem xs="12">
+                    <MudImage Class="carousel-help-image" Fluid Src="@Assets["/img/my_connectors.png"]"/>
+                    <MudText Style="position: absolute; left: 10px; top: 10px;" Class="carousel-help-text pa-6" Typo="Typo.body1">
+                        Use the
+                        <MudLink Href="/MyConnectors/Add">Add connector</MudLink>
+                        link to start adding integrations with 3rd party services.
+                    </MudText>
+                </MudItem>
+            </MudGrid>
+        </MudCarouselItem>
+        <MudCarouselItem
+            Class="px-4 carousel-help-container"
+            Transition="Transition.Slide"
+            Color="@Color.Tertiary">
+            <MudGrid Justify="Justify.Center" Container="true">
+                <MudItem xs="12">
+                    <MudImage Class="carousel-help-image" Fluid Src="@Assets["/img/my_workflows.png"]"/>
+                    <MudText Class="carousel-help-text pa-6" Typo="Typo.body1">
+                        Use the
+                        <MudLink Href="/MyWorkflows/Add">Add workflow</MudLink>
+                        link to start building workflow triggers for your page captures.
+                    </MudText>
+                </MudItem>
+            </MudGrid>
+        </MudCarouselItem>
+        <MudCarouselItem
+            Class="px-4 carousel-help-container"
+            Transition="Transition.Slide"
             Color="@Color.Tertiary"
         >
             <MudGrid Justify="Justify.SpaceEvenly" Container="true">
                 <MudItem xs="12">
                     <MudImage Class="carousel-help-image" Fluid Src="@Assets["/img/play_store.png"]"/>
-                    
                 </MudItem>
                 <MudFlexBreak/>
                 <MudItem xs="12" md="6" Style="position:absolute;">

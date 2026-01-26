@@ -41,5 +41,11 @@ namespace Rocket.Interfaces
             string workflowStepId,
             CancellationToken cancellationToken
         );
+
+        Task<int> ScrubConnectorIdFromWorkflowsAsync(
+            string connectorId,
+            string userId,
+            CancellationToken cancellationToken
+        );
     }
 }

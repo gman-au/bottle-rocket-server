@@ -55,7 +55,7 @@ namespace Rocket.Infrastructure.Mapping
                 ConnectorId = value.ConnectorId,
                 StepName = value.StepName,
                 ExecutionStatus = value.ExecutionStatus,
-                RunDate = value.RunDate,
+                RunDate = value.RunDate?.ToLocalTime(),
                 InputTypeName =
                     string.Join(
                         ", ",

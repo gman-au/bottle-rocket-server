@@ -48,7 +48,8 @@ namespace Rocket.Web.Host.Injection
                 .AddTransient<IEmailAddressValidator, EmailAddressValidator>()
                 .AddTransient<IWorkflowMermaidConverter, WorkflowMermaidConverter>()
                 .AddTransient<IExecutionMermaidConverter, ExecutionMermaidConverter>()
-                .AddTransient<IWebHostErrorHandler, WebHostErrorHandler>();
+                .AddTransient<IWebHostErrorHandler, WebHostErrorHandler>()
+                .AddScoped<IThemeService, ThemeService>();
 
             return services;
         }

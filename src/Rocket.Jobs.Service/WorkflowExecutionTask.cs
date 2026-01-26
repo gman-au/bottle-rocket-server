@@ -21,6 +21,15 @@ namespace Rocket.Jobs.Service
         {
             try
             {
+                await
+                    updateExecutionStepCallbackFunc(
+                        userId,
+                        executionId,
+                        (int)ExecutionStatusEnum.Running,
+                        step,
+                        null
+                    );
+                
                 // base execution step should have the connection ID
                 // we only need the applicable hook
                 var hook =

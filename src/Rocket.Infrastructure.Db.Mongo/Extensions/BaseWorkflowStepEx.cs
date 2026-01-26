@@ -75,7 +75,7 @@ namespace Rocket.Infrastructure.Db.Mongo.Extensions
         )
         {
             modifiedSteps = steps;
-            
+
             if (steps == null)
                 return false;
 
@@ -149,6 +149,45 @@ namespace Rocket.Infrastructure.Db.Mongo.Extensions
             }
 
             return false;
+        }
+
+        public static void ScrubConnectorIdFromSteps(
+            IEnumerable<BaseWorkflowStep> steps,
+            string connectorId,
+            ref int scrubCount,
+            out IEnumerable<BaseWorkflowStep> modifiedSteps
+        )
+        {
+            if (steps == null)
+            {
+                modifiedSteps = null;
+                return;
+            }
+
+            var stepsList = steps.ToList();
+
+            foreach (var step in stepsList)
+            {
+                if (step.ConnectorId == connectorId)
+                {
+                    step.ConnectorId = null;
+                    scrubCount++;
+                }
+
+                if (step.ChildSteps != null)
+                {
+                    ScrubConnectorIdFromSteps(
+                        step.ChildSteps,
+                        connectorId,
+                        ref scrubCount,
+                        out var modifiedChildren
+                    );
+
+                    step.ChildSteps = modifiedChildren;
+                }
+            }
+
+            modifiedSteps = stepsList;
         }
 
         private static bool DeleteStepFromChildren(

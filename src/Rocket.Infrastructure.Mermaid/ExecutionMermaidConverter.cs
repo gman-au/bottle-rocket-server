@@ -26,6 +26,10 @@ namespace Rocket.Infrastructure.Mermaid
         private const string CancelledStroke = "#894d18";
         private const string CancelledColor = "#894d18";
         
+        private const string RunningFill = "#90e3f3";
+        private const string RunningStroke = "#101c55";
+        private const string RunningColor = "#101c55";
+        
         public string Convert(ExecutionSummary execution)
         {
             using var aliasEnumerator =
@@ -118,6 +122,11 @@ namespace Rocket.Infrastructure.Mermaid
                         entityLine += "\ud83d\udec7";
                         styleBuilder
                             .AppendLine($"style {aliasEnumerator.Current} fill:{CancelledFill},stroke:{CancelledStroke},color:{CancelledColor}");
+                        break;
+                    case (int)ExecutionStatusEnum.Running:
+                        entityLine += "ⴵ";
+                        styleBuilder
+                            .AppendLine($"style {aliasEnumerator.Current} fill:{RunningFill},stroke:{RunningStroke},color:{RunningColor}");
                         break;
                 }
 

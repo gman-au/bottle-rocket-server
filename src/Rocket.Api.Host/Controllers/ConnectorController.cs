@@ -21,6 +21,7 @@ namespace Rocket.Api.Host.Controllers
     public class ConnectorController(
         ILogger<ConnectorController> logger,
         IUserManager userManager,
+        IConnectorScrubber connectorScrubber,
         IConnectorModelMapperRegistry connectorModelMapperRegistry,
         IConnectorRepository connectorRepository
     ) : RocketControllerBase(userManager)
@@ -138,6 +139,27 @@ namespace Rocket.Api.Host.Controllers
                     "Received connector deletion request for username: {userId}, id: {id}",
                     userId,
                     id
+                );
+            
+            logger
+                .LogInformation(
+                    "Scrubbing workflows with connector ID: {id}",
+                    id
+                );
+
+            var scrubCount =
+                await
+                    connectorScrubber
+                        .ScrubWorkflowsWithConnectorIdAsync(
+                            id,
+                            userId,
+                            cancellationToken
+                        );
+            
+            logger
+                .LogInformation(
+                    "Scrubbed {scrubCount} connector IDs from workflows",
+                    scrubCount
                 );
 
             var result =

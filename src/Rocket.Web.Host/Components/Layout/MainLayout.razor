@@ -1,8 +1,10 @@
-﻿@inherits LayoutComponentBase
+﻿@using Rocket.Web.Host.Infrastructure
+@inherits LayoutComponentBase
+@inject IThemeService ThemeService
 
 <PageTitle>Bottle Rocket</PageTitle>
 
-<BottleRocketMudThemeProvider IsDarkMode="@IsDarkMode"/>
+<BottleRocketMudThemeProvider IsDarkMode="@ThemeService.IsDarkMode"/>
 <MudDialogProvider/>
 <MudPopoverProvider />
 <MudSnackbarProvider/>
@@ -16,10 +18,10 @@
 <MudLayout>
     <BottleRocketSidebar
         OnDarkModeToggle="@(_ => DarkToggle())"
-        DarkMode="@IsDarkMode"/>
+        DarkMode="@ThemeService.IsDarkMode"/>
     <MudMainContent Class="pt-16 px-16">
         <MudContainer Class="mt-6">
-            <CascadingValue Name="IsDarkMode" Value="@IsDarkMode">
+            <CascadingValue Name="IsDarkMode" Value="@ThemeService.IsDarkMode">
                 <ErrorBoundary @ref="_errorBoundary">
                     <ChildContent>
                         @Body
@@ -35,13 +37,11 @@
 
 @code {
 
-    private bool IsDarkMode { get; set; } = true;
-
     private ErrorBoundary _errorBoundary;
 
     void DarkToggle()
     {
-        IsDarkMode = !IsDarkMode;
+        ThemeService.ToggleDarkMode();
         StateHasChanged();
     }
 
