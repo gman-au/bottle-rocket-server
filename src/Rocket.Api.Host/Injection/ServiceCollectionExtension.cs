@@ -131,6 +131,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<ISymbolDetector, SymbolDetector>()
                 .AddTransient<IWorkflowDetector, WorkflowDetector>()
                 .AddTransient<IActiveAdminChecker, ActiveAdminChecker>()
+                .AddTransient<IConnectorScrubber, ConnectorScrubber>()
                 .AddTransient<IThumbnailer, Thumbnailer>()
                 .AddTransient<IUserManager, UserManager>()
                 .AddTransient<IImageBase64Converter, ImageBase64Converter>()

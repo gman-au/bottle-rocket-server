@@ -236,7 +236,7 @@ namespace Rocket.Infrastructure.Db.Mongo
             if (!BaseWorkflowStepEx.UpdateStepById(
                     workflow.Steps,
                     workflowStepId,
-                    updatedWorkflowStep, 
+                    updatedWorkflowStep,
                     out var modifiedSteps
                 ))
                 throw new RocketException(
@@ -255,6 +255,69 @@ namespace Rocket.Infrastructure.Db.Mongo
                     );
 
             return workflow;
+        }
+
+        public async Task<int> ScrubConnectorIdFromWorkflowsAsync(
+            string connectorId,
+            string userId,
+            CancellationToken cancellationToken
+        )
+        {
+            var filter =
+                Builders<Workflow>
+                    .Filter
+                    .Eq(
+                        u => u.UserId,
+                        userId
+                    );
+
+            var workflows =
+                await
+                    GetMongoCollection()
+                        .Find(filter)
+                        .ToListAsync(cancellationToken);
+
+            if ((workflows ?? []).Count == 0)
+                return 0;
+
+            var scrubCount = 0;
+
+            foreach (var workflow in workflows)
+            {
+                BaseWorkflowStepEx
+                    .ScrubConnectorIdFromSteps(
+                        workflow.Steps,
+                        connectorId,
+                        ref scrubCount,
+                        out var modifiedSteps
+                    );
+
+                var update =
+                    Builders<Workflow>
+                        .Update
+                        .Set(
+                            w => w.Steps,
+                            modifiedSteps
+                        );
+                
+                var workflowFilter =
+                    Builders<Workflow>
+                        .Filter
+                        .Eq(
+                            u => u.Id,
+                            workflow.Id
+                        );
+
+                await
+                    GetMongoCollection()
+                        .UpdateOneAsync(
+                            workflowFilter,
+                            update,
+                            cancellationToken: cancellationToken
+                        );
+            }
+
+            return scrubCount;
         }
 
         private static FilterDefinition<Workflow> BuildWorkflowFilterByIdAndUserId(
