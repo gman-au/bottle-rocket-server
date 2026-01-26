@@ -11,6 +11,7 @@ using Rocket.Domain.Utils;
 using Rocket.Dropbox.Injection;
 using Rocket.Infrastructure.Json;
 using Rocket.MaxOcr.Injection;
+using Rocket.Notion.Injection;
 using Rocket.Ollama.Injection;
 
 var builder =
@@ -71,6 +72,7 @@ services
     .AddDropboxIntegration()
     .AddMaxOcrIntegration()
     .AddOllamaIntegration()
+    .AddNotionIntegration()
     .AddWorkflowBackgroundJob();
 
 services

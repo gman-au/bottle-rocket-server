@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
-using Rocket.Dropbox.Domain;
 using Rocket.Interfaces;
+using Rocket.Notion.Domain;
 
-namespace Rocket.Dropbox.Infrastructure
+namespace Rocket.Notion.Infrastructure
 {
-    public class DropboxHook(IDropboxClientManager dropboxClientManager) : IIntegrationHook
+    public class NotionHook(
+        ILogger<NotionHook> logger,
+        IImageBase64Converter imageBase64Converter
+    ) : IIntegrationHook
     {
-        public bool IsApplicable(BaseExecutionStep step) => step is DropboxUploadExecutionStep;
+        public bool IsApplicable(BaseExecutionStep step) => step is NotionUploadExecutionStep;
 
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
@@ -27,24 +31,17 @@ namespace Rocket.Dropbox.Infrastructure
             var connector =
                 await
                     context
-                        .GetConnectorAsync<DropboxConnector>(
+                        .GetConnectorAsync<NotionConnector>(
                             userId,
                             step,
                             cancellationToken
                         );
 
-            await
-                dropboxClientManager
-                    .UploadFileAsync(
-                        connector.AppKey,
-                        connector.AppSecret,
-                        connector.RefreshToken,
-                        artifact.FileExtension,
-                        artifact.Artifact,
-                        cancellationToken
-                    );
+            var imageBytes = artifact.Artifact;
+            
+            // Do the stuff here
 
-            return
+            return 
                 ExecutionStepArtifact
                     .Empty;
         }
