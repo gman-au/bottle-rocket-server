@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Rocket.Notion.Infrastructure.Definition
+namespace Rocket.Notion.Infrastructure.Definition.Searching
 {
     public class PageSearchResponse
     {

@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Rocket.Notion.Infrastructure.Definition
+namespace Rocket.Notion.Infrastructure.Definition.Common
 {
-    public class BlockText
+    public class NotionTextProperty
     {
         [JsonPropertyName("content")] 
         public string Content { get; set; }

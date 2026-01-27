@@ -20,7 +20,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
     [Authorize]
     public class NotionController(
         ILogger<NotionController> logger,
-        INotionClient notionClient,
+        INotionNoteSearcher notionNoteSearcher,
         IConnectorRepository connectorRepository,
         IUserManager userManager
     ) : RocketControllerBase(userManager)
@@ -82,7 +82,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
             // connect to notion and search for pages
             var parentNotes =
                 await
-                    notionClient
+                    notionNoteSearcher
                         .GetParentNotesAsync(
                             connector.IntegrationSecret,
                             cancellationToken

@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Interfaces;
@@ -11,7 +14,7 @@ namespace Rocket.Notion.Infrastructure
 {
     public class NotionHook(
         ILogger<NotionHook> logger,
-        IImageBase64Converter imageBase64Converter
+        INotionNoteUploader notionNoteUploader
     ) : IIntegrationHook
     {
         public bool IsApplicable(BaseExecutionStep step) => step is NotionUploadExecutionStep;
@@ -36,12 +39,37 @@ namespace Rocket.Notion.Infrastructure
                             step,
                             cancellationToken
                         );
-
-            var imageBytes = artifact.Artifact;
             
+            if (step is not NotionUploadExecutionStep notionStep)
+                throw new RocketException(
+                    "Unexpected step format, please check configuration",
+                    ApiStatusCodeEnum.DeveloperError
+                );
+
+            if (artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.RawTextData)
+            {
+                var textBytes =
+                    artifact
+                        .Artifact;
+
+                var textData =
+                    Encoding
+                        .Default
+                        .GetString(textBytes);
+
+                await
+                    notionNoteUploader
+                        .UploadTextNoteAsync(
+                            connector.IntegrationSecret,
+                            notionStep.ParentNoteId,
+                            textData,
+                            cancellationToken
+                        );
+            }
+
             // Do the stuff here
 
-            return 
+            return
                 ExecutionStepArtifact
                     .Empty;
         }

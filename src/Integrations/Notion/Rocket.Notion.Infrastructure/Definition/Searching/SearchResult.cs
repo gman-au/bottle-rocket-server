@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
+using Rocket.Notion.Infrastructure.Definition.Common;
 
-namespace Rocket.Notion.Infrastructure.Definition
+namespace Rocket.Notion.Infrastructure.Definition.Searching
 {
     public class SearchResult
     {
@@ -11,6 +12,6 @@ namespace Rocket.Notion.Infrastructure.Definition
         public string Id { get; set; }
         
         [JsonPropertyName("properties")] 
-        public SearchResultProperties Properties { get; set; }
+        public NotionProperties Properties { get; set; }
     }
 }

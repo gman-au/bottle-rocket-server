@@ -1,13 +1,13 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Rocket.Notion.Infrastructure.Definition
+namespace Rocket.Notion.Infrastructure.Definition.Common
 {
-    public class Block
+    public class NotionProperty
     {
         [JsonPropertyName("type")] 
         public string Type { get; set; }
         
         [JsonPropertyName("text")] 
-        public BlockText Text { get; set; }
+        public NotionTextProperty Text { get; set; }
     }
 }

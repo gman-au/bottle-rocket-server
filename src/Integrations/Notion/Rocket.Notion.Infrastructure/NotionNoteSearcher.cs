@@ -7,34 +7,18 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Notion.Contracts;
-using Rocket.Notion.Infrastructure.Definition;
+using Rocket.Notion.Infrastructure.Definition.Searching;
 
 namespace Rocket.Notion.Infrastructure
 {
-    public class NotionClient : INotionClient
+    public class NotionNoteSearcher : BaseNotionClient, INotionNoteSearcher
     {
-        private const string NotionEndpoint = "https://api.notion.com";
-        private const string NotionVersion = "2022-06-28";
-        private const string NotionContentType = "application/json";
-
         public async Task<IEnumerable<NotionParentNoteSummary>> GetParentNotesAsync(
             string integrationSecret,
             CancellationToken cancellationToken
         )
         {
-            using var httpClient = new HttpClient();
-
-            httpClient.BaseAddress =
-                new Uri(NotionEndpoint);
-
-            httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(
-                    "Bearer",
-                    integrationSecret
-                );
-
-            httpClient.DefaultRequestHeaders.Add("Notion-Version", NotionVersion);
-            // httpClient.DefaultRequestHeaders.Add("Content-Type", NotionContentType);
+            using var httpClient = GetBaseHttpClient(integrationSecret);
             
             var request = new PageSearchRequest
             {
@@ -80,6 +64,14 @@ namespace Rocket.Notion.Infrastructure
                     );
 
             return results;
+        }
+
+        public Task UploadTextNoteAsync(
+            string textContent, 
+            CancellationToken cancellationToken
+            )
+        {
+            throw new NotImplementedException();
         }
     }
 }
