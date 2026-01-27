@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Rocket.Dropbox.Contracts;
+using Rocket.Gcp.Contracts;
 using Rocket.MaxOcr.Contracts;
 using Rocket.Notion.Contracts;
 using Rocket.Ollama.Contracts;
@@ -14,6 +15,7 @@ namespace Rocket.Infrastructure.Json
             { typeof(DropboxConnectorSpecifics), "dropbox_connector" },
             { typeof(MaxOcrConnectorSpecifics), "maxocr_connector" },
             { typeof(OllamaConnectorSpecifics), "ollama_connector" },
+            { typeof(GcpConnectorSpecifics), "gcp_connector" },
             { typeof(NotionConnectorSpecifics), "notion_connector" }
         };
 

@@ -10,6 +10,7 @@ using Rocket.Api.Host.Injection;
 using Rocket.Diagnostics.Injection;
 using Rocket.Domain.Utils;
 using Rocket.Dropbox.Injection;
+using Rocket.Gcp.Injection;
 using Rocket.Infrastructure.Json;
 using Rocket.MaxOcr.Injection;
 using Rocket.Notion.Injection;
@@ -74,6 +75,7 @@ services
     .AddMaxOcrIntegration()
     .AddOllamaIntegration()
     .AddNotionIntegration()
+    .AddGcpIntegration()
     .AddDiagnosticIntegration()
     .AddWorkflowBackgroundJob();
 

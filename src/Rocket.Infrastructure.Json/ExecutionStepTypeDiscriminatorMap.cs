@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Rocket.Diagnostics.Contracts;
 using Rocket.Dropbox.Contracts;
+using Rocket.Gcp.Contracts;
 using Rocket.MaxOcr.Contracts;
 using Rocket.Notion.Contracts;
 using Rocket.Ollama.Contracts;
@@ -15,6 +16,7 @@ namespace Rocket.Infrastructure.Json
             { typeof(DropboxUploadExecutionStepSpecifics), "dropbox_upload_execution" },
             { typeof(MaxOcrExtractExecutionStepSpecifics), "maxocr_extract_execution" },
             { typeof(OllamaExtractExecutionStepSpecifics), "ollama_extract_execution" },
+            { typeof(GcpExtractExecutionStepSpecifics), "gcp_extract_execution" },
             { typeof(HelloWorldTextExecutionStepSpecifics), "hello_world_text_execution" },
             { typeof(NotionUploadExecutionStepSpecifics), "notion_upload_execution" }
         };
