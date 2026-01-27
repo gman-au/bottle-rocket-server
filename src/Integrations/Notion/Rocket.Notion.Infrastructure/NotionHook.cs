@@ -62,6 +62,7 @@ namespace Rocket.Notion.Infrastructure
                         .UploadTextNoteAsync(
                             connector.IntegrationSecret,
                             notionStep.ParentNoteId,
+                            null,
                             textData,
                             cancellationToken
                         );

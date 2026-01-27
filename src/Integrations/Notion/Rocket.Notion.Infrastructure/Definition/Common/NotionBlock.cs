@@ -2,11 +2,8 @@
 
 namespace Rocket.Notion.Infrastructure.Definition.Common
 {
+    [JsonDerivedType(typeof(NotionParagraphBlock))]
     public abstract class NotionBlock
     {
-        [JsonPropertyName("object")]
-        public string Object { get; set; } = "block";
-        
-        public abstract string Type { get; set; }
     }
 }

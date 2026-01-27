@@ -8,6 +8,7 @@ namespace Rocket.Notion.Infrastructure
         Task UploadTextNoteAsync(
             string integrationSecret,
             string parentNoteId,
+            string title,
             string textContent,
             CancellationToken cancellationToken
         );
