@@ -7,6 +7,7 @@ using Rocket.Api.Contracts.Scans;
 using Rocket.Api.Contracts.Users;
 using Rocket.Api.Contracts.Workflows;
 using Rocket.Dropbox.Contracts;
+using Rocket.Notion.Contracts;
 
 namespace Rocket.Web.Client
 {
@@ -84,11 +85,6 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         ) where T : ConnectorSummary;
 
-        public Task<ApiResponse> FinalizeDropboxConnectorAsync(
-            FinalizeDropboxConnectorRequest request,
-            CancellationToken cancellationToken
-        );
-
         public Task<T> GetWorkflowStepAsync<T>(
             string workflowId,
             string stepId,
@@ -132,6 +128,16 @@ namespace Rocket.Web.Client
 
         Task<CancelExecutionResponse> CancelExecutionAsync(
             string executionId,
+            CancellationToken cancellationToken
+        );
+
+        public Task<ApiResponse> FinalizeDropboxConnectorAsync(
+            FinalizeDropboxConnectorRequest request,
+            CancellationToken cancellationToken
+        );
+
+        public Task<GetAllNotionParentNotesResponse> GetNotionParentNotesAsync(
+            GetAllNotionParentNotesRequest request,
             CancellationToken cancellationToken
         );
     }

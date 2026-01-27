@@ -44,8 +44,9 @@ namespace Rocket.Dropbox.Infrastructure
                         cancellationToken
                     );
 
-            // TODO: create a static .Empty artifact
-            return artifact;
+            return
+                ExecutionStepArtifact
+                    .Empty;
         }
     }
 }

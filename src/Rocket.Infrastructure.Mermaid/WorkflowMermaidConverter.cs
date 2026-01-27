@@ -2,11 +2,13 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts.Workflows;
+using Rocket.Diagnostics.Contracts;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Utils;
 using Rocket.Dropbox.Contracts;
 using Rocket.Infrastructure.Mermaid.Extensions;
 using Rocket.Interfaces;
+using Rocket.Notion.Contracts;
 using Rocket.Ollama.Contracts;
 
 namespace Rocket.Infrastructure.Mermaid
@@ -108,6 +110,7 @@ namespace Rocket.Infrastructure.Mermaid
                 aliasEnumerator
                     .MoveNext();
 
+                var requiresConnection = !string.IsNullOrEmpty(step.RequiresConnectorCode);
                 var missingConnection = string.IsNullOrEmpty(step.ConnectorId);
 
                 var currentChildAlias =
@@ -116,13 +119,17 @@ namespace Rocket.Infrastructure.Mermaid
 
                 var entityLine = $"{currentChildAlias}";
                 entityLine += "(\"";
-                if (missingConnection)
+
+                if (requiresConnection)
                 {
-                    entityLine += "\u26a0\ufe0f";
-                }
-                else
-                {
-                    entityLine += "\u2705";
+                    if (missingConnection)
+                    {
+                        entityLine += "\u26a0\ufe0f";
+                    }
+                    else
+                    {
+                        entityLine += "\u2705";
+                    }
                 }
 
                 entityLine += $" {step.StepName}";
@@ -139,6 +146,14 @@ namespace Rocket.Infrastructure.Mermaid
                 if (step is OllamaExtractWorkflowStepSpecifics)
                 {
                     route = $"/MyWorkflow/Ollama/{workflowId}/Steps/{step.Id}/UpdateStep";
+                }
+                if (step is NotionUploadWorkflowStepSpecifics)
+                {
+                    route = $"/MyWorkflow/Notion/{workflowId}/Steps/{step.Id}/UpdateStep";
+                }
+                if (step is HelloWorldTextWorkflowStepSpecifics)
+                {
+                    route = $"/MyWorkflow/Diagnostic/{workflowId}/Steps/{step.Id}/UpdateStep";
                 }
 
                 if (!string.IsNullOrEmpty(route))

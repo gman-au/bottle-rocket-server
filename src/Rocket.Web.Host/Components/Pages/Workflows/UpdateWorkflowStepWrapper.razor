@@ -24,24 +24,28 @@
                     Class="mb-4">
                     @WorkflowStepName - @(_isNew ? "New" : "Update")
                 </MudText>
-                <MudGrid Class="align-start my-4">
-                    <MudItem sm="12" lg="6">
-                        <MudSelect
-                            T="string"
-                            Label="Connector"
-                            HelperText="Select a connector to use for this step"
-                            @bind-Value="@StepSpecifics.ConnectorId"
-                            Clearable="true"
-                            Required="false">
-                            @foreach (var connector in _availableConnectors ?? [])
-                            {
-                                <MudSelectItem Value="@connector.Id">
-                                    @connector.ConnectorName
-                                </MudSelectItem>
-                            }
-                        </MudSelect>
-                    </MudItem>
-                </MudGrid>
+                @if (!string.IsNullOrEmpty(RequiresConnectorCode))
+                {
+                    <MudGrid Class="align-start my-4">
+                        <MudItem sm="12" lg="6">
+                            <MudSelect
+                                T="string"
+                                Label="Connector"
+                                HelperText="Select a connector to use for this step"
+                                @bind-Value="@StepSpecifics.ConnectorId"
+                                Clearable="true"
+                                @bind-Value:after="InvokeConnectorIdChangedAsync"
+                                Required="false">
+                                @foreach (var connector in _availableConnectors ?? [])
+                                {
+                                    <MudSelectItem Value="@connector.Id">
+                                        @connector.ConnectorName
+                                    </MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                    </MudGrid>
+                }
 
                 @if (ChildContent != null)
                 {
@@ -105,6 +109,9 @@
     [Parameter]
     public RenderFragment<T> ChildContent { get; set; } // Changed to RenderFragment<T>
 
+    [Parameter]
+    public EventCallback<string> OnConnectorIdChanged { get; set; }
+
     private bool _isNew = true;
 
     protected override async Task OnInitializedAsync()
@@ -130,6 +137,9 @@
                                 StepId,
                                 BaseCancellationToken
                             );
+
+                await
+                    InvokeConnectorIdChangedAsync();
             }
             else
             {
@@ -293,6 +303,16 @@
                 _isLoading = false;
                 StateHasChanged();
             }
+        }
+    }
+
+    private async Task InvokeConnectorIdChangedAsync()
+    {
+        if (OnConnectorIdChanged.HasDelegate)
+        {
+            await
+                OnConnectorIdChanged
+                    .InvokeAsync(StepSpecifics.ConnectorId);
         }
     }
 

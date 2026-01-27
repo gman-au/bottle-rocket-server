@@ -5,8 +5,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Integrations\Diagnostics\Rocket.Diagnostics.Contracts\Rocket.Diagnostics.Contracts.csproj" />
       <ProjectReference Include="..\Integrations\Dropbox\Rocket.Dropbox.Contracts\Rocket.Dropbox.Contracts.csproj" />
       <ProjectReference Include="..\Integrations\MaxOcr\Rocket.MaxOcr.Contracts\Rocket.MaxOcr.Contracts.csproj" />
+      <ProjectReference Include="..\Integrations\Notion\Rocket.Notion.Contracts\Rocket.Notion.Contracts.csproj" />
       <ProjectReference Include="..\Integrations\Ollama\Rocket.Ollama.Contracts\Rocket.Ollama.Contracts.csproj" />
     </ItemGroup>
 

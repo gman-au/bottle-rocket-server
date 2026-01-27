@@ -66,19 +66,26 @@
             HrefChild = "/MyWorkflow/Dropbox/{0}/Steps/{1}/AddStep",
             ImagePath = "/img/dropbox-logo.webp"
         },
-        /*new()
-        {
-            Name = "Extract text from image (Max OCR)",
-            HrefBase = "/MyWorkflow/MaxOcr/{0}/AddStep",
-            HrefChild = "/MyWorkflow/MaxOcr/{0}/Steps/{1}/AddStep",
-            ImagePath = "/img/ibm-logo.svg"
-        },*/
         new()
         {
             Name = "Extract text from image (Ollama)",
             HrefBase = "/MyWorkflow/Ollama/{0}/AddStep",
             HrefChild = "/MyWorkflow/Ollama/{0}/Steps/{1}/AddStep",
             ImagePath = "/img/ollama-logo.png"
+        },
+        new()
+        {
+            Name = "Upload file to Notion",
+            HrefBase = "/MyWorkflow/Notion/{0}/AddStep",
+            HrefChild = "/MyWorkflow/Notion/{0}/Steps/{1}/AddStep",
+            ImagePath = "/img/notion-logo.png"
+        },
+        new()
+        {
+            Name = "Hello world (text output)",
+            HrefBase = "/MyWorkflow/Diagnostic/{0}/AddStep",
+            HrefChild = "/MyWorkflow/Diagnostic/{0}/Steps/{1}/AddStep",
+            ImagePath = "/img/bottle-rocket-logo.png"
         }
     ];
 
