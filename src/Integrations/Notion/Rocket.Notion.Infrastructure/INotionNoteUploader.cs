@@ -12,5 +12,13 @@ namespace Rocket.Notion.Infrastructure
             string textContent,
             CancellationToken cancellationToken
         );
+        
+        Task UploadImageNoteAsync(
+            string integrationSecret,
+            string parentNoteId,
+            string title,
+            string fileUploadId,
+            CancellationToken cancellationToken
+        );
     }
 }

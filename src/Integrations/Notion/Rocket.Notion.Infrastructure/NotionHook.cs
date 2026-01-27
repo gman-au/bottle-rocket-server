@@ -14,7 +14,8 @@ namespace Rocket.Notion.Infrastructure
 {
     public class NotionHook(
         ILogger<NotionHook> logger,
-        INotionNoteUploader notionNoteUploader
+        INotionNoteUploader notionNoteUploader,
+        INotionImageUploader notionImageUploader
     ) : IIntegrationHook
     {
         public bool IsApplicable(BaseExecutionStep step) => step is NotionUploadExecutionStep;
@@ -67,8 +68,23 @@ namespace Rocket.Notion.Infrastructure
                             cancellationToken
                         );
             }
+            else if (artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.ImageData)
+            {
+                var imageBytes =
+                    artifact
+                        .Artifact;
 
-            // Do the stuff here
+                await
+                    notionImageUploader
+                        .UploadImageNoteAsync(
+                            connector.IntegrationSecret,
+                            notionStep.ParentNoteId,
+                            null,
+                            imageBytes,
+                            artifact.FileExtension,
+                            cancellationToken
+                        );
+            }
 
             return
                 ExecutionStepArtifact
