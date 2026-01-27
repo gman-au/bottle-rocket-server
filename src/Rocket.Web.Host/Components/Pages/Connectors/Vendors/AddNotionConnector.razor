@@ -1,0 +1,162 @@
+﻿@page "/MyConnector/Notion/Add"
+@using Rocket.Api.Contracts.Connectors
+@using Rocket.Notion.Contracts
+@using Rocket.Ollama.Contracts
+@using Rocket.Web.Client
+@using Rocket.Web.Host.Infrastructure
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject ISnackbar Snackbar
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_connector != null)
+    {
+        <MudForm
+            Model="@_connector"
+            @ref="_form">
+            <MudPaper Class="p-4" elevation="2">
+                <MudText
+                    Align="Align.Center"
+                    Typo="Typo.h4"
+                    Color="Color.Primary"
+                    Class="mb-4">
+                    Add a Notion connector
+                </MudText>
+
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5"
+                        >
+                            Step 1: Set up the Notion integration
+                        </MudText>
+                        <MudText>
+                            <MudLink
+                                Target="_blank"
+                                Href="https://gman-au.github.io/bottle-rocket-documentation/docs/docs-general/workflow-integrations/notion#create-the-internal-integration">
+                                Follow the instructions to set up a Notion integration.
+                            </MudLink>
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5">
+                            Step 2: Enter the Notion integration secret
+                        </MudText>
+                        <MudText>
+                            Enter the secret provided by the Notion integration below.
+                        </MudText>
+                    </MudItem>
+                    <MudItem sm="12" lg="6">
+                        <MudTextField
+                            T="string"
+                            Required
+                            Label="Integration secret"
+                            HelperText="Enter the integration secret here"
+                            @bind-Value="_connector.IntegrationSecret"
+                            For="@(() => _connector.IntegrationSecret)"
+                            RequiredError="Integration secret is required."/>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="align-start mt-2" Justify="Justify.FlexEnd">
+                    <MudItem>
+                        <GoBackButton/>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton
+                            Variant="Variant.Outlined"
+                            Color="Color.Success"
+                            Disabled="@(_isLoading)"
+                            OnClick="@SubmitAsync">
+                            Submit
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudForm>
+    }
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    MudForm _form;
+
+    private bool _isLoading;
+    private NotionConnectorSpecifics _connector = new();
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SubmitAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                var response =
+                    await
+                        ApiRequestManager
+                            .CreateConnectorAsync(
+                                new CreateConnectorRequest<NotionConnectorSpecifics>
+                                {
+                                    Connector = _connector
+                                },
+                                BaseCancellationToken
+                            );
+
+                Snackbar
+                    .Add(
+                        "The connection has been added.",
+                        Severity.Success
+                    );
+
+                NavigationManager
+                    .NavigateTo("/MyConnectors");
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+}

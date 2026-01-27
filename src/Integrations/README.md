@@ -1,6 +1,6 @@
 # Developing a Bottle Rocket integration
 
-## Steps / Checklist
+## API Steps / Checklist
 
 ### 1. Create project folders
 * Create the project folder under the `/Integrations` sub folder in the solution.
@@ -63,3 +63,32 @@ services
 ### 10. Add entries into the JSON type discriminators
 * In order for the API contracts to distinguish the derived types as supplied (Connector, WorkflowStep, ExecutionStep), entries for each need to be added to the `ConnectorTypeDiscriminatorMap`, `ExecutionStepTypeDiscriminatorMap`, and `WorkflowStepTypeDiscriminatorMap` classes in the `Rocket.Infrastructure.Json` project.
     * Add the related API class (e.g. `AbcConnectorSpecifics`) and a unique string in that list to ensure that the type discriminator successfully parses the derived class type.
+
+## Web Steps / Checklist
+
+### 1. Add a vendor-specific connector page
+* Add a razor page under `/Components/Pages/Connectors/Vendors/AddAbcConnector.razor`.
+    * The page should be instructive as to any steps needed to gather information that is supplied to the page to save particulars of the connection.
+    * In simple cases, the submit method should be able to make an `ApiRequestManager.CreateConnectorAsync` typed call of your `AbcConnectorSpecifics` class, as opposed to defining your own API contract + controller method.
+* Add your new connector as a card under `/Components/Pages/Connectors/AddConnector.razor`.
+    * Add a logo image (preferably white backgrounded instead of transparent).
+
+### 2. Add a vendor-specific workflow step page
+* Add a razor page under `/Components/Pages/Workflows/Vendors/AbcStepDetails.razor`.
+    * The page should have the following routes defined:
+        * `@page "/MyWorkflow/Abc/{workflowId}/AddStep"`
+        * `@page "/MyWorkflow/Abc/{workflowId}/Steps/{parentStepId}/AddStep"`
+        * `@page "/MyWorkflow/Abc/{workflowId}/Steps/{stepId}/UpdateStep"`
+    * For convenience, use the `<UpdateWorkflowStepWrapper>` component to wrap the majority of form
+    components (connection filter, layout, etc), and add any step-specific form inputs inside the tag.
+* Add your new workflow step as a card under `/Components/Pages/Workflows/AddWorkflowStep.razor`.
+    * Add a logo image (preferably white backgrounded instead of transparent).
+
+### 3. Add handler to WriteNested() Mermaid converter
+* In the `WorkflowMermaidConverter.cs` file, add a provision for your new `AbcStepSpecifics` class to define the "update step" route for steps of that type; typically this will look like:
+```
+if (step is AbcWorkflowStepSpecifics)
+{
+    route = $"/MyWorkflow/Abc/{workflowId}/Steps/{step.Id}/UpdateStep";
+}
+```

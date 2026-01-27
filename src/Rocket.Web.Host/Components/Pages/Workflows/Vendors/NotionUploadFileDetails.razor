@@ -1,0 +1,41 @@
+﻿@page "/MyWorkflow/Notion/{workflowId}/AddStep"
+@page "/MyWorkflow/Notion/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/Notion/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.Notion.Contracts
+@using Rocket.Notion.Domain
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<UpdateWorkflowStepWrapper
+    T="NotionUploadWorkflowStepSpecifics"
+    WorkflowStepName="Upload file to Notion"
+    WorkflowId="@WorkflowId"
+    ParentStepId="@ParentStepId"
+    RequiresConnectorCode="@NotionDomainConstants.ConnectorCode"
+    StepId="@StepId"
+    Context="stepSpecifics">
+    <MudGrid>
+        <MudItem sm="12" lg="6">
+            <MudTextField
+                T="string"
+                Label="Parent note"
+                Required="true"
+                RequiredError="Parent note is required"
+                HelperText="Select the Notion parent note to add this note to."
+                @bind-Value="stepSpecifics.ParentNoteId"
+                For="@(() => stepSpecifics.ParentNoteId)"/>
+        </MudItem>
+    </MudGrid>
+</UpdateWorkflowStepWrapper>
+
+@code {
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+}

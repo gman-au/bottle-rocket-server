@@ -7,6 +7,7 @@ using Rocket.Domain.Utils;
 using Rocket.Dropbox.Contracts;
 using Rocket.Infrastructure.Mermaid.Extensions;
 using Rocket.Interfaces;
+using Rocket.Notion.Contracts;
 using Rocket.Ollama.Contracts;
 
 namespace Rocket.Infrastructure.Mermaid
@@ -139,6 +140,10 @@ namespace Rocket.Infrastructure.Mermaid
                 if (step is OllamaExtractWorkflowStepSpecifics)
                 {
                     route = $"/MyWorkflow/Ollama/{workflowId}/Steps/{step.Id}/UpdateStep";
+                }
+                if (step is NotionUploadWorkflowStepSpecifics)
+                {
+                    route = $"/MyWorkflow/Notion/{workflowId}/Steps/{step.Id}/UpdateStep";
                 }
 
                 if (!string.IsNullOrEmpty(route))

@@ -9,6 +9,7 @@
         <ProjectReference Include="..\Integrations\Dropbox\Rocket.Dropbox.Domain\Rocket.Dropbox.Domain.csproj" />
         <ProjectReference Include="..\Integrations\MaxOcr\Rocket.MaxOcr.Contracts\Rocket.MaxOcr.Contracts.csproj" />
         <ProjectReference Include="..\Integrations\MaxOcr\Rocket.MaxOcr.Domain\Rocket.MaxOcr.Domain.csproj" />
+        <ProjectReference Include="..\Integrations\Notion\Rocket.Notion.Domain\Rocket.Notion.Domain.csproj" />
         <ProjectReference Include="..\Integrations\Ollama\Rocket.Ollama.Domain\Rocket.Ollama.Domain.csproj" />
         <ProjectReference Include="..\Rocket.Api.Contracts\Rocket.Api.Contracts.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Json\Rocket.Infrastructure.Json.csproj" />
