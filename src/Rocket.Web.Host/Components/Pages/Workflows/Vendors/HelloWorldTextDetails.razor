@@ -1,0 +1,42 @@
+﻿@page "/MyWorkflow/Diagnostic/{workflowId}/AddStep"
+@page "/MyWorkflow/Diagnostic/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/Diagnostic/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.Diagnostics.Contracts
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<UpdateWorkflowStepWrapper
+    T="HelloWorldTextWorkflowStepSpecifics"
+    WorkflowStepName="Hello world (text output)"
+    WorkflowId="@WorkflowId"
+    ParentStepId="@ParentStepId"
+    StepId="@StepId"
+    Context="stepSpecifics">
+    <MudGrid>
+        <MudItem sm="12" lg="6">
+            <MudText
+                Align="Align.Center"
+                Typo="Typo.body2"
+                Color="Color.Default">
+                No configuration is required for this step.
+            </MudText>
+            <MudText
+                type="hidden"
+                T="string"
+                @bind-Value="stepSpecifics.InputTypeName"
+                For="@(() => stepSpecifics.InputTypeName)"/>
+        </MudItem>
+    </MudGrid>
+</UpdateWorkflowStepWrapper>
+
+@code {
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+}

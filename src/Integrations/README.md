@@ -92,3 +92,7 @@ if (step is AbcWorkflowStepSpecifics)
     route = $"/MyWorkflow/Abc/{workflowId}/Steps/{step.Id}/UpdateStep";
 }
 ```
+
+> [!TIP]
+> 
+> To test your integrations, you can use the diagnostic "Hello World" workflow steps to generate a dummy text output artifact, instead of plugging in an OCR step and waiting for it to finish each time.

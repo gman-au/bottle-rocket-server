@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Rocket.Infrastructure.Mapping\Rocket.Infrastructure.Mapping.csproj" />
+      <ProjectReference Include="..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
+      <ProjectReference Include="..\Rocket.Diagnostics.Contracts\Rocket.Diagnostics.Contracts.csproj" />
+      <ProjectReference Include="..\Rocket.Diagnostics.Domain\Rocket.Diagnostics.Domain.csproj" />
+    </ItemGroup>
+
+</Project>

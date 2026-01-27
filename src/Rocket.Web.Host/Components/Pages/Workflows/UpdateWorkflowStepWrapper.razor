@@ -24,25 +24,28 @@
                     Class="mb-4">
                     @WorkflowStepName - @(_isNew ? "New" : "Update")
                 </MudText>
-                <MudGrid Class="align-start my-4">
-                    <MudItem sm="12" lg="6">
-                        <MudSelect
-                            T="string"
-                            Label="Connector"
-                            HelperText="Select a connector to use for this step"
-                            @bind-Value="@StepSpecifics.ConnectorId"
-                            Clearable="true"
-                            @bind-Value:after="InvokeConnectorIdChangedAsync"
-                            Required="false">
-                            @foreach (var connector in _availableConnectors ?? [])
-                            {
-                                <MudSelectItem Value="@connector.Id">
-                                    @connector.ConnectorName
-                                </MudSelectItem>
-                            }
-                        </MudSelect>
-                    </MudItem>
-                </MudGrid>
+                @if (!string.IsNullOrEmpty(RequiresConnectorCode))
+                {
+                    <MudGrid Class="align-start my-4">
+                        <MudItem sm="12" lg="6">
+                            <MudSelect
+                                T="string"
+                                Label="Connector"
+                                HelperText="Select a connector to use for this step"
+                                @bind-Value="@StepSpecifics.ConnectorId"
+                                Clearable="true"
+                                @bind-Value:after="InvokeConnectorIdChangedAsync"
+                                Required="false">
+                                @foreach (var connector in _availableConnectors ?? [])
+                                {
+                                    <MudSelectItem Value="@connector.Id">
+                                        @connector.ConnectorName
+                                    </MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                    </MudGrid>
+                }
 
                 @if (ChildContent != null)
                 {

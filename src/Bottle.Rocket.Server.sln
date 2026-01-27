@@ -76,6 +76,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Notion.Infrastructur
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Notion.Injection", "Integrations\Notion\Rocket.Notion.Injection\Rocket.Notion.Injection.csproj", "{0C881348-6A72-41EA-99AA-9070A3E1E1A2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Diagnostics", "Diagnostics", "{2F35331B-7C2C-4C4F-B90D-DA4F8E0B4F45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Diagnostics.Domain", "Integrations\Diagnostics\Rocket.Diagnostics.Domain\Rocket.Diagnostics.Domain.csproj", "{3E175D0D-40E2-438F-B7C4-A6F4A7417582}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Diagnostics.Contracts", "Integrations\Diagnostics\Rocket.Diagnostics.Contracts\Rocket.Diagnostics.Contracts.csproj", "{65624FFF-3BAB-47CC-918C-5AEF8E1D0B8F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Diagnostics.Infrastructure", "Integrations\Diagnostics\Rocket.Diagnostics.Infrastructure\Rocket.Diagnostics.Infrastructure.csproj", "{7ACB47E2-A357-4CF8-95D1-98297733C089}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Diagnostics.Injection", "Integrations\Diagnostics\Rocket.Diagnostics.Injection\Rocket.Diagnostics.Injection.csproj", "{8F73CAE3-2CFE-4028-90BB-D72AFB5DECE4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -218,6 +228,22 @@ Global
 		{0C881348-6A72-41EA-99AA-9070A3E1E1A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C881348-6A72-41EA-99AA-9070A3E1E1A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C881348-6A72-41EA-99AA-9070A3E1E1A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E175D0D-40E2-438F-B7C4-A6F4A7417582}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E175D0D-40E2-438F-B7C4-A6F4A7417582}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E175D0D-40E2-438F-B7C4-A6F4A7417582}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E175D0D-40E2-438F-B7C4-A6F4A7417582}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65624FFF-3BAB-47CC-918C-5AEF8E1D0B8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65624FFF-3BAB-47CC-918C-5AEF8E1D0B8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65624FFF-3BAB-47CC-918C-5AEF8E1D0B8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65624FFF-3BAB-47CC-918C-5AEF8E1D0B8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ACB47E2-A357-4CF8-95D1-98297733C089}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ACB47E2-A357-4CF8-95D1-98297733C089}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ACB47E2-A357-4CF8-95D1-98297733C089}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ACB47E2-A357-4CF8-95D1-98297733C089}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F73CAE3-2CFE-4028-90BB-D72AFB5DECE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F73CAE3-2CFE-4028-90BB-D72AFB5DECE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F73CAE3-2CFE-4028-90BB-D72AFB5DECE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F73CAE3-2CFE-4028-90BB-D72AFB5DECE4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{42CB70A2-68E4-4EB7-8AAD-4E2F987D01BA} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
@@ -240,5 +266,10 @@ Global
 		{B42EF7CD-F0D1-4155-88FA-EFAE030EDCF4} = {84FBE110-0D05-4831-9467-24C690D7563E}
 		{A6896773-6B07-4D48-A007-64802E25A034} = {84FBE110-0D05-4831-9467-24C690D7563E}
 		{0C881348-6A72-41EA-99AA-9070A3E1E1A2} = {84FBE110-0D05-4831-9467-24C690D7563E}
+		{2F35331B-7C2C-4C4F-B90D-DA4F8E0B4F45} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
+		{3E175D0D-40E2-438F-B7C4-A6F4A7417582} = {2F35331B-7C2C-4C4F-B90D-DA4F8E0B4F45}
+		{65624FFF-3BAB-47CC-918C-5AEF8E1D0B8F} = {2F35331B-7C2C-4C4F-B90D-DA4F8E0B4F45}
+		{7ACB47E2-A357-4CF8-95D1-98297733C089} = {2F35331B-7C2C-4C4F-B90D-DA4F8E0B4F45}
+		{8F73CAE3-2CFE-4028-90BB-D72AFB5DECE4} = {2F35331B-7C2C-4C4F-B90D-DA4F8E0B4F45}
 	EndGlobalSection
 EndGlobal
