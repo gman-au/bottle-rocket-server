@@ -3,29 +3,49 @@
 @page "/MyWorkflow/Notion/{workflowId}/Steps/{stepId}/UpdateStep"
 @using Rocket.Notion.Contracts
 @using Rocket.Notion.Domain
+@using Rocket.Web.Host.Infrastructure
+@inject IWebHostErrorHandler WebHostErrorHandler
+
+@using Rocket.Web.Client
+@inject IApiRequestManager ApiRequestManager
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
-<UpdateWorkflowStepWrapper
-    T="NotionUploadWorkflowStepSpecifics"
-    WorkflowStepName="Upload file to Notion"
-    WorkflowId="@WorkflowId"
-    ParentStepId="@ParentStepId"
-    RequiresConnectorCode="@NotionDomainConstants.ConnectorCode"
-    StepId="@StepId"
-    Context="stepSpecifics">
-    <MudGrid>
-        <MudItem sm="12" lg="6">
-            <MudTextField
-                T="string"
-                Label="Parent note"
-                Required="true"
-                RequiredError="Parent note is required"
-                HelperText="Select the Notion parent note to add this note to."
-                @bind-Value="stepSpecifics.ParentNoteId"
-                For="@(() => stepSpecifics.ParentNoteId)"/>
-        </MudItem>
-    </MudGrid>
-</UpdateWorkflowStepWrapper>
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    <UpdateWorkflowStepWrapper
+        @ref="_wrapper"
+        T="NotionUploadWorkflowStepSpecifics"
+        WorkflowStepName="Upload file to Notion"
+        WorkflowId="@WorkflowId"
+        ParentStepId="@ParentStepId"
+        RequiresConnectorCode="@NotionDomainConstants.ConnectorCode"
+        OnConnectorIdChanged="ConnectorChangedAsync"
+        StepId="@StepId"
+        Context="stepSpecifics">
+        <MudGrid>
+            <MudItem sm="12" lg="6">
+                <MudSelect
+                    T="NotionParentNoteSummary"
+                    Label="Select a parent note"
+                    @bind-Value="@_parentNoteSelected"
+                    @bind-Value:after="() => ParentNoteChangedAsync(stepSpecifics)"
+                    Disabled="@_isLoading"
+                    Clearable
+                    Required
+                    RequiredError="Parent note is required">
+                    @foreach (var parentNote in _parentNotes ?? [])
+                    {
+                        <MudSelectItem
+                            T="NotionParentNoteSummary"
+                            Value="@parentNote"
+                        >
+                            @parentNote.ParentNoteName
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+        </MudGrid>
+    </UpdateWorkflowStepWrapper>
+</BottleRocketLoadingOverlay>
 
 @code {
 
@@ -37,5 +57,93 @@
 
     [Parameter]
     public string StepId { get; set; }
+
+    private bool _isLoading;
+
+    private string _connectorId;
+
+    private UpdateWorkflowStepWrapper<NotionUploadWorkflowStepSpecifics> _wrapper;
+
+    private NotionParentNoteSummary _parentNoteSelected;
+
+    private IEnumerable<NotionParentNoteSummary> _parentNotes = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+
+            await
+                RefreshParentNotesAsync();
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RefreshParentNotesAsync()
+    {
+        if (!string.IsNullOrEmpty(_connectorId))
+        {
+            var response =
+                await
+                    ApiRequestManager
+                        .GetNotionParentNotesAsync(
+                            new GetAllNotionParentNotesRequest
+                            {
+                                ConnectorId = _connectorId
+                            },
+                            BaseCancellationToken
+                        );
+
+            _parentNotes =
+                response?
+                    .ParentNotes ?? [];
+
+            _parentNoteSelected =
+                _parentNotes
+                    .FirstOrDefault(o => _wrapper?.StepSpecifics?.ParentNoteId == o.ParentNoteId);
+        }
+        else
+        {
+            _parentNotes = [];
+        }
+        
+        StateHasChanged();
+    }
+
+    private async Task ParentNoteChangedAsync(NotionUploadWorkflowStepSpecifics stepSpecifics)
+    {
+        stepSpecifics.ParentNoteId =
+            _parentNoteSelected?
+                .ParentNoteId;
+    }
+
+    private async Task ConnectorChangedAsync(string connectorId)
+    {
+        _connectorId = connectorId;
+
+        if (string.IsNullOrEmpty(connectorId))
+        {
+            _parentNoteSelected = null;
+        }
+
+        await
+            RefreshParentNotesAsync();
+    }
 
 }

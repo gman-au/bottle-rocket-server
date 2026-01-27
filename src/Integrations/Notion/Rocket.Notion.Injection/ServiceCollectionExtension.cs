@@ -14,6 +14,7 @@ namespace Rocket.Notion.Injection
                 .AddTransient<IExecutionStepModelMapper, NotionUploadExecutionStepMapper>()
                 .AddTransient<IConnectorModelMapper, NotionConnectorMapper>()
                 .AddTransient<IStepModelCloner, NotionUploadStepCloner>()
+                .AddTransient<INotionClient, NotionClient>()
                 .AddTransient<IBsonMapper, NotionBsonMapper>();
 
             return services;

@@ -32,6 +32,7 @@
                             HelperText="Select a connector to use for this step"
                             @bind-Value="@StepSpecifics.ConnectorId"
                             Clearable="true"
+                            @bind-Value:after="InvokeConnectorIdChangedAsync"
                             Required="false">
                             @foreach (var connector in _availableConnectors ?? [])
                             {
@@ -105,6 +106,9 @@
     [Parameter]
     public RenderFragment<T> ChildContent { get; set; } // Changed to RenderFragment<T>
 
+    [Parameter]
+    public EventCallback<string> OnConnectorIdChanged { get; set; }
+
     private bool _isNew = true;
 
     protected override async Task OnInitializedAsync()
@@ -130,6 +134,9 @@
                                 StepId,
                                 BaseCancellationToken
                             );
+
+                await
+                    InvokeConnectorIdChangedAsync();
             }
             else
             {
@@ -293,6 +300,16 @@
                 _isLoading = false;
                 StateHasChanged();
             }
+        }
+    }
+
+    private async Task InvokeConnectorIdChangedAsync()
+    {
+        if (OnConnectorIdChanged.HasDelegate)
+        {
+            await
+                OnConnectorIdChanged
+                    .InvokeAsync(StepSpecifics.ConnectorId);
         }
     }
 
