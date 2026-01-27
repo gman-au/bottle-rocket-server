@@ -15,13 +15,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Integrations\Dropbox\Rocket.Dropbox.Contracts\Rocket.Dropbox.Contracts.csproj" />
-        <ProjectReference Include="..\Integrations\Dropbox\Rocket.Dropbox.Domain\Rocket.Dropbox.Domain.csproj" />
-        <ProjectReference Include="..\Integrations\Dropbox\Rocket.Dropbox.Infrastructure\Rocket.Dropbox.Infrastructure.csproj" />
         <ProjectReference Include="..\Integrations\Dropbox\Rocket.Dropbox.Injection\Rocket.Dropbox.Injection.csproj" />
         <ProjectReference Include="..\Integrations\MaxOcr\Rocket.MaxOcr.Injection\Rocket.MaxOcr.Injection.csproj" />
         <ProjectReference Include="..\Integrations\Notion\Rocket.Notion.Injection\Rocket.Notion.Injection.csproj" />
         <ProjectReference Include="..\Integrations\Ollama\Rocket.Ollama.Injection\Rocket.Ollama.Injection.csproj" />
+        <ProjectReference Include="..\Integrations\Diagnostics\Rocket.Diagnostics.Injection\Rocket.Diagnostics.Injection.csproj" />
         <ProjectReference Include="..\Rocket.Api.Contracts\Rocket.Api.Contracts.csproj" />
         <ProjectReference Include="..\Rocket.Domain\Rocket.Domain.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Blob.Local\Rocket.Infrastructure.Blob.Local.csproj" />
