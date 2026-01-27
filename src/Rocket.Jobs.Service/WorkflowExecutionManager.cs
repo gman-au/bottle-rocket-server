@@ -117,6 +117,15 @@ namespace Rocket.Jobs.Service
                             // the task
                             foreach (var childStep in execution.Steps ?? [])
                             {
+                                // reset the root artifact
+                                await
+                                    context
+                                        .SetRootArtifactAsync(
+                                            userId,
+                                            execution.ScanId,
+                                            cts.Token
+                                        );
+                                
                                 await
                                     childStep
                                         .AsTask(
