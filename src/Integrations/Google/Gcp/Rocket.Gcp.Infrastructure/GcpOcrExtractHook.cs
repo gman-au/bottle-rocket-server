@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Net.Http;
-using System.Net.Http.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +13,8 @@ using Rocket.Interfaces;
 namespace Rocket.Gcp.Infrastructure
 {
     public class GcpOcrExtractHook(
-        ILogger<GcpOcrExtractHook> logger
+        ILogger<GcpOcrExtractHook> logger,
+        IVisionOcrService visionOcrService
     ) : IIntegrationHook
     {
         public bool IsApplicable(BaseExecutionStep step) => step is GcpExtractExecutionStep;
@@ -43,17 +42,46 @@ namespace Rocket.Gcp.Infrastructure
 
             var imageBytes = artifact.Artifact;
 
-            if (step is not GcpExtractExecutionStep ollamaStep)
+            if (step is not GcpExtractExecutionStep)
                 throw new RocketException(
                     "Unexpected step format, please check configuration",
                     ApiStatusCodeEnum.DeveloperError
                 );
 
-            // do the stuff            
+            var credential = 
+                connector
+                    .Credential;
 
-            return 
-                ExecutionStepArtifact
-                    .Empty;
+            var result =
+                await
+                    visionOcrService
+                        .ExtractHandwrittenTextAsync(
+                            imageBytes,
+                            credential,
+                            cancellationToken
+                        );
+
+            await
+                appendLogMessageCallback(
+                    step.Id,
+                    result
+                );
+            
+            var resultArtifact =
+                new ExecutionStepArtifact
+                {
+                    Result = (int)ExecutionStatusEnum.Completed,
+                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
+                    Artifact =
+                        Encoding
+                            .Default
+                            .GetBytes(
+                                result
+                            ),
+                    FileExtension = ".txt"
+                };
+
+            return resultArtifact;
         }
     }
 }

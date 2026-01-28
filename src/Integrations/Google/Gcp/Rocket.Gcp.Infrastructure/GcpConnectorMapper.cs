@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text.Json;
 using System.Threading.Tasks;
-using MongoDB.Bson.Serialization.Serializers;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Gcp.Contracts;

@@ -14,6 +14,7 @@ namespace Rocket.Gcp.Injection
                 .AddTransient<IExecutionStepModelMapper, GcpExtractExecutionStepMapper>()
                 .AddTransient<IConnectorModelMapper, GcpConnectorMapper>()
                 .AddTransient<IStepModelCloner, GcpExtractStepCloner>()
+                .AddTransient<IVisionOcrService, VisionOcrService>()
                 .AddTransient<IBsonMapper, GcpBsonMapper>();
 
             return services;
