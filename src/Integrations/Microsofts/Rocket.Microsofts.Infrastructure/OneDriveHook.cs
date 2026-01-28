@@ -12,6 +12,7 @@ using Rocket.Microsofts.Domain;
 namespace Rocket.Microsofts.Infrastructure
 {
     public class OneDriveHook(
+        IOneDriveUploader oneDriveUploader,
         ILogger<OneDriveHook> logger
     ) : IIntegrationHook
     {
@@ -37,14 +38,25 @@ namespace Rocket.Microsofts.Infrastructure
                             step,
                             cancellationToken
                         );
-            
-            if (step is not OneDriveUploadExecutionStep notionStep)
+
+            if (step is not OneDriveUploadExecutionStep oneDriveStep)
                 throw new RocketException(
                     "Unexpected step format, please check configuration",
                     ApiStatusCodeEnum.DeveloperError
                 );
 
-           // TODO: the stuff
+            var noteTitle = $"BR_Note_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
+            var fileName = noteTitle + artifact.FileExtension;
+
+            await
+                oneDriveUploader
+                    .UploadFileAsync(
+                        connector,
+                        fileName,
+                        oneDriveStep.Subfolder ?? "/",
+                        artifact.Artifact,
+                        cancellationToken
+                    );
 
             return
                 ExecutionStepArtifact

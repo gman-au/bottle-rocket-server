@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.11" />
+      <PackageReference Include="Microsoft.Graph" Version="4.54.0" />
       <PackageReference Include="Microsoft.Identity.Client" Version="4.81.0" />
     </ItemGroup>
 

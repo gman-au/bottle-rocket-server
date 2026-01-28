@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -46,7 +49,7 @@ namespace Rocket.Microsofts.Infrastructure
                         connector.TenantId
                     )
                     .Build();
-            
+
             DeviceCodeResult deviceCodeResult = null;
 
             // Start the auth process but don't await it yet
@@ -95,27 +98,26 @@ namespace Rocket.Microsofts.Infrastructure
                                     .FromMinutes(3)
                             );
 
-                        var authResult =
-                            await
-                                authTask
-                                    .WaitAsync(cts.Token);
+                        await
+                            authTask
+                                .WaitAsync(cts.Token);
 
                         logger
                             .LogInformation("Token acquired successfully");
 
-                        var accountIdentifier =
-                            authResult
-                                .Account
-                                .HomeAccountId
-                                .Identifier;
+                        var cacheData = (app.UserTokenCache as ITokenCacheSerializer)?.SerializeMsalV3();
+                        var cacheJson = System.Text.Encoding.UTF8.GetString(cacheData);
+                        var cacheObject = System.Text.Json.JsonDocument.Parse(cacheJson);
+                        var refreshTokens = cacheObject.RootElement.GetProperty("RefreshToken");
+                        var refreshToken = refreshTokens.EnumerateObject().First().Value.GetProperty("secret").GetString();
 
                         await
                             connectorRepository
                                 .UpdateConnectorFieldAsync<MicrosoftConnector, string>(
                                     connector.Id,
                                     userId,
-                                    o => o.AccountIdentifier,
-                                    accountIdentifier,
+                                    o => o.RefreshToken,
+                                    refreshToken,
                                     CancellationToken.None
                                 );
 
@@ -167,33 +169,78 @@ namespace Rocket.Microsofts.Infrastructure
             CancellationToken cancellationToken
         )
         {
-            var app = PublicClientApplicationBuilder
-                .Create(connector.ClientId)
-                .WithAuthority(
-                    AzureCloudInstance.AzurePublic,
-                    connector.TenantId
-                )
-                .Build();
+            using var httpClient = new HttpClient();
 
-            var accounts =
-                await
-                    app
-                        .GetAccountsAsync();
-
-            var account =
-                accounts
-                    .FirstOrDefault(a => a.HomeAccountId.Identifier == connector.AccountIdentifier);
-
-            var result =
-                await
-                    app
-                        .AcquireTokenSilent(
-                            Scopes,
-                            account
+            var requestBody = new FormUrlEncodedContent(
+                [
+                    new KeyValuePair<string, string>(
+                        "client_id",
+                        connector.ClientId
+                    ),
+                    new KeyValuePair<string, string>(
+                        "refresh_token",
+                        connector.RefreshToken
+                    ),
+                    new KeyValuePair<string, string>(
+                        "grant_type",
+                        "refresh_token"
+                    ),
+                    new KeyValuePair<string, string>(
+                        "scope",
+                        string.Join(
+                            " ",
+                            Scopes
                         )
-                        .ExecuteAsync(cancellationToken);
+                    )
+                ]
+            );
 
-            return result.AccessToken;
+            var response =
+                await
+                    httpClient
+                        .PostAsync(
+                            $"https://login.microsoftonline.com/{connector.TenantId}/oauth2/v2.0/token",
+                            requestBody,
+                            cancellationToken
+                        );
+
+            var json =
+                await
+                    response
+                        .Content
+                        .ReadAsStringAsync(cancellationToken);
+
+            var tokenResponse =
+                JsonDocument
+                    .Parse(json);
+
+            var accessToken =
+                tokenResponse
+                    .RootElement
+                    .GetProperty("access_token")
+                    .GetString();
+
+            var newRefreshToken =
+                tokenResponse
+                    .RootElement
+                    .GetProperty("refresh_token")
+                    .GetString();
+
+            // Update refresh token if changed
+            if (newRefreshToken != connector.RefreshToken)
+            {
+                await
+                    connectorRepository
+                        .UpdateConnectorFieldAsync<MicrosoftConnector, string>(
+                            connector.Id,
+                            connector.UserId,
+                            o => o.RefreshToken,
+                            newRefreshToken,
+                            CancellationToken.None
+                        );
+            }
+
+            return accessToken;
         }
     }
 }
