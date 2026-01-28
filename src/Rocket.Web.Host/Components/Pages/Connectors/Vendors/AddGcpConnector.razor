@@ -63,6 +63,8 @@
                     </MudItem>
                     <MudItem sm="12" lg="6">
                         <MudFileUpload
+                            Required
+                            RequiredError="The credentials file is required."
                             Disabled="@_isLoading"
                             T="IBrowserFile"
                             MaximumFileCount="1"
