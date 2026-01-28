@@ -1,6 +1,6 @@
 ﻿using Rocket.Domain.Executions;
 
-namespace Rocket.Microsoft.Domain
+namespace Rocket.Microsofts.Domain
 {
     public record OneDriveUploadExecutionStep : BaseExecutionStep
     {

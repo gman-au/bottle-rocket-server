@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rocket.Interfaces;
-using Rocket.Microsoft.Infrastructure;
+using Rocket.Microsofts.Infrastructure;
 
-namespace Rocket.Microsoft.Injection
+namespace Rocket.Microsofts.Injection
 {
     public static class ServiceCollectionExtension
     {

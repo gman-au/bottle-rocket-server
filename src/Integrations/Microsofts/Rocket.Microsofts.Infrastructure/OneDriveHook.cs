@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -8,9 +7,9 @@ using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Interfaces;
-using Rocket.Microsoft.Domain;
+using Rocket.Microsofts.Domain;
 
-namespace Rocket.Microsoft.Infrastructure
+namespace Rocket.Microsofts.Infrastructure
 {
     public class OneDriveHook(
         ILogger<OneDriveHook> logger

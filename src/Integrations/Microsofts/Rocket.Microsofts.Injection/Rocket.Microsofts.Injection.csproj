@@ -10,7 +10,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
-        <ProjectReference Include="..\Rocket.Microsoft.Infrastructure\Rocket.Microsoft.Infrastructure.csproj" />
+        <ProjectReference Include="..\Rocket.Microsofts.Infrastructure\Rocket.Microsofts.Infrastructure.csproj" />
     </ItemGroup>
     
 </Project>

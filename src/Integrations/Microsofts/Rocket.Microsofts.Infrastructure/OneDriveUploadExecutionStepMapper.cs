@@ -1,9 +1,9 @@
 ﻿using System;
 using Rocket.Infrastructure.Mapping;
-using Rocket.Microsoft.Contracts;
-using Rocket.Microsoft.Domain;
+using Rocket.Microsofts.Contracts;
+using Rocket.Microsofts.Domain;
 
-namespace Rocket.Microsoft.Infrastructure
+namespace Rocket.Microsofts.Infrastructure
 {
     public class OneDriveUploadExecutionStepMapper(IServiceProvider serviceProvider)
         : ExecutionStepModelMapperBase<OneDriveUploadExecutionStep, OneDriveUploadExecutionStepSpecifics>(serviceProvider)

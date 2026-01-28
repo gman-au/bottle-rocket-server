@@ -13,8 +13,7 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
-                .LogInformation("Received Get (Notion) parent notes request");
+            LoggerExtensions.LogInformation(logger, "Received Get (Notion) parent notes request");
 
             var response =
                 await
@@ -27,14 +26,14 @@ namespace Rocket.Web.Client
 
             var result =
                 await
-                    response
+                    HttpResponseMessageEx
                         .TryParseResponse<GetAllNotionParentNotesResponse>(
-                            logger,
+                            response, logger,
                             cancellationToken
                         );
 
-            EnsureApiSuccessStatusCode(result);
-            EnsureHttpSuccessStatusCode(response);
+            Client.ApiRequestManager.EnsureApiSuccessStatusCode(result);
+            Client.ApiRequestManager.EnsureHttpSuccessStatusCode(response);
 
             return result;
         }

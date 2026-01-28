@@ -1,7 +1,7 @@
 ﻿using Rocket.Domain.Connectors;
 using Rocket.Domain.Enum;
 
-namespace Rocket.Microsoft.Domain
+namespace Rocket.Microsofts.Domain
 {
     public record MicrosoftConnector : BaseConnector
     {

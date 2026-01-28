@@ -1,8 +1,8 @@
 ﻿using MongoDB.Bson.Serialization;
 using Rocket.Interfaces;
-using Rocket.Microsoft.Domain;
+using Rocket.Microsofts.Domain;
 
-namespace Rocket.Microsoft.Infrastructure
+namespace Rocket.Microsofts.Infrastructure
 {
     public class MicrosoftBsonMapper : IBsonMapper
     {

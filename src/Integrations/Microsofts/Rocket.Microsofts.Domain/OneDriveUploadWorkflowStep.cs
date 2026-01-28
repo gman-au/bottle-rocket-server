@@ -1,7 +1,7 @@
 ﻿using Rocket.Domain.Enum;
 using Rocket.Domain.Workflows;
 
-namespace Rocket.Microsoft.Domain
+namespace Rocket.Microsofts.Domain
 {
     public record OneDriveUploadWorkflowStep : BaseWorkflowStep
     {

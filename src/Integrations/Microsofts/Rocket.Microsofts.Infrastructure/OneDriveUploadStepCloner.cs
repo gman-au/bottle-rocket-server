@@ -1,8 +1,8 @@
 ﻿using System;
 using Rocket.Infrastructure.Mapping;
-using Rocket.Microsoft.Domain;
+using Rocket.Microsofts.Domain;
 
-namespace Rocket.Microsoft.Infrastructure
+namespace Rocket.Microsofts.Infrastructure
 {
     public class OneDriveUploadStepCloner(IServiceProvider serviceProvider)
         : StepModelClonerBase<OneDriveUploadWorkflowStep, OneDriveUploadExecutionStep>(serviceProvider)

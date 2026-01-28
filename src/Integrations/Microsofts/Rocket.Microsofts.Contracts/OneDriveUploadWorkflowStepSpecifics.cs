@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Rocket.Api.Contracts.Workflows;
 
-namespace Rocket.Microsoft.Contracts
+namespace Rocket.Microsofts.Contracts
 {
     public class OneDriveUploadWorkflowStepSpecifics : WorkflowStepSummary
     {

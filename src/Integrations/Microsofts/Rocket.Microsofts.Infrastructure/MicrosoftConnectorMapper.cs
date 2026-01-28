@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Infrastructure.Mapping;
-using Rocket.Microsoft.Contracts;
-using Rocket.Microsoft.Domain;
+using Rocket.Microsofts.Contracts;
+using Rocket.Microsofts.Domain;
 
-namespace Rocket.Microsoft.Infrastructure
+namespace Rocket.Microsofts.Infrastructure
 {
     public class MicrosoftConnectorMapper(
         IServiceProvider serviceProvider

@@ -1,4 +1,4 @@
-﻿namespace Rocket.Microsoft.Domain
+﻿namespace Rocket.Microsofts.Domain
 {
     public static class MicrosoftDomainConstants
     {

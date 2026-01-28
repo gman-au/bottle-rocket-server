@@ -13,7 +13,7 @@ using Rocket.Dropbox.Injection;
 using Rocket.Gcp.Injection;
 using Rocket.Infrastructure.Json;
 using Rocket.MaxOcr.Injection;
-using Rocket.Microsoft.Injection;
+using Rocket.Microsofts.Injection;
 using Rocket.Notion.Injection;
 using Rocket.Ollama.Injection;
 
