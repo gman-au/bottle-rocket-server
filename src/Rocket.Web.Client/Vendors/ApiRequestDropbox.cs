@@ -14,7 +14,8 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            LoggerExtensions.LogInformation(logger, "Received Patch (Dropbox) Connector request");
+            logger
+                .LogInformation("Received Patch (Dropbox) Connector request");
 
             var response =
                 await
@@ -27,14 +28,14 @@ namespace Rocket.Web.Client
 
             var result =
                 await
-                    HttpResponseMessageEx
+                    response
                         .TryParseResponse<ApiResponse>(
-                            response, logger,
+                            logger,
                             cancellationToken
                         );
 
-            Client.ApiRequestManager.EnsureApiSuccessStatusCode(result);
-            Client.ApiRequestManager.EnsureHttpSuccessStatusCode(response);
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
 
             return result;
         }

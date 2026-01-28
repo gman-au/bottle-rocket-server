@@ -1,0 +1,233 @@
+﻿@page "/MyConnector/Microsoft/Add"
+@using Rocket.Microsofts.Contracts
+@using Rocket.Web.Client
+@using Rocket.Web.Host.Infrastructure
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject ISnackbar Snackbar
+@inject IJSRuntime JsRuntime
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_initiateRequest != null)
+    {
+        <MudForm
+            Model="@_initiateRequest"
+            @ref="_form">
+            <MudPaper Class="p-4" elevation="2">
+                <MudText
+                    Align="Align.Center"
+                    Typo="Typo.h4"
+                    Color="Color.Primary"
+                    Class="mb-4">
+                    Add a Microsoft connector
+                </MudText>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5"
+                        >
+                            Step 1: Create a registered Entra / Microsoft application
+                        </MudText>
+                        <MudText>
+                            <ul>
+                                <li>
+                                    <MudLink
+                                        Target="_blank"
+                                        Href="https://gman-au.github.io/bottle-rocket-documentation/docs/docs-general/workflow-integrations/dropbox#prerequisites">
+                                        Follow the instructions to set up a Dropbox App.
+                                    </MudLink>
+                                </li>
+                                <li>Ensure that the correct permissions / scopes are set.</li>
+                                <li>When completed, you should receive an <b>App Key</b> and <b>App Secret</b>, which needs to be entered
+                                    below.
+                                </li>
+                            </ul>
+                        </MudText>
+                    </MudItem>
+                    <MudItem sm="12" lg="6">
+                        <MudTextField
+                            T="string"
+                            Required="true"
+                            Label="Client ID"
+                            HelperText="Enter the Client ID"
+                            @bind-Value="_initiateRequest.ClientId"
+                            For="@(() => _initiateRequest.ClientId)"
+                            RequiredError="Client ID is required"/>
+                    </MudItem>
+                    <MudItem sm="12" lg="6">
+                        <MudTextField
+                            T="string"
+                            Required="true"
+                            Label="Tenant ID"
+                            HelperText="Enter the Tenant ID"
+                            @bind-Value="_initiateRequest.TenantId"
+                            For="@(() => _initiateRequest.TenantId)"
+                            RequiredError="Tenant ID is required"/>
+                    </MudItem>
+                    <MudDivider Class="my-2"/>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5"
+                        >
+                            Step 2: Authorize the app to receive an access code
+                        </MudText>
+                        <MudText>
+                            <ul>
+                                <li>Click on the <b>Authorize button</b> below to be redirected to Dropbox's app authorization page.</li>
+                                <li>Once you have consented to the permissions required by the app, you will receive an access code, which
+                                    needs to be entered below.
+                                </li>
+                            </ul>
+                        </MudText>
+                    </MudItem>
+                    <MudItem sm="12" lg="6">
+                        <MudButton
+                            Variant="Variant.Outlined"
+                            Color="Color.Secondary"
+                            Disabled="!(_form.IsTouched || _form.IsValid)"
+                            OnClick="@BeginAuthorizeAsync">
+                            Authorize in Dropbox
+                        </MudButton>
+                    </MudItem>
+                    <MudDivider Class="my-2"/>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Tertiary"
+                            Typo="Typo.h2"
+                            Class="code-text"
+                        >
+                            @_userCode
+                        </MudText>
+                        <MudText>
+                            Click on the button below to open a Microsoft login page, where you can enter the code above and complete the authorization.
+                        </MudText>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="align-start mt-2" Justify="Justify.FlexEnd">
+                    <MudItem>
+                        <GoBackButton/>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton
+                            Variant="Variant.Outlined"
+                            Color="Color.Success"
+                            Disabled="@(_isAuthorizing || string.IsNullOrEmpty(_verificationUrl))"
+                            OnClick="@CompleteAuthorizeAsync">
+                            Complete authorization
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudForm>
+    }
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    MudForm _form;
+
+    private bool _isLoading;
+    private bool _isAuthorizing = false;
+    private MicrosoftAuthInitiateRequest _initiateRequest;
+
+    private string _userCode = null;
+    private string _verificationUrl = null;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+
+            _initiateRequest = new MicrosoftAuthInitiateRequest();
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task BeginAuthorizeAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                var clientId = _initiateRequest.ClientId;
+                var tenantId = _initiateRequest.TenantId;
+
+                var response =
+                    await
+                        ApiRequestManager
+                            .InitiateMicrosoftConnectorAuthAsync(
+                                new MicrosoftAuthInitiateRequest
+                                {
+                                    ClientId = clientId,
+                                    TenantId = tenantId
+                                },
+                                BaseCancellationToken
+                            );
+
+                _verificationUrl = response?.Result?.VerificationUrl;
+                _userCode = response?.Result?.UserCode;
+
+                if (string.IsNullOrEmpty(_verificationUrl))
+                    throw new Exception("There was a connection error.");
+
+                if (string.IsNullOrEmpty(_userCode))
+                    throw new Exception("There was a connection error.");
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task CompleteAuthorizeAsync()
+    {
+        _isAuthorizing = true;
+        //_isLoading = true;
+        StateHasChanged();
+
+        await
+            JsRuntime
+                .InvokeVoidAsync(
+                    "eval",
+                    $"window.open('{_verificationUrl}', '_blank')"
+                );
+    }
+
+}
+
+}

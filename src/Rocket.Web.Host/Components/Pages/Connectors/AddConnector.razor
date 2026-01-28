@@ -1,6 +1,7 @@
 ﻿@page "/MyConnectors/Add"
 @using Rocket.Dropbox.Domain
 @using Rocket.Gcp.Domain
+@using Rocket.Microsofts.Domain
 @using Rocket.Notion.Domain
 @using Rocket.Ollama.Domain
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
@@ -70,6 +71,12 @@
             Href = "/MyConnector/Gcp/Add",
             ImagePath = "/img/gcp-logo.png"
         },
+        new()
+        {
+            Name = MicrosoftDomainConstants.ConnectorName,
+            Href = "/MyConnector/Microsoft/Add",
+            ImagePath = "/img/microsoft-logo.png"
+        }
     ];
 
     private async Task NavigateToAddAsync(string href)

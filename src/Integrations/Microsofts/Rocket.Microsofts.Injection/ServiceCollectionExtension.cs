@@ -14,6 +14,7 @@ namespace Rocket.Microsofts.Injection
                 .AddTransient<IExecutionStepModelMapper, OneDriveUploadExecutionStepMapper>()
                 .AddTransient<IConnectorModelMapper, MicrosoftConnectorMapper>()
                 .AddTransient<IStepModelCloner, OneDriveUploadStepCloner>()
+                .AddTransient<IMicrosoftTokenAcquirer, MicrosoftTokenAcquirer>()
                 .AddTransient<IBsonMapper, MicrosoftBsonMapper>();
 
             return services;

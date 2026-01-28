@@ -15,9 +15,11 @@ namespace Rocket.Microsofts.Domain
         
         public string TenantId { get; set; }
 
+        public string AccountIdentifier { get; set; }
+
         public override ConnectorStatusEnum DetermineStatus()
         {
-            return !string.IsNullOrEmpty(ClientId)
+            return !string.IsNullOrEmpty(AccountIdentifier)
                 ? ConnectorStatusEnum.Active
                 : ConnectorStatusEnum.Pending;
         }

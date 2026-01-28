@@ -1,0 +1,39 @@
+﻿@page "/MyWorkflow/OneDrive/{workflowId}/AddStep"
+@page "/MyWorkflow/OneDrive/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/OneDrive/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.Microsofts.Contracts
+@using Rocket.Microsofts.Domain
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<UpdateWorkflowStepWrapper
+    T="OneDriveUploadWorkflowStepSpecifics"
+    WorkflowStepName="Upload file to OneDrive"
+    WorkflowId="@WorkflowId"
+    ParentStepId="@ParentStepId"
+    RequiresConnectorCode="@MicrosoftDomainConstants.ConnectorCode"
+    StepId="@StepId"
+    Context="stepSpecifics">
+    <MudGrid>
+        <MudItem sm="12" lg="6">
+            <MudTextField
+                T="string"
+                Label="Subfolder"
+                HelperText="Enter the OneDrive sub folder to upload to"
+                @bind-Value="stepSpecifics.Subfolder"
+                For="@(() => stepSpecifics.Subfolder)"/>
+        </MudItem>
+    </MudGrid>
+</UpdateWorkflowStepWrapper>
+
+@code {
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+}
