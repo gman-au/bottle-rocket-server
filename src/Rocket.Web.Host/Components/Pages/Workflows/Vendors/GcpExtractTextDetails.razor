@@ -1,0 +1,38 @@
+﻿@page "/MyWorkflow/Gcp/{workflowId}/AddStep"
+@page "/MyWorkflow/Gcp/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/Gcp/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.Gcp.Contracts
+@using Rocket.Gcp.Domain
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<UpdateWorkflowStepWrapper
+    T="GcpExtractWorkflowStepSpecifics"
+    WorkflowStepName="Extract text from image"
+    WorkflowId="@WorkflowId"
+    ParentStepId="@ParentStepId"
+    RequiresConnectorCode="@GcpDomainConstants.ConnectorCode"
+    StepId="@StepId"
+    Context="stepSpecifics">
+    <MudGrid>
+        <MudItem sm="12">
+            <MudText
+                type="hidden"
+                T="string"
+                @bind-Value="stepSpecifics.InputTypeName"
+                For="@(() => stepSpecifics.InputTypeName)"/>
+        </MudItem>
+    </MudGrid>
+</UpdateWorkflowStepWrapper>
+
+@code {
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+}
