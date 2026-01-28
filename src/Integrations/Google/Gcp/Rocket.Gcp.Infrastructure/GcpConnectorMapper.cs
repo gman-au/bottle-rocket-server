@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Text.Json;
 using System.Threading.Tasks;
+using MongoDB.Bson.Serialization.Serializers;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Gcp.Contracts;
@@ -19,7 +21,35 @@ namespace Rocket.Gcp.Infrastructure
                 base
                     .For(value);
 
-            // TODO: convert the base64 string into GcpCredential domain entity
+            var base64String = 
+                value
+                    .CredentialsFileBase64;
+            
+            var credentialsJson = 
+                Convert
+                    .FromBase64String(base64String);
+
+            try
+            {
+                var credential =
+                    JsonSerializer
+                        .Deserialize<GcpCredential>(credentialsJson);
+
+                if (string.IsNullOrEmpty(credential?.ProjectId))
+                    throw new RocketException(
+                        "There was a problem loading the credentials file. Please check it again and re-try.",
+                        ApiStatusCodeEnum.ValidationError
+                    );
+                
+                result.Credential = credential;
+            }
+            catch (JsonException)
+            {
+                throw new RocketException(
+                    "There was a problem loading the credentials file. Please check it again and re-try.",
+                    ApiStatusCodeEnum.ValidationError
+                );
+            }
 
             return result;
         }

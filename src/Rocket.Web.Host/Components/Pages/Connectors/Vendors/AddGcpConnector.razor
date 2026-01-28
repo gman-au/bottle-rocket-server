@@ -1,0 +1,231 @@
+﻿@page "/MyConnector/Gcp/Add"
+@using System.IO
+@using System.Threading
+@using Rocket.Api.Contracts.Connectors
+@using Rocket.Gcp.Contracts
+@using Rocket.Web.Client
+@using Rocket.Web.Host.Infrastructure
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject ISnackbar Snackbar
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_connector != null)
+    {
+        <MudForm
+            Model="@_connector"
+            @ref="_form">
+            <MudPaper Class="p-4" elevation="2">
+                <MudText
+                    Align="Align.Center"
+                    Typo="Typo.h4"
+                    Color="Color.Primary"
+                    Class="mb-4">
+                    Add a Google Cloud Platform (GCP) connector
+                </MudText>
+
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5"
+                        >
+                            Step 1: Set up the GCP project, with Cloud Vision API enabled
+                        </MudText>
+                        <MudText>
+                            <MudLink
+                                Target="_blank"
+                                Href="https://gman-au.github.io/bottle-rocket-documentation/docs/docs-general/workflow-integrations/google-cloud-vision#create-the-project-in-google-cloud">
+                                Follow the instructions to set up a Google Cloud project.
+                            </MudLink>
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5">
+                            Step 2: Download the credentials file
+                        </MudText>
+                        <MudText>
+                            After setup of the project and service account, you should be able to download the credentials file.
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5">
+                            Step 3: Upload the credentials file
+                        </MudText>
+                        <MudText>
+                            Upload the credentials file here.
+                        </MudText>
+                    </MudItem>
+                    <MudItem sm="12" lg="6">
+                        <MudFileUpload
+                            Disabled="@_isLoading"
+                            T="IBrowserFile"
+                            MaximumFileCount="1"
+                            FilesChanged="UploadFilesAsync">
+                            <ActivatorContent>
+                                <MudFab
+                                    Disabled="@_isLoading"
+                                    HtmlTag="label"
+                                    Color="Color.Default"
+                                    StartIcon="@StandardIcons.AttachmentIcon"
+                                >
+                                </MudFab>
+                            </ActivatorContent>
+                        </MudFileUpload>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="align-start mt-2" Justify="Justify.FlexEnd">
+                    <MudItem>
+                        <GoBackButton/>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton
+                            Variant="Variant.Outlined"
+                            Color="Color.Success"
+                            Disabled="@(_isLoading)"
+                            OnClick="@SubmitAsync">
+                            Submit
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudForm>
+    }
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    private const long MaxUploadSizeMb = 5;
+
+    MudForm _form;
+
+    private bool _isLoading;
+    private readonly GcpConnectorSpecifics _connector = new();
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task UploadFilesAsync(IBrowserFile file)
+    {
+        var base64 =
+            await
+                ConvertToBase64Async(
+                    file,
+                    BaseCancellationToken
+                );
+
+        _connector.CredentialsFileBase64 = base64;
+    }
+
+    private async Task SubmitAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                await
+                    ApiRequestManager
+                        .CreateConnectorAsync(
+                            new CreateConnectorRequest<GcpConnectorSpecifics>
+                            {
+                                Connector = _connector
+                            },
+                            BaseCancellationToken
+                        );
+
+                Snackbar
+                    .Add(
+                        "The connection has been added.",
+                        Severity.Success
+                    );
+
+                NavigationManager
+                    .NavigateTo("/MyConnectors");
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task<string> ConvertToBase64Async(IBrowserFile file, CancellationToken cancellationToken)
+    {
+        try
+        {
+            const long maxUploadSize = MaxUploadSizeMb * 1000000;
+
+            var stream =
+                file
+                    .OpenReadStream(maxUploadSize);
+
+            byte[] bytes;
+            using (var memoryStream = new MemoryStream())
+            {
+                await
+                    stream
+                        .CopyToAsync(
+                            memoryStream,
+                            cancellationToken
+                        );
+                
+                bytes = memoryStream.ToArray();
+            }
+
+            var base64 =
+                Convert
+                    .ToBase64String(bytes);
+
+            return base64;
+        }
+        catch (IOException ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+
+        return null;
+    }
+
+}

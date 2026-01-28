@@ -22,5 +22,6 @@ namespace Rocket.Web.Host
         public const string WorkflowsIcon = Icons.Material.Filled.AccountTree;
         public const string SearchWorkflowIcon = Icons.Material.Filled.Search;
         public const string AddWorkflowIcon = Icons.Material.Filled.AddCircleOutline;
+        public const string AttachmentIcon = Icons.Material.Filled.AttachFile;
     }
 }
