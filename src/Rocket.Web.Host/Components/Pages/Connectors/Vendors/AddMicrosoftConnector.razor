@@ -1,14 +1,17 @@
 ﻿@page "/MyConnector/Microsoft/Add"
 @using Rocket.Microsofts.Contracts
 @using Rocket.Web.Client
+@using Rocket.Web.Host.HubClients
 @using Rocket.Web.Host.Infrastructure
+@implements IAsyncDisposable
 @inject IApiRequestManager ApiRequestManager
 @inject IWebHostErrorHandler WebHostErrorHandler
-@inject ISnackbar Snackbar
+@inject ICaptureHubClient CaptureHubClient
 @inject IJSRuntime JsRuntime
+@inject ISnackbar Snackbar
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
-<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+<BottleRocketLoadingOverlay IsLoading="@(_isAuthorizing || _isLoading)">
     @if (_initiateRequest != null)
     {
         <MudForm
@@ -35,12 +38,12 @@
                                 <li>
                                     <MudLink
                                         Target="_blank"
-                                        Href="https://gman-au.github.io/bottle-rocket-documentation/docs/docs-general/workflow-integrations/dropbox#prerequisites">
-                                        Follow the instructions to set up a Dropbox App.
+                                        Href="#">
+                                        Follow the instructions to set up a Microsoft App Registration.
                                     </MudLink>
                                 </li>
                                 <li>Ensure that the correct permissions / scopes are set.</li>
-                                <li>When completed, you should receive an <b>App Key</b> and <b>App Secret</b>, which needs to be entered
+                                <li>When completed, you should receive an <b>Client ID</b> and <b>Tenant ID</b>, which needs to be entered
                                     below.
                                 </li>
                             </ul>
@@ -51,6 +54,7 @@
                             T="string"
                             Required="true"
                             Label="Client ID"
+                            Disabled="_isAuthorizing"
                             HelperText="Enter the Client ID"
                             @bind-Value="_initiateRequest.ClientId"
                             For="@(() => _initiateRequest.ClientId)"
@@ -61,6 +65,7 @@
                             T="string"
                             Required="true"
                             Label="Tenant ID"
+                            Disabled="_isAuthorizing"
                             HelperText="Enter the Tenant ID"
                             @bind-Value="_initiateRequest.TenantId"
                             For="@(() => _initiateRequest.TenantId)"
@@ -72,13 +77,13 @@
                             Color="Color.Secondary"
                             Typo="Typo.h5"
                         >
-                            Step 2: Authorize the app to receive an access code
+                            Step 2: Get an authorization code from Microsoft
                         </MudText>
                         <MudText>
                             <ul>
-                                <li>Click on the <b>Authorize button</b> below to be redirected to Dropbox's app authorization page.</li>
-                                <li>Once you have consented to the permissions required by the app, you will receive an access code, which
-                                    needs to be entered below.
+                                <li>
+                                    Click on the <b>Authorize button</b> below to receive a code to
+                                    enter into Microsoft's app authorization page.
                                 </li>
                             </ul>
                         </MudText>
@@ -87,22 +92,41 @@
                         <MudButton
                             Variant="Variant.Outlined"
                             Color="Color.Secondary"
-                            Disabled="!(_form.IsTouched || _form.IsValid)"
+                            Disabled="!(_isAuthorizing || !_form.IsValid)"
                             OnClick="@BeginAuthorizeAsync">
-                            Authorize in Dropbox
+                            Get an authorization code
                         </MudButton>
                     </MudItem>
                     <MudDivider Class="my-2"/>
                     <MudItem xs="12">
                         <MudText
-                            Color="Color.Tertiary"
-                            Typo="Typo.h2"
-                            Class="code-text"
+                            Color="Color.Secondary"
+                            Typo="Typo.h5"
                         >
-                            @_userCode
+                            Step 3: Complete the authorization process via Microsoft authentication
                         </MudText>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudContainer Class="general-centered">
+                            <MudText
+                                Color="Color.Info"
+                                Typo="Typo.h2"
+                                Class="code-text">
+                                @_userCode
+                            </MudText>
+                        </MudContainer>
+                    </MudItem>
+                    <MudItem xs="12">
                         <MudText>
-                            Click on the button below to open a Microsoft login page, where you can enter the code above and complete the authorization.
+                            <ul>
+                                <li>
+                                    Copy this code.
+                                </li>
+                                <li>
+                                    Click on the <b>Complete authorization</b> button below to open a Microsoft login page,
+                                    where you can enter the code above and complete the authorization.
+                                </li>
+                            </ul>
                         </MudText>
                     </MudItem>
                 </MudGrid>
@@ -151,6 +175,14 @@
             StateHasChanged();
 
             _initiateRequest = new MicrosoftAuthInitiateRequest();
+            
+            // Set up SignalR listener
+            CaptureHubClient.OnNewConnectorUpdateReceived += HandleNewConnectorUpdateAsync;
+            
+            // Connect to hub
+            await
+                CaptureHubClient
+                    .StartAsync();
         }
         catch (Exception ex)
         {
@@ -227,7 +259,41 @@
                     $"window.open('{_verificationUrl}', '_blank')"
                 );
     }
+    
+    private async Task HandleNewConnectorUpdateAsync(bool success)
+    {
+        if (success)
+        {
+            Snackbar
+                .Add(
+                    "The connection has been added.",
+                    Severity.Success
+                );
 
-}
+            NavigationManager
+                .NavigateTo("/MyConnectors");
+        }
+        else
+        {
+            Snackbar
+                .Add(
+                    "There was an error adding the connection.",
+                    Severity.Error
+                );
+            
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
 
+    public async ValueTask DisposeAsync()
+    {
+        // Clean up SignalR subscription
+        CaptureHubClient.OnNewConnectorUpdateReceived -= HandleNewConnectorUpdateAsync;
+
+        await
+            CaptureHubClient
+                .DisposeAsync();
+    }
+    
 }

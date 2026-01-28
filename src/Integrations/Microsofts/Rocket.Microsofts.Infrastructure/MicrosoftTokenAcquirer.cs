@@ -14,6 +14,7 @@ namespace Rocket.Microsofts.Infrastructure
 {
     public class MicrosoftTokenAcquirer(
         ILogger<MicrosoftTokenAcquirer> logger,
+        ICaptureNotifier captureNotifier,
         IConnectorRepository connectorRepository
     ) : IMicrosoftTokenAcquirer
     {
@@ -31,7 +32,7 @@ namespace Rocket.Microsofts.Infrastructure
                     ApiStatusCodeEnum.ValidationError
                 );
 
-            if (string.IsNullOrEmpty(connector?.TenantId))
+            if (string.IsNullOrEmpty(connector.TenantId))
                 throw new RocketException(
                     "No client ID was supplied for the connector",
                     ApiStatusCodeEnum.ValidationError
@@ -45,7 +46,7 @@ namespace Rocket.Microsofts.Infrastructure
                         connector.TenantId
                     )
                     .Build();
-
+            
             DeviceCodeResult deviceCodeResult = null;
 
             // Start the auth process but don't await it yet
@@ -88,7 +89,16 @@ namespace Rocket.Microsofts.Infrastructure
                 {
                     try
                     {
-                        var authResult = await authTask;
+                        using var cts =
+                            new CancellationTokenSource(
+                                TimeSpan
+                                    .FromMinutes(3)
+                            );
+
+                        var authResult =
+                            await
+                                authTask
+                                    .WaitAsync(cts.Token);
 
                         logger
                             .LogInformation("Token acquired successfully");
@@ -108,6 +118,27 @@ namespace Rocket.Microsofts.Infrastructure
                                     accountIdentifier,
                                     CancellationToken.None
                                 );
+
+                        await
+                            captureNotifier
+                                .NotifyConnectorUpdateAsync(
+                                    userId,
+                                    success: true,
+                                    cancellationToken
+                                );
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        logger
+                            .LogError("Authentication timed out");
+
+                        await
+                            captureNotifier
+                                .NotifyConnectorUpdateAsync(
+                                    userId,
+                                    success: false,
+                                    CancellationToken.None
+                                );
                     }
                     catch (Exception ex)
                     {
@@ -116,6 +147,14 @@ namespace Rocket.Microsofts.Infrastructure
                                 ex,
                                 "Failed to complete authentication"
                             );
+
+                        await
+                            captureNotifier
+                                .NotifyConnectorUpdateAsync(
+                                    userId,
+                                    success: false,
+                                    CancellationToken.None
+                                );
                     }
                 }
             );
