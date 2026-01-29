@@ -44,7 +44,7 @@ namespace Rocket.Microsofts.Infrastructure
                             o =>
                                 new OneNoteSection
                                 {
-                                    Id = o.Id,
+                                    SectionId = o.Id,
                                     SectionName = o.DisplayName,
                                 }
                         );

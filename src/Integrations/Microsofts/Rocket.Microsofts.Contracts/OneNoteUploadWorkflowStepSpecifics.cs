@@ -5,7 +5,7 @@ namespace Rocket.Microsofts.Contracts
 {
     public class OneNoteUploadWorkflowStepSpecifics : WorkflowStepSummary
     {
-        [JsonPropertyName("parent_note")]
-        public string ParentNote { get; set; }
+        [JsonPropertyName("section_id")]
+        public string SectionId { get; set; }
     }
 }

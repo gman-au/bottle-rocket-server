@@ -38,5 +38,36 @@ namespace Rocket.Web.Client
 
             return result;
         }
+        
+        public async Task<GetOneNoteSectionsResponse> GetOneNoteSectionsAsync(
+            GetOneNoteSectionsRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation("Received Get (OneNote) sections request");
+
+            var response =
+                await
+                    authenticatedApiClient
+                        .PostAsJsonAsync(
+                            "/api/microsoft/workflows/getOneNoteSections",
+                            request,
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<GetOneNoteSectionsResponse>(
+                            logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
     }
 }

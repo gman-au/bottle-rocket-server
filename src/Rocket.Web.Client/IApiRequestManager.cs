@@ -146,5 +146,10 @@ namespace Rocket.Web.Client
             MicrosoftAuthInitiateRequest request,
             CancellationToken cancellationToken
         );
+
+        public Task<GetOneNoteSectionsResponse> GetOneNoteSectionsAsync(
+            GetOneNoteSectionsRequest request,
+            CancellationToken cancellationToken
+        );
     }
 }
