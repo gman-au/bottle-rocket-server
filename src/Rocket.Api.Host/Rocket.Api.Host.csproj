@@ -3,8 +3,8 @@
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
-        <OpenApiDocumentsDirectory>C:\Stash\bottle-rocket\Bottle.Rocket.Documentation\src\openapi</OpenApiDocumentsDirectory>
+        <OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
+        <OpenApiDocumentsDirectory>$(ProjectDir)openapi</OpenApiDocumentsDirectory>
     </PropertyGroup>
     
     <ItemGroup>

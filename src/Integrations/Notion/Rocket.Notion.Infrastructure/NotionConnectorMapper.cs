@@ -3,12 +3,14 @@ using System.Threading.Tasks;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Infrastructure.Mapping;
+using Rocket.Interfaces;
 using Rocket.Notion.Contracts;
 using Rocket.Notion.Domain;
 
 namespace Rocket.Notion.Infrastructure
 {
     public class NotionConnectorMapper(
+        IObfuscator obfuscator,
         IServiceProvider serviceProvider
     )
         : ConnectorModelMapperBase<NotionConnector, NotionConnectorSpecifics>(serviceProvider)
@@ -30,7 +32,9 @@ namespace Rocket.Notion.Infrastructure
                 base
                     .From(value);
 
-            result.IntegrationSecret = value.IntegrationSecret;
+            result.IntegrationSecret = 
+                obfuscator
+                    .Obfuscate(value.IntegrationSecret);
 
             return result;
         }

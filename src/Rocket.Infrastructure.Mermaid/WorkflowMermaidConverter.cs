@@ -165,6 +165,10 @@ namespace Rocket.Infrastructure.Mermaid
                 {
                     route = $"/MyWorkflow/OneDrive/{workflowId}/Steps/{step.Id}/UpdateStep";
                 }
+                if (step is OneNoteUploadWorkflowStepSpecifics)
+                {
+                    route = $"/MyWorkflow/OneNote/{workflowId}/Steps/{step.Id}/UpdateStep";
+                }
 
                 if (!string.IsNullOrEmpty(route))
                 {

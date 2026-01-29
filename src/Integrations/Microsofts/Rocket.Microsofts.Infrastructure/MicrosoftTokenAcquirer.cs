@@ -21,7 +21,8 @@ namespace Rocket.Microsofts.Infrastructure
         IConnectorRepository connectorRepository
     ) : IMicrosoftTokenAcquirer
     {
-        private static readonly string[] Scopes = ["Files.ReadWrite.All", "offline_access"];
+        private static readonly string[] Scopes = ["Files.ReadWrite.All", "offline_access", "Notes.ReadWrite.All"];
+        private const string AuthEndpoint = "https://login.microsoftonline.com/{0}/oauth2/v2.0/token";
 
         public async Task<MicrosoftDeviceCodeResult> AcquireAccountIdentifierAsync(
             MicrosoftConnector connector,
@@ -105,11 +106,33 @@ namespace Rocket.Microsofts.Infrastructure
                         logger
                             .LogInformation("Token acquired successfully");
 
-                        var cacheData = (app.UserTokenCache as ITokenCacheSerializer)?.SerializeMsalV3();
-                        var cacheJson = System.Text.Encoding.UTF8.GetString(cacheData);
-                        var cacheObject = System.Text.Json.JsonDocument.Parse(cacheJson);
-                        var refreshTokens = cacheObject.RootElement.GetProperty("RefreshToken");
-                        var refreshToken = refreshTokens.EnumerateObject().First().Value.GetProperty("secret").GetString();
+                        var cacheData =
+                            (app.UserTokenCache as ITokenCacheSerializer)?
+                            .SerializeMsalV3();
+
+                        var cacheJson =
+                            System
+                                .Text
+                                .Encoding
+                                .UTF8
+                                .GetString(cacheData);
+
+                        var cacheObject =
+                            JsonDocument
+                                .Parse(cacheJson);
+
+                        var refreshTokens =
+                            cacheObject
+                                .RootElement
+                                .GetProperty("RefreshToken");
+
+                        var refreshToken =
+                            refreshTokens
+                                .EnumerateObject()
+                                .First()
+                                .Value
+                                .GetProperty("secret")
+                                .GetString();
 
                         await
                             connectorRepository
@@ -171,38 +194,45 @@ namespace Rocket.Microsofts.Infrastructure
         {
             using var httpClient = new HttpClient();
 
-            var requestBody = new FormUrlEncodedContent(
-                [
-                    new KeyValuePair<string, string>(
-                        "client_id",
-                        connector.ClientId
-                    ),
-                    new KeyValuePair<string, string>(
-                        "refresh_token",
-                        connector.RefreshToken
-                    ),
-                    new KeyValuePair<string, string>(
-                        "grant_type",
-                        "refresh_token"
-                    ),
-                    new KeyValuePair<string, string>(
-                        "scope",
-                        string.Join(
-                            " ",
-                            Scopes
+            var requestBody =
+                new FormUrlEncodedContent(
+                    [
+                        new KeyValuePair<string, string>(
+                            "client_id",
+                            connector.ClientId
+                        ),
+                        new KeyValuePair<string, string>(
+                            "refresh_token",
+                            connector.RefreshToken
+                        ),
+                        new KeyValuePair<string, string>(
+                            "grant_type",
+                            "refresh_token"
+                        ),
+                        new KeyValuePair<string, string>(
+                            "scope",
+                            string.Join(
+                                " ",
+                                Scopes
+                            )
                         )
-                    )
-                ]
-            );
+                    ]
+                );
 
             var response =
                 await
                     httpClient
                         .PostAsync(
-                            $"https://login.microsoftonline.com/{connector.TenantId}/oauth2/v2.0/token",
+                            string.Format(
+                                AuthEndpoint,
+                                connector.TenantId
+                            ),
                             requestBody,
                             cancellationToken
                         );
+
+            response
+                .EnsureSuccessStatusCode();
 
             var json =
                 await

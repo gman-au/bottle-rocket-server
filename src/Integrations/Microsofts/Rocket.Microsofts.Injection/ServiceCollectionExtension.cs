@@ -21,6 +21,7 @@ namespace Rocket.Microsofts.Injection
                 .AddTransient<IMicrosoftTokenAcquirer, MicrosoftTokenAcquirer>()
                 .AddTransient<IGraphClientProvider, GraphClientProvider>()
                 .AddTransient<IOneDriveUploader, OneDriveUploader>()
+                .AddTransient<IOneNoteSectionSearcher, OneNoteSectionSearcher>()
                 .AddTransient<IOneNoteUploader, OneNoteUploader>()
                 .AddTransient<IBsonMapper, MicrosoftBsonMapper>();
 

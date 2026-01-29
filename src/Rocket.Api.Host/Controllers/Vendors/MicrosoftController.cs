@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Host.Extensions;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Interfaces;
 using Rocket.Microsofts.Contracts;
 using Rocket.Microsofts.Domain;
@@ -20,6 +22,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
     public class MicrosoftController(
         ILogger<MicrosoftController> logger,
         IMicrosoftTokenAcquirer tokenAcquirer,
+        IOneNoteSectionSearcher oneNoteSectionSearcher,
         IConnectorRepository connectorRepository,
         IUserManager userManager
     ) : RocketControllerBase(userManager)
@@ -71,15 +74,15 @@ namespace Rocket.Api.Host.Controllers.Vendors
 
             if (connector == null)
             {
-                connector = 
+                connector =
                     new MicrosoftConnector
-                {
-                    UserId = userId,
-                    ClientId = request.ClientId,
-                    TenantId = request.TenantId,
-                    CreatedAt = DateTime.UtcNow,
-                    LastUpdatedAt = DateTime.UtcNow
-                };
+                    {
+                        UserId = userId,
+                        ClientId = request.ClientId,
+                        TenantId = request.TenantId,
+                        CreatedAt = DateTime.UtcNow,
+                        LastUpdatedAt = DateTime.UtcNow
+                    };
 
                 connector =
                     await
@@ -103,6 +106,76 @@ namespace Rocket.Api.Host.Controllers.Vendors
                 new MicrosoftAuthInitiateResponse
                     {
                         Result = response
+                    }
+                    .AsApiSuccess();
+        }
+
+        [HttpPost, Route("/api/microsoft/workflows/getOneNoteSections")]
+        [EndpointSummary("Get all OneNote sections accessible via a Microsoft connector")]
+        [EndpointGroupName("Manage workflows")]
+        [EndpointDescription(
+            """
+            Retrieves a set of (permitted) note sections for the given Microsoft connector.
+            """
+        )]
+        [ProducesResponseType(
+            typeof(GetOneNoteSectionsResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetAllOneNoteSectionsAsync(
+            [FromBody] GetOneNoteSectionsRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
+
+            logger
+                .LogInformation(
+                    "Received (Microsoft) sections request for username: {username}",
+                    user.Username
+                );
+
+            var userId =
+                user
+                    .Id;
+
+            var connectorId = request.ConnectorId;
+
+            var connector =
+                await
+                    connectorRepository
+                        .GetConnectorByIdAsync<MicrosoftConnector>(
+                            userId,
+                            connectorId,
+                            cancellationToken
+                        );
+
+            if (connector == null)
+                throw new RocketException(
+                    "Connector entry not found",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
+            // connect to notion and search for pages
+            var sections =
+                await
+                    oneNoteSectionSearcher
+                        .GetSectionsAsync(
+                            connector,
+                            cancellationToken
+                        );
+
+            return
+                new GetOneNoteSectionsResponse
+                    {
+                        Sections = sections
                     }
                     .AsApiSuccess();
         }

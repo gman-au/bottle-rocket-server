@@ -21,8 +21,6 @@ namespace Rocket.Microsofts.Infrastructure
 
             result.ClientId = value.ClientId;
             result.TenantId = value.TenantId;
-            
-            // account identifier is never supplied via API
 
             return result;
         }
