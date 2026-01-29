@@ -113,6 +113,7 @@ namespace Rocket.Infrastructure.Db.Mongo
 
         public async Task<bool> WorkflowExistsForNameAsync(
             string userId,
+            string workflowId,
             string workflowName,
             CancellationToken cancellationToken
         )
@@ -121,6 +122,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                 await
                     GetWorkflowByNameAsync(
                         userId,
+                        workflowIdToExclude: workflowId,
                         workflowName,
                         cancellationToken
                     ) != null;
@@ -130,6 +132,7 @@ namespace Rocket.Infrastructure.Db.Mongo
 
         public async Task<bool> WorkflowExistsForMatchingSymbolAsync(
             string userId,
+            string workflowId,
             int matchingPageSymbol,
             CancellationToken cancellationToken)
         {
@@ -137,6 +140,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                 await
                     GetWorkflowByMatchingPageSymbolAsync(
                         userId,
+                        workflowId,
                         matchingPageSymbol,
                         cancellationToken
                     ) != null;
@@ -146,46 +150,82 @@ namespace Rocket.Infrastructure.Db.Mongo
 
         private async Task<Workflow> GetWorkflowByNameAsync(
             string userId,
+            string workflowIdToExclude,
             string name,
             CancellationToken cancellationToken
-        ) =>
-            await
-                FetchFirstFilteredRecordAsync(
+        )
+        {
+            var filter =
+                Builders<Workflow>
+                    .Filter
+                    .Eq(
+                        o => o.UserId,
+                        userId
+                    ) &
+                Builders<Workflow>
+                    .Filter
+                    .Eq(
+                        o => o.Name,
+                        name
+                    );
+
+            if (!string.IsNullOrEmpty(workflowIdToExclude))
+            {
+                filter &=
                     Builders<Workflow>
                         .Filter
-                        .Eq(
-                            o => o.UserId,
-                            userId
-                        ) &
-                    Builders<Workflow>
-                        .Filter
-                        .Eq(
-                            o => o.Name,
-                            name
-                        ),
-                    cancellationToken
-                );
+                        .Ne(
+                            o => o.Id,
+                            workflowIdToExclude
+                        );
+            }
+
+            return
+                await
+                    FetchFirstFilteredRecordAsync(
+                        filter,
+                        cancellationToken
+                    );
+        }
 
         public async Task<Workflow> GetWorkflowByMatchingPageSymbolAsync(
             string userId,
+            string workflowIdToExclude,
             int matchingPageSymbol,
             CancellationToken cancellationToken
-        ) =>
-            await
-                FetchFirstFilteredRecordAsync(
+        )
+        {
+            var filter =
+                Builders<Workflow>
+                    .Filter
+                    .Eq(
+                        o => o.UserId,
+                        userId
+                    ) &
+                Builders<Workflow>
+                    .Filter
+                    .Eq(
+                        o => o.MatchingPageSymbol,
+                        matchingPageSymbol
+                    );
+
+            if (!string.IsNullOrEmpty(workflowIdToExclude))
+            {
+                filter &=
                     Builders<Workflow>
                         .Filter
-                        .Eq(
-                            o => o.UserId,
-                            userId
-                        ) &
-                    Builders<Workflow>
-                        .Filter
-                        .Eq(
-                            o => o.MatchingPageSymbol,
-                            matchingPageSymbol
-                        ),
-                    cancellationToken
-                );
+                        .Ne(
+                            o => o.Id,
+                            workflowIdToExclude
+                        );
+            }
+
+            return
+                await
+                    FetchFirstFilteredRecordAsync(
+                        filter,
+                        cancellationToken
+                    );
+        }
     }
 }
