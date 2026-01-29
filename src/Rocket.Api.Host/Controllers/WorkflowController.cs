@@ -78,6 +78,7 @@ namespace Rocket.Api.Host.Controllers
                                 new MyWorkflowSummary
                                 {
                                     Id = o.Id,
+                                    UserId = o.UserId,
                                     MatchingPageSymbol = o.MatchingPageSymbol,
                                     Name = o.Name,
                                     IsActive = o.IsActive,
