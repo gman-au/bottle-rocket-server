@@ -99,8 +99,6 @@ namespace Rocket.Jobs.Service
                         step,
                         ex
                     );
-
-                throw;
             }
         }
     }
