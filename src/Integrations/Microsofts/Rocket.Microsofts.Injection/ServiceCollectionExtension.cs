@@ -9,13 +9,19 @@ namespace Rocket.Microsofts.Injection
         public static IServiceCollection AddMicrosoftIntegration(this IServiceCollection services)
         {
             services
-                .AddTransient<IIntegrationHook, OneDriveHook>()
-                .AddTransient<IWorkflowStepModelMapper, OneDriveUploadWorkflowStepMapper>()
-                .AddTransient<IExecutionStepModelMapper, OneDriveUploadExecutionStepMapper>()
                 .AddTransient<IConnectorModelMapper, MicrosoftConnectorMapper>()
+                .AddTransient<IIntegrationHook, OneDriveHook>()
+                .AddTransient<IIntegrationHook, OneNoteHook>()
+                .AddTransient<IWorkflowStepModelMapper, OneDriveUploadWorkflowStepMapper>()
+                .AddTransient<IWorkflowStepModelMapper, OneNoteUploadWorkflowStepMapper>()
+                .AddTransient<IExecutionStepModelMapper, OneDriveUploadExecutionStepMapper>()
+                .AddTransient<IExecutionStepModelMapper, OneNoteUploadExecutionStepMapper>()
                 .AddTransient<IStepModelCloner, OneDriveUploadStepCloner>()
+                .AddTransient<IStepModelCloner, OneNoteUploadStepCloner>()
                 .AddTransient<IMicrosoftTokenAcquirer, MicrosoftTokenAcquirer>()
+                .AddTransient<IGraphClientProvider, GraphClientProvider>()
                 .AddTransient<IOneDriveUploader, OneDriveUploader>()
+                .AddTransient<IOneNoteUploader, OneNoteUploader>()
                 .AddTransient<IBsonMapper, MicrosoftBsonMapper>();
 
             return services;

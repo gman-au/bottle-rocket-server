@@ -31,6 +31,22 @@ namespace Rocket.Microsofts.Infrastructure
                     cm.AutoMap();
                 });
             }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(OneNoteUploadExecutionStep)))
+            {
+                BsonClassMap.RegisterClassMap<OneNoteUploadExecutionStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(OneNoteUploadWorkflowStep)))
+            {
+                BsonClassMap.RegisterClassMap<OneNoteUploadWorkflowStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
         }
     }
 }

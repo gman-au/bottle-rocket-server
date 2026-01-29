@@ -1,0 +1,39 @@
+﻿@page "/MyWorkflow/OneNote/{workflowId}/AddStep"
+@page "/MyWorkflow/OneNote/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/OneNote/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.Microsofts.Contracts
+@using Rocket.Microsofts.Domain
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<UpdateWorkflowStepWrapper
+    T="OneNoteUploadWorkflowStepSpecifics"
+    WorkflowStepName="Upload file to OneNote"
+    WorkflowId="@WorkflowId"
+    ParentStepId="@ParentStepId"
+    RequiresConnectorCode="@MicrosoftDomainConstants.ConnectorCode"
+    StepId="@StepId"
+    Context="stepSpecifics">
+    <MudGrid>
+        <MudItem sm="12" lg="6">
+            <MudTextField
+                T="string"
+                Label="ParentNote"
+                HelperText="Enter the OneNote parent note to add the note to"
+                @bind-Value="stepSpecifics.ParentNote"
+                For="@(() => stepSpecifics.ParentNote)"/>
+        </MudItem>
+    </MudGrid>
+</UpdateWorkflowStepWrapper>
+
+@code {
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+}

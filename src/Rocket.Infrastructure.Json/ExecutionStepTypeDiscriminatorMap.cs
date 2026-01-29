@@ -20,7 +20,8 @@ namespace Rocket.Infrastructure.Json
             { typeof(GcpExtractExecutionStepSpecifics), "gcp_extract_execution" },
             { typeof(HelloWorldTextExecutionStepSpecifics), "hello_world_text_execution" },
             { typeof(NotionUploadExecutionStepSpecifics), "notion_upload_execution" },
-            { typeof(OneDriveUploadExecutionStepSpecifics), "one_drive_upload_execution" }
+            { typeof(OneDriveUploadExecutionStepSpecifics), "one_drive_upload_execution" },
+            { typeof(OneNoteUploadExecutionStepSpecifics), "one_note_upload_execution" }
         };
 
         public static string GetExecutionStepTypeDiscriminator(this Type type)

@@ -6,7 +6,7 @@ using Rocket.Microsofts.Domain;
 
 namespace Rocket.Microsofts.Infrastructure
 {
-    public class OneDriveUploader(IMicrosoftTokenAcquirer microsoftTokenAcquirer)
+    public class OneDriveUploader(IGraphClientProvider graphClientProvider)
         : IOneDriveUploader
     {
         public async Task UploadFileAsync(
@@ -17,33 +17,13 @@ namespace Rocket.Microsofts.Infrastructure
             CancellationToken cancellationToken
         )
         {
-            var accessToken =
+            var graphClient =
                 await
-                    microsoftTokenAcquirer
-                        .AcquireTokenSilentAsync(
+                    graphClientProvider
+                        .GetClientAsync(
                             connector,
                             cancellationToken
                         );
-
-            var authProvider =
-                new DelegateAuthenticationProvider(
-                    requestMessage =>
-                    {
-                        requestMessage.Headers.Authorization =
-                            new
-                                System.Net.Http.Headers.AuthenticationHeaderValue(
-                                    "Bearer",
-                                    accessToken
-                                );
-
-                        return
-                            Task
-                                .CompletedTask;
-                    }
-                );
-
-            var graphClient =
-                new GraphServiceClient(authProvider);
 
             var fullFilePath =
                 $"{folderPath}{(!folderPath.EndsWith('/') ? "/" : "")}{fileName}";
