@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Graph;
 using Rocket.Microsofts.Domain;
@@ -19,7 +20,7 @@ namespace Rocket.Microsofts.Infrastructure
                             connector,
                             cancellationToken
                         );
-
+            
             var authProvider =
                 new DelegateAuthenticationProvider(
                     requestMessage =>

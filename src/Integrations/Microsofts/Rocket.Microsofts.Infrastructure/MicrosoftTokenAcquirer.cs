@@ -21,7 +21,7 @@ namespace Rocket.Microsofts.Infrastructure
         IConnectorRepository connectorRepository
     ) : IMicrosoftTokenAcquirer
     {
-        private static readonly string[] Scopes = ["Files.ReadWrite.All", "offline_access", "Notes.ReadWrite.All"];
+        private static readonly string[] Scopes = ["Files.ReadWrite", "offline_access", "Notes.ReadWrite"];
         private const string AuthEndpoint = "https://login.microsoftonline.com/{0}/oauth2/v2.0/token";
 
         public async Task<MicrosoftDeviceCodeResult> AcquireAccountIdentifierAsync(
