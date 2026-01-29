@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
@@ -13,7 +14,8 @@ namespace Rocket.Infrastructure
         IScannedImageRepository scannedImageRepository,
         IExecutionRepository executionRepository,
         IWorkflowRepository workflowRepository,
-        IWorkflowCloner workflowCloner
+        IWorkflowCloner workflowCloner,
+        IExecutionWorkflowValidator executionWorkflowValidator
     ) : IExecutionScheduler
     {
         public async Task<string> ScheduleExecutionAsync(
@@ -43,6 +45,24 @@ namespace Rocket.Infrastructure
                 throw new RocketException(
                     "Workflow does not exist for this user.",
                     ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
+            if (!(workflow.Steps ?? []).Any())
+                throw new RocketException(
+                    "This workflow has no steps defined. Please check the workflow configuration.",
+                    ApiStatusCodeEnum.ValidationError
+                );
+
+            var missingConnectors =
+                executionWorkflowValidator
+                    .GetMissingConnectors(workflow)
+                    .ToList();
+
+            if (missingConnectors.Count != 0)
+                throw new RocketException(
+                    "This workflow contains one or more steps with missing connectors: " +
+                    $"{string.Join(", ", missingConnectors.Select(o => $"'{o}'"))}.",
+                    ApiStatusCodeEnum.ValidationError
                 );
 
             var scan =
