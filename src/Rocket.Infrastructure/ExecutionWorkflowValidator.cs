@@ -23,10 +23,13 @@ namespace Rocket.Infrastructure
         {
             if (string.IsNullOrEmpty(step.ConnectorId))
             {
-                missingConnectors
-                    .Add(
-                        step.StepName
-                    );
+                if (!string.IsNullOrEmpty(step.RequiresConnectorCode))
+                {
+                    missingConnectors
+                        .Add(
+                            step.StepName
+                        );
+                }
             }
 
             foreach (var childStep in step.ChildSteps ?? [])
