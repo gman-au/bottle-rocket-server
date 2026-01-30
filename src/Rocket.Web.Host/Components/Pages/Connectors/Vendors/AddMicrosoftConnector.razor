@@ -1,4 +1,5 @@
 ﻿@page "/MyConnector/Microsoft/Add"
+@page "/MyConnector/Microsoft/Add/{clientId}/{tenantId}"
 @using Rocket.Microsofts.Contracts
 @using Rocket.Web.Client
 @using Rocket.Web.Host.HubClients
@@ -23,61 +24,62 @@
                     Typo="Typo.h4"
                     Color="Color.Primary"
                     Class="mb-4">
-                    Add a Microsoft connector
+                    Add a @(_isCustomConnector ? "Custom" : "Bottle-Rocket" ) Microsoft connector
                 </MudText>
                 <MudGrid>
+                    @if (_isCustomConnector)
+                    {
+                        <MudItem xs="12">
+                            <MudText
+                                Color="Color.Secondary"
+                                Typo="Typo.h5">
+                                Step 1: Create a registered Entra / Microsoft application
+                            </MudText>
+                            <MudText>
+                                <ul>
+                                    <li>
+                                        <MudLink
+                                            Target="_blank"
+                                            Href="https://gman-au.github.io/bottle-rocket-documentation/docs/docs-general/workflow-integrations/microsoft#option-2--adding-a-custom-microsoft-application">
+                                            Follow the instructions to set up a Microsoft app registration.
+                                        </MudLink>
+                                    </li>
+                                    <li>Ensure that the correct permissions / scopes are set.</li>
+                                    <li>When completed, you should receive an <b>Client ID</b> and <b>Tenant ID</b>, which needs to be entered
+                                        below.
+                                    </li>
+                                </ul>
+                            </MudText>
+                        </MudItem>
+                        <MudItem sm="12" lg="6">
+                            <MudTextField
+                                T="string"
+                                Required="true"
+                                Label="Client ID"
+                                Disabled="_isAuthorizing"
+                                HelperText="Enter the Client ID"
+                                @bind-Value="_initiateRequest.ClientId"
+                                For="@(() => _initiateRequest.ClientId)"
+                                RequiredError="Client ID is required"/>
+                        </MudItem>
+                        <MudItem sm="12" lg="6">
+                            <MudTextField
+                                T="string"
+                                Required="true"
+                                Label="Tenant ID"
+                                Disabled="_isAuthorizing"
+                                HelperText="Enter the Tenant ID"
+                                @bind-Value="_initiateRequest.TenantId"
+                                For="@(() => _initiateRequest.TenantId)"
+                                RequiredError="Tenant ID is required"/>
+                        </MudItem>
+                        <MudDivider Class="my-2"/>
+                    }
                     <MudItem xs="12">
                         <MudText
                             Color="Color.Secondary"
-                            Typo="Typo.h5"
-                        >
-                            Step 1: Create a registered Entra / Microsoft application
-                        </MudText>
-                        <MudText>
-                            <ul>
-                                <li>
-                                    <MudLink
-                                        Target="_blank"
-                                        Href="#">
-                                        Follow the instructions to set up a Microsoft App Registration.
-                                    </MudLink>
-                                </li>
-                                <li>Ensure that the correct permissions / scopes are set.</li>
-                                <li>When completed, you should receive an <b>Client ID</b> and <b>Tenant ID</b>, which needs to be entered
-                                    below.
-                                </li>
-                            </ul>
-                        </MudText>
-                    </MudItem>
-                    <MudItem sm="12" lg="6">
-                        <MudTextField
-                            T="string"
-                            Required="true"
-                            Label="Client ID"
-                            Disabled="_isAuthorizing"
-                            HelperText="Enter the Client ID"
-                            @bind-Value="_initiateRequest.ClientId"
-                            For="@(() => _initiateRequest.ClientId)"
-                            RequiredError="Client ID is required"/>
-                    </MudItem>
-                    <MudItem sm="12" lg="6">
-                        <MudTextField
-                            T="string"
-                            Required="true"
-                            Label="Tenant ID"
-                            Disabled="_isAuthorizing"
-                            HelperText="Enter the Tenant ID"
-                            @bind-Value="_initiateRequest.TenantId"
-                            For="@(() => _initiateRequest.TenantId)"
-                            RequiredError="Tenant ID is required"/>
-                    </MudItem>
-                    <MudDivider Class="my-2"/>
-                    <MudItem xs="12">
-                        <MudText
-                            Color="Color.Secondary"
-                            Typo="Typo.h5"
-                        >
-                            Step 2: Get an authorization code from Microsoft
+                            Typo="Typo.h5">
+                            Step @(_isCustomConnector ? 2 : 1): Get an authorization code from Microsoft
                         </MudText>
                         <MudText>
                             <ul>
@@ -92,7 +94,7 @@
                         <MudButton
                             Variant="Variant.Outlined"
                             Color="Color.Secondary"
-                            Disabled="!(_isAuthorizing || !_form.IsValid)"
+                            Disabled="!(_isAuthorizing || !_form.IsValid) && _isCustomConnector"
                             OnClick="@BeginAuthorizeAsync">
                             Get an authorization code
                         </MudButton>
@@ -101,9 +103,8 @@
                     <MudItem xs="12">
                         <MudText
                             Color="Color.Secondary"
-                            Typo="Typo.h5"
-                        >
-                            Step 3: Complete the authorization process via Microsoft authentication
+                            Typo="Typo.h5">
+                            Step @(_isCustomConnector ? 3 : 2): Complete the authorization process via Microsoft authentication
                         </MudText>
                     </MudItem>
                     <MudItem xs="12">
@@ -154,6 +155,7 @@
     MudForm _form;
 
     private bool _isLoading;
+    private bool _isCustomConnector = false;
     private bool _isAuthorizing = false;
     private MicrosoftAuthInitiateRequest _initiateRequest;
 
@@ -162,6 +164,12 @@
 
     [Parameter]
     public string Id { get; set; }
+    
+    [Parameter]
+    public string ClientId { get; set; }
+    
+    [Parameter]
+    public string TenantId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -173,8 +181,16 @@
 
             _isLoading = true;
             StateHasChanged();
+            
+            _isCustomConnector = string.IsNullOrEmpty(ClientId) || string.IsNullOrEmpty(TenantId);
 
             _initiateRequest = new MicrosoftAuthInitiateRequest();
+
+            if (!_isCustomConnector)
+            {
+                _initiateRequest.ClientId = ClientId;
+                _initiateRequest.TenantId = TenantId;
+            }
             
             // Set up SignalR listener
             CaptureHubClient.OnNewConnectorUpdateReceived += HandleNewConnectorUpdateAsync;
@@ -249,7 +265,6 @@
     private async Task CompleteAuthorizeAsync()
     {
         _isAuthorizing = true;
-        //_isLoading = true;
         StateHasChanged();
 
         await
