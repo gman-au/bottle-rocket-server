@@ -32,7 +32,9 @@ namespace Rocket.Api.Host.Controllers.Vendors
         [EndpointGroupName("Manage connectors")]
         [EndpointDescription(
             """
-            // TODO
+            Initiates a Microsoft authentication request for the given user, client, and tenant ID.\n
+            The API will return a verification URL and user code that can be supplied back to the user
+            to complete the authentication process.
             """
         )]
         [ProducesResponseType(
