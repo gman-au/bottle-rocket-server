@@ -78,6 +78,7 @@ namespace Rocket.Api.Host.Controllers
                                 new MyWorkflowSummary
                                 {
                                     Id = o.Id,
+                                    UserId = o.UserId,
                                     MatchingPageSymbol = o.MatchingPageSymbol,
                                     Name = o.Name,
                                     IsActive = o.IsActive,
@@ -197,6 +198,7 @@ namespace Rocket.Api.Host.Controllers
                 workflowRepository
                     .WorkflowExistsForNameAsync(
                         userId,
+                        null,
                         request.Name,
                         cancellationToken
                     )
@@ -212,6 +214,7 @@ namespace Rocket.Api.Host.Controllers
                     workflowRepository
                         .WorkflowExistsForMatchingSymbolAsync(
                             userId,
+                            null,
                             request.MatchingPageSymbol.Value,
                             cancellationToken
                         )
@@ -304,13 +307,14 @@ namespace Rocket.Api.Host.Controllers
                     workflowRepository
                         .WorkflowExistsForNameAsync(
                             userId,
+                            request.Id,
                             request.Name,
                             cancellationToken
                         )
                    )
                 {
                     throw new RocketException(
-                        "Workflow already exists",
+                        "Workflow already exists with this name",
                         ApiStatusCodeEnum.RecordAlreadyExists
                     );
                 }
@@ -333,6 +337,7 @@ namespace Rocket.Api.Host.Controllers
                     workflowRepository
                         .WorkflowExistsForMatchingSymbolAsync(
                             userId,
+                            request.Id,
                             request.MatchingPageSymbol.Value,
                             cancellationToken
                         )

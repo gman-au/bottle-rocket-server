@@ -7,6 +7,7 @@ using Rocket.Api.Contracts.Scans;
 using Rocket.Api.Contracts.Users;
 using Rocket.Api.Contracts.Workflows;
 using Rocket.Dropbox.Contracts;
+using Rocket.Microsofts.Contracts;
 using Rocket.Notion.Contracts;
 
 namespace Rocket.Web.Client
@@ -138,6 +139,16 @@ namespace Rocket.Web.Client
 
         public Task<GetAllNotionParentNotesResponse> GetNotionParentNotesAsync(
             GetAllNotionParentNotesRequest request,
+            CancellationToken cancellationToken
+        );
+
+        public Task<MicrosoftAuthInitiateResponse> InitiateMicrosoftConnectorAuthAsync(
+            MicrosoftAuthInitiateRequest request,
+            CancellationToken cancellationToken
+        );
+
+        public Task<GetOneNoteSectionsResponse> GetOneNoteSectionsAsync(
+            GetOneNoteSectionsRequest request,
             CancellationToken cancellationToken
         );
     }

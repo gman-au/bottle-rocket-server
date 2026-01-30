@@ -9,6 +9,7 @@ using Rocket.Dropbox.Contracts;
 using Rocket.Gcp.Contracts;
 using Rocket.Infrastructure.Mermaid.Extensions;
 using Rocket.Interfaces;
+using Rocket.Microsofts.Contracts;
 using Rocket.Notion.Contracts;
 using Rocket.Ollama.Contracts;
 
@@ -159,6 +160,14 @@ namespace Rocket.Infrastructure.Mermaid
                 if (step is GcpExtractWorkflowStepSpecifics)
                 {
                     route = $"/MyWorkflow/Gcp/{workflowId}/Steps/{step.Id}/UpdateStep";
+                }
+                if (step is OneDriveUploadWorkflowStepSpecifics)
+                {
+                    route = $"/MyWorkflow/OneDrive/{workflowId}/Steps/{step.Id}/UpdateStep";
+                }
+                if (step is OneNoteUploadWorkflowStepSpecifics)
+                {
+                    route = $"/MyWorkflow/OneNote/{workflowId}/Steps/{step.Id}/UpdateStep";
                 }
 
                 if (!string.IsNullOrEmpty(route))

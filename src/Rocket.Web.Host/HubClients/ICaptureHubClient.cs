@@ -9,6 +9,8 @@ namespace Rocket.Web.Host.HubClients
         
         event Func<Task> OnNewExecutionUpdateReceived;
         
+        event Func<bool, Task> OnNewConnectorUpdateReceived;
+        
         Task StartAsync();
         
         Task StopAsync();

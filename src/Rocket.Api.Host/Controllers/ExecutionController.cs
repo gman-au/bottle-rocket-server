@@ -47,7 +47,7 @@ namespace Rocket.Api.Host.Controllers
             StatusCodes.Status500InternalServerError
         )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> FetchWorkflowsAsync(
+        public async Task<IActionResult> FetchExecutionsAsync(
             [FromBody] FetchExecutionsRequest request,
             CancellationToken cancellationToken
         )
@@ -189,7 +189,7 @@ namespace Rocket.Api.Host.Controllers
 
             logger
                 .LogInformation(
-                    "Received workflow creation request for username: {username}",
+                    "Received execution creation request for username: {username}",
                     user.Username
                 );
 

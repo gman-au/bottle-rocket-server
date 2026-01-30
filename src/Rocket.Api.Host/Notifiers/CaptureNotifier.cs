@@ -54,5 +54,28 @@ namespace Rocket.Api.Host.Notifiers
                         cancellationToken: cancellationToken
                     );
         }
+
+        public async Task NotifyConnectorUpdateAsync(
+            string userId,
+            bool success,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation(
+                    "Notifying user {userId} of new connector update",
+                    userId
+                );
+
+            await
+                hubContext
+                    .Clients
+                    .Group($"user_{userId}")
+                    .SendAsync(
+                        "NewConnectorUpdateReceived",
+                        success,
+                        cancellationToken: cancellationToken
+                    );
+        }
     }
 }

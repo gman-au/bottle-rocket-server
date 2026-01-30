@@ -22,8 +22,10 @@ namespace Rocket.Web.Host.HubClients
         private HubConnection _hubConnection;
 
         public event Func<Task> OnNewCaptureReceived;
-        
+
         public event Func<Task> OnNewExecutionUpdateReceived;
+
+        public event Func<bool, Task> OnNewConnectorUpdateReceived;
 
         public bool IsConnected =>
             _hubConnection?.State == HubConnectionState.Connected;
@@ -77,7 +79,7 @@ namespace Rocket.Web.Host.HubClients
                     }
                 }
             );
-            
+
             _hubConnection.On(
                 "NewExecutionUpdateReceived",
                 async () =>
@@ -90,6 +92,25 @@ namespace Rocket.Web.Host.HubClients
                         await
                             OnNewExecutionUpdateReceived
                                 .Invoke();
+                    }
+                }
+            );
+
+            _hubConnection.On<bool>(
+                "NewConnectorUpdateReceived",
+                async success =>
+                {
+                    logger
+                        .LogInformation(
+                            "Received NewConnectorUpdateReceived notification with success={success}",
+                            success
+                        );
+
+                    if (OnNewConnectorUpdateReceived != null)
+                    {
+                        await
+                            OnNewConnectorUpdateReceived
+                                .Invoke(success);
                     }
                 }
             );

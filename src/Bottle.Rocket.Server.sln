@@ -98,6 +98,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Gcp.Infrastructure",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Gcp.Injection", "Integrations\Google\Gcp\Rocket.Gcp.Injection\Rocket.Gcp.Injection.csproj", "{F5A29672-DDCE-4633-82C1-FF7AFDE411D5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microsofts", "Microsofts", "{B755CB13-5F3A-4FD8-BB41-5EF4A959FFCA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Microsofts.Domain", "Integrations\Microsofts\Rocket.Microsofts.Domain\Rocket.Microsofts.Domain.csproj", "{A872B532-3D5A-451E-888B-70719DD0504C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Microsofts.Contracts", "Integrations\Microsofts\Rocket.Microsofts.Contracts\Rocket.Microsofts.Contracts.csproj", "{1FF82B78-86DC-48ED-96BF-7BE59A822EEE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Microsofts.Infrastructure", "Integrations\Microsofts\Rocket.Microsofts.Infrastructure\Rocket.Microsofts.Infrastructure.csproj", "{D8CB025C-8CED-498D-B7E9-C9CC6F14A0F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Microsofts.Injection", "Integrations\Microsofts\Rocket.Microsofts.Injection\Rocket.Microsofts.Injection.csproj", "{357B0613-38CE-428E-92A6-06C805B01427}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -272,6 +282,22 @@ Global
 		{F5A29672-DDCE-4633-82C1-FF7AFDE411D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5A29672-DDCE-4633-82C1-FF7AFDE411D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5A29672-DDCE-4633-82C1-FF7AFDE411D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A872B532-3D5A-451E-888B-70719DD0504C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A872B532-3D5A-451E-888B-70719DD0504C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A872B532-3D5A-451E-888B-70719DD0504C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A872B532-3D5A-451E-888B-70719DD0504C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FF82B78-86DC-48ED-96BF-7BE59A822EEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FF82B78-86DC-48ED-96BF-7BE59A822EEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FF82B78-86DC-48ED-96BF-7BE59A822EEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FF82B78-86DC-48ED-96BF-7BE59A822EEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8CB025C-8CED-498D-B7E9-C9CC6F14A0F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8CB025C-8CED-498D-B7E9-C9CC6F14A0F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8CB025C-8CED-498D-B7E9-C9CC6F14A0F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8CB025C-8CED-498D-B7E9-C9CC6F14A0F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{357B0613-38CE-428E-92A6-06C805B01427}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{357B0613-38CE-428E-92A6-06C805B01427}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{357B0613-38CE-428E-92A6-06C805B01427}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{357B0613-38CE-428E-92A6-06C805B01427}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{42CB70A2-68E4-4EB7-8AAD-4E2F987D01BA} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
@@ -305,5 +331,10 @@ Global
 		{1341408E-ADC3-4A3B-9AD7-0FD4CA0E43F6} = {5CEEE9EB-53E9-48DF-BF2D-E4E5FE371042}
 		{46BF26CE-C14E-49A2-9966-57DADFE568AE} = {5CEEE9EB-53E9-48DF-BF2D-E4E5FE371042}
 		{F5A29672-DDCE-4633-82C1-FF7AFDE411D5} = {5CEEE9EB-53E9-48DF-BF2D-E4E5FE371042}
+		{B755CB13-5F3A-4FD8-BB41-5EF4A959FFCA} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
+		{A872B532-3D5A-451E-888B-70719DD0504C} = {B755CB13-5F3A-4FD8-BB41-5EF4A959FFCA}
+		{1FF82B78-86DC-48ED-96BF-7BE59A822EEE} = {B755CB13-5F3A-4FD8-BB41-5EF4A959FFCA}
+		{D8CB025C-8CED-498D-B7E9-C9CC6F14A0F6} = {B755CB13-5F3A-4FD8-BB41-5EF4A959FFCA}
+		{357B0613-38CE-428E-92A6-06C805B01427} = {B755CB13-5F3A-4FD8-BB41-5EF4A959FFCA}
 	EndGlobalSection
 EndGlobal

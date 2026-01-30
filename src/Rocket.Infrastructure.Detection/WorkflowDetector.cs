@@ -42,6 +42,7 @@ namespace Rocket.Infrastructure.Detection
                             workflowRepository
                                 .GetWorkflowByMatchingPageSymbolAsync(
                                     userId,
+                                    workflowIdToExclude: null,
                                     detectedSymbol,
                                     cancellationToken
                                 );

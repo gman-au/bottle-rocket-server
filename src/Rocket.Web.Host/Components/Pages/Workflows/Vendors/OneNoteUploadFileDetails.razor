@@ -1,0 +1,149 @@
+﻿@page "/MyWorkflow/OneNote/{workflowId}/AddStep"
+@page "/MyWorkflow/OneNote/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/OneNote/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.Microsofts.Contracts
+@using Rocket.Microsofts.Domain
+@using Rocket.Web.Host.Infrastructure
+@inject IWebHostErrorHandler WebHostErrorHandler
+
+@using Rocket.Web.Client
+@inject IApiRequestManager ApiRequestManager
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    <UpdateWorkflowStepWrapper
+        @ref="_wrapper"
+        T="OneNoteUploadWorkflowStepSpecifics"
+        WorkflowStepName="Upload file to OneNote"
+        WorkflowId="@WorkflowId"
+        ParentStepId="@ParentStepId"
+        RequiresConnectorCode="@MicrosoftDomainConstants.ConnectorCode"
+        OnConnectorIdChanged="ConnectorChangedAsync"
+        StepId="@StepId"
+        Context="stepSpecifics">
+        <MudGrid>
+            <MudItem sm="12" lg="6">
+                <MudSelect
+                    T="OneNoteSection"
+                    Label="Select a section to place the note"
+                    @bind-Value="@_sectionSelected"
+                    @bind-Value:after="() => SectionIdChangedAsync(stepSpecifics)"
+                    Disabled="@_isLoading"
+                    Clearable
+                    Required
+                    RequiredError="Section is required">
+                    @foreach (var oneNoteSection in _oneNoteSections ?? [])
+                    {
+                        <MudSelectItem
+                            T="OneNoteSection"
+                            Value="@oneNoteSection"
+                        >
+                            @oneNoteSection.SectionName
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+        </MudGrid>
+    </UpdateWorkflowStepWrapper>
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+    private bool _isLoading;
+
+    private string _connectorId;
+
+    private UpdateWorkflowStepWrapper<OneNoteUploadWorkflowStepSpecifics> _wrapper;
+
+    private OneNoteSection _sectionSelected;
+
+    private IEnumerable<OneNoteSection> _oneNoteSections = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+
+            await
+                RefreshOneNoteSectionsAsync();
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RefreshOneNoteSectionsAsync()
+    {
+        if (!string.IsNullOrEmpty(_connectorId))
+        {
+            var response =
+                await
+                    ApiRequestManager
+                        .GetOneNoteSectionsAsync(
+                            new GetOneNoteSectionsRequest
+                            {
+                                ConnectorId = _connectorId
+                            },
+                            BaseCancellationToken
+                        );
+
+            _oneNoteSections =
+                response?
+                    .Sections ?? [];
+
+            _sectionSelected =
+                _oneNoteSections
+                    .FirstOrDefault(o => _wrapper?.StepSpecifics?.SectionId == o.SectionId);
+        }
+        else
+        {
+            _oneNoteSections = [];
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task SectionIdChangedAsync(OneNoteUploadWorkflowStepSpecifics stepSpecifics)
+    {
+        stepSpecifics.SectionId =
+            _sectionSelected?
+                .SectionId;
+    }
+
+    private async Task ConnectorChangedAsync(string connectorId)
+    {
+        _connectorId = connectorId;
+
+        if (string.IsNullOrEmpty(connectorId))
+        {
+            _sectionSelected = null;
+        }
+
+        await
+            RefreshOneNoteSectionsAsync();
+    }
+
+}
