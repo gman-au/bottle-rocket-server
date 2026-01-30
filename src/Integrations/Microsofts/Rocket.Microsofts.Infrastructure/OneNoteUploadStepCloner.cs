@@ -13,7 +13,7 @@ namespace Rocket.Microsofts.Infrastructure
                 base
                     .Clone(value);
 
-            result.ParentNote = value.ParentNote;
+            result.SectionId = value.SectionId;
 
             return result;
         }

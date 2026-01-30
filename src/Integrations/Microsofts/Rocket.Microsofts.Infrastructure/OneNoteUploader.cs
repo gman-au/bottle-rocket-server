@@ -3,18 +3,19 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Graph;
 using Rocket.Microsofts.Domain;
 
 namespace Rocket.Microsofts.Infrastructure
 {
     public class OneNoteUploader(IGraphClientProvider graphClientProvider) : IOneNoteUploader
     {
-        public async Task UploadNoteAsync(
+        private const string HtmlContentType = "text/html";
+
+        public async Task UploadTextNoteAsync(
             MicrosoftConnector connector,
-            string fileName,
-            string folderPath,
-            byte[] inputBytes,
+            string sectionId,
+            string pageTitle,
+            string textContent,
             CancellationToken cancellationToken
         )
         {
@@ -27,31 +28,86 @@ namespace Rocket.Microsofts.Infrastructure
                         );
 
             // Create simple HTML content
-            var htmlContent = $@"
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{"BR PAGE TITLE"}</title>
-</head>
-<body>
-    <h1>{"BR TITLE"}</h1>
-    <p>{"BR TEXT CONTENT"}</p>
-</body>
-</html>";
+            var htmlContent = $"""
+                                   <!DOCTYPE html>
+                                   <html>
+                                   <head>
+                                       <title>{pageTitle}</title>
+                                   </head>
+                                   <body>
+                                       <h1>{pageTitle}</h1>
+                                       <p>{textContent}</p>
+                                   </body>
+                                   </html>
+                               """;
 
-            using Stream contentStream = new MemoryStream(Encoding.UTF8.GetBytes(htmlContent));
+            await using Stream contentStream = new MemoryStream(Encoding.UTF8.GetBytes(htmlContent));
 
-            await graphClient
-                .Me
-                .Onenote
-                .Sections["BR SECTION"]
-                .Pages
-                .Request()
-                .AddAsync(
-                    contentStream,
-                    "html",
-                    cancellationToken
-                );
+            await
+                graphClient
+                    .Me
+                    .Onenote
+                    .Sections[sectionId]
+                    .Pages
+                    .Request()
+                    .AddAsync(
+                        contentStream,
+                        HtmlContentType,
+                        cancellationToken
+                    );
+        }
+
+        public async Task UploadImageNoteAsync(
+            MicrosoftConnector connector,
+            string sectionId,
+            string fileExtension,
+            string pageTitle,
+            byte[] imageBytes,
+            CancellationToken cancellationToken
+        )
+        {
+            var graphClient =
+                await
+                    graphClientProvider
+                        .GetClientAsync(
+                            connector,
+                            cancellationToken
+                        );
+
+            // Convert to base64
+            var base64Image =
+                Convert
+                    .ToBase64String(imageBytes);
+
+            var dataUri = $"data:{fileExtension?.Replace(".", "")};base64,{base64Image}";
+
+            // Create HTML with embedded base64 image
+            var htmlContent = $"""
+                                   <!DOCTYPE html>
+                                   <html>
+                                   <head>
+                                       <title>{pageTitle}</title>
+                                   </head>
+                                   <body>
+                                       <img src="{dataUri}" alt="{pageTitle}" />
+                                   </body>
+                                   </html>
+                               """;
+
+            await using Stream contentStream = new MemoryStream(Encoding.UTF8.GetBytes(htmlContent));
+
+            await
+                graphClient
+                    .Me
+                    .Onenote
+                    .Sections[sectionId]
+                    .Pages
+                    .Request()
+                    .AddAsync(
+                        contentStream,
+                        HtmlContentType,
+                        cancellationToken
+                    );
         }
     }
 }

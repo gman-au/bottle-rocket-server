@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -45,18 +46,48 @@ namespace Rocket.Microsofts.Infrastructure
                     ApiStatusCodeEnum.DeveloperError
                 );
 
-            var noteTitle = $"BR_Note_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
-            var fileName = noteTitle + artifact.FileExtension;
+            if (string.IsNullOrEmpty(oneNoteStep.SectionId))
+                throw new RocketException(
+                    "Section ID not found for OneNote workflow step",
+                    ApiStatusCodeEnum.ValidationError
+                );
 
-            await
-                oneNoteUploader
-                    .UploadNoteAsync(
-                        connector,
-                        fileName,
-                        oneNoteStep.ParentNote ?? "/",
-                        artifact.Artifact,
-                        cancellationToken
-                    );
+            var noteTitle = $"BR_Note_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
+
+            if (artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.RawTextData)
+            {
+                var textBytes =
+                    artifact
+                        .Artifact;
+
+                var textData =
+                    Encoding
+                        .Default
+                        .GetString(textBytes);
+
+                await
+                    oneNoteUploader
+                        .UploadTextNoteAsync(
+                            connector,
+                            oneNoteStep.SectionId,
+                            noteTitle,
+                            textData,
+                            cancellationToken
+                        );
+            }
+            else if (artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.ImageData)
+            {
+                await
+                    oneNoteUploader
+                        .UploadImageNoteAsync(
+                            connector,
+                            oneNoteStep.SectionId,
+                            artifact.FileExtension,
+                            noteTitle,
+                            artifact.Artifact,
+                            cancellationToken
+                        );
+            }
 
             return
                 ExecutionStepArtifact

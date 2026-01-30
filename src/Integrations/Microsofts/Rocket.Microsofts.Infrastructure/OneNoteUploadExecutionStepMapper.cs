@@ -14,7 +14,7 @@ namespace Rocket.Microsofts.Infrastructure
                 base
                     .For(value);
 
-            result.ParentNote = value.ParentNote;
+            result.SectionId = value.ParentNote;
 
             return result;
         }
@@ -25,7 +25,7 @@ namespace Rocket.Microsofts.Infrastructure
                 base
                     .From(value);
 
-            result.ParentNote = value.ParentNote;
+            result.ParentNote = value.SectionId;
 
             return result;
         }

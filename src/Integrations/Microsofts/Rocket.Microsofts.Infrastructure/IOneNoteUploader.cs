@@ -6,11 +6,20 @@ namespace Rocket.Microsofts.Infrastructure
 {
     public interface IOneNoteUploader
     {
-        Task UploadNoteAsync(
+        Task UploadTextNoteAsync(
             MicrosoftConnector connector,
-            string fileName,
-            string folderPath,
-            byte[] inputBytes,
+            string sectionId,
+            string pageTitle,
+            string textContent,
+            CancellationToken cancellationToken
+        );
+        
+        Task UploadImageNoteAsync(
+            MicrosoftConnector connector,
+            string sectionId,
+            string fileExtension,
+            string pageTitle,
+            byte[] imageBytes,
             CancellationToken cancellationToken
         );
     }

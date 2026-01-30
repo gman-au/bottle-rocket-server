@@ -4,6 +4,6 @@ namespace Rocket.Microsofts.Domain
 {
     public record OneNoteUploadExecutionStep : BaseExecutionStep
     {
-        public string ParentNote { get; set; }
+        public string SectionId { get; set; }
     }
 }
