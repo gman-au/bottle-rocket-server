@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,7 +9,10 @@ using Rocket.Microsofts.Domain;
 
 namespace Rocket.Microsofts.Infrastructure
 {
-    public class OneNoteUploader(IGraphClientProvider graphClientProvider) : IOneNoteUploader
+    public class OneNoteUploader(
+        IGraphClientProvider graphClientProvider,
+        IMicrosoftTokenAcquirer tokenAcquirer
+    ) : IOneNoteUploader
     {
         private const string HtmlContentType = "text/html";
 
@@ -66,48 +71,74 @@ namespace Rocket.Microsofts.Infrastructure
             CancellationToken cancellationToken
         )
         {
-            var graphClient =
+            var accessToken =
                 await
-                    graphClientProvider
-                        .GetClientAsync(
+                    tokenAcquirer
+                        .AcquireTokenSilentAsync(
                             connector,
                             cancellationToken
                         );
 
-            // Convert to base64
-            var base64Image =
-                Convert
-                    .ToBase64String(imageBytes);
+            var imageFileName = $"{pageTitle}{fileExtension}";
 
-            var dataUri = $"data:{fileExtension?.Replace(".", "")};base64,{base64Image}";
-
-            // Create HTML with embedded base64 image
             var htmlContent = $"""
-                                   <!DOCTYPE html>
-                                   <html>
-                                   <head>
-                                       <title>{pageTitle}</title>
-                                   </head>
-                                   <body>
-                                       <img src="{dataUri}" alt="{pageTitle}" />
-                                   </body>
-                                   </html>
+                               <!DOCTYPE html>
+                               <html>
+                               <head>
+                                   <title>{pageTitle}</title>
+                               </head>
+                               <body>
+                                   <img src="name:{imageFileName}" alt={imageFileName}" />
+                               </body>
+                               </html>
                                """;
 
-            await using Stream contentStream = new MemoryStream(Encoding.UTF8.GetBytes(htmlContent));
+            using var httpClient = new HttpClient();
 
-            await
-                graphClient
-                    .Me
-                    .Onenote
-                    .Sections[sectionId]
-                    .Pages
-                    .Request()
-                    .AddAsync(
-                        contentStream,
-                        HtmlContentType,
-                        cancellationToken
-                    );
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    accessToken
+                );
+
+            using var formContent = new MultipartFormDataContent();
+
+            var htmlPart =
+                new StringContent(
+                    htmlContent,
+                    Encoding.UTF8,
+                    "text/html"
+                );
+
+            formContent
+                .Add(
+                    htmlPart,
+                    "Presentation"
+                );
+
+            var imagePart =
+                new ByteArrayContent(imageBytes);
+
+            imagePart.Headers.ContentType =
+                new MediaTypeHeaderValue($"image/{fileExtension.Replace(".", "")}");
+
+            formContent
+                .Add(
+                    imagePart,
+                    imageFileName
+                );
+
+            var response =
+                await
+                    httpClient
+                        .PostAsync(
+                            $"https://graph.microsoft.com/v1.0/me/onenote/sections/{sectionId}/pages",
+                            formContent,
+                            cancellationToken
+                        );
+
+            response
+                .EnsureSuccessStatusCode();
         }
     }
 }
