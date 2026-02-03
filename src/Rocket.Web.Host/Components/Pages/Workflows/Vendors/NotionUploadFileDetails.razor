@@ -25,7 +25,7 @@
             <MudItem sm="12" lg="6">
                 <MudSelect
                     T="NotionParentNoteSummary"
-                    Label="Select a parent note"
+                    Label=@(_isLoading ? "Loading..." : "Select a parent note")
                     @bind-Value="@_parentNoteSelected"
                     @bind-Value:after="() => ParentNoteChangedAsync(stepSpecifics)"
                     Disabled="@_isLoading"
@@ -97,32 +97,48 @@
 
     private async Task RefreshParentNotesAsync()
     {
-        if (!string.IsNullOrEmpty(_connectorId))
+        try
         {
-            var response =
-                await
-                    ApiRequestManager
-                        .GetNotionParentNotesAsync(
-                            new GetAllNotionParentNotesRequest
-                            {
-                                ConnectorId = _connectorId
-                            },
-                            BaseCancellationToken
-                        );
+            if (!string.IsNullOrEmpty(_connectorId))
+            {
+                _isLoading = true;
+                StateHasChanged();
+                
+                var response =
+                    await
+                        ApiRequestManager
+                            .GetNotionParentNotesAsync(
+                                new GetAllNotionParentNotesRequest
+                                {
+                                    ConnectorId = _connectorId
+                                },
+                                BaseCancellationToken
+                            );
 
-            _parentNotes =
-                response?
-                    .ParentNotes ?? [];
+                _parentNotes =
+                    response?
+                        .ParentNotes ?? [];
 
-            _parentNoteSelected =
-                _parentNotes
-                    .FirstOrDefault(o => _wrapper?.StepSpecifics?.ParentNoteId == o.ParentNoteId);
+                _parentNoteSelected =
+                    _parentNotes
+                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.ParentNoteId == o.ParentNoteId);
+            }
+            else
+            {
+                _parentNotes = [];
+            }
         }
-        else
+        catch (Exception ex)
         {
-            _parentNotes = [];
+            WebHostErrorHandler
+                .HandleException(ex);
         }
-        
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+
         StateHasChanged();
     }
 
