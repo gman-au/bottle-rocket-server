@@ -11,9 +11,12 @@ namespace Rocket.Gcp.Injection
             services
                 .AddTransient<IIntegrationHook, GcpOcrExtractHook>()
                 .AddTransient<IWorkflowStepModelMapper, GcpExtractWorkflowStepMapper>()
+                .AddTransient<IWorkflowStepModelMapper, GcpUploadWorkflowStepMapper>()
                 .AddTransient<IExecutionStepModelMapper, GcpExtractExecutionStepMapper>()
+                .AddTransient<IExecutionStepModelMapper, GcpUploadExecutionStepMapper>()
                 .AddTransient<IConnectorModelMapper, GcpConnectorMapper>()
                 .AddTransient<IStepModelCloner, GcpExtractStepCloner>()
+                .AddTransient<IStepModelCloner, GcpUploadStepCloner>()
                 .AddTransient<IVisionOcrService, VisionOcrService>()
                 .AddTransient<IBsonMapper, GcpBsonMapper>();
 

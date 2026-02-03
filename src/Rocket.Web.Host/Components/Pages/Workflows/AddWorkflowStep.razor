@@ -90,9 +90,16 @@
         new()
         {
             Name = "Extract text from image (Google Vision API)",
-            HrefBase = "/MyWorkflow/Gcp/{0}/AddStep",
-            HrefChild = "/MyWorkflow/Gcp/{0}/Steps/{1}/AddStep",
+            HrefBase = "/MyWorkflow/GcpExtract/{0}/AddStep",
+            HrefChild = "/MyWorkflow/GcpExtract/{0}/Steps/{1}/AddStep",
             ImagePath = "/img/gcp-logo.png"
+        },
+        new()
+        {
+            Name = "Upload file to Google Drive",
+            HrefBase = "/MyWorkflow/GcpUpload/{0}/AddStep",
+            HrefChild = "/MyWorkflow/GcpUpload/{0}/Steps/{1}/AddStep",
+            ImagePath = "/img/google-drive-logo.png"
         },
         new()
         {

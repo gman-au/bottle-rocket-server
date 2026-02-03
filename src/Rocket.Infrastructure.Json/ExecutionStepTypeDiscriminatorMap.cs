@@ -22,6 +22,7 @@ namespace Rocket.Infrastructure.Json
             { typeof(HelloWorldTextExecutionStepSpecifics), "hello_world_text_execution" },
             { typeof(NotionUploadExecutionStepSpecifics), "notion_upload_execution" },
             { typeof(OneDriveUploadExecutionStepSpecifics), "one_drive_upload_execution" },
+            { typeof(GcpUploadExecutionStepSpecifics), "gcp_drive_upload_execution" },
             { typeof(OneNoteUploadExecutionStepSpecifics), "one_note_upload_execution" },
             { typeof(ConvertToPdfExecutionStepSpecifics), "convert_to_pdf_execution" }
         };

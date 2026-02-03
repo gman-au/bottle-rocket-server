@@ -25,6 +25,7 @@ namespace Rocket.Infrastructure.Json
             { typeof(GcpExtractWorkflowStepSpecifics), "gcp_extract_workflow" },
             { typeof(EmailFileAttachmentStepSpecifics), "email_file_attachment" },
             { typeof(OneNoteUploadWorkflowStepSpecifics), "one_note_upload_workflow" },
+            { typeof(GcpUploadWorkflowStepSpecifics), "gcp_drive_upload_workflow" },
             { typeof(ConvertToPdfWorkflowStepSpecifics), "convert_to_pdf_workflow" }
         };
 

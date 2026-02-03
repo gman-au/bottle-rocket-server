@@ -160,7 +160,11 @@ namespace Rocket.Infrastructure.Mermaid
                 }
                 if (step is GcpExtractWorkflowStepSpecifics)
                 {
-                    route = $"/MyWorkflow/Gcp/{workflowId}/Steps/{step.Id}/UpdateStep";
+                    route = $"/MyWorkflow/GcpExtract/{workflowId}/Steps/{step.Id}/UpdateStep";
+                }
+                if (step is GcpUploadWorkflowStepSpecifics)
+                {
+                    route = $"/MyWorkflow/GcpUpload/{workflowId}/Steps/{step.Id}/UpdateStep";
                 }
                 if (step is OneDriveUploadWorkflowStepSpecifics)
                 {

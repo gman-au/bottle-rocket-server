@@ -1,12 +1,12 @@
-﻿@page "/MyWorkflow/GcpExtract/{workflowId}/AddStep"
-@page "/MyWorkflow/GcpExtract/{workflowId}/Steps/{parentStepId}/AddStep"
-@page "/MyWorkflow/GcpExtract/{workflowId}/Steps/{stepId}/UpdateStep"
+﻿@page "/MyWorkflow/GcpUpload/{workflowId}/AddStep"
+@page "/MyWorkflow/GcpUpload/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/GcpUpload/{workflowId}/Steps/{stepId}/UpdateStep"
 @using Rocket.Gcp.Contracts
 @using Rocket.Gcp.Domain
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <UpdateWorkflowStepWrapper
-    T="GcpExtractWorkflowStepSpecifics"
+    T="GcpUploadWorkflowStepSpecifics"
     WorkflowStepName="Extract text from image"
     WorkflowId="@WorkflowId"
     ParentStepId="@ParentStepId"
