@@ -34,6 +34,11 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         );
 
+        Task<UpdateUserResponse> UpdateDarkModeAsync(
+            SetUserDarkModeRequest request,
+            CancellationToken cancellationToken
+        );
+
         Task<CreateUserResponse> CreateUserAsync(
             CreateUserRequest user,
             CancellationToken cancellationToken

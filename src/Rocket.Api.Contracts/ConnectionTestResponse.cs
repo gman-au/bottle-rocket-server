@@ -9,5 +9,8 @@ namespace Rocket.Api.Contracts
         
         [JsonPropertyName("role")]
         public string Role { get; set; }
+        
+        [JsonPropertyName("dark_mode")]
+        public bool DarkMode { get; set; }
     }
 }

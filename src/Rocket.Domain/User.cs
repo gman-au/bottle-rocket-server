@@ -21,5 +21,7 @@ namespace Rocket.Domain
         public bool IsActive { get; set; }
         
         public bool IsAdmin { get; set; }
+        
+        public bool DarkMode { get; set; }
     }
 }

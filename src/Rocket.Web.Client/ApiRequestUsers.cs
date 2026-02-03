@@ -130,5 +130,36 @@ namespace Rocket.Web.Client
 
             return result;
         }
+        
+        public async Task<UpdateUserResponse> UpdateDarkModeAsync(
+            SetUserDarkModeRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation("Received Update Dark Mode request");
+
+            var response =
+                await
+                    authenticatedApiClient
+                        .PostAsJsonAsync(
+                            "/api/users/darkMode",
+                            request,
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<UpdateUserResponse>(
+                            logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
     }
 }

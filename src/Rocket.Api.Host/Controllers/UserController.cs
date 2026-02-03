@@ -139,7 +139,8 @@ namespace Rocket.Api.Host.Controllers
                     CreatedAt = user.CreatedAt.ToLocalTime(),
                     LastLoginAt = user.LastLoginAt?.ToLocalTime(),
                     IsActive = user.IsActive,
-                    IsAdmin = user.IsAdmin
+                    IsAdmin = user.IsAdmin,
+                    DarkMode = user.DarkMode
                 };
 
             return
@@ -322,6 +323,53 @@ namespace Rocket.Api.Host.Controllers
                             cancellationToken
                         );
             }
+
+            var response =
+                new UpdateUserResponse();
+
+            return
+                response
+                    .AsApiSuccess();
+        }
+        
+        [HttpPost("darkMode")]
+        [EndpointSummary("Set dark mode preference for a user")]
+        [EndpointGroupName("Manage users")]
+        [EndpointDescription(
+            """
+            Sets the dark mode preference for a given user.
+            """
+        )]
+        [ProducesResponseType(typeof(UpdateUserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> UpdateDarkModeAsync(
+            [FromBody] SetUserDarkModeRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
+
+            var userId =
+                user
+                    .Id;
+            
+            logger
+                .LogInformation(
+                    "Received dark mode request for username: {id}",
+                    userId
+                );
+
+            // Update the user account
+            await
+                UserManager
+                    .UpdateDarkModePreferenceAsync(
+                        userId,
+                        request.DarkMode,
+                        cancellationToken
+                    );
 
             var response =
                 new UpdateUserResponse();
