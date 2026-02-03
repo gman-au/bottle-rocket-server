@@ -11,4 +11,8 @@
       <ProjectReference Include="..\Rocket.QuestPdf.Domain\Rocket.QuestPdf.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="QuestPDF" Version="2025.12.3" />
+    </ItemGroup>
+
 </Project>

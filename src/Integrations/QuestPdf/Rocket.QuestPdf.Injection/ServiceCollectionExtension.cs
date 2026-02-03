@@ -13,6 +13,7 @@ namespace Rocket.QuestPdf.Injection
                 .AddTransient<IWorkflowStepModelMapper, ConvertToPdfWorkflowStepMapper>()
                 .AddTransient<IExecutionStepModelMapper, ConvertToPdfExecutionStepMapper>()
                 .AddTransient<IStepModelCloner, ConvertToPdfStepCloner>()
+                .AddTransient<IPdfGenerator, PdfGenerator>()
                 .AddTransient<IBsonMapper, QuestPdfBsonMapper>();
 
             return services;
