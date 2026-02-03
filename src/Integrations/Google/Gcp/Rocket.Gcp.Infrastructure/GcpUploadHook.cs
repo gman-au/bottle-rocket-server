@@ -14,7 +14,7 @@ namespace Rocket.Gcp.Infrastructure
 {
     public class GcpUploadHook(
         ILogger<GcpUploadHook> logger,
-        IVisionOcrService visionOcrService
+        IDriveUploadService driveUploadService
     ) : IIntegrationHook
     {
         public bool IsApplicable(BaseExecutionStep step) => step is GcpUploadExecutionStep;
@@ -40,7 +40,7 @@ namespace Rocket.Gcp.Infrastructure
                             cancellationToken
                         );
 
-            var imageBytes = artifact.Artifact;
+            var fileBytes = artifact.Artifact;
 
             if (step is not GcpUploadExecutionStep gcpUploadStep)
                 throw new RocketException(
@@ -48,40 +48,22 @@ namespace Rocket.Gcp.Infrastructure
                     ApiStatusCodeEnum.DeveloperError
                 );
 
-            var credential = 
+            var credential =
                 connector
                     .Credential;
 
-            var result =
-                await
-                    visionOcrService
-                        .ExtractHandwrittenTextAsync(
-                            imageBytes,
-                            credential,
-                            cancellationToken
-                        );
-
             await
-                appendLogMessageCallback(
-                    step.Id,
-                    result
-                );
-            
-            var resultArtifact =
-                new ExecutionStepArtifact
-                {
-                    Result = (int)ExecutionStatusEnum.Completed,
-                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
-                    Artifact =
-                        Encoding
-                            .Default
-                            .GetBytes(
-                                result
-                            ),
-                    FileExtension = ".txt"
-                };
+                driveUploadService
+                    .UploadFileAsync(
+                        fileBytes,
+                        artifact.FileExtension,
+                        credential,
+                        cancellationToken
+                    );
 
-            return resultArtifact;
+            return
+                ExecutionStepArtifact
+                    .Empty;
         }
     }
 }
