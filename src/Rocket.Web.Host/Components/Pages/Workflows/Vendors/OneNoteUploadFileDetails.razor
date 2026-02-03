@@ -25,10 +25,10 @@
             <MudItem sm="12" lg="6">
                 <MudSelect
                     T="OneNoteSection"
-                    Label="Select a section to place the note"
+                    Label=@(_isLoading ? "Loading..." : "Select a section to place the note")
                     @bind-Value="@_sectionSelected"
                     @bind-Value:after="() => SectionIdChangedAsync(stepSpecifics)"
-                    Disabled="@_isLoading"
+                    Disabled="@(_isLoading || string.IsNullOrEmpty(_connectorId))"
                     Clearable
                     Required
                     RequiredError="Section is required">
@@ -36,8 +36,7 @@
                     {
                         <MudSelectItem
                             T="OneNoteSection"
-                            Value="@oneNoteSection"
-                        >
+                            Value="@oneNoteSection">
                             @oneNoteSection.SectionName
                         </MudSelectItem>
                     }
@@ -87,7 +86,6 @@
             WebHostErrorHandler
                 .HandleException(ex);
         }
-
         finally
         {
             _isLoading = false;
@@ -97,30 +95,46 @@
 
     private async Task RefreshOneNoteSectionsAsync()
     {
-        if (!string.IsNullOrEmpty(_connectorId))
+        try
         {
-            var response =
-                await
-                    ApiRequestManager
-                        .GetOneNoteSectionsAsync(
-                            new GetOneNoteSectionsRequest
-                            {
-                                ConnectorId = _connectorId
-                            },
-                            BaseCancellationToken
-                        );
+            if (!string.IsNullOrEmpty(_connectorId))
+            {
+                _isLoading = true;
+                StateHasChanged();
+                
+                var response =
+                    await
+                        ApiRequestManager
+                            .GetOneNoteSectionsAsync(
+                                new GetOneNoteSectionsRequest
+                                {
+                                    ConnectorId = _connectorId
+                                },
+                                BaseCancellationToken
+                            );
 
-            _oneNoteSections =
-                response?
-                    .Sections ?? [];
+                _oneNoteSections =
+                    response?
+                        .Sections ?? [];
 
-            _sectionSelected =
-                _oneNoteSections
-                    .FirstOrDefault(o => _wrapper?.StepSpecifics?.SectionId == o.SectionId);
+                _sectionSelected =
+                    _oneNoteSections
+                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.SectionId == o.SectionId);
+            }
+            else
+            {
+                _oneNoteSections = [];
+            }
         }
-        else
+        catch (Exception ex)
         {
-            _oneNoteSections = [];
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
         }
 
         StateHasChanged();

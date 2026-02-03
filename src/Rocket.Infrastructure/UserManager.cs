@@ -175,6 +175,38 @@ namespace Rocket.Infrastructure
             }
         }
 
+        public async Task UpdateDarkModePreferenceAsync(
+            string userId,
+            bool requestDarkMode,
+            CancellationToken cancellationToken
+        )
+        {
+            var user =
+                await
+                    userRepository
+                        .GetUserByIdAsync(
+                            userId,
+                            cancellationToken
+                        );
+            
+            if (user == null)
+            {
+                throw new RocketException(
+                    $"User id: {userId} not found",
+                    ApiStatusCodeEnum.UnknownUser
+                );
+            }
+            
+            await
+                userRepository
+                    .UpdateUserFieldAsync(
+                        userId,
+                        o => o.DarkMode,
+                        requestDarkMode,
+                        cancellationToken
+                    );
+        }
+
         private async Task ThrowIfUserNameExistsOrInvalidAsync(
             string userName,
             CancellationToken cancellationToken

@@ -21,6 +21,7 @@ namespace Rocket.Web.Client.Authentication
         private readonly HttpClient _httpClient;
         private readonly ILogger<BasicAuthenticationManager> _logger;
         private readonly ProtectedSessionStorage _sessionStorage;
+        private readonly IThemeService _themeService;
         private string _cachedAuthHeader;
         private string _cachedRole;
         private string _cachedUsername;
@@ -30,13 +31,16 @@ namespace Rocket.Web.Client.Authentication
         public BasicAuthenticationManager(
             IOptions<ApiConfigurationOptions> apiConfigurationOptionsAccessor,
             ILogger<BasicAuthenticationManager> logger,
-            ProtectedSessionStorage sessionStorage
+            ProtectedSessionStorage sessionStorage, 
+            IThemeService themeService
         )
         {
             _logger = logger;
             _sessionStorage = sessionStorage;
+            _themeService = themeService;
 
             var options = apiConfigurationOptionsAccessor.Value;
+            
             _httpClient = new HttpClient();
             _httpClient.BaseAddress =
                 new Uri(
@@ -95,6 +99,9 @@ namespace Rocket.Web.Client.Authentication
                     _cachedAuthHeader = authHeader;
                     _cachedUsername = connectionTestResponse.UserName;
                     _cachedRole = connectionTestResponse.Role;
+                    
+                    _themeService
+                        .SetDarkMode(connectionTestResponse.DarkMode);
 
                     try
                     {

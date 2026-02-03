@@ -25,5 +25,8 @@ namespace Rocket.Api.Contracts.Users
         
         [JsonPropertyName("new_password")]
         public string NewPassword { get; set; }
+        
+        [JsonPropertyName("dark_mode")]
+        public bool DarkMode { get; set; }
     }
 }

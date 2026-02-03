@@ -58,7 +58,8 @@ namespace Rocket.Api.Host.Controllers
                 new ConnectionTestResponse
                     {
                         UserName = user.Username,
-                        Role = user.IsAdmin ? DomainConstants.AdminRole : DomainConstants.UserRole
+                        Role = user.IsAdmin ? DomainConstants.AdminRole : DomainConstants.UserRole,
+                        DarkMode = user.DarkMode
                     }
                     .AsApiSuccess();
         }
