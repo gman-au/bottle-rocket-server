@@ -7,6 +7,7 @@ using Rocket.MaxOcr.Contracts;
 using Rocket.Microsofts.Contracts;
 using Rocket.Notion.Contracts;
 using Rocket.Ollama.Contracts;
+using Rocket.QuestPdf.Contracts;
 
 namespace Rocket.Infrastructure.Json
 {
@@ -21,7 +22,8 @@ namespace Rocket.Infrastructure.Json
             { typeof(HelloWorldTextExecutionStepSpecifics), "hello_world_text_execution" },
             { typeof(NotionUploadExecutionStepSpecifics), "notion_upload_execution" },
             { typeof(OneDriveUploadExecutionStepSpecifics), "one_drive_upload_execution" },
-            { typeof(OneNoteUploadExecutionStepSpecifics), "one_note_upload_execution" }
+            { typeof(OneNoteUploadExecutionStepSpecifics), "one_note_upload_execution" },
+            { typeof(ConvertToPdfExecutionStepSpecifics), "convert_to_pdf_execution" }
         };
 
         public static string GetExecutionStepTypeDiscriminator(this Type type)

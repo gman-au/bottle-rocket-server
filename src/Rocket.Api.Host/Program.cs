@@ -16,6 +16,7 @@ using Rocket.MaxOcr.Injection;
 using Rocket.Microsofts.Injection;
 using Rocket.Notion.Injection;
 using Rocket.Ollama.Injection;
+using Rocket.QuestPdf.Injection;
 
 var builder =
     WebApplication
@@ -79,6 +80,7 @@ services
     .AddMicrosoftIntegration()
     .AddGcpIntegration()
     .AddDiagnosticIntegration()
+    .AddQuestPdfIntegration()
     .AddWorkflowBackgroundJob();
 
 services

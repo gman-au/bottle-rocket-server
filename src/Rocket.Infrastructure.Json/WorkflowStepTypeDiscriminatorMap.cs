@@ -8,6 +8,7 @@ using Rocket.MaxOcr.Contracts;
 using Rocket.Microsofts.Contracts;
 using Rocket.Notion.Contracts;
 using Rocket.Ollama.Contracts;
+using Rocket.QuestPdf.Contracts;
 
 namespace Rocket.Infrastructure.Json
 {
@@ -23,7 +24,8 @@ namespace Rocket.Infrastructure.Json
             { typeof(HelloWorldTextWorkflowStepSpecifics), "hello_world_text_workflow" },
             { typeof(GcpExtractWorkflowStepSpecifics), "gcp_extract_workflow" },
             { typeof(EmailFileAttachmentStepSpecifics), "email_file_attachment" },
-            { typeof(OneNoteUploadWorkflowStepSpecifics), "one_note_upload_workflow" }
+            { typeof(OneNoteUploadWorkflowStepSpecifics), "one_note_upload_workflow" },
+            { typeof(ConvertToPdfWorkflowStepSpecifics), "convert_to_pdf_workflow" }
         };
 
         public static string GetWorkflowStepTypeDiscriminator(this Type type)

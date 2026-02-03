@@ -12,6 +12,7 @@
       <ProjectReference Include="..\Integrations\Microsofts\Rocket.Microsofts.Contracts\Rocket.Microsofts.Contracts.csproj" />
       <ProjectReference Include="..\Integrations\Notion\Rocket.Notion.Contracts\Rocket.Notion.Contracts.csproj" />
       <ProjectReference Include="..\Integrations\Ollama\Rocket.Ollama.Contracts\Rocket.Ollama.Contracts.csproj" />
+      <ProjectReference Include="..\Integrations\QuestPdf\Rocket.QuestPdf.Contracts\Rocket.QuestPdf.Contracts.csproj" />
     </ItemGroup>
 
 </Project>
