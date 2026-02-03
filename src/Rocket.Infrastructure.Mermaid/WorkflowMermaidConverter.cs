@@ -12,6 +12,7 @@ using Rocket.Interfaces;
 using Rocket.Microsofts.Contracts;
 using Rocket.Notion.Contracts;
 using Rocket.Ollama.Contracts;
+using Rocket.QuestPdf.Contracts;
 
 namespace Rocket.Infrastructure.Mermaid
 {
@@ -168,6 +169,10 @@ namespace Rocket.Infrastructure.Mermaid
                 if (step is OneNoteUploadWorkflowStepSpecifics)
                 {
                     route = $"/MyWorkflow/OneNote/{workflowId}/Steps/{step.Id}/UpdateStep";
+                }
+                if (step is ConvertToPdfWorkflowStepSpecifics)
+                {
+                    route = $"/MyWorkflow/ConvertToPdf/{workflowId}/Steps/{step.Id}/UpdateStep";
                 }
 
                 if (!string.IsNullOrEmpty(route))
