@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -7,17 +6,17 @@ using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
-using Rocket.Gcp.Domain;
+using Rocket.Google.Domain;
 using Rocket.Interfaces;
 
-namespace Rocket.Gcp.Infrastructure
+namespace Rocket.Google.Infrastructure
 {
-    public class GcpUploadHook(
-        ILogger<GcpUploadHook> logger,
+    public class GoogleDriveUploadHook(
+        ILogger<GoogleDriveUploadHook> logger,
         IDriveUploadService driveUploadService
     ) : IIntegrationHook
     {
-        public bool IsApplicable(BaseExecutionStep step) => step is GcpUploadExecutionStep;
+        public bool IsApplicable(BaseExecutionStep step) => step is GoogleDriveUploadExecutionStep;
 
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
@@ -34,7 +33,7 @@ namespace Rocket.Gcp.Infrastructure
             var connector =
                 await
                     context
-                        .GetConnectorAsync<GcpConnector>(
+                        .GetConnectorAsync<GoogleConnector>(
                             userId,
                             step,
                             cancellationToken
@@ -42,7 +41,7 @@ namespace Rocket.Gcp.Infrastructure
 
             var fileBytes = artifact.Artifact;
 
-            if (step is not GcpUploadExecutionStep gcpUploadStep)
+            if (step is not GoogleDriveUploadExecutionStep gcpUploadStep)
                 throw new RocketException(
                     "Unexpected step format, please check configuration",
                     ApiStatusCodeEnum.DeveloperError

@@ -17,6 +17,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Integrations\Dropbox\Rocket.Dropbox.Injection\Rocket.Dropbox.Injection.csproj" />
         <ProjectReference Include="..\Integrations\Google\Gcp\Rocket.Gcp.Injection\Rocket.Gcp.Injection.csproj" />
+        <ProjectReference Include="..\Integrations\Google\Google\Rocket.Google.Injection\Rocket.Google.Injection.csproj" />
         <ProjectReference Include="..\Integrations\MaxOcr\Rocket.MaxOcr.Injection\Rocket.MaxOcr.Injection.csproj" />
         <ProjectReference Include="..\Integrations\Microsofts\Rocket.Microsofts.Injection\Rocket.Microsofts.Injection.csproj" />
         <ProjectReference Include="..\Integrations\Notion\Rocket.Notion.Injection\Rocket.Notion.Injection.csproj" />

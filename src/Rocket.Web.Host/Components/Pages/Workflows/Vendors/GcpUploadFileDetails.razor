@@ -3,10 +3,11 @@
 @page "/MyWorkflow/GcpUpload/{workflowId}/Steps/{stepId}/UpdateStep"
 @using Rocket.Gcp.Contracts
 @using Rocket.Gcp.Domain
+@using Rocket.Google.Contracts
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <UpdateWorkflowStepWrapper
-    T="GcpUploadWorkflowStepSpecifics"
+    T="GoogleDriveUploadWorkflowStepSpecifics"
     WorkflowStepName="Extract text from image"
     WorkflowId="@WorkflowId"
     ParentStepId="@ParentStepId"

@@ -1,8 +1,8 @@
 ﻿using Rocket.Domain.Executions;
 
-namespace Rocket.Gcp.Domain
+namespace Rocket.Google.Domain
 {
-    public record GcpUploadExecutionStep : BaseExecutionStep
+    public record GoogleDriveUploadExecutionStep : BaseExecutionStep
     {
         public string ParentFolderId { get; set; }
     }

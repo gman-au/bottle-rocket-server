@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
+      <ProjectReference Include="..\Rocket.Google.Infrastructure\Rocket.Google.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>

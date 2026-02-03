@@ -6,23 +6,24 @@ using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
-using Rocket.Gcp.Domain;
+using Rocket.Google.Domain;
+using File = Google.Apis.Drive.v3.Data.File;
 
-namespace Rocket.Gcp.Infrastructure
+namespace Rocket.Google.Infrastructure
 {
     public class DriveUploadService : IDriveUploadService
     {
         public async Task UploadFileAsync(
             byte[] fileBytes,
             string fileExtension,
-            GcpCredential gcpCredential,
+            GooglesCredential googlesCredential,
             CancellationToken cancellationToken
         )
         {
             // Convert your credential object back to JSON string
             var credentialJson =
                 JsonSerializer
-                    .Serialize(gcpCredential);
+                    .Serialize(googlesCredential);
 
             // Create GoogleCredential from JSON content (new way)
             GoogleCredential credential;
@@ -47,7 +48,7 @@ namespace Rocket.Gcp.Infrastructure
 
             var fileName = $"{Guid.NewGuid()}{fileExtension}";
 
-            var fileMetadata = new Google.Apis.Drive.v3.Data.File
+            var fileMetadata = new File
             {
                 Name = fileName,
                 // Parents = new List<string> { TargetFolderId } // Specify the parent folder

@@ -1,15 +1,15 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Rocket.Gcp.Domain;
+using Rocket.Google.Domain;
 
-namespace Rocket.Gcp.Infrastructure
+namespace Rocket.Google.Infrastructure
 {
     public interface IDriveUploadService
     {
         Task UploadFileAsync(
             byte[] fileBytes,
             string fileExtension,
-            GcpCredential gcpCredential,
+            GooglesCredential googlesCredential,
             CancellationToken cancellationToken
         );
     }

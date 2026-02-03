@@ -9,6 +9,7 @@
         <ProjectReference Include="..\Integrations\Dropbox\Rocket.Dropbox.Contracts\Rocket.Dropbox.Contracts.csproj" />
         <ProjectReference Include="..\Integrations\Dropbox\Rocket.Dropbox.Domain\Rocket.Dropbox.Domain.csproj" />
         <ProjectReference Include="..\Integrations\Google\Gcp\Rocket.Gcp.Domain\Rocket.Gcp.Domain.csproj" />
+        <ProjectReference Include="..\Integrations\Google\Google\Rocket.Google.Contracts\Rocket.Google.Contracts.csproj" />
         <ProjectReference Include="..\Integrations\MaxOcr\Rocket.MaxOcr.Contracts\Rocket.MaxOcr.Contracts.csproj" />
         <ProjectReference Include="..\Integrations\MaxOcr\Rocket.MaxOcr.Domain\Rocket.MaxOcr.Domain.csproj" />
         <ProjectReference Include="..\Integrations\Microsofts\Rocket.Microsofts.Domain\Rocket.Microsofts.Domain.csproj" />

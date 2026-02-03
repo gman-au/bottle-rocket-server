@@ -11,6 +11,7 @@ using Rocket.Diagnostics.Injection;
 using Rocket.Domain.Utils;
 using Rocket.Dropbox.Injection;
 using Rocket.Gcp.Injection;
+using Rocket.Google.Injection;
 using Rocket.Infrastructure.Json;
 using Rocket.MaxOcr.Injection;
 using Rocket.Microsofts.Injection;
@@ -79,6 +80,7 @@ services
     .AddNotionIntegration()
     .AddMicrosoftIntegration()
     .AddGcpIntegration()
+    .AddGoogleIntegration()
     .AddDiagnosticIntegration()
     .AddQuestPdfIntegration()
     .AddWorkflowBackgroundJob();
