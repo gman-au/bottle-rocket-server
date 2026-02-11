@@ -41,7 +41,7 @@ namespace Rocket.Google.Infrastructure
 
             var fileBytes = artifact.Artifact;
 
-            if (step is not GoogleDriveUploadExecutionStep gcpUploadStep)
+            if (step is not GoogleDriveUploadExecutionStep)
                 throw new RocketException(
                     "Unexpected step format, please check configuration",
                     ApiStatusCodeEnum.DeveloperError

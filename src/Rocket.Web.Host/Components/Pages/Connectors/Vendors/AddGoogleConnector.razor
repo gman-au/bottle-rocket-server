@@ -86,7 +86,7 @@
                     </MudText>
                     <MudText>
                         <ul>
-                            <li>Click on the <b>Authorize button</b> below to be redirected to Dropbox's app authorization page.</li>
+                            <li>Click on the <b>Authorize button</b> below to be redirected to Google's authorization page.</li>
                             <li>Once you have consented to the permissions required by the app, you will receive an access code, which
                                 needs to be entered below.
                             </li>
@@ -97,9 +97,9 @@
                     <MudButton
                         Variant="Variant.Outlined"
                         Color="Color.Secondary"
-                        Disabled="!(_form.IsTouched || _form.IsValid)"
+                        Disabled="@(string.IsNullOrEmpty(_credentialsFileBase64) || _isAuthorizing)"
                         OnClick="@BeginAuthorizeAsync">
-                        Authorize in Dropbox
+                        Authorize in Google
                     </MudButton>
                 </MudItem>
                 <MudDivider Class="my-2"/>

@@ -51,7 +51,7 @@ namespace Rocket.Web.Client
             var response =
                 await
                     authenticatedApiClient
-                        .PostAsJsonAsync(
+                        .PatchAsJsonAsync(
                             "/api/google/connectors/finalize",
                             request,
                             cancellationToken

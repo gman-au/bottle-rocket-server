@@ -19,7 +19,7 @@ namespace Rocket.Google.Domain
 
         public override ConnectorStatusEnum DetermineStatus()
         {
-            return Credential != null
+            return !string.IsNullOrEmpty(RefreshToken)
                 ? ConnectorStatusEnum.Active
                 : ConnectorStatusEnum.Pending;
         }
