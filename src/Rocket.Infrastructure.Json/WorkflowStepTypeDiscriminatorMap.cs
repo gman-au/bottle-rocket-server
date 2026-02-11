@@ -4,6 +4,7 @@ using Rocket.Api.Contracts.Workflows;
 using Rocket.Diagnostics.Contracts;
 using Rocket.Dropbox.Contracts;
 using Rocket.Gcp.Contracts;
+using Rocket.Google.Contracts;
 using Rocket.MaxOcr.Contracts;
 using Rocket.Microsofts.Contracts;
 using Rocket.Notion.Contracts;
@@ -25,6 +26,7 @@ namespace Rocket.Infrastructure.Json
             { typeof(GcpExtractWorkflowStepSpecifics), "gcp_extract_workflow" },
             { typeof(EmailFileAttachmentStepSpecifics), "email_file_attachment" },
             { typeof(OneNoteUploadWorkflowStepSpecifics), "one_note_upload_workflow" },
+            { typeof(GoogleDriveUploadWorkflowStepSpecifics), "google_drive_upload_workflow" },
             { typeof(ConvertToPdfWorkflowStepSpecifics), "convert_to_pdf_workflow" }
         };
 

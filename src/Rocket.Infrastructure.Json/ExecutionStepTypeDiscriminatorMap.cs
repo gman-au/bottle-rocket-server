@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Rocket.Diagnostics.Contracts;
 using Rocket.Dropbox.Contracts;
 using Rocket.Gcp.Contracts;
+using Rocket.Google.Contracts;
 using Rocket.MaxOcr.Contracts;
 using Rocket.Microsofts.Contracts;
 using Rocket.Notion.Contracts;
@@ -22,6 +23,7 @@ namespace Rocket.Infrastructure.Json
             { typeof(HelloWorldTextExecutionStepSpecifics), "hello_world_text_execution" },
             { typeof(NotionUploadExecutionStepSpecifics), "notion_upload_execution" },
             { typeof(OneDriveUploadExecutionStepSpecifics), "one_drive_upload_execution" },
+            { typeof(GoogleDriveUploadExecutionStepSpecifics), "google_drive_upload_execution" },
             { typeof(OneNoteUploadExecutionStepSpecifics), "one_note_upload_execution" },
             { typeof(ConvertToPdfExecutionStepSpecifics), "convert_to_pdf_execution" }
         };

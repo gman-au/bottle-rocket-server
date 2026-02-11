@@ -7,6 +7,7 @@ using Rocket.Domain.Enum;
 using Rocket.Domain.Utils;
 using Rocket.Dropbox.Contracts;
 using Rocket.Gcp.Contracts;
+using Rocket.Google.Contracts;
 using Rocket.Infrastructure.Mermaid.Extensions;
 using Rocket.Interfaces;
 using Rocket.Microsofts.Contracts;
@@ -160,7 +161,11 @@ namespace Rocket.Infrastructure.Mermaid
                 }
                 if (step is GcpExtractWorkflowStepSpecifics)
                 {
-                    route = $"/MyWorkflow/Gcp/{workflowId}/Steps/{step.Id}/UpdateStep";
+                    route = $"/MyWorkflow/GcpExtract/{workflowId}/Steps/{step.Id}/UpdateStep";
+                }
+                if (step is GoogleDriveUploadWorkflowStepSpecifics)
+                {
+                    route = $"/MyWorkflow/GcpUpload/{workflowId}/Steps/{step.Id}/UpdateStep";
                 }
                 if (step is OneDriveUploadWorkflowStepSpecifics)
                 {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Rocket.Dropbox.Contracts;
 using Rocket.Gcp.Contracts;
+using Rocket.Google.Contracts;
 using Rocket.MaxOcr.Contracts;
 using Rocket.Microsofts.Contracts;
 using Rocket.Notion.Contracts;
@@ -18,7 +19,8 @@ namespace Rocket.Infrastructure.Json
             { typeof(OllamaConnectorSpecifics), "ollama_connector" },
             { typeof(GcpConnectorSpecifics), "gcp_connector" },
             { typeof(NotionConnectorSpecifics), "notion_connector" },
-            { typeof(MicrosoftConnectorSpecifics), "microsoft_connector" }
+            { typeof(MicrosoftConnectorSpecifics), "microsoft_connector" },
+            { typeof(GoogleConnectorSpecifics), "google_connector" }
         };
 
         public static string GetConnectorTypeDiscriminator(this Type type)

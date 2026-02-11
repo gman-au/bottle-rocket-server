@@ -1,0 +1,303 @@
+﻿@page "/MyConnector/Google/Add"
+@using System.IO
+@using Rocket.Google.Contracts
+@using Rocket.Web.Client
+@using Rocket.Web.Host.Extensions
+@using Rocket.Web.Host.Infrastructure
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject ISnackbar Snackbar
+@inject IJSRuntime JsRuntime
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    <MudForm
+        @ref="_form">
+        <MudPaper Class="p-4" elevation="2">
+            <MudText
+                Align="Align.Center"
+                Typo="Typo.h4"
+                Color="Color.Primary"
+                Class="mb-4">
+                Add a Google connector
+            </MudText>
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudText
+                        Color="Color.Secondary"
+                        Typo="Typo.h5"
+                    >
+                        Step 1: Set up the GCP project, with Cloud Vision API enabled
+                    </MudText>
+                    <MudText>
+                        <MudLink
+                            Target="_blank"
+                            Href="https://gman-au.github.io/bottle-rocket-documentation/docs/docs-general/workflow-integrations/google-drive#create-the-project-in-google-cloud">
+                            Follow the instructions to set up a Google Cloud project <u>for Google Drive</u>.
+                        </MudLink>
+                    </MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText
+                        Color="Color.Secondary"
+                        Typo="Typo.h5">
+                        Step 2: Download the credentials file
+                    </MudText>
+                    <MudText>
+                        After setup of the project and service account, you should be able to download the credentials file.
+                    </MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText
+                        Color="Color.Secondary"
+                        Typo="Typo.h5">
+                        Step 3: Upload the credentials file
+                    </MudText>
+                    <MudText>
+                        Upload the credentials file here.
+                    </MudText>
+                </MudItem>
+                <MudItem sm="12" lg="6">
+                    <MudFileUpload
+                        Required
+                        RequiredError="The credentials file is required."
+                        Disabled="@_isLoading"
+                        T="IBrowserFile"
+                        MaximumFileCount="1"
+                        FilesChanged="UploadFilesAsync">
+                        <ActivatorContent>
+                            <MudFab
+                                Disabled="@_isLoading"
+                                HtmlTag="label"
+                                Color="Color.Default"
+                                StartIcon="@StandardIcons.AttachmentIcon"
+                            >
+                            </MudFab>
+                        </ActivatorContent>
+                    </MudFileUpload>
+                </MudItem>
+                <MudDivider Class="my-2"/>
+                <MudItem xs="12">
+                    <MudText
+                        Color="Color.Secondary"
+                        Typo="Typo.h5"
+                    >
+                        Step 2: Authorize the app to receive an access code
+                    </MudText>
+                    <MudText>
+                        <ul>
+                            <li>Click on the <b>Authorize button</b> below to be redirected to Google's authorization page.</li>
+                            <li>Once you have consented to the permissions required by the app, you will receive an access code, which
+                                needs to be entered below.
+                            </li>
+                        </ul>
+                    </MudText>
+                </MudItem>
+                <MudItem sm="12" lg="6">
+                    <MudButton
+                        Variant="Variant.Outlined"
+                        Color="Color.Secondary"
+                        Disabled="@(string.IsNullOrEmpty(_credentialsFileBase64) || _isAuthorizing)"
+                        OnClick="@BeginAuthorizeAsync">
+                        Authorize in Google
+                    </MudButton>
+                </MudItem>
+                <MudDivider Class="my-2"/>
+                <MudItem xs="12">
+                    <MudText
+                        Color="Color.Secondary"
+                        Typo="Typo.h5"
+                    >
+                        Step 3: Enter the access code
+                    </MudText>
+                    <MudText>
+                        Enter the access code received in step 2 below.
+                    </MudText>
+                </MudItem>
+                <MudItem sm="12" lg="6">
+                    <MudTextField
+                        T="string"
+                        Required="@_isAuthorizing"
+                        Label="Access Code"
+                        HelperText="Enter the Access Code here"
+                        @bind-Value="_accessCode"
+                        For="@(() => _accessCode)"
+                        RequiredError="Access Code is required"/>
+                </MudItem>
+            </MudGrid>
+            <MudGrid Class="align-start mt-2" Justify="Justify.FlexEnd">
+                <MudItem>
+                    <GoBackButton/>
+                </MudItem>
+                <MudItem>
+                    <MudButton
+                        Variant="Variant.Outlined"
+                        Color="Color.Success"
+                        Disabled="@(_isLoading || !_form.IsTouched)"
+                        OnClick="@CompleteAuthorizeAsync">
+                        Submit
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    </MudForm>
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    MudForm _form;
+
+    private bool _isLoading;
+    private bool _isAuthorizing = false;
+
+    private string _accessCode = null;
+    private string _credentialsFileBase64 = null;
+    private string _connectorId = null;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task BeginAuthorizeAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                var response =
+                    await
+                        ApiRequestManager
+                            .InitiateGoogleConnectorAuthAsync(
+                                new GoogleAuthInitiateRequest
+                                {
+                                    CredentialsFileBase64 = _credentialsFileBase64
+                                },
+                                BaseCancellationToken
+                            );
+
+                var authorizeUrl = response?.AuthorizationUrl;
+
+                _connectorId = response?.Id;
+
+                if (string.IsNullOrEmpty(authorizeUrl))
+                    throw new Exception("There was a connection error.");
+
+                await
+                    JsRuntime
+                        .InvokeVoidAsync(
+                            "eval",
+                            $"window.open('{authorizeUrl}', '_blank')"
+                        );
+
+                _isAuthorizing = true;
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task UploadFilesAsync(IBrowserFile file)
+    {
+        try
+        {
+            var base64 =
+                await
+                    file
+                        .ConvertToBase64Async(
+                            BaseCancellationToken
+                        );
+
+            _credentialsFileBase64 = base64;
+        }
+        catch (IOException ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+    }
+
+    private async Task CompleteAuthorizeAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                var accessCode = _accessCode;
+
+                await
+                    ApiRequestManager
+                        .FinalizeGoogleConnectorAsync(
+                            new GoogleAuthFinalizeRequest
+                            {
+                                Id = _connectorId,
+                                AccessCode = accessCode
+                            },
+                            BaseCancellationToken
+                        );
+
+                Snackbar
+                    .Add(
+                        "The connection has been added.",
+                        Severity.Success
+                    );
+
+                NavigationManager
+                    .NavigateTo("/MyConnectors");
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+}

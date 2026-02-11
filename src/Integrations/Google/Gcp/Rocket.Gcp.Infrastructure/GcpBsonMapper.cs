@@ -24,9 +24,9 @@ namespace Rocket.Gcp.Infrastructure
                 });
             }
             
-            if (!BsonClassMap.IsClassMapRegistered(typeof(GcpExtractWorkflowStep)))
+            if (!BsonClassMap.IsClassMapRegistered(typeof(GcpExtractExecutionStep)))
             {
-                BsonClassMap.RegisterClassMap<GcpExtractWorkflowStep>(cm =>
+                BsonClassMap.RegisterClassMap<GcpExtractExecutionStep>(cm =>
                 {
                     cm.AutoMap();
                 });

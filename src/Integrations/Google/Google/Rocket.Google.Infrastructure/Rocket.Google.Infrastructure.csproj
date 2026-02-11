@@ -6,14 +6,13 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\Rocket.Infrastructure.Mapping\Rocket.Infrastructure.Mapping.csproj" />
-      <ProjectReference Include="..\..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
-      <ProjectReference Include="..\Rocket.Gcp.Contracts\Rocket.Gcp.Contracts.csproj" />
-      <ProjectReference Include="..\Rocket.Gcp.Domain\Rocket.Gcp.Domain.csproj" />
+      <ProjectReference Include="..\Rocket.Google.Contracts\Rocket.Google.Contracts.csproj" />
+      <ProjectReference Include="..\Rocket.Google.Domain\Rocket.Google.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Google.Apis.Auth" Version="1.73.0" />
-      <PackageReference Include="Google.Cloud.Vision.V1" Version="3.8.0" />
+      <PackageReference Include="Google.Apis.Drive.v3" Version="1.73.0.4045" />
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.11" />
     </ItemGroup>
 
