@@ -47,16 +47,12 @@ namespace Rocket.Google.Infrastructure
                     ApiStatusCodeEnum.DeveloperError
                 );
 
-            var credential =
-                connector
-                    .Credential;
-
             await
                 driveUploadService
                     .UploadFileAsync(
                         fileBytes,
                         artifact.FileExtension,
-                        credential,
+                        connector,
                         cancellationToken
                     );
 

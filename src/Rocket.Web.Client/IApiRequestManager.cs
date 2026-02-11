@@ -7,6 +7,7 @@ using Rocket.Api.Contracts.Scans;
 using Rocket.Api.Contracts.Users;
 using Rocket.Api.Contracts.Workflows;
 using Rocket.Dropbox.Contracts;
+using Rocket.Google.Contracts;
 using Rocket.Microsofts.Contracts;
 using Rocket.Notion.Contracts;
 
@@ -154,6 +155,16 @@ namespace Rocket.Web.Client
 
         public Task<GetOneNoteSectionsResponse> GetOneNoteSectionsAsync(
             GetOneNoteSectionsRequest request,
+            CancellationToken cancellationToken
+        );
+
+        public Task<GoogleAuthInitiateResponse> InitiateGoogleConnectorAuthAsync(
+            GoogleAuthInitiateRequest request,
+            CancellationToken cancellationToken
+        );
+
+        public Task<ApiResponse> FinalizeGoogleConnectorAsync(
+            GoogleAuthFinalizeRequest request,
             CancellationToken cancellationToken
         );
     }

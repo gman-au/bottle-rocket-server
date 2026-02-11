@@ -1,17 +1,16 @@
 ﻿@page "/MyWorkflow/GcpUpload/{workflowId}/AddStep"
 @page "/MyWorkflow/GcpUpload/{workflowId}/Steps/{parentStepId}/AddStep"
 @page "/MyWorkflow/GcpUpload/{workflowId}/Steps/{stepId}/UpdateStep"
-@using Rocket.Gcp.Contracts
-@using Rocket.Gcp.Domain
 @using Rocket.Google.Contracts
+@using Rocket.Google.Domain
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <UpdateWorkflowStepWrapper
     T="GoogleDriveUploadWorkflowStepSpecifics"
-    WorkflowStepName="Extract text from image"
+    WorkflowStepName="Upload file to Google Drive"
     WorkflowId="@WorkflowId"
     ParentStepId="@ParentStepId"
-    RequiresConnectorCode="@GcpDomainConstants.ConnectorCode"
+    RequiresConnectorCode="@GoogleDomainConstants.ConnectorCode"
     StepId="@StepId"
     Context="stepSpecifics">
     <MudGrid>

@@ -1,42 +1,52 @@
 ﻿using System;
 using System.IO;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Google.Domain;
 using File = Google.Apis.Drive.v3.Data.File;
 
 namespace Rocket.Google.Infrastructure
 {
-    public class DriveUploadService : IDriveUploadService
+    public class DriveUploadService(IGoogleTokenAcquirer tokenAcquirer) : IDriveUploadService
     {
         public async Task UploadFileAsync(
             byte[] fileBytes,
             string fileExtension,
-            GooglesCredential googlesCredential,
+            GoogleConnector googleConnector,
             CancellationToken cancellationToken
         )
         {
-            // Convert your credential object back to JSON string
-            var credentialJson =
-                JsonSerializer
-                    .Serialize(googlesCredential);
+            var googlesCredential =
+                googleConnector
+                    .Credential;
 
-            // Create GoogleCredential from JSON content (new way)
-            GoogleCredential credential;
-            using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(credentialJson)))
-            {
-                credential =
-                    await
-                        GoogleCredential
-                            .FromStreamAsync(
-                                stream,
-                                cancellationToken
-                            );
-            }
+            if (googlesCredential == null)
+                throw new RocketException(
+                    "Credential file is not supplied for operation, please check Google connector",
+                    ApiStatusCodeEnum.ThirdPartyServiceError
+                );
+
+            var refreshToken =
+                googleConnector
+                    .RefreshToken;
+
+            if (string.IsNullOrWhiteSpace(refreshToken))
+                throw new RocketException(
+                    "Refresh token is not supplied for operation, please check Google connector",
+                    ApiStatusCodeEnum.ThirdPartyServiceError
+                );
+            
+            var credential =
+                await tokenAcquirer
+                    .GetFlowCredentialAsync(
+                        googlesCredential,
+                        refreshToken,
+                        cancellationToken
+                    );
 
             var service =
                 new DriveService(

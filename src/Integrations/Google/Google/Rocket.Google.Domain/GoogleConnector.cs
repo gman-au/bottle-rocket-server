@@ -13,6 +13,10 @@ namespace Rocket.Google.Domain
 
         public GooglesCredential Credential { get; set; }
 
+        public string AccessToken { get; set; }
+
+        public string RefreshToken { get; set; }
+
         public override ConnectorStatusEnum DetermineStatus()
         {
             return Credential != null

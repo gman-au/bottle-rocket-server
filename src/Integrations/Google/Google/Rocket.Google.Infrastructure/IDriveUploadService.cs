@@ -9,7 +9,7 @@ namespace Rocket.Google.Infrastructure
         Task UploadFileAsync(
             byte[] fileBytes,
             string fileExtension,
-            GooglesCredential googlesCredential,
+            GoogleConnector googleConnector,
             CancellationToken cancellationToken
         );
     }

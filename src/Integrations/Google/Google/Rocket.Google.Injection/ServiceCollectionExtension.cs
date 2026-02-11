@@ -15,6 +15,7 @@ namespace Rocket.Google.Injection
                 .AddTransient<IConnectorModelMapper, GoogleConnectorMapper>()
                 .AddTransient<IStepModelCloner, GoogleDriveUploadStepCloner>()
                 .AddTransient<IDriveUploadService, DriveUploadService>()
+                .AddTransient<IGoogleTokenAcquirer, GoogleTokenAcquirer>()
                 .AddTransient<IBsonMapper, GoogleBsonMapper>();
 
             return services;

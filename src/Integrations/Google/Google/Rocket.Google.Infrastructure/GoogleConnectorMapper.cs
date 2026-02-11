@@ -34,7 +34,7 @@ namespace Rocket.Google.Infrastructure
                     JsonSerializer
                         .Deserialize<GooglesCredential>(credentialsJson);
 
-                if (string.IsNullOrEmpty(credential?.ProjectId))
+                if (string.IsNullOrEmpty(credential?.Installed?.ProjectId))
                     throw new RocketException(
                         "There was a problem loading the credentials file. Please check it again and re-try.",
                         ApiStatusCodeEnum.ValidationError
@@ -42,7 +42,7 @@ namespace Rocket.Google.Infrastructure
                 
                 result.Credential = credential;
             }
-            catch (JsonException)
+            catch (JsonException ex)
             {
                 throw new RocketException(
                     "There was a problem loading the credentials file. Please check it again and re-try.",
@@ -59,7 +59,7 @@ namespace Rocket.Google.Infrastructure
                 base
                     .From(value);
             
-            // don't return the credentials
+            // don't return the credentials or tokens
 
             return result;
         }

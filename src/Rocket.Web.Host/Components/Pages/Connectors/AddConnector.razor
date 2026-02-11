@@ -1,6 +1,7 @@
 ﻿@page "/MyConnectors/Add"
 @using Rocket.Dropbox.Domain
 @using Rocket.Gcp.Domain
+@using Rocket.Google.Domain
 @using Rocket.Microsofts.Domain
 @using Rocket.Notion.Domain
 @using Rocket.Ollama.Domain
@@ -82,6 +83,12 @@
             Name = $"{MicrosoftDomainConstants.ConnectorName} (Custom)",
             Href = "/MyConnector/Microsoft/Add",
             ImagePath = "/img/microsoft-logo.png"
+        },
+        new()
+        {
+            Name = GoogleDomainConstants.ConnectorName,
+            Href = "/MyConnector/Google/Add",
+            ImagePath = "/img/google-logo.webp"
         }
     ];
 
