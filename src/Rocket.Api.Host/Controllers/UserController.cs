@@ -223,6 +223,42 @@ namespace Rocket.Api.Host.Controllers
                     "There was an error writing the user record",
                     ApiStatusCodeEnum.ServerError
                 );
+            
+            var qrCode = string.Empty;
+
+            if (!string.IsNullOrEmpty(request.Password))
+            {
+                var user =
+                    await
+                        UserManager
+                            .GetUserByUserIdAsync(
+                                newUser.Id,
+                                cancellationToken
+                            );
+
+                var hostName =
+                    hostResolver
+                        .GetThisHost();
+
+                if (!string.IsNullOrEmpty(hostName))
+                {
+                    var userQuickAuth =
+                        new UserQuickAuth
+                        {
+                            UserName = user.Username,
+                            Password = request.Password,
+                            Server = hostName
+                        };
+
+                    qrCode =
+                        await
+                            qrCodeGenerator
+                                .GenerateUserQuickAuthCodeAsync(
+                                    userQuickAuth,
+                                    cancellationToken
+                                );
+                }
+            }
 
             if (currentUsername == DomainConstants.RootAdminUserName)
             {
@@ -260,7 +296,8 @@ namespace Rocket.Api.Host.Controllers
                 new CreateUserResponse
                 {
                     Username = newUser.Username,
-                    CreatedAt = newUser.CreatedAt.ToLocalTime()
+                    CreatedAt = newUser.CreatedAt.ToLocalTime(),
+                    QrCodeBase64 = qrCode
                 };
 
             return
