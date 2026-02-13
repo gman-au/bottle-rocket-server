@@ -2,10 +2,12 @@
 @using Rocket.Api.Contracts.Users
 @using Rocket.Interfaces
 @using Rocket.Web.Client
+@using Rocket.Web.Host.Components.Dialog
 @using Rocket.Web.Host.Infrastructure
 @inject IApiRequestManager ApiRequestManager
 @inject IEmailAddressValidator EmailAddressValidator
 @inject IWebHostErrorHandler WebHostErrorHandler
+@inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
@@ -122,23 +124,42 @@
 
             try
             {
-                await
-                    ApiRequestManager
-                        .CreateUserAsync(
-                            new CreateUserRequest
-                            {
-                                Username = _newModel.Username,
-                                Password = _newModel.NewPassword,
-                                IsTheNewAdmin = false
-                            },
-                            BaseCancellationToken
-                        );
+                var createUserResponse =
+                    await
+                        ApiRequestManager
+                            .CreateUserAsync(
+                                new CreateUserRequest
+                                {
+                                    Username = _newModel.Username,
+                                    Password = _newModel.NewPassword,
+                                    IsTheNewAdmin = false
+                                },
+                                BaseCancellationToken
+                            );
 
                 Snackbar
                     .Add(
                         "The user has been created.",
                         Severity.Success
                     );
+                
+                if (!string.IsNullOrEmpty(createUserResponse?.QrCodeBase64))
+                {
+                    var dialog =
+                        await
+                            DialogService
+                                .ShowAsync<UserQuickAuthDialog>(
+                                    null,
+                                    new DialogParameters
+                                    {
+                                        { "UserQuickAuthBase64", createUserResponse.QrCodeBase64 }
+                                    }
+                                );
+
+                    await
+                        dialog
+                            .Result;
+                }
 
                 NavigationManager
                     .NavigateTo(

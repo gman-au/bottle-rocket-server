@@ -23,6 +23,8 @@ namespace Rocket.Api.Host.Controllers
     public class UserController(
         ILogger<UserController> logger,
         IUserManager userManager,
+        IHostResolver hostResolver,
+        IQrCodeGenerator qrCodeGenerator,
         IUserRepository userRepository,
         IStartupInitialization startupInitialization,
         IActiveAdminChecker activeAdminChecker
@@ -37,8 +39,14 @@ namespace Rocket.Api.Host.Controllers
             Provide a zero-based start index and record count to retrieve paged results and minimise server load. 
             """
         )]
-        [ProducesResponseType(typeof(FetchUsersResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(
+            typeof(FetchUsersResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> FetchUsersAsync(
             [FromBody] FetchUsersRequest request,
@@ -69,7 +77,6 @@ namespace Rocket.Api.Host.Controllers
                                         Id = o.Username == DomainConstants.RootAdminUserName ? null : o.Id,
                                         Username = o.Username,
                                         CreatedAt = o.CreatedAt.ToLocalTime(),
-
                                     }
                             ),
                     TotalRecords = (int)totalRecordCount
@@ -79,13 +86,19 @@ namespace Rocket.Api.Host.Controllers
                 response
                     .AsApiSuccess();
         }
-        
+
         [HttpGet("get/{id}")]
         [EndpointSummary("Get user by ID")]
         [EndpointGroupName("Manage users")]
         [EndpointDescription("Returns a user by their unique identifier.")]
-        [ProducesResponseType(typeof(UserSpecifics), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(
+            typeof(UserSpecifics),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetUserAsync(
             string id,
@@ -157,8 +170,14 @@ namespace Rocket.Api.Host.Controllers
             then on success, the administrator account will be made inactive.
             """
         )]
-        [ProducesResponseType(typeof(CreateUserResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(
+            typeof(CreateUserResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateUserAsync(
             [FromBody] CreateUserRequest request,
@@ -204,6 +223,42 @@ namespace Rocket.Api.Host.Controllers
                     "There was an error writing the user record",
                     ApiStatusCodeEnum.ServerError
                 );
+            
+            var qrCode = string.Empty;
+
+            if (!string.IsNullOrEmpty(request.Password))
+            {
+                var user =
+                    await
+                        UserManager
+                            .GetUserByUserIdAsync(
+                                newUser.Id,
+                                cancellationToken
+                            );
+
+                var hostName =
+                    hostResolver
+                        .GetThisHost();
+
+                if (!string.IsNullOrEmpty(hostName))
+                {
+                    var userQuickAuth =
+                        new UserQuickAuth
+                        {
+                            UserName = user.Username,
+                            Password = request.Password,
+                            Server = hostName
+                        };
+
+                    qrCode =
+                        await
+                            qrCodeGenerator
+                                .GenerateUserQuickAuthCodeAsync(
+                                    userQuickAuth,
+                                    cancellationToken
+                                );
+                }
+            }
 
             if (currentUsername == DomainConstants.RootAdminUserName)
             {
@@ -241,7 +296,8 @@ namespace Rocket.Api.Host.Controllers
                 new CreateUserResponse
                 {
                     Username = newUser.Username,
-                    CreatedAt = newUser.CreatedAt.ToLocalTime()
+                    CreatedAt = newUser.CreatedAt.ToLocalTime(),
+                    QrCodeBase64 = qrCode
                 };
 
             return
@@ -255,11 +311,18 @@ namespace Rocket.Api.Host.Controllers
         [EndpointDescription(
             """
             Updates one or more details of an existing system user. A value not supplied will not be updated.\n
-            If the update sets the `IsAdmin` flag to true, then the user calling the API will have their administrator status removed.
+            If the update sets the `IsAdmin` flag to true, then the user calling the API will have their administrator status removed.\n
+            If a new password has been supplied (and only if so), the response will contain a QR code that the mobile app can scan to provide their credentials.
             """
         )]
-        [ProducesResponseType(typeof(UpdateUserResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(
+            typeof(UpdateUserResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdateUserAsync(
             [FromBody] UserSpecifics request,
@@ -294,7 +357,7 @@ namespace Rocket.Api.Host.Controllers
                     "There must be at least one active admin user in the system.",
                     ApiStatusCodeEnum.PotentiallyIrrecoverableOperation
                 );
-            
+
             // Update the user account
             await
                 UserManager
@@ -324,14 +387,53 @@ namespace Rocket.Api.Host.Controllers
                         );
             }
 
+            var qrCode = string.Empty;
+
+            if (!string.IsNullOrEmpty(request.NewPassword))
+            {
+                var user =
+                    await
+                        UserManager
+                            .GetUserByUserIdAsync(
+                                request.Id,
+                                cancellationToken
+                            );
+
+                var hostName =
+                    hostResolver
+                        .GetThisHost();
+
+                if (!string.IsNullOrEmpty(hostName))
+                {
+                    var userQuickAuth =
+                        new UserQuickAuth
+                        {
+                            UserName = user.Username,
+                            Password = request.NewPassword,
+                            Server = hostName
+                        };
+
+                    qrCode =
+                        await
+                            qrCodeGenerator
+                                .GenerateUserQuickAuthCodeAsync(
+                                    userQuickAuth,
+                                    cancellationToken
+                                );
+                }
+            }
+
             var response =
-                new UpdateUserResponse();
+                new UpdateUserResponse
+                {
+                    QrCodeBase64 = qrCode
+                };
 
             return
                 response
                     .AsApiSuccess();
         }
-        
+
         [HttpPost("darkMode")]
         [EndpointSummary("Set dark mode preference for a user")]
         [EndpointGroupName("Manage users")]
@@ -340,8 +442,14 @@ namespace Rocket.Api.Host.Controllers
             Sets the dark mode preference for a given user.
             """
         )]
-        [ProducesResponseType(typeof(UpdateUserResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(
+            typeof(UpdateUserResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdateDarkModeAsync(
             [FromBody] SetUserDarkModeRequest request,
@@ -355,7 +463,7 @@ namespace Rocket.Api.Host.Controllers
             var userId =
                 user
                     .Id;
-            
+
             logger
                 .LogInformation(
                     "Received dark mode request for username: {id}",

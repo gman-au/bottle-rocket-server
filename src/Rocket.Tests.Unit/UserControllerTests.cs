@@ -207,6 +207,8 @@ namespace Rocket.Tests.Unit
                     new UserController(
                         Fixture.Freeze<ILogger<UserController>>(),
                         UserManager,
+                        Fixture.Freeze<IHostResolver>(),
+                        Fixture.Freeze<IQrCodeGenerator>(),
                         Fixture.Freeze<IUserRepository>(),
                         _startupInitialization,
                         _activeAdminChecker

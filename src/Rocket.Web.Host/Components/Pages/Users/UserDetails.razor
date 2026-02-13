@@ -169,25 +169,6 @@
         }
     }
 
-    private async Task ConfirmAdminRevocationAsync()
-    {
-        var dialog =
-            await
-                DialogService
-                    .ShowAsync<ConfirmRevokeAdminDialog>();
-
-        var result =
-            await
-                dialog
-                    .Result;
-
-        if (!(result?.Canceled ?? true))
-        {
-            await
-                SubmitAsync();
-        }
-    }
-
     private async Task SubmitAsync()
     {
         await
@@ -224,19 +205,20 @@
                 var isAdminValue = _currentModel.IsAdmin != _newModel.IsAdmin ? _newModel.IsAdmin : null;
                 var newPasswordValue = _currentModel.NewPassword != _newModel.NewPassword ? _newModel.NewPassword : null;
 
-                await
-                    ApiRequestManager
-                        .UpdateUserAsync(
-                            new UserSpecifics
-                            {
-                                Id = _newModel.Id,
-                                Username = _currentModel.Username != _newModel.Username ? _newModel.Username : null,
-                                IsActive = _currentModel.IsActive != _newModel.IsActive ? _newModel.IsActive : null,
-                                IsAdmin = _currentModel.IsAdmin != _newModel.IsAdmin ? _newModel.IsAdmin : null,
-                                NewPassword = _currentModel.NewPassword != _newModel.NewPassword ? _newModel.NewPassword : null
-                            },
-                            BaseCancellationToken
-                        );
+                var updateUserResponse =
+                    await
+                        ApiRequestManager
+                            .UpdateUserAsync(
+                                new UserSpecifics
+                                {
+                                    Id = _newModel.Id,
+                                    Username = _currentModel.Username != _newModel.Username ? _newModel.Username : null,
+                                    IsActive = _currentModel.IsActive != _newModel.IsActive ? _newModel.IsActive : null,
+                                    IsAdmin = _currentModel.IsAdmin != _newModel.IsAdmin ? _newModel.IsAdmin : null,
+                                    NewPassword = _currentModel.NewPassword != _newModel.NewPassword ? _newModel.NewPassword : null
+                                },
+                                BaseCancellationToken
+                            );
 
                 _currentModel = new UserSpecifics
                 {
@@ -254,6 +236,24 @@
                         "The user has been updated.",
                         Severity.Success
                     );
+
+                if (!string.IsNullOrEmpty(updateUserResponse?.QrCodeBase64))
+                {
+                    var dialog =
+                        await
+                            DialogService
+                                .ShowAsync<UserQuickAuthDialog>(
+                                    null,
+                                    new DialogParameters
+                                    {
+                                        { "UserQuickAuthBase64", updateUserResponse.QrCodeBase64 }
+                                    }
+                                );
+
+                    await
+                        dialog
+                            .Result;
+                }
 
                 if (revokingAdmin)
                 {

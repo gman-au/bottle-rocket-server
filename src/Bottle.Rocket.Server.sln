@@ -128,6 +128,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Google.Infrastructur
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Google.Injection", "Integrations\Google\Google\Rocket.Google.Injection\Rocket.Google.Injection.csproj", "{40B02FA1-353C-4D96-B7AB-38974E422AD8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.QrCode", "Rocket.Infrastructure.QrCode\Rocket.Infrastructure.QrCode.csproj", "{9307AC85-3DAA-4186-B423-338EBAEBA6A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -350,6 +352,10 @@ Global
 		{40B02FA1-353C-4D96-B7AB-38974E422AD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40B02FA1-353C-4D96-B7AB-38974E422AD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40B02FA1-353C-4D96-B7AB-38974E422AD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9307AC85-3DAA-4186-B423-338EBAEBA6A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9307AC85-3DAA-4186-B423-338EBAEBA6A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9307AC85-3DAA-4186-B423-338EBAEBA6A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9307AC85-3DAA-4186-B423-338EBAEBA6A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{42CB70A2-68E4-4EB7-8AAD-4E2F987D01BA} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
