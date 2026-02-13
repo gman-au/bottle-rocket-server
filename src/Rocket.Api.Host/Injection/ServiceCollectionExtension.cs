@@ -22,6 +22,7 @@ using Rocket.Infrastructure.Db.Mongo.Options;
 using Rocket.Infrastructure.Detection;
 using Rocket.Infrastructure.Hashing;
 using Rocket.Infrastructure.Mapping;
+using Rocket.Infrastructure.QrCode;
 using Rocket.Infrastructure.Thumbnails;
 using Rocket.Interfaces;
 using Rocket.Jobs.Service;
@@ -130,6 +131,8 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IExecutionScheduler, ExecutionScheduler>()
                 .AddTransient<ISymbolDetector, SymbolDetector>()
                 .AddTransient<IWorkflowDetector, WorkflowDetector>()
+                .AddTransient<IQrCodeGenerator, QrCodeGenerator>()
+                .AddTransient<IHostResolver, HostResolver>()
                 .AddTransient<IActiveAdminChecker, ActiveAdminChecker>()
                 .AddTransient<IConnectorScrubber, ConnectorScrubber>()
                 .AddTransient<IThumbnailer, Thumbnailer>()
