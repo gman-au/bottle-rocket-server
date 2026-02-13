@@ -83,8 +83,10 @@ namespace Rocket.Dropbox.Infrastructure
             string appKey,
             string appSecret,
             string refreshToken,
+            string uploadFolder,
             string fileExtension,
-            byte[] fileData, CancellationToken cancellationToken
+            byte[] fileData,
+            CancellationToken cancellationToken
         )
         {
             try
@@ -104,11 +106,19 @@ namespace Rocket.Dropbox.Infrastructure
 
                 using var stream = new MemoryStream(fileData);
 
+                var path =
+                    Path
+                        .Combine(
+                            "/",
+                            uploadFolder,
+                            $"{Guid.NewGuid()}{fileExtension}"
+                        );
+
                 await
                     dbx
                         .Files
                         .UploadAsync(
-                            new UploadArg(path: $"/{UploadSubfolder}/{Guid.NewGuid()}{fileExtension}"),
+                            new UploadArg(path: path),
                             stream
                         );
 

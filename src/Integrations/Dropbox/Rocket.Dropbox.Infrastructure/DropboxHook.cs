@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Dropbox.Domain;
@@ -23,6 +25,12 @@ namespace Rocket.Dropbox.Infrastructure
             var artifact =
                 context
                     .GetInputArtifact();
+            
+            if (step is not DropboxUploadExecutionStep dropboxUploadExecutionStep)
+                throw new RocketException(
+                    "Unexpected step format, please check configuration",
+                    ApiStatusCodeEnum.DeveloperError
+                );
 
             var connector =
                 await
@@ -39,6 +47,7 @@ namespace Rocket.Dropbox.Infrastructure
                         connector.AppKey,
                         connector.AppSecret,
                         connector.RefreshToken,
+                        dropboxUploadExecutionStep.Subfolder,
                         artifact.FileExtension,
                         artifact.Artifact,
                         cancellationToken

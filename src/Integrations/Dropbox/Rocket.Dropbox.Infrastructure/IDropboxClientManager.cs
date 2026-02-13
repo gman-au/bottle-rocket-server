@@ -17,6 +17,7 @@ namespace Rocket.Dropbox.Infrastructure
             string appKey,
             string appSecret,
             string refreshToken,
+            string uploadFolder,
             string fileExtension,
             byte[] fileData, 
             CancellationToken cancellationToken
