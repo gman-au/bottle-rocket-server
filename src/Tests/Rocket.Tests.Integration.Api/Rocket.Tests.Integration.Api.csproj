@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="coverlet.collector" Version="6.0.2"/>
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.11" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.11" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.11" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0"/>
+        <PackageReference Include="NUnit" Version="4.2.2"/>
+        <PackageReference Include="NUnit.Analyzers" Version="4.4.0"/>
+        <PackageReference Include="NUnit3TestAdapter" Version="4.6.0"/>
+        <PackageReference Include="Reqnroll.Microsoft.Extensions.DependencyInjection" Version="3.3.3" />
+        <PackageReference Include="Reqnroll.NUnit" Version="3.3.3" />
+        <PackageReference Include="Reqnroll.Tools.MsBuild.Generation" Version="3.3.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="NUnit.Framework"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Rocket.Tests.Infrastructure\Rocket.Tests.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>

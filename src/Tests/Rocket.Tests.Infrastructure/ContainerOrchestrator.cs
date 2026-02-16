@@ -1,0 +1,129 @@
+﻿using System.Threading.Tasks;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
+using DotNet.Testcontainers.Networks;
+using Testcontainers.MongoDb;
+
+namespace Rocket.Tests.Infrastructure
+{
+    public class ContainerOrchestrator : IContainerOrchestrator
+    {
+        private INetwork _network;
+        private IContainer _apiContainer;
+        private MongoDbContainer _dbContainer;
+
+        private const string DbUserName = "mongodbuser";
+        private const string DbPassword = "secretpassword";
+        private const string NetworkName = "integration-network";
+
+        public async Task<INetwork> ArrangeDockerNetwork()
+        {
+            _network =
+                new NetworkBuilder()
+                    .WithName(NetworkName)
+                    .Build();
+
+            await
+                _network
+                    .CreateAsync();
+
+            return
+                _network;
+        }
+
+        public async Task TeardownDockerNetwork()
+        {
+            if (_network != null)
+                await
+                    _network
+                        .DisposeAsync();
+        }
+
+        public async Task ArrangeDatabaseResetAsync()
+        {
+            await
+                TeardownDatabaseContainerAsync();
+
+            await
+                ArrangeDatabaseContainerAsync();
+        }
+
+        public async Task<MongoDbContainer> ArrangeDatabaseContainerAsync()
+        {
+            _dbContainer =
+                new MongoDbBuilder("mongo:latest")
+                    .WithUsername(DbUserName)
+                    .WithPassword(DbPassword)
+                    .WithName("bottle.rocket.mongodb")
+                    .WithHostname("bottle.rocket.mongodb")
+                    .WithNetworkAliases("bottle.rocket.mongodb")
+                    .WithNetwork(_network)
+                    .WithEnvironment(
+                        "ACCEPT_EULA",
+                        "Y"
+                    )
+                    .Build();
+
+            await
+                _dbContainer
+                    .StartAsync();
+
+            return
+                _dbContainer;
+        }
+
+        public async Task TeardownDatabaseContainerAsync()
+        {
+            if (_dbContainer != null)
+                await
+                    _dbContainer
+                        .DisposeAsync();
+        }
+
+        public async Task<IContainer> ArrangeApiContainerAsync()
+        {
+            _apiContainer =
+                new ContainerBuilder("ghcr.io/gman-au/bottle-rocket-server/bottle-rocket-server-api:latest")
+                    .WithName("bottle.rocket.api")
+                    .WithHostname("bottle.rocket.api")
+                    .WithNetworkAliases("bottle.rocket.api")
+                    .WithEnvironment(
+                        "ASPNETCORE_ENVIRONMENT",
+                        "Development"
+                    )
+                    .WithEnvironment(
+                        "ASPNETCORE_URLS",
+                        "http://+:8080"
+                    )
+                    .WithEnvironment(
+                        "MongoDbConfigurationOptions__ConnectionString",
+                        $"mongodb://{DbUserName}:{DbPassword}@bottle.rocket.mongodb:27017"
+                    )
+                    .WithEnvironment(
+                        "MongoDbConfigurationOptions__DatabaseName",
+                        $"BottleRocket"
+                    )
+                    .WithPortBinding(
+                        3001,
+                        8080
+                    )
+                    .WithNetwork(_network)
+                    .Build();
+
+            await
+                _apiContainer
+                    .StartAsync();
+
+            return
+                _apiContainer;
+        }
+
+        public async Task TeardownAppContainersAsync()
+        {
+            if (_apiContainer != null)
+                await
+                    _apiContainer
+                        .DisposeAsync();
+        }
+    }
+}
