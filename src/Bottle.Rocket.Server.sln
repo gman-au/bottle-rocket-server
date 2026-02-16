@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Domain", "Rocket.Dom
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Interfaces", "Rocket.Interfaces\Rocket.Interfaces.csproj", "{7D475DD1-9B19-4ABD-A1CE-BF2BD267A17C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Tests.Unit", "Rocket.Tests.Unit\Rocket.Tests.Unit.csproj", "{DA986CAB-AC2C-428E-BFA3-624FB29423EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Tests.Unit", "Tests\Rocket.Tests.Unit\Rocket.Tests.Unit.csproj", "{DA986CAB-AC2C-428E-BFA3-624FB29423EE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Api.Contracts", "Rocket.Api.Contracts\Rocket.Api.Contracts.csproj", "{859505EB-BD8A-4C8C-A7DB-FAE217D39B78}"
 EndProject
@@ -129,6 +129,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Google.Injection", "Integrations\Google\Google\Rocket.Google.Injection\Rocket.Google.Injection.csproj", "{40B02FA1-353C-4D96-B7AB-38974E422AD8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.QrCode", "Rocket.Infrastructure.QrCode\Rocket.Infrastructure.QrCode.csproj", "{9307AC85-3DAA-4186-B423-338EBAEBA6A9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{70E3DFE8-7D75-471D-86CD-40CBD465DA00}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -404,5 +406,6 @@ Global
 		{8E1DE1A3-D245-47E7-83EA-0EB05834398F} = {B1703A2F-61B8-4CF1-B81C-000F68AA481A}
 		{433C2EC0-2581-4478-832F-152BFFD57A03} = {B1703A2F-61B8-4CF1-B81C-000F68AA481A}
 		{40B02FA1-353C-4D96-B7AB-38974E422AD8} = {B1703A2F-61B8-4CF1-B81C-000F68AA481A}
+		{DA986CAB-AC2C-428E-BFA3-624FB29423EE} = {70E3DFE8-7D75-471D-86CD-40CBD465DA00}
 	EndGlobalSection
 EndGlobal
