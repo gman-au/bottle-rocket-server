@@ -58,9 +58,16 @@ namespace Rocket.Tests.Infrastructure
                     .WithHostname("bottle.rocket.mongodb")
                     .WithNetworkAliases("bottle.rocket.mongodb")
                     .WithNetwork(_network)
-                    .WithEnvironment(
-                        "ACCEPT_EULA",
-                        "Y"
+                    .WithPortBinding(
+                        27017,
+                        27017
+                    )
+                    .WithWaitStrategy(
+                        Wait
+                            .ForUnixContainer()
+                            .UntilCommandIsCompleted(
+                                "mongosh --eval 'db.runCommand({ ping: 1 }).ok' --quiet || exit 1"
+                            )
                     )
                     .Build();
 
@@ -108,6 +115,13 @@ namespace Rocket.Tests.Infrastructure
                         8080
                     )
                     .WithNetwork(_network)
+                    .WithWaitStrategy(
+                        Wait
+                            .ForUnixContainer()
+                            .UntilCommandIsCompleted(
+                                "curl -f http://localhost:8080/api/health | grep -q 'Status OK' || exit 1"
+                            )
+                    )
                     .Build();
 
             await

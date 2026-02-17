@@ -13,10 +13,6 @@ namespace Rocket.Tests.Integration.Api.Hooks
             await
                 context
                     .SetupEnvironmentContextAsync();
-
-            await
-                context
-                    .ResetDatabaseAsync();
         }
 
         [AfterTestRun]
