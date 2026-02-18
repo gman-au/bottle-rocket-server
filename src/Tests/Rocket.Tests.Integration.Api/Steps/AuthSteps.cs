@@ -6,20 +6,39 @@ using Achar.Infrastructure.Api.Extensions;
 using Achar.Infrastructure.Testing.Extensions;
 using Achar.Interfaces.Testing;
 using Reqnroll;
+using Rocket.Tests.Integration.Api.Engine;
 
 namespace Rocket.Tests.Integration.Api.Steps
 {
     [Binding]
-    public class AuthSteps(IApiInteractionEngine engine)
+    public class AuthSteps(
+        IApiInteractionEngine engine,
+        IApiExtendedInteractionEngine extendedEngine
+    )
     {
         private const string AdminUserName = "admin";
         private const string AdminPassword = "password123";
 
         private readonly Dictionary<string, Tuple<string, string>> _testUsers = new()
         {
-            { "Admin", new Tuple<string, string>(AdminUserName, AdminPassword) },
-            { "John", new Tuple<string, string>("john@test.com", "P@ssword!23") },
-            { "Paula", new Tuple<string, string>("paula@test.com", "P@ssword4%6") }
+            {
+                "Admin", new Tuple<string, string>(
+                    AdminUserName,
+                    AdminPassword
+                )
+            },
+            {
+                "John", new Tuple<string, string>(
+                    "john@test.com",
+                    "P@ssword!23"
+                )
+            },
+            {
+                "Paula", new Tuple<string, string>(
+                    "paula@test.com",
+                    "P@ssword4%6"
+                )
+            }
         };
 
         [Given("the request authorization is set to the admin user")]
@@ -41,8 +60,32 @@ namespace Rocket.Tests.Integration.Api.Steps
                 await
                     engine
                         .ActGetContext();
+            
+            await 
+                SetRequestAuthorizationHeadersAsync(userIdentifier, context);
+        }
 
-            if (!_testUsers.TryGetValue(userIdentifier, out var user))
+        [Given("the multipart request authorization is set to the user (.*)")]
+        public async Task GivenTheMultipartRequestAuthorizationIsSetToTheUser(string userIdentifier)
+        {
+            var context =
+                await
+                    extendedEngine
+                        .ActGetContext();
+            
+            await 
+                SetRequestAuthorizationHeadersAsync(userIdentifier, context);
+        }
+
+        private async Task SetRequestAuthorizationHeadersAsync(
+            string userIdentifier,
+            IApiInteractionEngine context
+        )
+        {
+            if (!_testUsers.TryGetValue(
+                    userIdentifier,
+                    out var user
+                ))
                 throw new Exception($"User {userIdentifier} not found in test case dictionary");
 
             await
@@ -55,24 +98,39 @@ namespace Rocket.Tests.Integration.Api.Steps
 
         [Given("the user (.*) has been added as an admin")]
         public async Task GivenTheUserHasBeenAddedAsAnAdmin(string userIdentifier) =>
-            await AddUserAsync(userIdentifier, true);
+            await AddUserAsync(
+                userIdentifier,
+                true
+            );
 
         [Given("the user (.*) has been added as an admin via user (.*)")]
         public async Task GivenTheUserHasBeenAddedAsAnAdminViaUser(string userIdentifier, string adminIdentifier) =>
-            await AddUserAsync(userIdentifier, true, adminIdentifier);
+            await AddUserAsync(
+                userIdentifier,
+                true,
+                adminIdentifier
+            );
 
         [Given("the user (.*) has been added as a non-admin")]
         public async Task GivenTheUserHasBeenAddedAsANonAdmin(string userIdentifier) =>
-            await AddUserAsync(userIdentifier, false);
+            await AddUserAsync(
+                userIdentifier,
+                false
+            );
 
         [Given("the user (.*) has been added as a non-admin via user (.*)")]
         public async Task GivenTheUserHasBeenAddedAsANonAdminViaUser(string userIdentifier, string adminIdentifier) =>
-            await AddUserAsync(userIdentifier, false, adminIdentifier);
+            await AddUserAsync(
+                userIdentifier,
+                false,
+                adminIdentifier
+            );
 
         private async Task AddUserAsync(
             string userIdentifier,
             bool isAdmin,
-            string adminIdentifier = null)
+            string adminIdentifier = null
+        )
         {
             var context =
                 await
@@ -81,7 +139,10 @@ namespace Rocket.Tests.Integration.Api.Steps
 
             adminIdentifier = adminIdentifier ?? "Admin";
 
-            if (!_testUsers.TryGetValue(adminIdentifier, out var adminUser))
+            if (!_testUsers.TryGetValue(
+                    adminIdentifier,
+                    out var adminUser
+                ))
                 throw new Exception($"User {adminIdentifier} not found in test case dictionary");
 
             await
@@ -95,20 +156,32 @@ namespace Rocket.Tests.Integration.Api.Steps
                     adminUser.Item2
                 );
 
-            if (!_testUsers.TryGetValue(userIdentifier, out var user))
+            if (!_testUsers.TryGetValue(
+                    userIdentifier,
+                    out var user
+                ))
                 throw new Exception($"User {userIdentifier} not found in test case dictionary");
 
             await
                 context
-                    .SetRequestBodyValueAsync("user_name", user.Item1);
+                    .SetRequestBodyValueAsync(
+                        "user_name",
+                        user.Item1
+                    );
 
             await
                 context
-                    .SetRequestBodyValueAsync("password", user.Item2);
+                    .SetRequestBodyValueAsync(
+                        "password",
+                        user.Item2
+                    );
 
             await
                 context
-                    .SetRequestBodyValueAsync("is_the_new_admin", isAdmin);
+                    .SetRequestBodyValueAsync(
+                        "is_the_new_admin",
+                        isAdmin
+                    );
 
             await
                 context
@@ -140,7 +213,10 @@ namespace Rocket.Tests.Integration.Api.Steps
             await
                 engine
                     .ActGetContext()
-                    .ActSetRequestHeaderValueAsync("Authorization", $"Basic {basicAuth}");
+                    .ActSetRequestHeaderValueAsync(
+                        "Authorization",
+                        $"Basic {basicAuth}"
+                    );
         }
     }
 }

@@ -5,10 +5,10 @@ namespace Rocket.Tests.Integration.Api.Engine
 {
     public interface IApiExtendedInteractionEngine : IApiInteractionEngine
     {
+        void SetImageBase64(string imageBase64);
+        
         Task SendMultiPartRequestAsync(
             string method,
-            string endpoint,
-            byte[] bytes,
             string contentType,
             string fileName
         );

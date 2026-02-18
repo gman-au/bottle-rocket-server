@@ -12,9 +12,12 @@ namespace Rocket.Tests.Infrastructure
         private IContainer _apiContainer;
         private MongoDbContainer _dbContainer;
 
-        private const string DbUserName = "mongodbuser";
+        private const string DbUserName = "mongouser";
         private const string DbPassword = "secretpassword";
         private const string NetworkName = "integration-network";
+
+        private const string MongoImageTag = "mongo:latest";
+        private const string ApiImageTag = "intermediate-bottle-rocket-api:latest";
 
         public async Task<INetwork> ArrangeDockerNetwork()
         {

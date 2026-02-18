@@ -120,7 +120,7 @@ namespace Rocket.Tests.Integration.Api.Features
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/Scans.feature.ndjson", 4);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/Scans.feature.ndjson", 5);
         }
         
         [global::NUnit.Framework.TestAttribute()]
@@ -162,16 +162,18 @@ namespace Rocket.Tests.Integration.Api.Features
         }
         
         [global::NUnit.Framework.TestAttribute()]
-        [global::NUnit.Framework.DescriptionAttribute("Send new capture")]
-        public async global::System.Threading.Tasks.Task SendNewCapture()
+        [global::NUnit.Framework.DescriptionAttribute("Send new capture (no attachment data)")]
+        [global::NUnit.Framework.CategoryAttribute("INVALID")]
+        public async global::System.Threading.Tasks.Task SendNewCaptureNoAttachmentData()
         {
-            string[] tagsOfScenario = ((string[])(null));
+            string[] tagsOfScenario = new string[] {
+                    "INVALID"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "1";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Send new capture", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Send new capture (no attachment data)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 15
+#line 16
     this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -184,8 +186,66 @@ namespace Rocket.Tests.Integration.Api.Features
 #line 5
     await this.FeatureBackgroundAsync();
 #line hidden
-#line 16
-        await testRunner.GivenAsync("the extended method is called against endpoint \"/api/capture/process\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line 17
+        await testRunner.GivenAsync("an API multipart request is created against endpoint \"/api/capture/process\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 18
+        await testRunner.AndAsync("the multipart file data is set to base64 string \"\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 19
+        await testRunner.AndAsync("the multipart request authorization is set to the user John", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 20
+        await testRunner.WhenAsync("the multipart request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 21
+        await testRunner.ThenAsync("the multipart request should have failed with status code 500", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 22
+        await testRunner.AndAsync("the multipart response with path \"error_code\" should have a value of \"1001\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::NUnit.Framework.TestAttribute()]
+        [global::NUnit.Framework.DescriptionAttribute("Send new capture (include attachment data)")]
+        public async global::System.Threading.Tasks.Task SendNewCaptureIncludeAttachmentData()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "2";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Send new capture (include attachment data)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 24
+    this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 5
+    await this.FeatureBackgroundAsync();
+#line hidden
+#line 25
+        await testRunner.GivenAsync("an API multipart request is created against endpoint \"/api/capture/process\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 26
+        await testRunner.AndAsync("the multipart file data is set to base64 string \"iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB" +
+                        "CAYAAAAfFcSJAAAACklEQVR42mMAAQAABQABoIJXOQAAAABJRU5ErkJggg==\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 27
+        await testRunner.AndAsync("the multipart request authorization is set to the user John", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 28
+        await testRunner.WhenAsync("the multipart request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 29
+        await testRunner.ThenAsync("the multipart request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
