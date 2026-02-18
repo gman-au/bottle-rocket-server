@@ -51,7 +51,7 @@ namespace Rocket.Tests.Infrastructure
         public async Task<MongoDbContainer> ArrangeDatabaseContainerAsync()
         {
             _dbContainer =
-                new MongoDbBuilder("mongo:latest")
+                new MongoDbBuilder(MongoImageTag)
                     .WithUsername(DbUserName)
                     .WithPassword(DbPassword)
                     .WithName("bottle.rocket.mongodb")
@@ -90,7 +90,7 @@ namespace Rocket.Tests.Infrastructure
         public async Task<IContainer> ArrangeApiContainerAsync()
         {
             _apiContainer =
-                new ContainerBuilder("ghcr.io/gman-au/bottle-rocket-server/bottle-rocket-server-api:latest")
+                new ContainerBuilder(ApiImageTag)
                     .WithName("bottle.rocket.api")
                     .WithHostname("bottle.rocket.api")
                     .WithNetworkAliases("bottle.rocket.api")

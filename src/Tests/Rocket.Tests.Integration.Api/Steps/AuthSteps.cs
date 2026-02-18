@@ -54,19 +54,46 @@ namespace Rocket.Tests.Integration.Api.Steps
         }
 
         [Given("the user (.*) has been added as an admin")]
-        public async Task GivenTheUserHasBeenAddedAsAnAdmin(string userIdentifier)
+        public async Task GivenTheUserHasBeenAddedAsAnAdmin(string userIdentifier) =>
+            await AddUserAsync(userIdentifier, true);
+
+        [Given("the user (.*) has been added as an admin via user (.*)")]
+        public async Task GivenTheUserHasBeenAddedAsAnAdminViaUser(string userIdentifier, string adminIdentifier) =>
+            await AddUserAsync(userIdentifier, true, adminIdentifier);
+
+        [Given("the user (.*) has been added as a non-admin")]
+        public async Task GivenTheUserHasBeenAddedAsANonAdmin(string userIdentifier) =>
+            await AddUserAsync(userIdentifier, false);
+
+        [Given("the user (.*) has been added as a non-admin via user (.*)")]
+        public async Task GivenTheUserHasBeenAddedAsANonAdminViaUser(string userIdentifier, string adminIdentifier) =>
+            await AddUserAsync(userIdentifier, false, adminIdentifier);
+
+        private async Task AddUserAsync(
+            string userIdentifier,
+            bool isAdmin,
+            string adminIdentifier = null)
         {
             var context =
                 await
                     engine
                         .ActGetContext();
 
+            adminIdentifier = adminIdentifier ?? "Admin";
+
+            if (!_testUsers.TryGetValue(adminIdentifier, out var adminUser))
+                throw new Exception($"User {adminIdentifier} not found in test case dictionary");
+
             await
                 context
                     .CreateRequestAsync("/api/users/create");
 
             await
-                SetRequestAuthorizationToAdminUserAsync(context);
+                SetRequestAuthorizationToAdminUserAsync(
+                    context,
+                    adminUser.Item1,
+                    adminUser.Item2
+                );
 
             if (!_testUsers.TryGetValue(userIdentifier, out var user))
                 throw new Exception($"User {userIdentifier} not found in test case dictionary");
@@ -81,7 +108,7 @@ namespace Rocket.Tests.Integration.Api.Steps
 
             await
                 context
-                    .SetRequestBodyValueAsync("is_the_new_admin", true);
+                    .SetRequestBodyValueAsync("is_the_new_admin", isAdmin);
 
             await
                 context

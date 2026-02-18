@@ -1,10 +1,13 @@
 ﻿using System.IO;
+using Achar.Infrastructure.Api.HttpClient;
 using Achar.Infrastructure.Api.HttpClient.Options;
+using Achar.Interfaces.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Reqnroll.Microsoft.Extensions.DependencyInjection;
 using Rocket.Tests.Infrastructure;
 using Rocket.Tests.Infrastructure.Contexts;
+using Rocket.Tests.Integration.Api.Engine;
 
 namespace Rocket.Tests.Integration.Api.Injection
 {
@@ -26,6 +29,9 @@ namespace Rocket.Tests.Integration.Api.Injection
 
             services
                 .AddSingleton<IServiceContext, TestContainerServiceContext>();
+
+            services
+                .AddSingleton<IApiExtendedInteractionEngine, ApiExtendedHttpClientInteractionEngine>();
 
             return services;
         }
