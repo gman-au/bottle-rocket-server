@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Achar.Infrastructure.Api.Extensions;
@@ -14,8 +15,12 @@ namespace Rocket.Tests.Integration.Api.Steps
         private const string AdminUserName = "admin";
         private const string AdminPassword = "password123";
 
-        private const string TestUserName = "user@test.com";
-        private const string TestPassword = "P@ssword!23";
+        private readonly Dictionary<string, Tuple<string, string>> _testUsers = new()
+        {
+            { "Admin", new Tuple<string, string>(AdminUserName, AdminPassword) },
+            { "John", new Tuple<string, string>("john@test.com", "P@ssword!23") },
+            { "Paula", new Tuple<string, string>("paula@test.com", "P@ssword4%6") }
+        };
 
         [Given("the request authorization is set to the admin user")]
         public async Task GivenTheRequestAuthorizationIsSetToTheAdminUser()
@@ -29,24 +34,27 @@ namespace Rocket.Tests.Integration.Api.Steps
                 SetRequestAuthorizationToAdminUserAsync(context);
         }
 
-        [Given("the request authorization is set to the test user")]
-        public async Task GivenTheRequestAuthorizationIsSetToTheTestUser()
+        [Given("the request authorization is set to the user (.*)")]
+        public async Task GivenTheRequestAuthorizationIsSetToTheUser(string userIdentifier)
         {
             var context =
                 await
                     engine
                         .ActGetContext();
 
+            if (!_testUsers.TryGetValue(userIdentifier, out var user))
+                throw new Exception($"User {userIdentifier} not found in test case dictionary");
+
             await
                 SetRequestAuthorizationToAdminUserAsync(
                     context,
-                    TestUserName,
-                    TestPassword
+                    user.Item1,
+                    user.Item2
                 );
         }
 
-        [Given("the test user has been added as an admin")]
-        public async Task GivenTheTestUserHasBeenAddedAsAnAdmin()
+        [Given("the user (.*) has been added as an admin")]
+        public async Task GivenTheUserHasBeenAddedAsAnAdmin(string userIdentifier)
         {
             var context =
                 await
@@ -60,13 +68,16 @@ namespace Rocket.Tests.Integration.Api.Steps
             await
                 SetRequestAuthorizationToAdminUserAsync(context);
 
-            await
-                context
-                    .SetRequestBodyValueAsync("user_name", TestUserName);
+            if (!_testUsers.TryGetValue(userIdentifier, out var user))
+                throw new Exception($"User {userIdentifier} not found in test case dictionary");
 
             await
                 context
-                    .SetRequestBodyValueAsync("password", TestPassword);
+                    .SetRequestBodyValueAsync("user_name", user.Item1);
+
+            await
+                context
+                    .SetRequestBodyValueAsync("password", user.Item2);
 
             await
                 context

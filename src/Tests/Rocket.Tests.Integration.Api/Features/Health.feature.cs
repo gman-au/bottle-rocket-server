@@ -243,7 +243,7 @@ namespace Rocket.Tests.Integration.Api.Features
             {
                 await this.ScenarioStartAsync();
 #line 26
-        await testRunner.GivenAsync("the test user has been added as an admin", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+        await testRunner.GivenAsync("the user John has been added as an admin", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 27
         await testRunner.AndAsync("an API request is created against endpoint \"/api/startup/phase\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
