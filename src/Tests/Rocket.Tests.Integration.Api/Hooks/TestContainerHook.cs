@@ -7,7 +7,7 @@ namespace Rocket.Tests.Integration.Api.Hooks
     [Binding]
     public class TestContainerHook
     {
-        [BeforeTestRun]
+        [BeforeScenario]
         public static async Task SetupTestEnvironment(IServiceContext context)
         {
             await
@@ -15,7 +15,7 @@ namespace Rocket.Tests.Integration.Api.Hooks
                     .SetupEnvironmentContextAsync();
         }
 
-        [AfterTestRun]
+        [AfterScenario]
         public static async Task TeardownTestEnvironment(IServiceContext context)
         {
             await
