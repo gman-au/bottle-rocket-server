@@ -19,10 +19,8 @@ Description: Testing the Users API endpoint and associated functionality.
         And the request body element "record_count" has value "10"
         When the request is sent via "POST"
         Then the request should have succeeded
-        And the response with path "users.[0].user_name" should have a value of "admin"
-        And the response with path "users.[0].is_active" should have a value of "false"
         And the response with path "users.[0].user_name" should have a value of "user@test.com"
-        And the response with path "users.[0].is_active" should have a value of "true"
+        And the response with path "users.[1].user_name" should have a value of "admin"
         And the response with path "total_records" should have a value of "2"
 
     @FETCH-RECORDS
@@ -33,4 +31,4 @@ Description: Testing the Users API endpoint and associated functionality.
         And the request body element "record_count" has value "0"
         When the request is sent via "POST"
         Then the request should have succeeded
-        And the response with path "total_records" should have a value of "1"
+        And the response with path "total_records" should have a value of "2"

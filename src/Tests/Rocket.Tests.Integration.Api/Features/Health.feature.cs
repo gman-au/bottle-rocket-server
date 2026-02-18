@@ -18,10 +18,10 @@ namespace Rocket.Tests.Integration.Api.Features
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Reqnroll", "3.0.0.0")]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::NUnit.Framework.TestFixtureAttribute()]
-    [global::NUnit.Framework.DescriptionAttribute("Users")]
+    [global::NUnit.Framework.DescriptionAttribute("Health")]
     [global::NUnit.Framework.FixtureLifeCycleAttribute(global::NUnit.Framework.LifeCycle.InstancePerTestCase)]
     [global::NUnit.Framework.CategoryAttribute("DEVICE:API")]
-    public partial class UsersFeature
+    public partial class HealthFeature
     {
         
         private global::Reqnroll.ITestRunner testRunner;
@@ -29,9 +29,9 @@ namespace Rocket.Tests.Integration.Api.Features
         private static string[] featureTags = new string[] {
                 "DEVICE:API"};
         
-        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "Users", "Description: Testing the Users API endpoint and associated functionality.", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "Health", "Description: Testing basic API connectivity endpoints.", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
         
-#line 1 "Users.feature"
+#line 1 "Health.feature"
 #line hidden
         
         [global::NUnit.Framework.OneTimeSetUpAttribute()]
@@ -105,33 +105,24 @@ namespace Rocket.Tests.Integration.Api.Features
             await testRunner.CollectScenarioErrorsAsync();
         }
         
-        public virtual async global::System.Threading.Tasks.Task FeatureBackgroundAsync()
-        {
-#line 5
-    #line hidden
-#line 6
-        await testRunner.GivenAsync("the test user has been added as an admin", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
-#line hidden
-        }
-        
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/Users.feature.ndjson", 5);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/Health.feature.ndjson", 6);
         }
         
         [global::NUnit.Framework.TestAttribute()]
-        [global::NUnit.Framework.DescriptionAttribute("Fetch users (unauthorized)")]
-        [global::NUnit.Framework.CategoryAttribute("UNAUTHORIZED")]
-        public async global::System.Threading.Tasks.Task FetchUsersUnauthorized()
+        [global::NUnit.Framework.DescriptionAttribute("Health check endpoint (get)")]
+        [global::NUnit.Framework.CategoryAttribute("HEALTH-CHECK")]
+        public async global::System.Threading.Tasks.Task HealthCheckEndpointGet()
         {
             string[] tagsOfScenario = new string[] {
-                    "UNAUTHORIZED"};
+                    "HEALTH-CHECK"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "0";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Fetch users (unauthorized)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Health check endpoint (get)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 9
+#line 6
     this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -141,35 +132,34 @@ namespace Rocket.Tests.Integration.Api.Features
             else
             {
                 await this.ScenarioStartAsync();
-#line 5
-    await this.FeatureBackgroundAsync();
+#line 7
+        await testRunner.GivenAsync("an API request is created against endpoint \"/api/health\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 10
-        await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line 8
+        await testRunner.WhenAsync("the request is sent via \"GET\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 11
-        await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
-#line hidden
-#line 12
-        await testRunner.ThenAsync("the request should have failed with status code 401", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line 9
+        await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
         }
         
         [global::NUnit.Framework.TestAttribute()]
-        [global::NUnit.Framework.DescriptionAttribute("Fetch users (as admin), first 10 records")]
-        [global::NUnit.Framework.CategoryAttribute("FETCH-RECORDS")]
-        public async global::System.Threading.Tasks.Task FetchUsersAsAdminFirst10Records()
+        [global::NUnit.Framework.DescriptionAttribute("Health check endpoint (post)")]
+        [global::NUnit.Framework.CategoryAttribute("HEALTH-CHECK")]
+        [global::NUnit.Framework.CategoryAttribute("INVALID")]
+        public async global::System.Threading.Tasks.Task HealthCheckEndpointPost()
         {
             string[] tagsOfScenario = new string[] {
-                    "FETCH-RECORDS"};
+                    "HEALTH-CHECK",
+                    "INVALID"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "1";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Fetch users (as admin), first 10 records", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Health check endpoint (post)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 15
+#line 12
     this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -179,54 +169,70 @@ namespace Rocket.Tests.Integration.Api.Features
             else
             {
                 await this.ScenarioStartAsync();
-#line 5
-    await this.FeatureBackgroundAsync();
+#line 13
+        await testRunner.GivenAsync("an API request is created against endpoint \"/api/health\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 16
-        await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line 14
+        await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 17
-        await testRunner.AndAsync("the request authorization is set to the test user", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line 15
+        await testRunner.ThenAsync("the request should have failed with status code 405", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::NUnit.Framework.TestAttribute()]
+        [global::NUnit.Framework.DescriptionAttribute("Startup phase (get) before admin creation")]
+        [global::NUnit.Framework.CategoryAttribute("HEALTH-CHECK")]
+        public async global::System.Threading.Tasks.Task StartupPhaseGetBeforeAdminCreation()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "HEALTH-CHECK"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "2";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Startup phase (get) before admin creation", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
 #line 18
-        await testRunner.AndAsync("the request body element \"start_index\" has value \"0\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
 #line 19
-        await testRunner.AndAsync("the request body element \"record_count\" has value \"10\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+        await testRunner.GivenAsync("an API request is created against endpoint \"/api/startup/phase\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 20
-        await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+        await testRunner.WhenAsync("the request is sent via \"GET\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 21
         await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 22
-        await testRunner.AndAsync("the response with path \"users.[0].user_name\" should have a value of \"user@test.co" +
-                        "m\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 23
-        await testRunner.AndAsync("the response with path \"users.[1].user_name\" should have a value of \"admin\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 24
-        await testRunner.AndAsync("the response with path \"total_records\" should have a value of \"2\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+        await testRunner.AndAsync("the response with path \"phase\" should have a value of \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
         }
         
         [global::NUnit.Framework.TestAttribute()]
-        [global::NUnit.Framework.DescriptionAttribute("Fetch users (as admin), first 0 records")]
-        [global::NUnit.Framework.CategoryAttribute("FETCH-RECORDS")]
-        public async global::System.Threading.Tasks.Task FetchUsersAsAdminFirst0Records()
+        [global::NUnit.Framework.DescriptionAttribute("Startup phase (get) after admin creation")]
+        [global::NUnit.Framework.CategoryAttribute("HEALTH-CHECK")]
+        public async global::System.Threading.Tasks.Task StartupPhaseGetAfterAdminCreation()
         {
             string[] tagsOfScenario = new string[] {
-                    "FETCH-RECORDS"};
+                    "HEALTH-CHECK"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
-            string pickleIndex = "2";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Fetch users (as admin), first 0 records", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string pickleIndex = "3";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Startup phase (get) after admin creation", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 27
+#line 25
     this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -236,29 +242,20 @@ namespace Rocket.Tests.Integration.Api.Features
             else
             {
                 await this.ScenarioStartAsync();
-#line 5
-    await this.FeatureBackgroundAsync();
+#line 26
+        await testRunner.GivenAsync("the test user has been added as an admin", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 27
+        await testRunner.AndAsync("an API request is created against endpoint \"/api/startup/phase\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 28
-        await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+        await testRunner.WhenAsync("the request is sent via \"GET\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 29
-        await testRunner.AndAsync("the request authorization is set to the test user", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 30
-        await testRunner.AndAsync("the request body element \"start_index\" has value \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 31
-        await testRunner.AndAsync("the request body element \"record_count\" has value \"0\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 32
-        await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
-#line hidden
-#line 33
         await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 34
-        await testRunner.AndAsync("the response with path \"total_records\" should have a value of \"2\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line 30
+        await testRunner.AndAsync("the response with path \"phase\" should have a value of \"2\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
