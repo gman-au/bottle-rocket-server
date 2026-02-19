@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
@@ -14,10 +15,11 @@ namespace Rocket.Tests.Infrastructure
 
         private const string DbUserName = "mongouser";
         private const string DbPassword = "secretpassword";
-        private const string NetworkName = "integration-network";
+        
+        private static readonly string NetworkName = $"integration-network-{Guid.NewGuid()}";
 
         private const string MongoImageTag = "mongo:latest";
-        private const string ApiImageTag = "intermediate-bottle-rocket-api:latest";
+        private const string ApiImageTag = "ghcr.io/gman-au/bottle-rocket-server/bottle-rocket-server-api:smoke";
 
         public async Task<INetwork> ArrangeDockerNetwork()
         {
