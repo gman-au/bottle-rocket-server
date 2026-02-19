@@ -15,7 +15,7 @@ namespace Rocket.Tests.Infrastructure
 
         private const string DbUserName = "mongouser";
         private const string DbPassword = "secretpassword";
-        
+
         private static readonly string NetworkName = $"integration-network-{Guid.NewGuid()}";
 
         private const string MongoImageTag = "mongo:latest";
@@ -115,10 +115,19 @@ namespace Rocket.Tests.Infrastructure
                         "MongoDbConfigurationOptions__DatabaseName",
                         $"BottleRocket"
                     )
+                    .WithEnvironment(
+                        "LocalBlobConfigurationOptions__LocalBasePath",
+                        "/bottle-rocket"
+                    )
+                    .WithEnvironment(
+                        "LocalBlobConfigurationOptions__LocalSubfolder",
+                        "/scans"
+                    )
                     .WithPortBinding(
                         3001,
                         8080
                     )
+                    .WithVolumeMount("api-scans", "/bottle-rocket/scans")
                     .WithNetwork(_network)
                     .WithWaitStrategy(
                         Wait
