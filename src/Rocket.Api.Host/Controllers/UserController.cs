@@ -70,14 +70,13 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Users =
                         records
-                            .Select(
-                                o =>
-                                    new UserSummary
-                                    {
-                                        Id = o.Username == DomainConstants.RootAdminUserName ? null : o.Id,
-                                        Username = o.Username,
-                                        CreatedAt = o.CreatedAt.ToLocalTime(),
-                                    }
+                            .Select(o =>
+                                new UserSummary
+                                {
+                                    Id = o.Username == DomainConstants.RootAdminUserName ? null : o.Id,
+                                    Username = o.Username,
+                                    CreatedAt = o.CreatedAt.ToLocalTime(),
+                                }
                             ),
                     TotalRecords = (int)totalRecordCount
                 };
@@ -190,6 +189,11 @@ namespace Rocket.Api.Host.Controllers
                     request.Username
                 );
 
+            var startupPhase =
+                await
+                    startupInitialization
+                        .GetStartupPhaseAsync(cancellationToken);
+
             var currentUser =
                 await
                     ThrowIfNotAdminAsync(cancellationToken);
@@ -202,6 +206,17 @@ namespace Rocket.Api.Host.Controllers
             var currentUsername =
                 currentUser
                     .Username;
+
+            var isRootAdminUser = currentUsername == DomainConstants.RootAdminUserName;
+
+            // Explicitly creating the first non-root user as non-admin should be a specially caught scenario
+            if (isRootAdminUser && startupPhase == StartupPhaseEnum.AdminPendingDeactivation && !request.IsTheNewAdmin)
+            {
+                throw new RocketException(
+                    "There must be at least one active admin user in the system.",
+                    ApiStatusCodeEnum.PotentiallyIrrecoverableOperation
+                );
+            }
 
             var newUserIsAdmin =
                 currentUsername == DomainConstants.RootAdminUserName ||
@@ -223,7 +238,7 @@ namespace Rocket.Api.Host.Controllers
                     "There was an error writing the user record",
                     ApiStatusCodeEnum.ServerError
                 );
-            
+
             var qrCode = string.Empty;
 
             if (!string.IsNullOrEmpty(request.Password))
@@ -260,13 +275,8 @@ namespace Rocket.Api.Host.Controllers
                 }
             }
 
-            if (currentUsername == DomainConstants.RootAdminUserName)
+            if (isRootAdminUser)
             {
-                var startupPhase =
-                    await
-                        startupInitialization
-                            .GetStartupPhaseAsync(cancellationToken);
-
                 if (startupPhase == StartupPhaseEnum.AdminPendingDeactivation)
                 {
                     logger

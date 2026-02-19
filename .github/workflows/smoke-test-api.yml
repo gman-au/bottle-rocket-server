@@ -1,0 +1,53 @@
+name: smoke test API
+
+on:
+  workflow_call:
+  
+env:
+  REGISTRY: ghcr.io/gman-au/bottle-rocket-server
+  IMAGE_NAME: bottle-rocket-server-api:smoke
+  
+jobs:
+  build-and-run-smoke-test-image:
+    runs-on: ubuntu-latest    
+    env:
+      SOLUTION_PATH: ./src
+      TESTCONTAINERS_RYUK_DISABLED: "true"
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+      checks: write
+  
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4      
+                 
+      - name: Build image
+        run: docker build --file ./src/Rocket.Api.Host/Dockerfile --tag built-image ./src
+
+      - name: Tag image
+        run: docker tag built-image $REGISTRY/$IMAGE_NAME
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 9.0.x         
+      
+      - name: Restore dependencies
+        run: dotnet restore $SOLUTION_PATH
+      
+      - name: Test
+        run: dotnet test $SOLUTION_PATH --no-restore --verbosity normal --tl:off --logger "console;verbosity=normal" --logger "trx;LogFileName=test-results.trx" --results-directory ./test-results
+        continue-on-error: true
+
+      - name: Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Smoke Tests
+          path: ./test-results/*.trx
+          reporter: dotnet-trx
+          fail-on-error: true
+          token: ${{ secrets.GITHUB_TOKEN }} 

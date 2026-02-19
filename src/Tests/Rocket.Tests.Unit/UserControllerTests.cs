@@ -70,11 +70,8 @@ namespace Rocket.Tests.Unit
             _context.ArrangeStartupPhaseAdminPendingDeactivation();
             _context.ArrangeLoggedInRootAdminUser();
             _context.ArrangeValidCreateUserAsNotNewAdminRequest();
-            await _context.ActCreateUserAsync();
-            _context.AssertOkResult();
-            _context.AssertCreateAccountIsAdminWasCalledWithTrue();
-            _context.AssertDeactivationAdminWasCalled();
-            _context.AssertUpdateAccountIsAdminWasNotCalled();
+            await _context.ActCreateUserAsyncWithExceptionsAsync();
+            _context.AssertExceptionCode(ApiStatusCodeEnum.PotentiallyIrrecoverableOperation);
         }
 
         [Fact]
@@ -333,6 +330,12 @@ namespace Rocket.Tests.Unit
                     await
                         Assert
                             .ThrowsAsync<RocketException>(ActUpdateUserAsync);
+
+            public async Task ActCreateUserAsyncWithExceptionsAsync() =>
+                _exception =
+                    await
+                        Assert
+                            .ThrowsAsync<RocketException>(ActCreateUserAsync);
 
             public void AssertOkResult()
             {

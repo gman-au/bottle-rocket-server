@@ -110,7 +110,7 @@ namespace Rocket.Tests.Unit
             {
                 _mockHttpResponseMessageContent = """
                                                   { 
-                                                  "error_code": "2005", 
+                                                  "error_code": 2005, 
                                                   "error_message": "file data corrupted"
                                                   }
                                                   """;
@@ -122,7 +122,7 @@ namespace Rocket.Tests.Unit
                 _mockHttpResponseMessageContent = """
                                                   { 
                                                   "id": "abcdef",
-                                                  "error_code": "0", 
+                                                  "error_code": 0, 
                                                   "error_message": "no error",
                                                   "capture_date": "1909-01-01T00:00:00Z",
                                                   "blob_id": "923874ab3",
