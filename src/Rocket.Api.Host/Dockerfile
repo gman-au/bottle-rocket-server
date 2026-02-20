@@ -6,12 +6,14 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS publish
 
+ARG VERSION=0.0.0
+
 COPY . /dotnet-app
 RUN cd /dotnet-app && echo $(ls -1)
 RUN \
     cd /dotnet-app && \
     dotnet restore "./Rocket.Api.Host/Rocket.Api.Host.csproj" && \
-    dotnet publish "./Rocket.Api.Host/Rocket.Api.Host.csproj" --ignore-failed-sources --no-restore -c Release -o /app/publish /p:UseAppHost=false
+    dotnet publish "./Rocket.Api.Host/Rocket.Api.Host.csproj" --ignore-failed-sources --no-restore -c Release -o /app/publish /p:UseAppHost=false /p:AssemblyVersion=$VERSION
     
 FROM base AS final
 WORKDIR /app

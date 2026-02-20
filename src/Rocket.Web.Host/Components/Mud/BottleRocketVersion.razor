@@ -1,13 +1,37 @@
-﻿<MudText
+﻿@using System.Threading
+@using Rocket.Web.Client
+@inject IApiRequestManager ApiRequestManager
+
+<MudText
     Class="version-number"
     Align="Align.Center"
     Typo="Typo.subtitle2">
-    @_currentVersion
+    @_webVersion
 </MudText>
+<MudText
+    Class="version-number"
+    Align="Align.Center"
+    Typo="Typo.subtitle2">
+    @_apiVersion
+</MudText>
+
 
 @code {
 
-    private readonly string _currentVersion =
-        $"{Environment.GetEnvironmentVariable("RELEASE_VERSION")}:{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}";
+    private string _apiVersion = null;
+    private string _webVersion = null;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var versionResponse =
+            await
+                ApiRequestManager
+                    .GetSystemVersionsAsync(CancellationToken.None);
 
+        if (versionResponse != null)
+        {
+            _webVersion = $"web:{versionResponse.WebVersion}";
+            _apiVersion = $"api:{versionResponse.ApiVersion}";
+        }
+    }
 }

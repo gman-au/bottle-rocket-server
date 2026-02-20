@@ -167,5 +167,9 @@ namespace Rocket.Web.Client
             GoogleAuthFinalizeRequest request,
             CancellationToken cancellationToken
         );
+
+        public Task<VersionResponse> GetSystemVersionsAsync(
+            CancellationToken cancellationToken
+        );
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -38,6 +39,40 @@ namespace Rocket.Web.Client
                             logger,
                             cancellationToken
                         );
+
+            return result;
+        }
+
+        public async Task<VersionResponse> GetSystemVersionsAsync(CancellationToken cancellationToken)
+        {
+            logger
+                .LogInformation("Checking system versions");
+            
+            var webVersion =
+                Assembly
+                    .GetExecutingAssembly()
+                    .GetName()
+                    .Version
+                    ?.ToString()
+                ?? "dev";
+            
+            var response =
+                await
+                    authenticatedApiClient
+                        .GetAsync(
+                            "/api/version",
+                            cancellationToken
+                        );
+            
+            var result =
+                await
+                    response
+                        .TryParseResponse<VersionResponse>(
+                            logger,
+                            cancellationToken
+                        );
+            
+            result.WebVersion = webVersion;
 
             return result;
         }
