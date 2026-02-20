@@ -1,5 +1,5 @@
-﻿using System.Net.Http;
-using System.Reflection;
+﻿using System;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -47,15 +47,11 @@ namespace Rocket.Web.Client
         {
             logger
                 .LogInformation("Checking system versions");
-            
+
             var webVersion =
-                Assembly
-                    .GetExecutingAssembly()
-                    .GetName()
-                    .Version
-                    ?.ToString()
-                ?? "dev";
-            
+                Environment.GetEnvironmentVariable("APP_VERSION")
+                ?? "unknown";
+
             var response =
                 await
                     authenticatedApiClient
@@ -63,7 +59,7 @@ namespace Rocket.Web.Client
                             "/api/version",
                             cancellationToken
                         );
-            
+
             var result =
                 await
                     response
@@ -71,7 +67,7 @@ namespace Rocket.Web.Client
                             logger,
                             cancellationToken
                         );
-            
+
             result.WebVersion = webVersion;
 
             return result;

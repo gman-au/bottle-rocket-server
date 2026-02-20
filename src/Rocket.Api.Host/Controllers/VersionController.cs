@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -26,12 +26,8 @@ namespace Rocket.Api.Host.Controllers
                 .LogInformation("Received version request");
 
             var apiVersion =
-                Assembly
-                    .GetExecutingAssembly()
-                    .GetName()
-                    .Version
-                    ?.ToString()
-                ?? "dev";
+                Environment.GetEnvironmentVariable("APP_VERSION")
+                ?? "unknown";
 
             var response = new VersionResponse
             {
