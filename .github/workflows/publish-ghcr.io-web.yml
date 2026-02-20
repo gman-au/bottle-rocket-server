@@ -28,7 +28,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Build image
-        run: docker build --file ./src/Rocket.Web.Host/Dockerfile --tag built-image ./src
+        run: docker build --file ./src/Rocket.Web.Host/Dockerfile --build-arg VERSION=${{ github.ref_name }} --tag built-image ./src
 
       - name: Push image
         run: |
