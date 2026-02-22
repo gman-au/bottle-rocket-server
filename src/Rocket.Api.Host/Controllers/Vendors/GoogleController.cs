@@ -22,6 +22,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
     public class GoogleController(
         ILogger<GoogleController> logger,
         IGoogleTokenAcquirer tokenAcquirer,
+        IDriveFolderSearcher driveFolderSearcher,
         IConnectorRepository connectorRepository,
         IConnectorModelMapperRegistry connectorModelMapperRegistry,
         IUserManager userManager
@@ -202,7 +203,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
                             accessToken,
                             cancellationToken
                         );
-                
+
                 await
                     connectorRepository
                         .UpdateConnectorFieldAsync<GoogleConnector, string>(
@@ -212,7 +213,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
                                 o.RefreshToken,
                             refreshToken,
                             cancellationToken
-                        );                
+                        );
             }
 
             var lastUpdatedAt = DateTime.UtcNow;
@@ -230,6 +231,76 @@ namespace Rocket.Api.Host.Controllers.Vendors
 
             return
                 new ApiResponse()
+                    .AsApiSuccess();
+        }
+
+        [HttpPost, Route("/api/google/workflows/getFolders")]
+        [EndpointSummary("Get all Google Drive folders accessible via a Google connector")]
+        [EndpointGroupName("Manage workflows")]
+        [EndpointDescription(
+            """
+            Retrieves a set of (permitted) folders for the given Google connector.
+            """
+        )]
+        [ProducesResponseType(
+            typeof(GetGoogleDriveFoldersResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetAllGoogleDriveFoldersAsync(
+            [FromBody] GetGoogleDriveFoldersRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
+
+            logger
+                .LogInformation(
+                    "Received (Google) folders request for username: {username}",
+                    user.Username
+                );
+
+            var userId =
+                user
+                    .Id;
+
+            var connectorId = request.ConnectorId;
+
+            var connector =
+                await
+                    connectorRepository
+                        .GetConnectorByIdAsync<GoogleConnector>(
+                            userId,
+                            connectorId,
+                            cancellationToken
+                        );
+
+            if (connector == null)
+                throw new RocketException(
+                    "Connector entry not found",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
+            // connect to google drive and search for pages
+            var folders =
+                await
+                    driveFolderSearcher
+                        .GetFoldersAsync(
+                            connector,
+                            cancellationToken
+                        );
+
+            return
+                new GetGoogleDriveFoldersResponse
+                    {
+                        Folders = folders
+                    }
                     .AsApiSuccess();
         }
     }

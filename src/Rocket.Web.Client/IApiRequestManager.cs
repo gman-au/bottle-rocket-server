@@ -168,6 +168,11 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         );
 
+        Task<GetGoogleDriveFoldersResponse> GetGoogleFoldersAsync(
+            GetGoogleDriveFoldersRequest request,
+            CancellationToken cancellationToken
+        );
+
         public Task<VersionResponse> GetSystemVersionsAsync(
             CancellationToken cancellationToken
         );

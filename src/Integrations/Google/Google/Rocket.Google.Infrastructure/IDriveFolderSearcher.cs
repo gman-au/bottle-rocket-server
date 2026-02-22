@@ -1,15 +1,14 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using Rocket.Google.Contracts;
 using Rocket.Google.Domain;
 
 namespace Rocket.Google.Infrastructure
 {
-    public interface IDriveUploadService
+    public interface IDriveFolderSearcher
     {
-        Task UploadFileAsync(
-            byte[] fileBytes,
-            string fileExtension,
-            string targetFolderId,
+        Task<IEnumerable<GoogleDriveFolder>> GetFoldersAsync(
             GoogleConnector googleConnector,
             CancellationToken cancellationToken
         );
