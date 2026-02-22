@@ -3,23 +3,42 @@
 @page "/MyWorkflow/GcpUpload/{workflowId}/Steps/{stepId}/UpdateStep"
 @using Rocket.Google.Contracts
 @using Rocket.Google.Domain
+@using Rocket.Web.Host.Infrastructure
+@using Rocket.Web.Client
+
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject IApiRequestManager ApiRequestManager
 
 <UpdateWorkflowStepWrapper
+    @ref="_wrapper"
     T="GoogleDriveUploadWorkflowStepSpecifics"
     WorkflowStepName="Upload file to Google Drive"
     WorkflowId="@WorkflowId"
     ParentStepId="@ParentStepId"
     RequiresConnectorCode="@GoogleDomainConstants.ConnectorCode"
+    OnConnectorIdChanged="ConnectorChangedAsync"
     StepId="@StepId"
     Context="stepSpecifics">
     <MudGrid>
-        <MudItem sm="12">
-            <MudText
-                type="hidden"
-                T="string"
-                @bind-Value="stepSpecifics.InputTypeName"
-                For="@(() => stepSpecifics.InputTypeName)"/>
+        <MudItem sm="12" lg="6">
+            <MudSelect
+                T="GoogleDriveFolder"
+                Label=@(_isLoading ? "Loading..." : "Select a folder to place the note")
+                @bind-Value="@_folderSelected"
+                @bind-Value:after="() => SectionIdChangedAsync(stepSpecifics)"
+                Disabled="@(_isLoading || string.IsNullOrEmpty(_connectorId))"
+                Clearable
+            >
+                @foreach (var googleDriveFolder in _googleDriveFolders ?? [])
+                {
+                    <MudSelectItem
+                        T="GoogleDriveFolder"
+                        Value="@googleDriveFolder">
+                        @googleDriveFolder.FolderName
+                    </MudSelectItem>
+                }
+            </MudSelect>
         </MudItem>
     </MudGrid>
 </UpdateWorkflowStepWrapper>
@@ -34,5 +53,108 @@
 
     [Parameter]
     public string StepId { get; set; }
+
+    private bool _isLoading;
+
+    private string _connectorId;
+
+    private UpdateWorkflowStepWrapper<GoogleDriveUploadWorkflowStepSpecifics> _wrapper;
+
+    private GoogleDriveFolder _folderSelected;
+
+    private IEnumerable<GoogleDriveFolder> _googleDriveFolders = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+
+            await
+                RefreshGoogleDriveFoldersAsync();
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RefreshGoogleDriveFoldersAsync()
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(_connectorId))
+            {
+                _isLoading = true;
+                StateHasChanged();
+
+                var response =
+                    await
+                        ApiRequestManager
+                            .GetGoogleFoldersAsync(
+                                new GetGoogleDriveFoldersRequest
+                                {
+                                    ConnectorId = _connectorId
+                                },
+                                BaseCancellationToken
+                            );
+
+                _googleDriveFolders =
+                    response?
+                        .Folders ?? [];
+
+                _folderSelected =
+                    _googleDriveFolders
+                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.ParentFolderId == o.FolderId);
+            }
+            else
+            {
+                _googleDriveFolders = [];
+            }
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task SectionIdChangedAsync(GoogleDriveUploadWorkflowStepSpecifics stepSpecifics)
+    {
+        stepSpecifics.ParentFolderId =
+            _folderSelected?
+                .FolderId;
+    }
+
+    private async Task ConnectorChangedAsync(string connectorId)
+    {
+        _connectorId = connectorId;
+
+        if (string.IsNullOrEmpty(connectorId))
+        {
+            _folderSelected = null;
+        }
+
+        await
+            RefreshGoogleDriveFoldersAsync();
+    }
 
 }

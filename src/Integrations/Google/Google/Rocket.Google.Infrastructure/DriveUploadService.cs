@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace Rocket.Google.Infrastructure
         public async Task UploadFileAsync(
             byte[] fileBytes,
             string fileExtension,
+            string targetFolderId,
             GoogleConnector googleConnector,
             CancellationToken cancellationToken
         )
@@ -61,7 +63,7 @@ namespace Rocket.Google.Infrastructure
             var fileMetadata = new File
             {
                 Name = fileName,
-                // Parents = new List<string> { TargetFolderId } // Specify the parent folder
+                Parents = new List<string> { targetFolderId } // Specify the parent folder
             };
 
             await using (var fileStream = new MemoryStream(fileBytes))

@@ -70,5 +70,36 @@ namespace Rocket.Web.Client
 
             return result;
         }
+        
+        public async Task<GetGoogleDriveFoldersResponse> GetGoogleFoldersAsync(
+            GetGoogleDriveFoldersRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation("Received Get (Google Drive) folders request");
+
+            var response =
+                await
+                    authenticatedApiClient
+                        .PostAsJsonAsync(
+                            "/api/google/workflows/getFolders",
+                            request,
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<GetGoogleDriveFoldersResponse>(
+                            logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
     }
 }
