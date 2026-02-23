@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -9,17 +12,20 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Replicate.Domain;
 using Rocket.Replicate.Infrastructure.Definition;
 
 namespace Rocket.Replicate.Infrastructure
 {
     public class ReplicateClient(ILogger<ReplicateClient> logger) : BaseReplicateClient, IReplicateClient
     {
+        private const int PollingIntervalInSeconds = 5;
+
         private static readonly JsonSerializerOptions DefaultJsonSerializationOptions = new()
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
-        
+
         public async Task<(string, string)> UploadFileAsync(
             string apiToken,
             byte[] bytes,
@@ -96,7 +102,7 @@ namespace Rocket.Replicate.Infrastructure
             where T : IReplicateInput
         {
             customEndpoint ??= "v1/predictions";
-            
+
             using var httpClient = GetBaseHttpClient(apiToken);
 
             var request = new CreatePredictionRequest<T>
@@ -148,11 +154,96 @@ namespace Rocket.Replicate.Infrastructure
             }
         }
 
+        public async Task<T> WaitUntilPredictionCompletesAsync<T>(
+            string apiToken,
+            string predictionId,
+            CancellationToken cancellationToken,
+            int timeoutInSeconds = 300
+        ) where T : IReplicateOutput
+        {
+            // loop (this is a background job so patience is OK)
+            var status =
+                ReplicateDomainConstants
+                    .ReplicateStatusProcessing;
+
+            ReplicatePredictionResponse<T> predictionStatusResponse = null;
+
+            var stopwatch = new Stopwatch();
+
+            stopwatch
+                .Start();
+
+            IEnumerable<string> transitiveStatuses =
+                new[]
+                    {
+                        ReplicateDomainConstants.ReplicateStatusStarting,
+                        ReplicateDomainConstants.ReplicateStatusProcessing
+                    }
+                    .ToArray();
+
+            while (transitiveStatuses.Contains(status))
+            {
+                if (stopwatch.Elapsed.TotalSeconds > timeoutInSeconds)
+                    throw new RocketException(
+                        $"The Replicate prediction timed out ({timeoutInSeconds} seconds).",
+                        ApiStatusCodeEnum.ThirdPartyServiceError
+                    );
+
+                predictionStatusResponse =
+                    await
+                        GetPredictionStatusAsync<T>(
+                            apiToken,
+                            predictionId,
+                            cancellationToken
+                        );
+
+                status =
+                    predictionStatusResponse
+                        .Status;
+
+                await
+                    Task
+                        .Delay(
+                            5000,
+                            cancellationToken
+                        );
+
+                logger
+                    .LogInformation(
+                        "Polling interval {pollingInterval} sec elapsed, retrying prediction status.",
+                        PollingIntervalInSeconds
+                    );
+            }
+
+            stopwatch
+                .Stop();
+
+            if (status != ReplicateDomainConstants.ReplicateStatusSucceeded)
+            {
+                throw new RocketException(
+                    "There was an error processing the Replicate prediction.",
+                    ApiStatusCodeEnum.ThirdPartyServiceError
+                );
+            }
+
+            if (predictionStatusResponse == null || predictionStatusResponse != null && predictionStatusResponse.Output == null)
+            {
+                throw new RocketException(
+                    "There was an error processing the Replicate prediction.",
+                    ApiStatusCodeEnum.ThirdPartyServiceError
+                );
+            }
+
+            return
+                predictionStatusResponse
+                    .Output;
+        }
+
         public async Task<ReplicatePredictionResponse<T>> GetPredictionStatusAsync<T>(
             string apiToken,
             string predictionId,
             CancellationToken cancellationToken
-        )
+        ) where T : IReplicateOutput
         {
             using var httpClient = GetBaseHttpClient(apiToken);
 

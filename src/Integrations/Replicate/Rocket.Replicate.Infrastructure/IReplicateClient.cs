@@ -26,8 +26,15 @@ namespace Rocket.Replicate.Infrastructure
             string apiToken,
             string predictionId,
             CancellationToken cancellationToken
-        );
-        
+        ) where T : IReplicateOutput;
+
+        Task<T> WaitUntilPredictionCompletesAsync<T>(
+            string apiToken,
+            string predictionId,
+            CancellationToken cancellationToken,
+            int timeoutInSeconds = 300
+        ) where T : IReplicateOutput;
+
         Task DeleteUploadAsync(string apiToken, string fileId);
     }
 }

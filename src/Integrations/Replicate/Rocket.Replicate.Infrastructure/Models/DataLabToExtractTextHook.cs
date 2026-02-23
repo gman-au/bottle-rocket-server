@@ -2,7 +2,6 @@
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
@@ -14,10 +13,11 @@ using Rocket.Replicate.Domain.Models.DataLabTo;
 namespace Rocket.Replicate.Infrastructure.Models
 {
     public class DataLabToExtractTextHook(
-        ILogger<DataLabToExtractTextHook> logger,
         IReplicateClient replicateClient
     ) : IIntegrationHook
     {
+        private const string DataLabToCustomEndpoint = "v1/models/datalab-to/marker/predictions";
+        
         public bool IsApplicable(BaseExecutionStep step) => step is DataLabToExtractTextExecutionStep;
 
         public async Task<ExecutionStepArtifact> ProcessAsync(
@@ -82,15 +82,30 @@ namespace Rocket.Replicate.Infrastructure.Models
                                 null,
                                 new DataLabToInput
                                 {
-                                    File = imageUrl
+                                    File = imageUrl,
+                                    DisableImageExtraction = true
                                 },
                                 cancellationToken,
-                                "v1/models/datalab-to/marker/predictions"
+                                DataLabToCustomEndpoint
                             );
 
-                // loop (this is a background job so patience is OK)
+                var result =
+                    await
+                        replicateClient
+                            .WaitUntilPredictionCompletesAsync<DataLabToOutput>(
+                                apiToken,
+                                predictionId,
+                                cancellationToken
+                            );
 
+                var extractedText = result?.Markdown ?? string.Empty;
 
+                await
+                    appendLogMessageCallback(
+                        step.Id,
+                        extractedText
+                    );
+                
                 var resultArtifact =
                     new ExecutionStepArtifact
                     {
@@ -100,7 +115,7 @@ namespace Rocket.Replicate.Infrastructure.Models
                             Encoding
                                 .Default
                                 .GetBytes(
-                                    "dummy"
+                                    extractedText
                                 ),
                         FileExtension = ".txt"
                     };

@@ -7,5 +7,8 @@ namespace Rocket.Replicate.Infrastructure.Models
     {
         [JsonPropertyName("file")]
         public string File { get; set; }
+        
+        [JsonPropertyName("disable_image_extraction")]
+        public bool DisableImageExtraction { get; set; }
     }
 }
