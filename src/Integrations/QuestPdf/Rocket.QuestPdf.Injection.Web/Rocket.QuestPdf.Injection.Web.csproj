@@ -10,6 +10,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
+        <ProjectReference Include="..\Rocket.QuestPdf.Domain\Rocket.QuestPdf.Domain.csproj" />
     </ItemGroup>
 
 </Project>

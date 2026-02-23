@@ -1,4 +1,5 @@
 ﻿using Rocket.Api.Contracts;
+using Rocket.Diagnostics.Domain;
 using Rocket.Interfaces;
 
 namespace Rocket.Diagnostics.Injection.Web
@@ -16,5 +17,7 @@ namespace Rocket.Diagnostics.Injection.Web
         public string ImagePath => "/img/bottle-rocket-logo.png";
 
         public bool DataLeavesYourServer => false;
+
+        public string StepCode => DiagnosticDomainConstants.HelloWorldTextWorkflowCode;
     }
 }

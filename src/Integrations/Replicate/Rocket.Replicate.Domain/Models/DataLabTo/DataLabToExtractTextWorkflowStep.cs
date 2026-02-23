@@ -11,6 +11,8 @@ namespace Rocket.Replicate.Domain.Models.DataLabTo
 
         public override string StepName { get; set; } = "Extract text from image using Replicate (model: datalab-to/marker)";
 
+        public override string StepCode { get; set; } = ReplicateDomainConstants.DataLabToExtractTextWorkflowCode;
+
         public override string RequiresConnectorCode { get; set; } = ReplicateDomainConstants.ConnectorCode;
     }
 }

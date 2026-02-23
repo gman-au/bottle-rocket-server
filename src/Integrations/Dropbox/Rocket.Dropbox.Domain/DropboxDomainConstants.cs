@@ -4,5 +4,7 @@
     {
         public const string ConnectorName = "Dropbox App Connector";
         public const string ConnectorCode = "DROPBOX_APP";
+        
+        public const string UploadWorkflowCode = "DROPBOX_UPLOAD";
     }
 }

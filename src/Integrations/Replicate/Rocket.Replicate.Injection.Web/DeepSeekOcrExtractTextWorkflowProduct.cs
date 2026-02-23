@@ -1,5 +1,6 @@
 ﻿using Rocket.Api.Contracts;
 using Rocket.Interfaces;
+using Rocket.Replicate.Domain;
 
 namespace Rocket.Replicate.Injection.Web
 {
@@ -16,5 +17,7 @@ namespace Rocket.Replicate.Injection.Web
         public string ImagePath => "/img/replicate-logo.png";
 
         public bool DataLeavesYourServer => true;
+
+        public string StepCode => ReplicateDomainConstants.DeepSeekOcrExtractTextWorkflowCode;
     }
 }

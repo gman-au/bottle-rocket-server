@@ -1,4 +1,5 @@
 ﻿using Rocket.Api.Contracts;
+using Rocket.Google.Domain;
 using Rocket.Interfaces;
 
 namespace Rocket.Google.Injection.Web
@@ -16,5 +17,7 @@ namespace Rocket.Google.Injection.Web
         public string ImagePath => "/img/google-drive-logo.png";
 
         public bool DataLeavesYourServer => true;
+
+        public string StepCode => GoogleDomainConstants.UploadFileWorkflowCode;
     }
 }

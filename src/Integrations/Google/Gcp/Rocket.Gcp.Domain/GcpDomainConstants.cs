@@ -4,5 +4,7 @@
     {
         public const string ConnectorName = "Google Cloud Platform Connector";
         public const string ConnectorCode = "GCP_PLATFORM";
+        
+        public const string ExtractTextWorkflowCode = "GCP_EXTRACT_TEXT";
     }
 }

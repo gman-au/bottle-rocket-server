@@ -1,5 +1,6 @@
 ﻿using Rocket.Api.Contracts;
 using Rocket.Interfaces;
+using Rocket.Notion.Domain;
 
 namespace Rocket.Notion.Injection.Web
 {
@@ -16,5 +17,7 @@ namespace Rocket.Notion.Injection.Web
         public string ImagePath => "/img/notion-logo.png";
 
         public bool DataLeavesYourServer => true;
+
+        public string StepCode => NotionDomainConstants.NotionUploadWorkflowCode;
     }
 }

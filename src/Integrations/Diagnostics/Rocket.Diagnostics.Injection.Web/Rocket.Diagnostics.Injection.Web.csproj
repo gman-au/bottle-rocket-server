@@ -6,6 +6,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj"/>
+        <ProjectReference Include="..\Rocket.Diagnostics.Domain\Rocket.Diagnostics.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>

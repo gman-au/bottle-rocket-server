@@ -199,7 +199,10 @@ namespace Rocket.Tests.Unit
                     )
                     .ReturnsForAnyArgs(
                         _fixture.Build<DummyStep>()
-                            .With(o => o.OutputType, outputType)
+                            .With(
+                                o => o.OutputType,
+                                outputType
+                            )
                             .Create()
                     );
             }
@@ -242,6 +245,7 @@ namespace Rocket.Tests.Unit
                 public override int[] InputTypes { get; set; }
                 public override int OutputType { get; set; }
                 public override string StepName { get; set; }
+                public override string StepCode { get; set; }
                 public override string RequiresConnectorCode { get; set; }
             }
         }

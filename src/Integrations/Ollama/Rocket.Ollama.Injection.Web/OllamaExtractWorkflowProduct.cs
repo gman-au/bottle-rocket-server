@@ -1,5 +1,6 @@
 ﻿using Rocket.Api.Contracts;
 using Rocket.Interfaces;
+using Rocket.Ollama.Domain;
 
 namespace Rocket.Ollama.Injection.Web
 {
@@ -16,5 +17,7 @@ namespace Rocket.Ollama.Injection.Web
         public string ImagePath => "/img/ollama-logo.png";
 
         public bool DataLeavesYourServer => false;
+
+        public string StepCode => OllamaDomainConstants.OllamaExtractWorkflowCode;
     }
 }

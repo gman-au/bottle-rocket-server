@@ -1,4 +1,5 @@
 ﻿using Rocket.Api.Contracts;
+using Rocket.Dropbox.Domain;
 using Rocket.Interfaces;
 
 namespace Rocket.Dropbox.Injection.Web
@@ -16,5 +17,7 @@ namespace Rocket.Dropbox.Injection.Web
         public string ImagePath => "/img/dropbox-logo.webp";
 
         public bool DataLeavesYourServer => true;
+
+        public string StepCode => DropboxDomainConstants.UploadWorkflowCode;
     }
 }

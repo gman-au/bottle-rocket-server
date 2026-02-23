@@ -54,6 +54,7 @@ namespace Rocket.Infrastructure.Mapping
                 Id = value.Id,
                 ConnectorId = value.ConnectorId,
                 StepName = value.StepName,
+                StepCode = value.StepCode,
                 RequiresConnectorCode = value.RequiresConnectorCode,
                 InputTypeName =
                     string.Join(

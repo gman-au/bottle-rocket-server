@@ -1,4 +1,5 @@
 ﻿using Rocket.Api.Contracts;
+using Rocket.Gcp.Domain;
 using Rocket.Interfaces;
 
 namespace Rocket.Gcp.Injection.Web
@@ -16,5 +17,7 @@ namespace Rocket.Gcp.Injection.Web
         public string ImagePath => "/img/gcp-logo.png";
 
         public bool DataLeavesYourServer => true;
+
+        public string StepCode => GcpDomainConstants.ExtractTextWorkflowCode;
     }
 }

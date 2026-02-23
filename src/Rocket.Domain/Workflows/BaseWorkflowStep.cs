@@ -14,6 +14,8 @@ namespace Rocket.Domain.Workflows
 
         public abstract string StepName { get; set; }
 
+        public abstract string StepCode { get; set; }
+
         public abstract string RequiresConnectorCode { get; set; }
 
         public IEnumerable<BaseWorkflowStep> ChildSteps { get; set; }

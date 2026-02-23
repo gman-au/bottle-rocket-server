@@ -16,6 +16,8 @@ namespace Rocket.Microsofts.Domain
 
         public override string StepName { get; set; } = "Upload note to OneNote";
 
+        public override string StepCode { get; set; } = MicrosoftDomainConstants.OneNoteUploadWorkflowCode;
+
         public override string RequiresConnectorCode { get; set; } = MicrosoftDomainConstants.ConnectorCode;
 
         public string SectionId { get; set; }
