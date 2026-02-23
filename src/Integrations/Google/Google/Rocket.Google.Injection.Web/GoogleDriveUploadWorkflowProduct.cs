@@ -10,7 +10,7 @@ namespace Rocket.Google.Injection.Web
 
         public string Description => "Upload a file (image, text, PDF) to a Google Drive folder.";
 
-        public string[] Categories => [SkuConstants.FileUpload];
+        public string[] Categories => [SkuConstants.FileUpload, SkuConstants.Google];
 
         public string HrefBase => "/MyWorkflow/GcpUpload";
 

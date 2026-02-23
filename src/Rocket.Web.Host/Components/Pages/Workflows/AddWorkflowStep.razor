@@ -12,19 +12,56 @@
         Typo="Typo.h4">
         Add New Workflow Step
     </MudText>
-    <MudGrid Justify="Justify.FlexStart" Class="pa-4">
-        @foreach (var template in WorkflowSkus)
+    <MudGrid Justify="Justify.Center" Class="pa-4">
+        <MudItem xs="8">
+            <MudChipSet
+                SelectedValues="@_selectedCategories"
+                SelectedValuesChanged="@((IReadOnlyCollection<string> values) =>
+                                       {
+                                           _selectedCategories = values;
+                                           FilterByCategory();
+                                       })"
+                SelectionMode="SelectionMode.MultiSelection"
+                CheckMark="_checkMark"
+                Variant="Variant.Text"
+                Color="Color.Info">
+                @foreach (var category in AllCategories ?? [])
+                {
+                    <MudChip Value="@(category)"/>
+                }
+            </MudChipSet>
+        </MudItem>
+        <MudFlexBreak/>
+        @foreach (var template in FilteredSkus)
         {
             <MudItem xs="12" sm="12" md="6" lg="4" xl="3">
                 <MudCard Style="height:100%" Outlined>
                     <MudCardMedia
                         Image="@Assets[template.ImagePath]"
-                        Height="100"
-                    />
+                        Height="100"/>
                     <MudCardContent>
-                        <MudText Typo="Typo.h6">
+                        <MudText
+                            Typo="Typo.h6"
+                            Color="Color.Primary"
+                        >
                             @template.Name
                         </MudText>
+                        @if (template.DataLeavesYourServer)
+                        {
+                            <MudChip
+                                T="string"
+                                Size="Size.Small"
+                                Variant="Variant.Outlined"
+                                Icon="@StandardIcons.CloudIcon"
+                                Color="Color.Warning">
+                                Data leaves your server
+                            </MudChip>
+                        }
+                        <p>
+                            <MudText Typo="Typo.caption">
+                                @template.Description
+                            </MudText>
+                        </p>
                     </MudCardContent>
                     <MudCardActions Class="justify-end">
                         <MudButton
@@ -57,7 +94,60 @@
 
     [Parameter]
     public string StepId { get; set; }
-    
+
+    private bool _checkMark = true;
+
+    private IReadOnlyCollection<string> _selectedCategories;
+
+    private IEnumerable<string> AllCategories { get; set; }
+
+    private IEnumerable<ISkuWorkflow> AllSkus { get; set; }
+
+    private IEnumerable<ISkuWorkflow> FilteredSkus { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        AllSkus = WorkflowSkus;
+
+        AllCategories =
+            WorkflowSkus
+                .SelectMany(o => o.Categories)
+                .Distinct();
+
+        FilteredSkus = AllSkus;
+
+        FilterByCategory();
+
+        StateHasChanged();
+    }
+
+    private void FilterByCategory()
+    {
+        if ((_selectedCategories ?? []).Any())
+        {
+            FilteredSkus =
+                AllSkus
+                    .Where(
+                        o =>
+                            _selectedCategories
+                                .Any(
+                                    c =>
+                                        o
+                                            .Categories
+                                            .Contains(c)
+                                )
+                    );
+        }
+        else
+        {
+            FilteredSkus = AllSkus;
+        }
+
+        StateHasChanged();
+    }
+
     private static string BuildHref(
         string basePath,
         string workflowId,

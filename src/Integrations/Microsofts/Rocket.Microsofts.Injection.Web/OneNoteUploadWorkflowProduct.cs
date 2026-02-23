@@ -10,7 +10,7 @@ namespace Rocket.Microsofts.Injection.Web
 
         public string Description => "Upload a file (image, text, PDF) to a Microsoft OneNote folder.";
 
-        public string[] Categories => [SkuConstants.FileUpload];
+        public string[] Categories => [SkuConstants.FileUpload, SkuConstants.Microsoft];
 
         public string HrefBase => "/MyWorkflow/OneNote";
 

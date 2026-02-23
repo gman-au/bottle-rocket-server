@@ -10,7 +10,7 @@ namespace Rocket.Gcp.Injection.Web
 
         public string Description => "Extract text from an image using Google Vision API.";
 
-        public string[] Categories => [SkuConstants.TextRecognition];
+        public string[] Categories => [SkuConstants.TextRecognition, SkuConstants.Google];
 
         public string HrefBase => "/MyWorkflow/GcpExtract";
 
