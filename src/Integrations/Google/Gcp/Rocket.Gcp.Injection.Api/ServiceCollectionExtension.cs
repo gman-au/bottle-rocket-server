@@ -6,7 +6,7 @@ namespace Rocket.Gcp.Injection.Api
 {
     public static class ServiceCollectionExtension
     {
-        public static IServiceCollection AddGcpIntegration(this IServiceCollection services)
+        public static IServiceCollection AddGcpApiIntegration(this IServiceCollection services)
         {
             services
                 .AddTransient<IIntegrationHook, GcpOcrExtractHook>()

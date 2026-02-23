@@ -6,7 +6,7 @@ namespace Rocket.Microsofts.Injection.Api
 {
     public static class ServiceCollectionExtension
     {
-        public static IServiceCollection AddMicrosoftIntegration(this IServiceCollection services)
+        public static IServiceCollection AddMicrosoftApiIntegration(this IServiceCollection services)
         {
             services
                 .AddTransient<IConnectorModelMapper, MicrosoftConnectorMapper>()

@@ -33,10 +33,7 @@ var services =
 
 services
     .Configure<HostOptions>(
-        options =>
-        {
-            options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
-        }
+        options => { options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore; }
     );
 
 services
@@ -74,15 +71,17 @@ services
     .AddOpenApiServices();
 
 services
-    .AddDropboxIntegration()
-    .AddOllamaIntegration()
-    .AddNotionIntegration()
-    .AddMicrosoftIntegration()
-    .AddGcpIntegration()
-    .AddGoogleIntegration()
-    .AddDiagnosticIntegration()
-    .AddQuestPdfIntegration()
-    .AddReplicateIntegration()
+    .AddDropboxApiIntegration()
+    .AddOllamaApiIntegration()
+    .AddNotionApiIntegration()
+    .AddMicrosoftApiIntegration()
+    .AddGcpApiIntegration()
+    .AddGoogleApiIntegration()
+    .AddDiagnosticApiIntegration()
+    .AddQuestPdfApiIntegration()
+    .AddReplicateApiIntegration();
+
+services
     .AddWorkflowBackgroundJob();
 
 services

@@ -6,7 +6,7 @@ namespace Rocket.Dropbox.Injection.Api
 {
     public static class ServiceCollectionExtension
     {
-        public static IServiceCollection AddDropboxIntegration(this IServiceCollection services)
+        public static IServiceCollection AddDropboxApiIntegration(this IServiceCollection services)
         {
             services
                 .AddTransient<IIntegrationHook, DropboxHook>()

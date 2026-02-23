@@ -6,7 +6,7 @@ namespace Rocket.QuestPdf.Injection.Api
 {
     public static class ServiceCollectionExtension
     {
-        public static IServiceCollection AddQuestPdfIntegration(this IServiceCollection services)
+        public static IServiceCollection AddQuestPdfApiIntegration(this IServiceCollection services)
         {
             services
                 .AddTransient<IIntegrationHook, ConvertToPdfHook>()

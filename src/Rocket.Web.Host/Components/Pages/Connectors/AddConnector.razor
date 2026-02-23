@@ -1,12 +1,7 @@
 ﻿@page "/MyConnectors/Add"
-@using Rocket.Dropbox.Domain
-@using Rocket.Gcp.Domain
-@using Rocket.Google.Domain
-@using Rocket.Microsofts.Domain
-@using Rocket.Notion.Domain
-@using Rocket.Ollama.Domain
-@using Rocket.Replicate.Domain
+@using Rocket.Interfaces
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+@inject IEnumerable<ISkuConnector> ConnectorSkus
 
 <MudPaper Class="p-4" elevation="2">
     <MudText
@@ -17,14 +12,13 @@
         Add New Connector
     </MudText>
     <MudGrid Justify="Justify.FlexStart" Class="pa-4">
-        @foreach (var connectorTemplate in ConnectorTemplates)
+        @foreach (var connectorTemplate in ConnectorSkus ?? [])
         {
             <MudItem xs="12" sm="12" md="6" lg="4" xl="3">
                 <MudCard Style="height:100%" Outlined>
                     <MudCardMedia
                         Image="@Assets[connectorTemplate.ImagePath]"
-                        Height="100"
-                    />
+                        Height="100"/>
                     <MudCardContent>
                         <MudText Typo="Typo.h6">
                             @connectorTemplate.Name
@@ -47,71 +41,10 @@
 
 @code {
 
-    private static readonly List<ConnectorTemplate> ConnectorTemplates =
-    [
-        new()
-        {
-            Name = DropboxDomainConstants.ConnectorName,
-            Href = "/MyConnector/Dropbox/Add",
-            ImagePath = "/img/dropbox-logo.webp"
-        },
-        new()
-        {
-            Name = OllamaDomainConstants.ConnectorName,
-            Href = "/MyConnector/Ollama/Add",
-            ImagePath = "/img/ollama-logo.png"
-        },
-        new()
-        {
-            Name = NotionDomainConstants.ConnectorName,
-            Href = "/MyConnector/Notion/Add",
-            ImagePath = "/img/notion-logo.png"
-        },
-        new()
-        {
-            Name = GcpDomainConstants.ConnectorName,
-            Href = "/MyConnector/GcpExtract/Add",
-            ImagePath = "/img/gcp-logo.png"
-        },
-        new()
-        {
-            Name = $"{MicrosoftDomainConstants.ConnectorName} (Bottle-Rocket)",
-            Href = "/MyConnector/Microsoft/Add/cb829057-cb6e-45c3-90a7-5fcf40edacae/common",
-            ImagePath = "/img/microsoft-logo.png"
-        },
-        new()
-        {
-            Name = $"{MicrosoftDomainConstants.ConnectorName} (Custom)",
-            Href = "/MyConnector/Microsoft/Add",
-            ImagePath = "/img/microsoft-logo.png"
-        },
-        new()
-        {
-            Name = GoogleDomainConstants.ConnectorName,
-            Href = "/MyConnector/Google/Add",
-            ImagePath = "/img/google-logo.webp"
-        },
-        new()
-        {
-            Name = ReplicateDomainConstants.ConnectorName,
-            Href = "/MyConnector/Replicate/Add",
-            ImagePath = "/img/replicate-logo.png"
-        }
-    ];
-
     private async Task NavigateToAddAsync(string href)
     {
         NavigationManager
             .NavigateTo(href);
     }
-
-    private class ConnectorTemplate
-    {
-        public string Name { get; set; }
-
-        public string Href { get; set; }
-
-        public string ImagePath { get; set; }
-    }
-
+    
 }

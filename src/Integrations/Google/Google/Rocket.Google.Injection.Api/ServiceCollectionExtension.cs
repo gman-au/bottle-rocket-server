@@ -6,7 +6,7 @@ namespace Rocket.Google.Injection.Api
 {
     public static class ServiceCollectionExtension
     {
-        public static IServiceCollection AddGoogleIntegration(this IServiceCollection services)
+        public static IServiceCollection AddGoogleApiIntegration(this IServiceCollection services)
         {
             services
                 .AddTransient<IIntegrationHook, GoogleDriveUploadHook>()

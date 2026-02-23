@@ -6,7 +6,7 @@ namespace Rocket.Diagnostics.Injection.Api
 {
     public static class ServiceCollectionExtension
     {
-        public static IServiceCollection AddDiagnosticIntegration(this IServiceCollection services)
+        public static IServiceCollection AddDiagnosticApiIntegration(this IServiceCollection services)
         {
             services
                 .AddTransient<IIntegrationHook, HelloWorldTextHook>()

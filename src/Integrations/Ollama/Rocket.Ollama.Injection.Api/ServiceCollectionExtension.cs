@@ -6,7 +6,7 @@ namespace Rocket.Ollama.Injection.Api
 {
     public static class ServiceCollectionExtension
     {
-        public static IServiceCollection AddOllamaIntegration(this IServiceCollection services)
+        public static IServiceCollection AddOllamaApiIntegration(this IServiceCollection services)
         {
             services
                 .AddTransient<IIntegrationHook, OllamaHook>()

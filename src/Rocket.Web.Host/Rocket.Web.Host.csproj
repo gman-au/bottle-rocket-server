@@ -6,15 +6,24 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Integrations\Diagnostics\Rocket.Diagnostics.Contracts\Rocket.Diagnostics.Contracts.csproj" />
+        <ProjectReference Include="..\Integrations\Diagnostics\Rocket.Diagnostics.Injection.Web\Rocket.Diagnostics.Injection.Web.csproj" />
         <ProjectReference Include="..\Integrations\Dropbox\Rocket.Dropbox.Contracts\Rocket.Dropbox.Contracts.csproj" />
         <ProjectReference Include="..\Integrations\Dropbox\Rocket.Dropbox.Domain\Rocket.Dropbox.Domain.csproj" />
+        <ProjectReference Include="..\Integrations\Dropbox\Rocket.Dropbox.Injection.Web\Rocket.Dropbox.Injection.Web.csproj" />
         <ProjectReference Include="..\Integrations\Google\Gcp\Rocket.Gcp.Domain\Rocket.Gcp.Domain.csproj" />
+        <ProjectReference Include="..\Integrations\Google\Gcp\Rocket.Gcp.Injection.Web\Rocket.Gcp.Injection.Web.csproj" />
         <ProjectReference Include="..\Integrations\Google\Google\Rocket.Google.Contracts\Rocket.Google.Contracts.csproj" />
         <ProjectReference Include="..\Integrations\Google\Google\Rocket.Google.Domain\Rocket.Google.Domain.csproj" />
+        <ProjectReference Include="..\Integrations\Google\Google\Rocket.Google.Injection.Web\Rocket.Google.Injection.Web.csproj" />
         <ProjectReference Include="..\Integrations\Microsofts\Rocket.Microsofts.Domain\Rocket.Microsofts.Domain.csproj" />
+        <ProjectReference Include="..\Integrations\Microsofts\Rocket.Microsofts.Injection.Web\Rocket.Microsofts.Injection.Web.csproj" />
         <ProjectReference Include="..\Integrations\Notion\Rocket.Notion.Domain\Rocket.Notion.Domain.csproj" />
+        <ProjectReference Include="..\Integrations\Notion\Rocket.Notion.Injection.Web\Rocket.Notion.Injection.Web.csproj" />
         <ProjectReference Include="..\Integrations\Ollama\Rocket.Ollama.Domain\Rocket.Ollama.Domain.csproj" />
+        <ProjectReference Include="..\Integrations\Ollama\Rocket.Ollama.Injection.Web\Rocket.Ollama.Injection.Web.csproj" />
+        <ProjectReference Include="..\Integrations\QuestPdf\Rocket.QuestPdf.Injection.Web\Rocket.QuestPdf.Injection.Web.csproj" />
         <ProjectReference Include="..\Integrations\Replicate\Rocket.Replicate.Domain\Rocket.Replicate.Domain.csproj" />
+        <ProjectReference Include="..\Integrations\Replicate\Rocket.Replicate.Injection.Web\Rocket.Replicate.Injection.Web.csproj" />
         <ProjectReference Include="..\Rocket.Api.Contracts\Rocket.Api.Contracts.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Json\Rocket.Infrastructure.Json.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Mermaid\Rocket.Infrastructure.Mermaid.csproj" />

@@ -10,7 +10,7 @@ namespace Rocket.Replicate.Injection.Api
 {
     public static class ServiceCollectionExtension
     {
-        public static IServiceCollection AddReplicateIntegration(this IServiceCollection services)
+        public static IServiceCollection AddReplicateApiIntegration(this IServiceCollection services)
         {
             services
                 .AddTransient<IIntegrationHook, DataLabToExtractTextHook>()

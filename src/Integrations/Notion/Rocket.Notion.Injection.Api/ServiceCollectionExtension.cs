@@ -6,7 +6,7 @@ namespace Rocket.Notion.Injection.Api
 {
     public static class ServiceCollectionExtension
     {
-        public static IServiceCollection AddNotionIntegration(this IServiceCollection services)
+        public static IServiceCollection AddNotionApiIntegration(this IServiceCollection services)
         {
             services
                 .AddTransient<IIntegrationHook, NotionHook>()
