@@ -14,7 +14,8 @@ using Rocket.Replicate.Domain.Models.DataLabTo;
 namespace Rocket.Replicate.Infrastructure.Models
 {
     public class DataLabExtractTextHook(
-        ILogger<DataLabExtractTextHook> logger
+        ILogger<DataLabExtractTextHook> logger,
+        IReplicateClient replicateClient
     ) : IIntegrationHook
     {
         public bool IsApplicable(BaseExecutionStep step) => step is DataLabToExtractTextExecutionStep;
@@ -48,40 +49,65 @@ namespace Rocket.Replicate.Infrastructure.Models
                     ApiStatusCodeEnum.DeveloperError
                 );
 
-            /*var credential = 
+            var apiToken =
                 connector
-                    .Credential;
+                    .ApiToken;
 
-            var result =
-                await
-                    visionOcrService
-                        .ExtractHandwrittenTextAsync(
-                            imageBytes,
-                            credential,
-                            cancellationToken
-                        );
+            var fileName = $"{Guid.NewGuid()}{artifact.FileExtension}";
 
-            await
-                appendLogMessageCallback(
-                    step.Id,
-                    result
-                );*/
-            
-            var resultArtifact =
-                new ExecutionStepArtifact
-                {
-                    Result = (int)ExecutionStatusEnum.Completed,
-                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
-                    Artifact =
-                        Encoding
-                            .Default
-                            .GetBytes(
-                                "dummy"
-                            ),
-                    FileExtension = ".txt"
-                };
+            try
+            {
+                // upload the file
+                var imageUrl =
+                    await
+                        replicateClient
+                            .UploadFileAsync(
+                                apiToken,
+                                imageBytes,
+                                fileName,
+                                cancellationToken
+                            );
 
-            return resultArtifact;
+                // create the prediction
+                var predictionId =
+                    await
+                        replicateClient
+                            .CreatePredictionAsync(
+                                apiToken,
+                                null,
+                                new DataLabToInput
+                                {
+                                    File = imageUrl
+                                },
+                                cancellationToken
+                            );
+
+                // loop (this is a background job so patience is OK)
+                
+
+                var resultArtifact =
+                    new ExecutionStepArtifact
+                    {
+                        Result = (int)ExecutionStatusEnum.Completed,
+                        ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
+                        Artifact =
+                            Encoding
+                                .Default
+                                .GetBytes(
+                                    "dummy"
+                                ),
+                        FileExtension = ".txt"
+                    };
+
+                // delete uploads
+
+                return resultArtifact;
+            }
+            catch (TaskCanceledException)
+            {
+                // delete uploads
+                throw;
+            }
         }
     }
 }

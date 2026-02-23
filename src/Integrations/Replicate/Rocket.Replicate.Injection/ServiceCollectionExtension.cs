@@ -16,7 +16,8 @@ namespace Rocket.Replicate.Injection
                 .AddTransient<IConnectorModelMapper, ReplicateConnectorMapper>()
                 .AddTransient<IStepModelCloner, DataLabToExtractTextStepCloner>()
                 .AddTransient<IBsonMapper, ReplicateBsonMapper>()
-                .AddTransient<IBsonMapper, DataLabToBsonMapper>();
+                .AddTransient<IBsonMapper, DataLabToBsonMapper>()
+                .AddTransient<IReplicateClient, ReplicateClient>();
 
             return services;
         }
