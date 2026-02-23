@@ -2,23 +2,25 @@
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Interfaces;
 using Rocket.Replicate.Domain;
-using Rocket.Replicate.Domain.Models.DataLabTo;
+using Rocket.Replicate.Domain.Models.DeepSeekOcr;
 
-namespace Rocket.Replicate.Infrastructure.Models
+namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
 {
-    public class DataLabToExtractTextHook(
+    public class DeepSeekOcrExtractTextHook(
+        ILogger<DeepSeekOcrExtractTextHook> logger,
         IReplicateClient replicateClient
     ) : IIntegrationHook
     {
-        private const string DataLabToCustomEndpoint = "v1/models/datalab-to/marker/predictions";
+        private const string DeepSeekModelVersion = "a524caeaa23495bc9edc805ab08ab5fe943afd3febed884a4f3747aa32e9cd61";
         
-        public bool IsApplicable(BaseExecutionStep step) => step is DataLabToExtractTextExecutionStep;
+        public bool IsApplicable(BaseExecutionStep step) => step is DeepSeekOcrExtractTextExecutionStep;
 
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
@@ -43,7 +45,7 @@ namespace Rocket.Replicate.Infrastructure.Models
 
             var imageBytes = artifact.Artifact;
 
-            if (step is not DataLabToExtractTextExecutionStep)
+            if (step is not DeepSeekOcrExtractTextExecutionStep)
                 throw new RocketException(
                     "Unexpected step format, please check configuration",
                     ApiStatusCodeEnum.DeveloperError
@@ -72,6 +74,9 @@ namespace Rocket.Replicate.Infrastructure.Models
                             );
 
                 imageIdToDelete = imageId;
+                
+                logger
+                    .LogInformation("Uploaded image to Replicate: {imageUrl}", imageUrl);
 
                 // create the prediction
                 var predictionId =
@@ -79,26 +84,27 @@ namespace Rocket.Replicate.Infrastructure.Models
                         replicateClient
                             .CreatePredictionAsync(
                                 apiToken,
-                                null,
-                                new DataLabToInput
+                                DeepSeekModelVersion,
+                                new DeepSeekOcrInput
                                 {
-                                    File = imageUrl,
-                                    DisableImageExtraction = true
+                                    Image = imageUrl
                                 },
-                                cancellationToken,
-                                DataLabToCustomEndpoint
+                                cancellationToken
                             );
+                
+                logger
+                    .LogInformation("Created prediction in Replicate: {predictionId}", predictionId);
 
                 var result =
                     await
                         replicateClient
-                            .WaitUntilPredictionCompletesAsync<DataLabToOutput>(
+                            .WaitUntilPredictionCompletesAsync(
                                 apiToken,
                                 predictionId,
                                 cancellationToken
                             );
 
-                var extractedText = result?.Markdown ?? string.Empty;
+                var extractedText = result ?? string.Empty;
 
                 await
                     appendLogMessageCallback(
@@ -132,6 +138,9 @@ namespace Rocket.Replicate.Infrastructure.Models
                                 apiToken,
                                 imageIdToDelete
                             );
+                
+                logger
+                    .LogInformation("Deleted image in Replicate: {imageIdToDelete}", imageIdToDelete);
             }
         }
     }

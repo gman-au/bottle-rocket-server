@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Rocket.Replicate.Infrastructure.Definition;
 
-namespace Rocket.Replicate.Infrastructure.Models
+namespace Rocket.Replicate.Infrastructure.Models.DataLabTo
 {
     public class DataLabToInput : IReplicateInput
     {

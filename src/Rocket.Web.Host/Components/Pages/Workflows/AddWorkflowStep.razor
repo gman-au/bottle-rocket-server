@@ -124,9 +124,16 @@
         },
         new()
         {
-            Name = "Extract text from image (using Replicate model datalab-to)",
+            Name = "Extract text from image (using Replicate model: datalab-to)",
             HrefBase = "/MyWorkflow/Replicate/DataLabTo/{0}/AddStep",
             HrefChild = "/MyWorkflow/Replicate/DataLabTo/{0}/Steps/{1}/AddStep",
+            ImagePath = "/img/replicate-logo.png"
+        },
+        new()
+        {
+            Name = "Extract text from image (using Replicate model: lucataco/deepseek-ocr)",
+            HrefBase = "/MyWorkflow/Replicate/DeepSeekOcr/{0}/AddStep",
+            HrefChild = "/MyWorkflow/Replicate/DeepSeekOcr/{0}/Steps/{1}/AddStep",
             ImagePath = "/img/replicate-logo.png"
         }
     ];

@@ -154,12 +154,40 @@ namespace Rocket.Replicate.Infrastructure
             }
         }
 
+        public async Task<string> WaitUntilPredictionCompletesAsync(
+            string apiToken,
+            string predictionId,
+            CancellationToken cancellationToken,
+            int timeoutInSeconds = 300
+        ) =>
+            await
+                GetPredictionStatusAsync<string>(
+                    apiToken,
+                    predictionId,
+                    cancellationToken,
+                    timeoutInSeconds
+                );
+
         public async Task<T> WaitUntilPredictionCompletesAsync<T>(
             string apiToken,
             string predictionId,
             CancellationToken cancellationToken,
             int timeoutInSeconds = 300
-        ) where T : IReplicateOutput
+        ) where T : IReplicateOutput =>
+            await
+                GetPredictionStatusAsync<T>(
+                    apiToken,
+                    predictionId,
+                    cancellationToken,
+                    timeoutInSeconds
+                );
+
+        private async Task<T> GetPredictionStatusAsync<T>(
+            string apiToken,
+            string predictionId,
+            CancellationToken cancellationToken,
+            int timeoutInSeconds = 300
+        )
         {
             // loop (this is a background job so patience is OK)
             var status =
@@ -191,7 +219,7 @@ namespace Rocket.Replicate.Infrastructure
 
                 predictionStatusResponse =
                     await
-                        GetPredictionStatusAsync<T>(
+                        GetReplicatePredictionStatusAsync<T>(
                             apiToken,
                             predictionId,
                             cancellationToken
@@ -239,11 +267,11 @@ namespace Rocket.Replicate.Infrastructure
                     .Output;
         }
 
-        public async Task<ReplicatePredictionResponse<T>> GetPredictionStatusAsync<T>(
+        private async Task<ReplicatePredictionResponse<T>> GetReplicatePredictionStatusAsync<T>(
             string apiToken,
             string predictionId,
             CancellationToken cancellationToken
-        ) where T : IReplicateOutput
+        )
         {
             using var httpClient = GetBaseHttpClient(apiToken);
 

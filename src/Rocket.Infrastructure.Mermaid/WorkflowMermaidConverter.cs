@@ -15,6 +15,7 @@ using Rocket.Notion.Contracts;
 using Rocket.Ollama.Contracts;
 using Rocket.QuestPdf.Contracts;
 using Rocket.Replicate.Contracts.Models.DataLabTo;
+using Rocket.Replicate.Contracts.Models.DeepSeekOcr;
 
 namespace Rocket.Infrastructure.Mermaid
 {
@@ -183,6 +184,10 @@ namespace Rocket.Infrastructure.Mermaid
                 if (step is DataLabToExtractTextWorkflowStepSpecifics)
                 {
                     route = $"/MyWorkflow/Replicate/DataLabTo/{workflowId}/Steps/{step.Id}/UpdateStep";
+                }
+                if (step is DeepSeekOcrExtractTextWorkflowStepSpecifics)
+                {
+                    route = $"/MyWorkflow/Replicate/DeepSeekOcr/{workflowId}/Steps/{step.Id}/UpdateStep";
                 }
 
                 if (!string.IsNullOrEmpty(route))

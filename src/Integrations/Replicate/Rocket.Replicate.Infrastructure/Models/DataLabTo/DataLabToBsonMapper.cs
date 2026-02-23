@@ -2,7 +2,7 @@
 using Rocket.Interfaces;
 using Rocket.Replicate.Domain.Models.DataLabTo;
 
-namespace Rocket.Replicate.Infrastructure.Models
+namespace Rocket.Replicate.Infrastructure.Models.DataLabTo
 {
     public class DataLabToBsonMapper : IBsonMapper
     {

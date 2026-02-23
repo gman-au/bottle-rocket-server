@@ -2,6 +2,9 @@
 using Rocket.Interfaces;
 using Rocket.Replicate.Infrastructure;
 using Rocket.Replicate.Infrastructure.Models;
+using Rocket.Replicate.Infrastructure.Models.DataLabTo;
+using Rocket.Replicate.Infrastructure.Models.DeepSeekOcr;
+using DataLabToExtractTextHook = Rocket.Replicate.Infrastructure.Models.DataLabTo.DataLabToExtractTextHook;
 
 namespace Rocket.Replicate.Injection
 {
@@ -11,12 +14,27 @@ namespace Rocket.Replicate.Injection
         {
             services
                 .AddTransient<IIntegrationHook, DataLabToExtractTextHook>()
+                .AddTransient<IIntegrationHook, DeepSeekOcrExtractTextHook>();
+            
+            services
                 .AddTransient<IWorkflowStepModelMapper, DataLabToExtractTextWorkflowStepMapper>()
+                .AddTransient<IWorkflowStepModelMapper, DeepSeekOcrExtractTextWorkflowStepMapper>();
+
+            services
                 .AddTransient<IExecutionStepModelMapper, DataLabToExtractTextExecutionStepMapper>()
-                .AddTransient<IConnectorModelMapper, ReplicateConnectorMapper>()
+                .AddTransient<IExecutionStepModelMapper, DeepSeekOcrExtractTextExecutionStepMapper>();
+
+            services
                 .AddTransient<IStepModelCloner, DataLabToExtractTextStepCloner>()
-                .AddTransient<IBsonMapper, ReplicateBsonMapper>()
+                .AddTransient<IStepModelCloner, DeepSeekOcrExtractTextStepCloner>();
+            
+            services
                 .AddTransient<IBsonMapper, DataLabToBsonMapper>()
+                .AddTransient<IBsonMapper, DeepSeekBsonMapper>();
+            
+            services
+                .AddTransient<IConnectorModelMapper, ReplicateConnectorMapper>()
+                .AddTransient<IBsonMapper, ReplicateBsonMapper>()
                 .AddTransient<IReplicateClient, ReplicateClient>();
 
             return services;
