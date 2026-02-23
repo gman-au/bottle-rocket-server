@@ -13,8 +13,8 @@ using Rocket.Replicate.Domain.Models.DataLabTo;
 
 namespace Rocket.Replicate.Infrastructure.Models
 {
-    public class DataLabExtractTextHook(
-        ILogger<DataLabExtractTextHook> logger,
+    public class DataLabToExtractTextHook(
+        ILogger<DataLabToExtractTextHook> logger,
         IReplicateClient replicateClient
     ) : IIntegrationHook
     {
@@ -55,18 +55,23 @@ namespace Rocket.Replicate.Infrastructure.Models
 
             var fileName = $"{Guid.NewGuid()}{artifact.FileExtension}";
 
+            var imageIdToDelete = string.Empty;
+
             try
             {
                 // upload the file
-                var imageUrl =
+                var (imageUrl, imageId) =
                     await
                         replicateClient
                             .UploadFileAsync(
                                 apiToken,
                                 imageBytes,
                                 fileName,
+                                artifact.FileExtension,
                                 cancellationToken
                             );
+
+                imageIdToDelete = imageId;
 
                 // create the prediction
                 var predictionId =
@@ -79,11 +84,12 @@ namespace Rocket.Replicate.Infrastructure.Models
                                 {
                                     File = imageUrl
                                 },
-                                cancellationToken
+                                cancellationToken,
+                                "v1/models/datalab-to/marker/predictions"
                             );
 
                 // loop (this is a background job so patience is OK)
-                
+
 
                 var resultArtifact =
                     new ExecutionStepArtifact
@@ -99,14 +105,18 @@ namespace Rocket.Replicate.Infrastructure.Models
                         FileExtension = ".txt"
                     };
 
-                // delete uploads
-
                 return resultArtifact;
             }
-            catch (TaskCanceledException)
+            finally
             {
                 // delete uploads
-                throw;
+                if (!string.IsNullOrEmpty(imageIdToDelete))
+                    await
+                        replicateClient
+                            .DeleteUploadAsync(
+                                apiToken,
+                                imageIdToDelete
+                            );
             }
         }
     }

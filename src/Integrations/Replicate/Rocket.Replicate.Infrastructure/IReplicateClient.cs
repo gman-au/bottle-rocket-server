@@ -6,10 +6,11 @@ namespace Rocket.Replicate.Infrastructure
 {
     public interface IReplicateClient
     {
-        Task<string> UploadFileAsync(
+        Task<(string, string)> UploadFileAsync(
             string apiToken,
             byte[] bytes,
             string fileName,
+            string fileExtension,
             CancellationToken cancellationToken
         );
 
@@ -17,7 +18,8 @@ namespace Rocket.Replicate.Infrastructure
             string apiToken,
             string version,
             T input,
-            CancellationToken cancellationToken
+            CancellationToken cancellationToken,
+            string customEndpoint = null
         ) where T : IReplicateInput;
 
         Task<ReplicatePredictionResponse<T>> GetPredictionStatusAsync<T>(
@@ -25,5 +27,7 @@ namespace Rocket.Replicate.Infrastructure
             string predictionId,
             CancellationToken cancellationToken
         );
+        
+        Task DeleteUploadAsync(string apiToken, string fileId);
     }
 }

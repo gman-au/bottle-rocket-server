@@ -10,7 +10,7 @@ namespace Rocket.Replicate.Injection
         public static IServiceCollection AddReplicateIntegration(this IServiceCollection services)
         {
             services
-                .AddTransient<IIntegrationHook, DataLabExtractTextHook>()
+                .AddTransient<IIntegrationHook, DataLabToExtractTextHook>()
                 .AddTransient<IWorkflowStepModelMapper, DataLabToExtractTextWorkflowStepMapper>()
                 .AddTransient<IExecutionStepModelMapper, DataLabToExtractTextExecutionStepMapper>()
                 .AddTransient<IConnectorModelMapper, ReplicateConnectorMapper>()

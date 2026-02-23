@@ -1,68 +1,102 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Replicate.Infrastructure.Definition;
 
 namespace Rocket.Replicate.Infrastructure
 {
-    public class ReplicateClient : BaseReplicateClient, IReplicateClient
+    public class ReplicateClient(ILogger<ReplicateClient> logger) : BaseReplicateClient, IReplicateClient
     {
-        public async Task<string> UploadFileAsync(
+        private static readonly JsonSerializerOptions DefaultJsonSerializationOptions = new()
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
+        
+        public async Task<(string, string)> UploadFileAsync(
             string apiToken,
             byte[] bytes,
             string fileName,
+            string fileExtension,
             CancellationToken cancellationToken
         )
         {
             using var httpClient = GetBaseHttpClient(apiToken);
 
-            var response =
-                await
-                    httpClient
-                        .PostAsync(
-                            "v1/files",
-                            new MultipartFormDataContent
-                            {
-                                {
-                                    new ByteArrayContent(bytes),
-                                    "content",
-                                    fileName
-                                }
-                            },
-                            cancellationToken
-                        );
-
-            response
-                .EnsureSuccessStatusCode();
-
-            var uploadResponse =
-                await
-                    response
-                        .Content
-                        .ReadFromJsonAsync<ReplicateUploadResponse>(cancellationToken);
-
-            var getUrl = uploadResponse?.Urls?.GetUrl;
-
-            if (string.IsNullOrEmpty(getUrl))
-                throw new RocketException(
-                    "There was an error uploading the image to Replicate.",
-                    ApiStatusCodeEnum.ThirdPartyServiceError
+            var multipart =
+                BuildMultipartContent(
+                    bytes,
+                    fileName,
+                    $"image/{fileExtension.Replace(".", "")}"
                 );
 
-            return getUrl;
+            HttpResponseMessage response = null;
+            try
+            {
+                response =
+                    await
+                        httpClient
+                            .PostAsync(
+                                "v1/files",
+                                multipart,
+                                cancellationToken
+                            );
+
+                response
+                    .EnsureSuccessStatusCode();
+
+                var uploadResponse =
+                    await
+                        response
+                            .Content
+                            .ReadFromJsonAsync<ReplicateUploadResponse>(cancellationToken);
+
+                var getUrl =
+                    uploadResponse?
+                        .Urls?
+                        .GetUrl;
+
+                var imageId =
+                    uploadResponse?
+                        .Id;
+
+                if (string.IsNullOrEmpty(getUrl) || string.IsNullOrEmpty(imageId))
+                    throw new RocketException(
+                        "There was an error uploading the image to Replicate.",
+                        ApiStatusCodeEnum.ThirdPartyServiceError
+                    );
+
+                return (getUrl, imageId);
+            }
+            catch (HttpRequestException)
+            {
+                throw
+                    await
+                        HandleReplicateExceptionAsync(
+                            response,
+                            cancellationToken
+                        );
+            }
         }
 
         public async Task<string> CreatePredictionAsync<T>(
             string apiToken,
             string version,
             T input,
-            CancellationToken cancellationToken
+            CancellationToken cancellationToken,
+            string customEndpoint = null
         )
             where T : IReplicateInput
         {
+            customEndpoint ??= "v1/predictions";
+            
             using var httpClient = GetBaseHttpClient(apiToken);
 
             var request = new CreatePredictionRequest<T>
@@ -78,8 +112,9 @@ namespace Rocket.Replicate.Infrastructure
                     await
                         httpClient
                             .PostAsJsonAsync(
-                                "v1/predictions",
+                                customEndpoint,
                                 request,
+                                DefaultJsonSerializationOptions,
                                 cancellationToken
                             );
 
@@ -152,6 +187,82 @@ namespace Rocket.Replicate.Infrastructure
                             cancellationToken
                         );
             }
+        }
+
+        public async Task DeleteUploadAsync(
+            string apiToken,
+            string fileId
+        )
+        {
+            using var httpClient = GetBaseHttpClient(apiToken);
+
+            try
+            {
+                await
+                    httpClient
+                        .DeleteAsync(
+                            $"v1/files/{fileId}"
+                        );
+            }
+            catch (HttpRequestException ex)
+            {
+                logger
+                    .LogError(
+                        "Could not delete file from Replicate: {error}",
+                        ex.Message
+                    );
+            }
+        }
+
+        private static MultipartFormDataContent BuildMultipartContent(byte[] bytes, string fileName, string mimeType)
+        {
+            // NOTE: .NET quotes the boundary by default which Replicate rejects.
+            // Parts must be added before modifying Content-Type or they will be lost.
+            var boundary =
+                Guid
+                    .NewGuid()
+                    .ToString("N");
+
+            var fileContent = new ByteArrayContent(bytes);
+
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
+
+            fileContent
+                .Headers
+                .TryAddWithoutValidation(
+                    "Content-Disposition",
+                    $"form-data; name=\"content\"; filename=\"{fileName}\""
+                );
+
+            var filenameContent = new StringContent(fileName);
+
+            filenameContent
+                .Headers
+                .TryAddWithoutValidation(
+                    "Content-Disposition",
+                    "form-data; name=\"filename\""
+                );
+
+            var multipart = new MultipartFormDataContent(boundary);
+
+            multipart
+                .Add(fileContent);
+            multipart
+                .Add(filenameContent);
+
+            // Must come AFTER Add() calls or content is wiped
+            multipart
+                .Headers
+                .Remove("Content-Type");
+
+            multipart
+                .Headers
+                .TryAddWithoutValidation(
+                    "Content-Type",
+                    $"multipart/form-data; boundary={boundary}"
+                );
+
+            return multipart;
         }
     }
 }
