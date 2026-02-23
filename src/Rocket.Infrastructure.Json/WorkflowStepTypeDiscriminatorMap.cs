@@ -10,6 +10,7 @@ using Rocket.Microsofts.Contracts;
 using Rocket.Notion.Contracts;
 using Rocket.Ollama.Contracts;
 using Rocket.QuestPdf.Contracts;
+using Rocket.Replicate.Contracts.Models.DataLabTo;
 
 namespace Rocket.Infrastructure.Json
 {
@@ -27,7 +28,8 @@ namespace Rocket.Infrastructure.Json
             { typeof(EmailFileAttachmentStepSpecifics), "email_file_attachment" },
             { typeof(OneNoteUploadWorkflowStepSpecifics), "one_note_upload_workflow" },
             { typeof(GoogleDriveUploadWorkflowStepSpecifics), "google_drive_upload_workflow" },
-            { typeof(ConvertToPdfWorkflowStepSpecifics), "convert_to_pdf_workflow" }
+            { typeof(ConvertToPdfWorkflowStepSpecifics), "convert_to_pdf_workflow" },
+            { typeof(DataLabToExtractTextWorkflowStepSpecifics), "replicate_data_lab_to_extract_text_workflow" }
         };
 
         public static string GetWorkflowStepTypeDiscriminator(this Type type)

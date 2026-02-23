@@ -7,6 +7,7 @@ using Rocket.MaxOcr.Contracts;
 using Rocket.Microsofts.Contracts;
 using Rocket.Notion.Contracts;
 using Rocket.Ollama.Contracts;
+using Rocket.Replicate.Contracts;
 
 namespace Rocket.Infrastructure.Json
 {
@@ -20,7 +21,8 @@ namespace Rocket.Infrastructure.Json
             { typeof(GcpConnectorSpecifics), "gcp_connector" },
             { typeof(NotionConnectorSpecifics), "notion_connector" },
             { typeof(MicrosoftConnectorSpecifics), "microsoft_connector" },
-            { typeof(GoogleConnectorSpecifics), "google_connector" }
+            { typeof(GoogleConnectorSpecifics), "google_connector" },
+            { typeof(ReplicateConnectorSpecifics), "replicate_connector" }
         };
 
         public static string GetConnectorTypeDiscriminator(this Type type)

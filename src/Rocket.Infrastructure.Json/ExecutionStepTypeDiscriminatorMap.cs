@@ -9,6 +9,7 @@ using Rocket.Microsofts.Contracts;
 using Rocket.Notion.Contracts;
 using Rocket.Ollama.Contracts;
 using Rocket.QuestPdf.Contracts;
+using Rocket.Replicate.Contracts.Models.DataLabTo;
 
 namespace Rocket.Infrastructure.Json
 {
@@ -25,7 +26,8 @@ namespace Rocket.Infrastructure.Json
             { typeof(OneDriveUploadExecutionStepSpecifics), "one_drive_upload_execution" },
             { typeof(GoogleDriveUploadExecutionStepSpecifics), "google_drive_upload_execution" },
             { typeof(OneNoteUploadExecutionStepSpecifics), "one_note_upload_execution" },
-            { typeof(ConvertToPdfExecutionStepSpecifics), "convert_to_pdf_execution" }
+            { typeof(ConvertToPdfExecutionStepSpecifics), "convert_to_pdf_execution" },
+            { typeof(DataLabToExtractTextExecutionStepSpecifics), "replicate_data_lab_to_extract_text_execution" }
         };
 
         public static string GetExecutionStepTypeDiscriminator(this Type type)

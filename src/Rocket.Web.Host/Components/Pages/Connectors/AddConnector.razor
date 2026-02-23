@@ -5,6 +5,7 @@
 @using Rocket.Microsofts.Domain
 @using Rocket.Notion.Domain
 @using Rocket.Ollama.Domain
+@using Rocket.Replicate.Domain
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <MudPaper Class="p-4" elevation="2">
@@ -89,6 +90,12 @@
             Name = GoogleDomainConstants.ConnectorName,
             Href = "/MyConnector/Google/Add",
             ImagePath = "/img/google-logo.webp"
+        },
+        new()
+        {
+            Name = ReplicateDomainConstants.ConnectorName,
+            Href = "/MyConnector/Replicate/Add",
+            ImagePath = "/img/replicate-logo.png"
         }
     ];
 

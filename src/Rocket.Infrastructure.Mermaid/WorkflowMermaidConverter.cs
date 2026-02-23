@@ -14,6 +14,7 @@ using Rocket.Microsofts.Contracts;
 using Rocket.Notion.Contracts;
 using Rocket.Ollama.Contracts;
 using Rocket.QuestPdf.Contracts;
+using Rocket.Replicate.Contracts.Models.DataLabTo;
 
 namespace Rocket.Infrastructure.Mermaid
 {
@@ -178,6 +179,10 @@ namespace Rocket.Infrastructure.Mermaid
                 if (step is ConvertToPdfWorkflowStepSpecifics)
                 {
                     route = $"/MyWorkflow/ConvertToPdf/{workflowId}/Steps/{step.Id}/UpdateStep";
+                }
+                if (step is DataLabToExtractTextWorkflowStepSpecifics)
+                {
+                    route = $"/MyWorkflow/Replicate/DataLabTo/{workflowId}/Steps/{step.Id}/UpdateStep";
                 }
 
                 if (!string.IsNullOrEmpty(route))
