@@ -2,7 +2,7 @@
 using Rocket.Diagnostics.Infrastructure;
 using Rocket.Interfaces;
 
-namespace Rocket.Diagnostics.Injection
+namespace Rocket.Diagnostics.Injection.Api
 {
     public static class ServiceCollectionExtension
     {

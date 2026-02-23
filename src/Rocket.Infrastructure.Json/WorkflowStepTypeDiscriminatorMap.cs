@@ -5,7 +5,6 @@ using Rocket.Diagnostics.Contracts;
 using Rocket.Dropbox.Contracts;
 using Rocket.Gcp.Contracts;
 using Rocket.Google.Contracts;
-using Rocket.MaxOcr.Contracts;
 using Rocket.Microsofts.Contracts;
 using Rocket.Notion.Contracts;
 using Rocket.Ollama.Contracts;
@@ -20,7 +19,6 @@ namespace Rocket.Infrastructure.Json
         public static readonly Dictionary<Type, string> TypeDiscriminatorMap = new()
         {
             { typeof(DropboxUploadWorkflowStepSpecifics), "dropbox_upload_workflow" },
-            { typeof(MaxOcrExtractWorkflowStepSpecifics), "maxocr_extract_workflow" },
             { typeof(OllamaExtractWorkflowStepSpecifics), "ollama_extract_workflow" },
             { typeof(NotionUploadWorkflowStepSpecifics), "notion_upload_workflow" },
             { typeof(OneDriveUploadWorkflowStepSpecifics), "one_drive_upload_workflow" },

@@ -4,7 +4,6 @@ using Rocket.Diagnostics.Contracts;
 using Rocket.Dropbox.Contracts;
 using Rocket.Gcp.Contracts;
 using Rocket.Google.Contracts;
-using Rocket.MaxOcr.Contracts;
 using Rocket.Microsofts.Contracts;
 using Rocket.Notion.Contracts;
 using Rocket.Ollama.Contracts;
@@ -19,7 +18,6 @@ namespace Rocket.Infrastructure.Json
         public static readonly Dictionary<Type, string> TypeDiscriminatorMap = new()
         {
             { typeof(DropboxUploadExecutionStepSpecifics), "dropbox_upload_execution" },
-            { typeof(MaxOcrExtractExecutionStepSpecifics), "maxocr_extract_execution" },
             { typeof(OllamaExtractExecutionStepSpecifics), "ollama_extract_execution" },
             { typeof(GcpExtractExecutionStepSpecifics), "gcp_extract_execution" },
             { typeof(HelloWorldTextExecutionStepSpecifics), "hello_world_text_execution" },

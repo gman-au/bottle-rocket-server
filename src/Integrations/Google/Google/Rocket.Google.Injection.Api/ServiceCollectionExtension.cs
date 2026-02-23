@@ -2,7 +2,7 @@
 using Rocket.Google.Infrastructure;
 using Rocket.Interfaces;
 
-namespace Rocket.Google.Injection
+namespace Rocket.Google.Injection.Api
 {
     public static class ServiceCollectionExtension
     {

@@ -2,7 +2,7 @@
 using Rocket.Interfaces;
 using Rocket.Ollama.Infrastructure;
 
-namespace Rocket.Ollama.Injection
+namespace Rocket.Ollama.Injection.Api
 {
     public static class ServiceCollectionExtension
     {

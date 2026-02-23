@@ -2,7 +2,7 @@
 using Rocket.Dropbox.Infrastructure;
 using Rocket.Interfaces;
 
-namespace Rocket.Dropbox.Injection
+namespace Rocket.Dropbox.Injection.Api
 {
     public static class ServiceCollectionExtension
     {

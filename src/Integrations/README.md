@@ -8,7 +8,8 @@
     * `Rocket.Abc.Domain` - this is the root domain library where Bottle Rocket domain objects are defined as derived classes and extended
     * `Rocket.Abc.Contracts` - this is the contracts library where Bottle Rocket API contracts are defined as derived classes as extended. If you have particular API requests that need to be added, they also go here (e.g. `FinalizeDropboxConnectorRequest`)
     * `Rocket.Abc.Infrastructure` - define all of the integration-specific interfaces and implementations here - this project should contain everything needed to complete integration actions e.g. uploading a note, emailing a file, etc.
-    * `Rocket.Abc.Injection` - this is the injection library that should define a single extension method to inject all of the ABC integration into the main Bottle Rocket system.
+    * `Rocket.Abc.Injection.Api` - this is the injection library that should define a single extension method to inject all of the ABC integration into the main Bottle Rocket (API) system.
+    * `Rocket.Abc.Injection.Web` - this is the injection library that should define a single extension method to inject all of the ABC integration into the main Bottle Rocket (Web) system.
 
 ### 2. Create connectors
 * Derive new connectors from `BaseConnector`.

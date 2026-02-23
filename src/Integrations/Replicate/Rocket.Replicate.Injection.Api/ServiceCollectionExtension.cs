@@ -6,7 +6,7 @@ using Rocket.Replicate.Infrastructure.Models.DataLabTo;
 using Rocket.Replicate.Infrastructure.Models.DeepSeekOcr;
 using DataLabToExtractTextHook = Rocket.Replicate.Infrastructure.Models.DataLabTo.DataLabToExtractTextHook;
 
-namespace Rocket.Replicate.Injection
+namespace Rocket.Replicate.Injection.Api
 {
     public static class ServiceCollectionExtension
     {

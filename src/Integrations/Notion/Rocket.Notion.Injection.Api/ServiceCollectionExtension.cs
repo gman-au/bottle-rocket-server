@@ -2,7 +2,7 @@
 using Rocket.Interfaces;
 using Rocket.Notion.Infrastructure;
 
-namespace Rocket.Notion.Injection
+namespace Rocket.Notion.Injection.Api
 {
     public static class ServiceCollectionExtension
     {

@@ -2,7 +2,7 @@
 using Rocket.Interfaces;
 using Rocket.QuestPdf.Infrastructure;
 
-namespace Rocket.QuestPdf.Injection
+namespace Rocket.QuestPdf.Injection.Api
 {
     public static class ServiceCollectionExtension
     {
