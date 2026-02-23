@@ -1,6 +1,8 @@
 ﻿@page "/MyWorkflow/{workflowId}/AddStep"
 @page "/MyWorkflow/{workflowId}/Steps/{stepId}/AddStep"
+@using Rocket.Interfaces
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+@inject IEnumerable<ISkuWorkflow> WorkflowSkus
 
 <MudPaper Class="p-4" elevation="2">
     <MudText
@@ -10,19 +12,56 @@
         Typo="Typo.h4">
         Add New Workflow Step
     </MudText>
-    <MudGrid Justify="Justify.FlexStart" Class="pa-4">
-        @foreach (var template in WorkflowStepTemplates)
+    <MudGrid Justify="Justify.Center" Class="pa-4">
+        <MudItem xs="8">
+            <MudChipSet
+                SelectedValues="@_selectedCategories"
+                SelectedValuesChanged="@((IReadOnlyCollection<string> values) =>
+                                       {
+                                           _selectedCategories = values;
+                                           FilterByCategory();
+                                       })"
+                SelectionMode="SelectionMode.MultiSelection"
+                CheckMark="_checkMark"
+                Variant="Variant.Text"
+                Color="Color.Info">
+                @foreach (var category in AllCategories ?? [])
+                {
+                    <MudChip Value="@(category)"/>
+                }
+            </MudChipSet>
+        </MudItem>
+        <MudFlexBreak/>
+        @foreach (var template in FilteredSkus)
         {
             <MudItem xs="12" sm="12" md="6" lg="4" xl="3">
                 <MudCard Style="height:100%" Outlined>
                     <MudCardMedia
                         Image="@Assets[template.ImagePath]"
-                        Height="100"
-                    />
+                        Height="100"/>
                     <MudCardContent>
-                        <MudText Typo="Typo.h6">
+                        <MudText
+                            Typo="Typo.h6"
+                            Color="Color.Primary"
+                        >
                             @template.Name
                         </MudText>
+                        @if (template.DataLeavesYourServer)
+                        {
+                            <MudChip
+                                T="string"
+                                Size="Size.Small"
+                                Variant="Variant.Outlined"
+                                Icon="@StandardIcons.CloudIcon"
+                                Color="Color.Warning">
+                                Data leaves your server
+                            </MudChip>
+                        }
+                        <p>
+                            <MudText Typo="Typo.caption">
+                                @template.Description
+                            </MudText>
+                        </p>
                     </MudCardContent>
                     <MudCardActions Class="justify-end">
                         <MudButton
@@ -31,7 +70,6 @@
                             @onclick="@(() => NavigationManager.NavigateTo(
                                           BuildHref(
                                               template.HrefBase,
-                                              template.HrefChild,
                                               WorkflowId,
                                               StepId
                                           )
@@ -57,103 +95,80 @@
     [Parameter]
     public string StepId { get; set; }
 
-    private static readonly List<WorkflowStepTemplate> WorkflowStepTemplates =
-    [
-        new()
-        {
-            Name = "Upload file to Dropbox",
-            HrefBase = "/MyWorkflow/Dropbox/{0}/AddStep",
-            HrefChild = "/MyWorkflow/Dropbox/{0}/Steps/{1}/AddStep",
-            ImagePath = "/img/dropbox-logo.webp"
-        },
-        new()
-        {
-            Name = "Extract text from image (Ollama)",
-            HrefBase = "/MyWorkflow/Ollama/{0}/AddStep",
-            HrefChild = "/MyWorkflow/Ollama/{0}/Steps/{1}/AddStep",
-            ImagePath = "/img/ollama-logo.png"
-        },
-        new()
-        {
-            Name = "Upload file to Notion",
-            HrefBase = "/MyWorkflow/Notion/{0}/AddStep",
-            HrefChild = "/MyWorkflow/Notion/{0}/Steps/{1}/AddStep",
-            ImagePath = "/img/notion-logo.png"
-        },
-        new()
-        {
-            Name = "Hello world (text output)",
-            HrefBase = "/MyWorkflow/Diagnostic/{0}/AddStep",
-            HrefChild = "/MyWorkflow/Diagnostic/{0}/Steps/{1}/AddStep",
-            ImagePath = "/img/bottle-rocket-logo.png"
-        },
-        new()
-        {
-            Name = "Extract text from image (Google Vision API)",
-            HrefBase = "/MyWorkflow/GcpExtract/{0}/AddStep",
-            HrefChild = "/MyWorkflow/GcpExtract/{0}/Steps/{1}/AddStep",
-            ImagePath = "/img/gcp-logo.png"
-        },
-        new()
-        {
-            Name = "Upload file to Google Drive",
-            HrefBase = "/MyWorkflow/GcpUpload/{0}/AddStep",
-            HrefChild = "/MyWorkflow/GcpUpload/{0}/Steps/{1}/AddStep",
-            ImagePath = "/img/google-drive-logo.png"
-        },
-        new()
-        {
-            Name = "Upload file to OneDrive",
-            HrefBase = "/MyWorkflow/OneDrive/{0}/AddStep",
-            HrefChild = "/MyWorkflow/OneDrive/{0}/Steps/{1}/AddStep",
-            ImagePath = "/img/onedrive-logo.png"
-        },
-        new()
-        {
-            Name = "Upload file to OneNote",
-            HrefBase = "/MyWorkflow/OneNote/{0}/AddStep",
-            HrefChild = "/MyWorkflow/OneNote/{0}/Steps/{1}/AddStep",
-            ImagePath = "/img/onenote-logo.png"
-        },
-        new()
-        {
-            Name = "Convert data to PDF file",
-            HrefBase = "/MyWorkflow/ConvertToPdf/{0}/AddStep",
-            HrefChild = "/MyWorkflow/ConvertToPdf/{0}/Steps/{1}/AddStep",
-            ImagePath = "/img/pdf-logo.png"
-        }
-    ];
+    private bool _checkMark = true;
 
-    private class WorkflowStepTemplate
+    private IReadOnlyCollection<string> _selectedCategories;
+
+    private IEnumerable<string> AllCategories { get; set; }
+
+    private IEnumerable<ISkuWorkflow> AllSkus { get; set; }
+
+    private IEnumerable<ISkuWorkflow> FilteredSkus { get; set; }
+
+    protected override void OnInitialized()
     {
-        public string Name { get; init; }
+        base.OnInitialized();
 
-        public string HrefBase { get; init; }
+        AllSkus = WorkflowSkus;
 
-        public string HrefChild { get; init; }
+        AllCategories =
+            WorkflowSkus
+                .SelectMany(o => o.Categories)
+                .Distinct();
 
-        public string ImagePath { get; init; }
+        FilteredSkus = AllSkus;
+
+        FilterByCategory();
+
+        StateHasChanged();
+    }
+
+    private void FilterByCategory()
+    {
+        if ((_selectedCategories ?? []).Any())
+        {
+            FilteredSkus =
+                AllSkus
+                    .Where(
+                        o =>
+                            _selectedCategories
+                                .Any(
+                                    c =>
+                                        o
+                                            .Categories
+                                            .Contains(c)
+                                )
+                    );
+        }
+        else
+        {
+            FilteredSkus = AllSkus;
+        }
+
+        StateHasChanged();
     }
 
     private static string BuildHref(
         string basePath,
-        string childPath,
         string workflowId,
         string stepId
     )
     {
+        var derivedBasePath = $"{basePath}/{{0}}/AddStep";
+        var derivedChildPath = $"{basePath}/{{0}}/Steps/{{1}}/AddStep";
+
         if (string.IsNullOrEmpty(stepId))
             return
                 string
                     .Format(
-                        basePath,
+                        derivedBasePath,
                         workflowId
                     );
 
         return
             string
                 .Format(
-                    childPath,
+                    derivedChildPath,
                     workflowId,
                     stepId
                 );

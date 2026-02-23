@@ -28,7 +28,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Dropbox.Infrastructu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Dropbox.Contracts", "Integrations\Dropbox\Rocket.Dropbox.Contracts\Rocket.Dropbox.Contracts.csproj", "{24A4F6B2-5761-4888-9B25-1E79A23E8572}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Dropbox.Injection", "Integrations\Dropbox\Rocket.Dropbox.Injection\Rocket.Dropbox.Injection.csproj", "{F46B0519-54A9-4F29-BB69-B5D23B8E1360}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Dropbox.Injection.Api", "Integrations\Dropbox\Rocket.Dropbox.Injection.Api\Rocket.Dropbox.Injection.Api.csproj", "{F46B0519-54A9-4F29-BB69-B5D23B8E1360}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Dropbox.Domain", "Integrations\Dropbox\Rocket.Dropbox.Domain\Rocket.Dropbox.Domain.csproj", "{CC415B91-1DE4-46AC-BAF3-6B85DAA154C9}"
 EndProject
@@ -44,17 +44,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Merma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Detection", "Rocket.Infrastructure.Detection\Rocket.Infrastructure.Detection.csproj", "{0FD5BCBD-227F-41F9-81BB-FC0AE81A91EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.MaxOcr.Contracts", "Integrations\MaxOcr\Rocket.MaxOcr.Contracts\Rocket.MaxOcr.Contracts.csproj", "{2339BF0D-968C-465C-8D8E-3A9853F2B834}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.MaxOcr.Domain", "Integrations\MaxOcr\Rocket.MaxOcr.Domain\Rocket.MaxOcr.Domain.csproj", "{89B90F6D-08C2-4AA9-B124-68CCE1DA9B08}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.MaxOcr.Injection", "Integrations\MaxOcr\Rocket.MaxOcr.Injection\Rocket.MaxOcr.Injection.csproj", "{BD10E927-03F7-440A-BC3E-F307503CCAF6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.MaxOcr.Infrastructure", "Integrations\MaxOcr\Rocket.MaxOcr.Infrastructure\Rocket.MaxOcr.Infrastructure.csproj", "{0BA9C168-B2A5-418F-8F13-24D273A54E99}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dropbox", "Dropbox", "{42CB70A2-68E4-4EB7-8AAD-4E2F987D01BA}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MaxOcr", "MaxOcr", "{57F97432-0A3A-4947-9C94-C1937E658D1F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ollama", "Ollama", "{E02E9B38-E79C-4C27-8C1E-5E37705A72D0}"
 EndProject
@@ -64,7 +54,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Ollama.Contracts", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Ollama.Infrastructure", "Integrations\Ollama\Rocket.Ollama.Infrastructure\Rocket.Ollama.Infrastructure.csproj", "{B62D19C1-7ED0-4482-9836-2EBA884CF83F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Ollama.Injection", "Integrations\Ollama\Rocket.Ollama.Injection\Rocket.Ollama.Injection.csproj", "{53D5CCFD-982C-477D-A8B8-B16D9F1CB08B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Ollama.Injection.Api", "Integrations\Ollama\Rocket.Ollama.Injection.Api\Rocket.Ollama.Injection.Api.csproj", "{53D5CCFD-982C-477D-A8B8-B16D9F1CB08B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notion", "Notion", "{84FBE110-0D05-4831-9467-24C690D7563E}"
 EndProject
@@ -74,7 +64,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Notion.Contracts", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Notion.Infrastructure", "Integrations\Notion\Rocket.Notion.Infrastructure\Rocket.Notion.Infrastructure.csproj", "{A6896773-6B07-4D48-A007-64802E25A034}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Notion.Injection", "Integrations\Notion\Rocket.Notion.Injection\Rocket.Notion.Injection.csproj", "{0C881348-6A72-41EA-99AA-9070A3E1E1A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Notion.Injection.Api", "Integrations\Notion\Rocket.Notion.Injection.Api\Rocket.Notion.Injection.Api.csproj", "{0C881348-6A72-41EA-99AA-9070A3E1E1A2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Diagnostics", "Diagnostics", "{2F35331B-7C2C-4C4F-B90D-DA4F8E0B4F45}"
 EndProject
@@ -84,7 +74,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Diagnostics.Contract
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Diagnostics.Infrastructure", "Integrations\Diagnostics\Rocket.Diagnostics.Infrastructure\Rocket.Diagnostics.Infrastructure.csproj", "{7ACB47E2-A357-4CF8-95D1-98297733C089}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Diagnostics.Injection", "Integrations\Diagnostics\Rocket.Diagnostics.Injection\Rocket.Diagnostics.Injection.csproj", "{8F73CAE3-2CFE-4028-90BB-D72AFB5DECE4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Diagnostics.Injection.Api", "Integrations\Diagnostics\Rocket.Diagnostics.Injection.Api\Rocket.Diagnostics.Injection.Api.csproj", "{8F73CAE3-2CFE-4028-90BB-D72AFB5DECE4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Google", "Google", "{445F8544-3B58-4B2B-84CE-D5B983656989}"
 EndProject
@@ -96,7 +86,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Gcp.Contracts", "Int
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Gcp.Infrastructure", "Integrations\Google\Gcp\Rocket.Gcp.Infrastructure\Rocket.Gcp.Infrastructure.csproj", "{46BF26CE-C14E-49A2-9966-57DADFE568AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Gcp.Injection", "Integrations\Google\Gcp\Rocket.Gcp.Injection\Rocket.Gcp.Injection.csproj", "{F5A29672-DDCE-4633-82C1-FF7AFDE411D5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Gcp.Injection.Api", "Integrations\Google\Gcp\Rocket.Gcp.Injection.Api\Rocket.Gcp.Injection.Api.csproj", "{F5A29672-DDCE-4633-82C1-FF7AFDE411D5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microsofts", "Microsofts", "{B755CB13-5F3A-4FD8-BB41-5EF4A959FFCA}"
 EndProject
@@ -106,7 +96,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Microsofts.Contracts
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Microsofts.Infrastructure", "Integrations\Microsofts\Rocket.Microsofts.Infrastructure\Rocket.Microsofts.Infrastructure.csproj", "{D8CB025C-8CED-498D-B7E9-C9CC6F14A0F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Microsofts.Injection", "Integrations\Microsofts\Rocket.Microsofts.Injection\Rocket.Microsofts.Injection.csproj", "{357B0613-38CE-428E-92A6-06C805B01427}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Microsofts.Injection.Api", "Integrations\Microsofts\Rocket.Microsofts.Injection.Api\Rocket.Microsofts.Injection.Api.csproj", "{357B0613-38CE-428E-92A6-06C805B01427}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.QuestPdf.Domain", "Integrations\QuestPdf\Rocket.QuestPdf.Domain\Rocket.QuestPdf.Domain.csproj", "{A9369994-2A70-4F0A-8D45-1BAF346A7454}"
 EndProject
@@ -116,7 +106,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.QuestPdf.Contracts",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.QuestPdf.Infrastructure", "Integrations\QuestPdf\Rocket.QuestPdf.Infrastructure\Rocket.QuestPdf.Infrastructure.csproj", "{455221AB-A6B0-4B7F-81A5-AB289D8FED9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.QuestPdf.Injection", "Integrations\QuestPdf\Rocket.QuestPdf.Injection\Rocket.QuestPdf.Injection.csproj", "{3EC0E225-CB6D-4D99-9F8F-A13B29FE4EB4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.QuestPdf.Injection.Api", "Integrations\QuestPdf\Rocket.QuestPdf.Injection.Api\Rocket.QuestPdf.Injection.Api.csproj", "{3EC0E225-CB6D-4D99-9F8F-A13B29FE4EB4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Google", "Google", "{B1703A2F-61B8-4CF1-B81C-000F68AA481A}"
 EndProject
@@ -126,7 +116,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Google.Contracts", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Google.Infrastructure", "Integrations\Google\Google\Rocket.Google.Infrastructure\Rocket.Google.Infrastructure.csproj", "{433C2EC0-2581-4478-832F-152BFFD57A03}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Google.Injection", "Integrations\Google\Google\Rocket.Google.Injection\Rocket.Google.Injection.csproj", "{40B02FA1-353C-4D96-B7AB-38974E422AD8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Google.Injection.Api", "Integrations\Google\Google\Rocket.Google.Injection.Api\Rocket.Google.Injection.Api.csproj", "{40B02FA1-353C-4D96-B7AB-38974E422AD8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.QrCode", "Rocket.Infrastructure.QrCode\Rocket.Infrastructure.QrCode.csproj", "{9307AC85-3DAA-4186-B423-338EBAEBA6A9}"
 EndProject
@@ -135,6 +125,34 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Tests.Integration.Api", "Tests\Rocket.Tests.Integration.Api\Rocket.Tests.Integration.Api.csproj", "{8DAB69F4-1514-4B20-9BC7-F54AB73DF0AB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Tests.Infrastructure", "Tests\Rocket.Tests.Infrastructure\Rocket.Tests.Infrastructure.csproj", "{3A746FF8-9D5F-4F92-ADB9-6F4825A066A5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Replicate", "Replicate", "{8574A3BF-515B-418F-9319-3B5B63455AF0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Replicate.Domain", "Integrations\Replicate\Rocket.Replicate.Domain\Rocket.Replicate.Domain.csproj", "{226F4A7E-CB60-4D32-99F7-E9827E5B9E2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Replicate.Contracts", "Integrations\Replicate\Rocket.Replicate.Contracts\Rocket.Replicate.Contracts.csproj", "{5C0B92D5-DC97-4B78-BD01-67D7FB0FF3AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Replicate.Infrastructure", "Integrations\Replicate\Rocket.Replicate.Infrastructure\Rocket.Replicate.Infrastructure.csproj", "{F7E063DE-6561-4CF6-BBC6-DD267DD7B03B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Replicate.Injection.Api", "Integrations\Replicate\Rocket.Replicate.Injection.Api\Rocket.Replicate.Injection.Api.csproj", "{3FFE7FF4-DC13-4040-9022-A626AB389332}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Diagnostics.Injection.Web", "Integrations\Diagnostics\Rocket.Diagnostics.Injection.Web\Rocket.Diagnostics.Injection.Web.csproj", "{2B6E65AC-FB23-46EB-9FB0-4185FA3F7762}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Dropbox.Injection.Web", "Integrations\Dropbox\Rocket.Dropbox.Injection.Web\Rocket.Dropbox.Injection.Web.csproj", "{0CB05901-B82B-44D0-B11F-7FA4D0204F62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Gcp.Injection.Web", "Integrations\Google\Gcp\Rocket.Gcp.Injection.Web\Rocket.Gcp.Injection.Web.csproj", "{DB0C52B2-A222-4DB4-AC5F-134B7A21E7F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Google.Injection.Web", "Integrations\Google\Google\Rocket.Google.Injection.Web\Rocket.Google.Injection.Web.csproj", "{52DF5D5D-CC3A-4C10-8C42-6A58D6EA0400}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Microsofts.Injection.Web", "Integrations\Microsofts\Rocket.Microsofts.Injection.Web\Rocket.Microsofts.Injection.Web.csproj", "{089EAABE-DBDD-4CED-847A-3527B1605489}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Notion.Injection.Web", "Integrations\Notion\Rocket.Notion.Injection.Web\Rocket.Notion.Injection.Web.csproj", "{E5C8C6E8-4818-4B05-8147-71F9FCD13F61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Ollama.Injection.Web", "Integrations\Ollama\Rocket.Ollama.Injection.Web\Rocket.Ollama.Injection.Web.csproj", "{0E7A75CB-1C39-47E5-A265-824697336870}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.QuestPdf.Injection.Web", "Integrations\QuestPdf\Rocket.QuestPdf.Injection.Web\Rocket.QuestPdf.Injection.Web.csproj", "{A87B66A6-C50F-41F8-A50B-4BC114FC374E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Replicate.Injection.Web", "Integrations\Replicate\Rocket.Replicate.Injection.Web\Rocket.Replicate.Injection.Web.csproj", "{F810449A-5EE2-4CA1-AD46-CC5F8B3CE30E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -230,22 +248,6 @@ Global
 		{CC415B91-1DE4-46AC-BAF3-6B85DAA154C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC415B91-1DE4-46AC-BAF3-6B85DAA154C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC415B91-1DE4-46AC-BAF3-6B85DAA154C9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2339BF0D-968C-465C-8D8E-3A9853F2B834}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2339BF0D-968C-465C-8D8E-3A9853F2B834}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2339BF0D-968C-465C-8D8E-3A9853F2B834}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2339BF0D-968C-465C-8D8E-3A9853F2B834}.Release|Any CPU.Build.0 = Release|Any CPU
-		{89B90F6D-08C2-4AA9-B124-68CCE1DA9B08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{89B90F6D-08C2-4AA9-B124-68CCE1DA9B08}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{89B90F6D-08C2-4AA9-B124-68CCE1DA9B08}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{89B90F6D-08C2-4AA9-B124-68CCE1DA9B08}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BD10E927-03F7-440A-BC3E-F307503CCAF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BD10E927-03F7-440A-BC3E-F307503CCAF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BD10E927-03F7-440A-BC3E-F307503CCAF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BD10E927-03F7-440A-BC3E-F307503CCAF6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0BA9C168-B2A5-418F-8F13-24D273A54E99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0BA9C168-B2A5-418F-8F13-24D273A54E99}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0BA9C168-B2A5-418F-8F13-24D273A54E99}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0BA9C168-B2A5-418F-8F13-24D273A54E99}.Release|Any CPU.Build.0 = Release|Any CPU
 		{574C28CE-D24B-427C-B663-BDC41EB7255A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{574C28CE-D24B-427C-B663-BDC41EB7255A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{574C28CE-D24B-427C-B663-BDC41EB7255A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -370,6 +372,58 @@ Global
 		{3A746FF8-9D5F-4F92-ADB9-6F4825A066A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A746FF8-9D5F-4F92-ADB9-6F4825A066A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A746FF8-9D5F-4F92-ADB9-6F4825A066A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{226F4A7E-CB60-4D32-99F7-E9827E5B9E2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{226F4A7E-CB60-4D32-99F7-E9827E5B9E2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{226F4A7E-CB60-4D32-99F7-E9827E5B9E2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{226F4A7E-CB60-4D32-99F7-E9827E5B9E2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C0B92D5-DC97-4B78-BD01-67D7FB0FF3AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C0B92D5-DC97-4B78-BD01-67D7FB0FF3AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C0B92D5-DC97-4B78-BD01-67D7FB0FF3AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C0B92D5-DC97-4B78-BD01-67D7FB0FF3AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7E063DE-6561-4CF6-BBC6-DD267DD7B03B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7E063DE-6561-4CF6-BBC6-DD267DD7B03B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7E063DE-6561-4CF6-BBC6-DD267DD7B03B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7E063DE-6561-4CF6-BBC6-DD267DD7B03B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FFE7FF4-DC13-4040-9022-A626AB389332}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FFE7FF4-DC13-4040-9022-A626AB389332}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FFE7FF4-DC13-4040-9022-A626AB389332}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FFE7FF4-DC13-4040-9022-A626AB389332}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B6E65AC-FB23-46EB-9FB0-4185FA3F7762}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B6E65AC-FB23-46EB-9FB0-4185FA3F7762}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B6E65AC-FB23-46EB-9FB0-4185FA3F7762}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B6E65AC-FB23-46EB-9FB0-4185FA3F7762}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CB05901-B82B-44D0-B11F-7FA4D0204F62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CB05901-B82B-44D0-B11F-7FA4D0204F62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CB05901-B82B-44D0-B11F-7FA4D0204F62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CB05901-B82B-44D0-B11F-7FA4D0204F62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB0C52B2-A222-4DB4-AC5F-134B7A21E7F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB0C52B2-A222-4DB4-AC5F-134B7A21E7F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB0C52B2-A222-4DB4-AC5F-134B7A21E7F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB0C52B2-A222-4DB4-AC5F-134B7A21E7F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52DF5D5D-CC3A-4C10-8C42-6A58D6EA0400}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52DF5D5D-CC3A-4C10-8C42-6A58D6EA0400}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52DF5D5D-CC3A-4C10-8C42-6A58D6EA0400}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52DF5D5D-CC3A-4C10-8C42-6A58D6EA0400}.Release|Any CPU.Build.0 = Release|Any CPU
+		{089EAABE-DBDD-4CED-847A-3527B1605489}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{089EAABE-DBDD-4CED-847A-3527B1605489}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{089EAABE-DBDD-4CED-847A-3527B1605489}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{089EAABE-DBDD-4CED-847A-3527B1605489}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5C8C6E8-4818-4B05-8147-71F9FCD13F61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5C8C6E8-4818-4B05-8147-71F9FCD13F61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5C8C6E8-4818-4B05-8147-71F9FCD13F61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5C8C6E8-4818-4B05-8147-71F9FCD13F61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E7A75CB-1C39-47E5-A265-824697336870}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E7A75CB-1C39-47E5-A265-824697336870}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E7A75CB-1C39-47E5-A265-824697336870}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E7A75CB-1C39-47E5-A265-824697336870}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A87B66A6-C50F-41F8-A50B-4BC114FC374E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A87B66A6-C50F-41F8-A50B-4BC114FC374E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A87B66A6-C50F-41F8-A50B-4BC114FC374E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A87B66A6-C50F-41F8-A50B-4BC114FC374E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F810449A-5EE2-4CA1-AD46-CC5F8B3CE30E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F810449A-5EE2-4CA1-AD46-CC5F8B3CE30E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F810449A-5EE2-4CA1-AD46-CC5F8B3CE30E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F810449A-5EE2-4CA1-AD46-CC5F8B3CE30E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{42CB70A2-68E4-4EB7-8AAD-4E2F987D01BA} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
@@ -377,11 +431,6 @@ Global
 		{CC415B91-1DE4-46AC-BAF3-6B85DAA154C9} = {42CB70A2-68E4-4EB7-8AAD-4E2F987D01BA}
 		{121393B8-1E90-4620-A200-444315FFB75D} = {42CB70A2-68E4-4EB7-8AAD-4E2F987D01BA}
 		{F46B0519-54A9-4F29-BB69-B5D23B8E1360} = {42CB70A2-68E4-4EB7-8AAD-4E2F987D01BA}
-		{57F97432-0A3A-4947-9C94-C1937E658D1F} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
-		{2339BF0D-968C-465C-8D8E-3A9853F2B834} = {57F97432-0A3A-4947-9C94-C1937E658D1F}
-		{89B90F6D-08C2-4AA9-B124-68CCE1DA9B08} = {57F97432-0A3A-4947-9C94-C1937E658D1F}
-		{0BA9C168-B2A5-418F-8F13-24D273A54E99} = {57F97432-0A3A-4947-9C94-C1937E658D1F}
-		{BD10E927-03F7-440A-BC3E-F307503CCAF6} = {57F97432-0A3A-4947-9C94-C1937E658D1F}
 		{E02E9B38-E79C-4C27-8C1E-5E37705A72D0} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
 		{574C28CE-D24B-427C-B663-BDC41EB7255A} = {E02E9B38-E79C-4C27-8C1E-5E37705A72D0}
 		{CF21066E-11C9-4BCF-B21B-2D7CB17611A1} = {E02E9B38-E79C-4C27-8C1E-5E37705A72D0}
@@ -421,5 +470,19 @@ Global
 		{DA986CAB-AC2C-428E-BFA3-624FB29423EE} = {70E3DFE8-7D75-471D-86CD-40CBD465DA00}
 		{8DAB69F4-1514-4B20-9BC7-F54AB73DF0AB} = {70E3DFE8-7D75-471D-86CD-40CBD465DA00}
 		{3A746FF8-9D5F-4F92-ADB9-6F4825A066A5} = {70E3DFE8-7D75-471D-86CD-40CBD465DA00}
+		{8574A3BF-515B-418F-9319-3B5B63455AF0} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
+		{226F4A7E-CB60-4D32-99F7-E9827E5B9E2B} = {8574A3BF-515B-418F-9319-3B5B63455AF0}
+		{5C0B92D5-DC97-4B78-BD01-67D7FB0FF3AB} = {8574A3BF-515B-418F-9319-3B5B63455AF0}
+		{F7E063DE-6561-4CF6-BBC6-DD267DD7B03B} = {8574A3BF-515B-418F-9319-3B5B63455AF0}
+		{3FFE7FF4-DC13-4040-9022-A626AB389332} = {8574A3BF-515B-418F-9319-3B5B63455AF0}
+		{2B6E65AC-FB23-46EB-9FB0-4185FA3F7762} = {2F35331B-7C2C-4C4F-B90D-DA4F8E0B4F45}
+		{0CB05901-B82B-44D0-B11F-7FA4D0204F62} = {42CB70A2-68E4-4EB7-8AAD-4E2F987D01BA}
+		{DB0C52B2-A222-4DB4-AC5F-134B7A21E7F4} = {5CEEE9EB-53E9-48DF-BF2D-E4E5FE371042}
+		{52DF5D5D-CC3A-4C10-8C42-6A58D6EA0400} = {B1703A2F-61B8-4CF1-B81C-000F68AA481A}
+		{089EAABE-DBDD-4CED-847A-3527B1605489} = {B755CB13-5F3A-4FD8-BB41-5EF4A959FFCA}
+		{E5C8C6E8-4818-4B05-8147-71F9FCD13F61} = {84FBE110-0D05-4831-9467-24C690D7563E}
+		{0E7A75CB-1C39-47E5-A265-824697336870} = {E02E9B38-E79C-4C27-8C1E-5E37705A72D0}
+		{A87B66A6-C50F-41F8-A50B-4BC114FC374E} = {3E3BBF70-341A-4755-B493-2548ABFAA45C}
+		{F810449A-5EE2-4CA1-AD46-CC5F8B3CE30E} = {8574A3BF-515B-418F-9319-3B5B63455AF0}
 	EndGlobalSection
 EndGlobal

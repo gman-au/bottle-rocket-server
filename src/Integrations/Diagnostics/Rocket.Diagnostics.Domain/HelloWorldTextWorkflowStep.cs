@@ -16,6 +16,8 @@ namespace Rocket.Diagnostics.Domain
 
         public override string StepName { get; set; } = "Hello world text (test workflow)";
 
+        public override string StepCode { get; set; } = DiagnosticDomainConstants.HelloWorldTextWorkflowCode;
+
         public override string RequiresConnectorCode { get; set; } = string.Empty;
 
     }

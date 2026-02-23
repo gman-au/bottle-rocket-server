@@ -11,6 +11,8 @@ namespace Rocket.Ollama.Domain
 
         public override string StepName { get; set; } = "Extract text from image using Ollama model";
 
+        public override string StepCode { get; set; } = OllamaDomainConstants.OllamaExtractWorkflowCode;
+
         public override string RequiresConnectorCode { get; set; } = OllamaDomainConstants.ConnectorCode;
 
         public string ModelName { get; set; }

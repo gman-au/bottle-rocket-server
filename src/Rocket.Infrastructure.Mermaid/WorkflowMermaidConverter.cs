@@ -1,25 +1,20 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts.Workflows;
-using Rocket.Diagnostics.Contracts;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Utils;
-using Rocket.Dropbox.Contracts;
-using Rocket.Gcp.Contracts;
-using Rocket.Google.Contracts;
 using Rocket.Infrastructure.Mermaid.Extensions;
 using Rocket.Interfaces;
-using Rocket.Microsofts.Contracts;
-using Rocket.Notion.Contracts;
-using Rocket.Ollama.Contracts;
-using Rocket.QuestPdf.Contracts;
 
 namespace Rocket.Infrastructure.Mermaid
 {
-    public class WorkflowMermaidConverter(ILogger<WorkflowMermaidConverter> logger) : IWorkflowMermaidConverter
+    public class WorkflowMermaidConverter(
+        ILogger<WorkflowMermaidConverter> logger,
+        IEnumerable<ISkuWorkflow> skuWorkflows
+    ) : IWorkflowMermaidConverter
     {
-        private const string StartNode = "Bottle Rocket";
         private const string AddNewStep = "+ Add New Step";
         private const string AddBackgroundButtonColor = "#a8ef6d";
 
@@ -58,7 +53,8 @@ namespace Rocket.Infrastructure.Mermaid
                 workflow.Steps,
                 aliasEnumerator,
                 DomainConstants.WorkflowFormatTypes[(int)WorkflowFormatTypeEnum.ImageData],
-                null
+                null,
+                skuWorkflows
             );
 
             aliasEnumerator
@@ -89,7 +85,10 @@ namespace Rocket.Infrastructure.Mermaid
                 .Append(styleBuilder);
 
             logger
-                .LogDebug("mermaid: {mermaid}", result.ToString());
+                .LogDebug(
+                    "mermaid: {mermaid}",
+                    result.ToString()
+                );
 
             return
                 result
@@ -106,7 +105,8 @@ namespace Rocket.Infrastructure.Mermaid
             IEnumerable<WorkflowStepSummary> steps,
             IEnumerator<string> aliasEnumerator,
             string currentParentOutputTypeName,
-            string currentParentId
+            string currentParentId,
+            IEnumerable<ISkuWorkflow> skuWorkflows
         )
         {
             foreach (var step in steps ?? [])
@@ -142,43 +142,14 @@ namespace Rocket.Infrastructure.Mermaid
                 linksBuilder
                     .AppendLine($"{currentParentAlias} --> |{currentParentOutputTypeName}| {currentChildAlias}");
 
+                var matchedSku =
+                    (skuWorkflows ?? [])
+                    .FirstOrDefault(o => step.StepCode == o.StepCode);
+
                 var route = string.Empty;
-                if (step is DropboxUploadWorkflowStepSpecifics)
-                {
-                    route = $"/MyWorkflow/Dropbox/{workflowId}/Steps/{step.Id}/UpdateStep";
-                }
-                if (step is OllamaExtractWorkflowStepSpecifics)
-                {
-                    route = $"/MyWorkflow/Ollama/{workflowId}/Steps/{step.Id}/UpdateStep";
-                }
-                if (step is NotionUploadWorkflowStepSpecifics)
-                {
-                    route = $"/MyWorkflow/Notion/{workflowId}/Steps/{step.Id}/UpdateStep";
-                }
-                if (step is HelloWorldTextWorkflowStepSpecifics)
-                {
-                    route = $"/MyWorkflow/Diagnostic/{workflowId}/Steps/{step.Id}/UpdateStep";
-                }
-                if (step is GcpExtractWorkflowStepSpecifics)
-                {
-                    route = $"/MyWorkflow/GcpExtract/{workflowId}/Steps/{step.Id}/UpdateStep";
-                }
-                if (step is GoogleDriveUploadWorkflowStepSpecifics)
-                {
-                    route = $"/MyWorkflow/GcpUpload/{workflowId}/Steps/{step.Id}/UpdateStep";
-                }
-                if (step is OneDriveUploadWorkflowStepSpecifics)
-                {
-                    route = $"/MyWorkflow/OneDrive/{workflowId}/Steps/{step.Id}/UpdateStep";
-                }
-                if (step is OneNoteUploadWorkflowStepSpecifics)
-                {
-                    route = $"/MyWorkflow/OneNote/{workflowId}/Steps/{step.Id}/UpdateStep";
-                }
-                if (step is ConvertToPdfWorkflowStepSpecifics)
-                {
-                    route = $"/MyWorkflow/ConvertToPdf/{workflowId}/Steps/{step.Id}/UpdateStep";
-                }
+
+                if (matchedSku != null)
+                    route = $"{matchedSku.HrefBase}/{workflowId}/Steps/{step.Id}/UpdateStep";
 
                 if (!string.IsNullOrEmpty(route))
                 {
@@ -203,7 +174,8 @@ namespace Rocket.Infrastructure.Mermaid
                     step.ChildSteps,
                     aliasEnumerator,
                     step.OutputTypeName,
-                    step.Id
+                    step.Id,
+                    skuWorkflows
                 );
             }
 

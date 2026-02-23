@@ -2,6 +2,15 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Rocket.Diagnostics.Injection.Web;
+using Rocket.Dropbox.Injection.Web;
+using Rocket.Gcp.Injection.Web;
+using Rocket.Google.Injection.Web;
+using Rocket.Microsofts.Injection.Web;
+using Rocket.Notion.Injection.Web;
+using Rocket.Ollama.Injection.Web;
+using Rocket.QuestPdf.Injection.Web;
+using Rocket.Replicate.Injection.Web;
 using Rocket.Web.Host.Components;
 using Rocket.Web.Host.Injection;
 
@@ -28,9 +37,6 @@ services
 
 services
     .AddCascadingAuthenticationState();
-// services.AddScoped<IdentityUserAccessor>();
-// services.AddScoped<IdentityRedirectManager>();
-// services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
 services
     .AddAuthentication(
@@ -52,6 +58,17 @@ services
 services
     .AddAuthorizationCore()
     .AddAuthenticationServices();
+
+services
+    .AddDiagnosticWebIntegration()
+    .AddDropboxWebIntegration()
+    .AddGcpWebIntegration()
+    .AddGoogleWebIntegration()
+    .AddMicrosoftWebIntegration()
+    .AddNotionWebIntegration()
+    .AddOllamaWebIntegration()
+    .AddQuestPdfWebIntegration()
+    .AddReplicateWebIntegration();
 
 services
     .AddSignalRClientServices();

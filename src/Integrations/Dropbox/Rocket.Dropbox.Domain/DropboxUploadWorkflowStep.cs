@@ -15,6 +15,8 @@ namespace Rocket.Dropbox.Domain
         public override int OutputType { get; set; } = (int)WorkflowFormatTypeEnum.Void;
 
         public override string StepName { get; set; } = "Upload file to Dropbox";
+        
+        public override string StepCode { get; set; } = DropboxDomainConstants.UploadWorkflowCode;
 
         public override string RequiresConnectorCode { get; set; } = DropboxDomainConstants.ConnectorCode;
 

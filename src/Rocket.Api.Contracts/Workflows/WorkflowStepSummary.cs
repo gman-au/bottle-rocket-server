@@ -23,6 +23,9 @@ namespace Rocket.Api.Contracts.Workflows
         [JsonPropertyName("step_name")]
         public string StepName { get; set; }
 
+        [JsonPropertyName("step_code")]
+        public string StepCode { get; set; }
+
         [JsonPropertyName("child_steps")]
         public IEnumerable<WorkflowStepSummary> ChildSteps { get; set; }
     }

@@ -15,6 +15,8 @@ namespace Rocket.QuestPdf.Domain
 
         public override string StepName { get; set; } = "Convert data to PDF";
 
+        public override string StepCode { get; set; } = QuestPdfDomainConstants.ConvertToPdfWorkflowCode;
+
         public override string RequiresConnectorCode { get; set; } = string.Empty;
     }
 }

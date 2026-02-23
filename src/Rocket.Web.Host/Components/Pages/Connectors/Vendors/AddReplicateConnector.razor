@@ -1,0 +1,162 @@
+﻿@page "/MyConnector/Replicate/Add"
+@using Rocket.Api.Contracts.Connectors
+@using Rocket.Notion.Contracts
+@using Rocket.Replicate.Contracts
+@using Rocket.Web.Client
+@using Rocket.Web.Host.Infrastructure
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject ISnackbar Snackbar
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_connector != null)
+    {
+        <MudForm
+            Model="@_connector"
+            @ref="_form">
+            <MudPaper Class="p-4" elevation="2">
+                <MudText
+                    Align="Align.Center"
+                    Typo="Typo.h4"
+                    Color="Color.Primary"
+                    Class="mb-4">
+                    Add a Replicate connector
+                </MudText>
+
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5"
+                        >
+                            Step 1: Create a Replicate account with an API token
+                        </MudText>
+                        <MudText>
+                            <MudLink
+                                Target="_blank"
+                                Href="https://gman-au.github.io/bottle-rocket-documentation/docs/docs-general/workflow-integrations/replicate#prerequisites">
+                                Follow the instructions to set up a Replicate integration.
+                            </MudLink>
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5">
+                            Step 2: Enter the Replicate API token
+                        </MudText>
+                        <MudText>
+                            Enter the Replicate API key below.
+                        </MudText>
+                    </MudItem>
+                    <MudItem sm="12" lg="6">
+                        <MudTextField
+                            T="string"
+                            Required
+                            Label="API key"
+                            HelperText="Enter the API token here"
+                            @bind-Value="_connector.ApiToken"
+                            For="@(() => _connector.ApiToken)"
+                            RequiredError="Integration secret is required."/>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="align-start mt-2" Justify="Justify.FlexEnd">
+                    <MudItem>
+                        <GoBackButton/>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton
+                            Variant="Variant.Outlined"
+                            Color="Color.Success"
+                            Disabled="@(_isLoading)"
+                            OnClick="@SubmitAsync">
+                            Submit
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudForm>
+    }
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    MudForm _form;
+
+    private bool _isLoading;
+    private ReplicateConnectorSpecifics _connector = new();
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SubmitAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                var response =
+                    await
+                        ApiRequestManager
+                            .CreateConnectorAsync(
+                                new CreateConnectorRequest<ReplicateConnectorSpecifics>
+                                {
+                                    Connector = _connector
+                                },
+                                BaseCancellationToken
+                            );
+
+                Snackbar
+                    .Add(
+                        "The connection has been added.",
+                        Severity.Success
+                    );
+
+                NavigationManager
+                    .NavigateTo("/MyConnectors");
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+}

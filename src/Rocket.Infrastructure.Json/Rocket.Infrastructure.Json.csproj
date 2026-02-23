@@ -9,11 +9,11 @@
       <ProjectReference Include="..\Integrations\Dropbox\Rocket.Dropbox.Contracts\Rocket.Dropbox.Contracts.csproj" />
       <ProjectReference Include="..\Integrations\Google\Gcp\Rocket.Gcp.Contracts\Rocket.Gcp.Contracts.csproj" />
       <ProjectReference Include="..\Integrations\Google\Google\Rocket.Google.Contracts\Rocket.Google.Contracts.csproj" />
-      <ProjectReference Include="..\Integrations\MaxOcr\Rocket.MaxOcr.Contracts\Rocket.MaxOcr.Contracts.csproj" />
       <ProjectReference Include="..\Integrations\Microsofts\Rocket.Microsofts.Contracts\Rocket.Microsofts.Contracts.csproj" />
       <ProjectReference Include="..\Integrations\Notion\Rocket.Notion.Contracts\Rocket.Notion.Contracts.csproj" />
       <ProjectReference Include="..\Integrations\Ollama\Rocket.Ollama.Contracts\Rocket.Ollama.Contracts.csproj" />
       <ProjectReference Include="..\Integrations\QuestPdf\Rocket.QuestPdf.Contracts\Rocket.QuestPdf.Contracts.csproj" />
+      <ProjectReference Include="..\Integrations\Replicate\Rocket.Replicate.Contracts\Rocket.Replicate.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

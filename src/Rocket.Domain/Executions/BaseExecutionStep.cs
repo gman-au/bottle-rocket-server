@@ -15,6 +15,8 @@ namespace Rocket.Domain.Executions
         
         public string StepName { get; set; }
         
+        public string StepCode { get; set; }
+        
         public DateTime? RunDate { get; set; }
         
         public int ExecutionStatus { get; set; }

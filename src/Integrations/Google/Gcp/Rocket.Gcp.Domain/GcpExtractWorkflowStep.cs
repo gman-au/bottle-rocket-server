@@ -11,6 +11,8 @@ namespace Rocket.Gcp.Domain
 
         public override string StepName { get; set; } = "Extract text from image using Google Cloud Vision API";
 
+        public override string StepCode { get; set; } = GcpDomainConstants.ExtractTextWorkflowCode;
+
         public override string RequiresConnectorCode { get; set; } = GcpDomainConstants.ConnectorCode;
     }
 }

@@ -7,17 +7,17 @@ using Rocket.Api.Host.Filters;
 using Rocket.Api.Host.Handlers;
 using Rocket.Api.Host.Hubs;
 using Rocket.Api.Host.Injection;
-using Rocket.Diagnostics.Injection;
+using Rocket.Diagnostics.Injection.Api;
 using Rocket.Domain.Utils;
-using Rocket.Dropbox.Injection;
-using Rocket.Gcp.Injection;
-using Rocket.Google.Injection;
+using Rocket.Dropbox.Injection.Api;
+using Rocket.Gcp.Injection.Api;
+using Rocket.Google.Injection.Api;
 using Rocket.Infrastructure.Json;
-using Rocket.MaxOcr.Injection;
-using Rocket.Microsofts.Injection;
-using Rocket.Notion.Injection;
-using Rocket.Ollama.Injection;
-using Rocket.QuestPdf.Injection;
+using Rocket.Microsofts.Injection.Api;
+using Rocket.Notion.Injection.Api;
+using Rocket.Ollama.Injection.Api;
+using Rocket.QuestPdf.Injection.Api;
+using Rocket.Replicate.Injection.Api;
 
 var builder =
     WebApplication
@@ -33,10 +33,7 @@ var services =
 
 services
     .Configure<HostOptions>(
-        options =>
-        {
-            options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
-        }
+        options => { options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore; }
     );
 
 services
@@ -74,15 +71,17 @@ services
     .AddOpenApiServices();
 
 services
-    .AddDropboxIntegration()
-    .AddMaxOcrIntegration()
-    .AddOllamaIntegration()
-    .AddNotionIntegration()
-    .AddMicrosoftIntegration()
-    .AddGcpIntegration()
-    .AddGoogleIntegration()
-    .AddDiagnosticIntegration()
-    .AddQuestPdfIntegration()
+    .AddDropboxApiIntegration()
+    .AddOllamaApiIntegration()
+    .AddNotionApiIntegration()
+    .AddMicrosoftApiIntegration()
+    .AddGcpApiIntegration()
+    .AddGoogleApiIntegration()
+    .AddDiagnosticApiIntegration()
+    .AddQuestPdfApiIntegration()
+    .AddReplicateApiIntegration();
+
+services
     .AddWorkflowBackgroundJob();
 
 services
@@ -91,9 +90,6 @@ services
 // call this after all of the integrations
 services
     .RegisterBsonDomainMappings();
-
-//MongoBsonClassMapping
-//    .RegisterBaseConnectors();
 
 var app =
     builder

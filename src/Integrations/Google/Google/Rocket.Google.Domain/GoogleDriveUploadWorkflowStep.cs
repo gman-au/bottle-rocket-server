@@ -16,6 +16,8 @@ namespace Rocket.Google.Domain
 
         public override string StepName { get; set; } = "Upload note to Google Drive";
 
+        public override string StepCode { get; set; } = GoogleDomainConstants.UploadFileWorkflowCode;
+
         public override string RequiresConnectorCode { get; set; } = GoogleDomainConstants.ConnectorCode;
 
         public string ParentFolderId { get; set; }

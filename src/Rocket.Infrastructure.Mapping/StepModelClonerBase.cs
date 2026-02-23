@@ -26,6 +26,7 @@ namespace Rocket.Infrastructure.Mapping
                 InputTypes = value.InputTypes,
                 OutputType = value.OutputType,
                 StepName = value.StepName,
+                StepCode = value.StepCode,
                 RunDate = null,
                 ExecutionStatus = (int)ExecutionStatusEnum.NotRun,
                 ChildSteps =
