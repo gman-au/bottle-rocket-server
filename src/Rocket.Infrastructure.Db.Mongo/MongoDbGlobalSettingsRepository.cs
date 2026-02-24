@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Rocket.Domain;
-using Rocket.Domain.Connectors;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Db.Mongo
@@ -13,7 +12,7 @@ namespace Rocket.Infrastructure.Db.Mongo
     public class MongoDbGlobalSettingsRepository(
         ILogger<MongoDbGlobalSettingsRepository> logger,
         IMongoDbClient mongoDbClient
-    ) : MongoDbRepositoryBase<BaseConnector>(
+    ) : MongoDbRepositoryBase<GlobalSettings>(
         mongoDbClient,
         logger
     ), IGlobalSettingsRepository
@@ -26,6 +25,61 @@ namespace Rocket.Infrastructure.Db.Mongo
                 { nameof(GlobalSettings.SweepSuccessfulScansAfterDays), 10 },
                 { nameof(GlobalSettings.EnableSweeping), true }
             };
+
+        public async Task UpdateGlobalSettingsAsync(
+            int? sweepSuccessfulScansAfterDays,
+            bool? enableSweeping,
+            CancellationToken cancellationToken
+        )
+        {
+            var filter =
+                Builders<GlobalSettings>
+                    .Filter
+                    .Empty;
+
+            var updateBuilder = Builders<GlobalSettings>.Update;
+            var updates = new List<UpdateDefinition<GlobalSettings>>();
+
+            if (enableSweeping.HasValue)
+            {
+                updates
+                    .Add(
+                        updateBuilder
+                            .Set(
+                                o => o.EnableSweeping,
+                                enableSweeping.Value
+                            )
+                    );
+            }
+
+            if (sweepSuccessfulScansAfterDays.HasValue)
+            {
+                updates
+                    .Add(
+                        updateBuilder
+                            .Set(
+                                o => o.SweepSuccessfulScansAfterDays,
+                                sweepSuccessfulScansAfterDays.Value
+                            )
+                    );
+            }
+
+            if (updates.Count == 0) return;
+
+            var combinedUpdate = updateBuilder.Combine(updates);
+
+            var collection =
+                GetMongoCollection();
+
+            await
+                collection
+                    .UpdateOneAsync(
+                        filter,
+                        combinedUpdate,
+                        new UpdateOptions(),
+                        cancellationToken
+                    );
+        }
 
         public async Task UpdateGlobalSettingsAsync(CancellationToken cancellationToken)
         {
@@ -90,7 +144,8 @@ namespace Rocket.Infrastructure.Db.Mongo
                         {
                             "$" + field.Name,
                             field.Value
-                        });
+                        }
+                    );
             }
 
             return fields;

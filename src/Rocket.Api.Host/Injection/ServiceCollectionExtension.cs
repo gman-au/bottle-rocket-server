@@ -276,6 +276,7 @@ namespace Rocket.Api.Host.Injection
             services.AddSingleton<ICaptureSweeper, CaptureSweeper>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddSingleton<IWorkflowExecutionManager, WorkflowExecutionManager>();
+            services.AddSingleton<IGlobalSettingsChangedSignal, GlobalSettingsChangedSignal>();
             services.AddTransient<IWorkflowExecutionContext, WorkflowExecutionContext>();
             services.AddHostedService<QueuedHostedService>();
             services.AddHostedService<ScanSweeperHostedService>();

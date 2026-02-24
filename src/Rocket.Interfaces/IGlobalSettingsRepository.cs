@@ -9,5 +9,11 @@ namespace Rocket.Interfaces
         Task UpdateGlobalSettingsAsync(CancellationToken cancellationToken);
 
         Task<GlobalSettings> GetGlobalSettingsAsync(CancellationToken cancellationToken);
+
+        Task UpdateGlobalSettingsAsync(
+            int? sweepSuccessfulScansAfterDays,
+            bool? enableSweeping,
+            CancellationToken cancellationToken
+        );
     }
 }

@@ -11,21 +11,15 @@ namespace Rocket.Jobs.Service
     public class CaptureSweeper(
         ILogger<CaptureSweeper> logger,
         IScannedImageHandler scannedImageHandler,
-        IExecutionRepository executionRepository,
-        IGlobalSettingsRepository globalSettingsRepository
+        IExecutionRepository executionRepository
     ) : ICaptureSweeper
     {
-        public async Task PerformAsync(CancellationToken cancellationToken)
+        public async Task PerformAsync(
+            bool sweepEnabled,
+            int daysSinceLastSuccessfulExecution,
+            CancellationToken cancellationToken
+        )
         {
-            var globalSettings =
-                await
-                    globalSettingsRepository
-                        .GetGlobalSettingsAsync(cancellationToken);
-
-            var sweepEnabled =
-                globalSettings?
-                    .EnableSweeping ?? false;
-
             if (!sweepEnabled)
             {
                 logger
@@ -34,12 +28,11 @@ namespace Rocket.Jobs.Service
                 return;
             }
 
-            var daysSinceLastSuccessfulExecution =
-                globalSettings?
-                    .SweepSuccessfulScansAfterDays ?? 7;
-
             logger
-                .LogInformation("Retrieving successful executions using day threshold {days}", daysSinceLastSuccessfulExecution);
+                .LogInformation(
+                    "Retrieving successful executions using day threshold {days}",
+                    daysSinceLastSuccessfulExecution
+                );
 
             var pendingExecutions =
                 await
@@ -79,7 +72,10 @@ namespace Rocket.Jobs.Service
                             );
 
                     logger
-                        .LogInformation("Successfully archived scan ID: {scanId}", pendingExecution.ScanId);
+                        .LogInformation(
+                            "Successfully archived scan ID: {scanId}",
+                            pendingExecution.ScanId
+                        );
 
                     totalScansArchived++;
                 }
@@ -93,7 +89,11 @@ namespace Rocket.Jobs.Service
                 catch (Exception ex)
                 {
                     logger
-                        .LogError(ex, "Error archiving execution ID: {executionId}", pendingExecution);
+                        .LogError(
+                            ex,
+                            "Error archiving execution ID: {executionId}",
+                            pendingExecution
+                        );
                 }
             }
 

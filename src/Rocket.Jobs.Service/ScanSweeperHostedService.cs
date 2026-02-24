@@ -9,7 +9,9 @@ namespace Rocket.Jobs.Service
 {
     public class ScanSweeperHostedService(
         ILogger<ScanSweeperHostedService> logger,
-        ICaptureSweeper captureSweeper
+        ICaptureSweeper captureSweeper,
+        IGlobalSettingsRepository globalSettingsRepository,
+        IGlobalSettingsChangedSignal globalSettingsChangedSignal
     ) : BackgroundService
     {
         private const int PollingIntervalSeconds = 15;
@@ -20,9 +22,27 @@ namespace Rocket.Jobs.Service
             {
                 try
                 {
+                    // get settings
+                    var globalSettings =
+                        await
+                            globalSettingsRepository
+                                .GetGlobalSettingsAsync(cancellationToken);
+
+                    var sweepEnabled =
+                        globalSettings?
+                            .EnableSweeping ?? false;
+
+                    var daysSinceLastSuccessfulExecution =
+                        globalSettings?
+                            .SweepSuccessfulScansAfterDays ?? 7;
+
                     await
                         captureSweeper
-                            .PerformAsync(cancellationToken);
+                            .PerformAsync(
+                                sweepEnabled,
+                                daysSinceLastSuccessfulExecution,
+                                cancellationToken
+                            );
                 }
                 catch (Exception ex)
                 {
@@ -36,10 +56,15 @@ namespace Rocket.Jobs.Service
                 {
                     await
                         Task
-                            .Delay(
-                                TimeSpan
-                                    .FromSeconds(PollingIntervalSeconds),
-                                cancellationToken
+                            .WhenAny(
+                                Task
+                                    .Delay(
+                                        TimeSpan
+                                            .FromSeconds(PollingIntervalSeconds),
+                                        cancellationToken
+                                    ),
+                                globalSettingsChangedSignal
+                                    .WaitAsync(cancellationToken)
                             );
                 }
             }

@@ -5,6 +5,10 @@ namespace Rocket.Interfaces
 {
     public interface ICaptureSweeper
     {
-        Task PerformAsync(CancellationToken cancellationToken);
+        Task PerformAsync(
+            bool sweepEnabled,
+            int daysSinceLastSuccessfulExecution,
+            CancellationToken cancellationToken
+        );
     }
 }
