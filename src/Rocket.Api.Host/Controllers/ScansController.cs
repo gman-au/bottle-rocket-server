@@ -23,9 +23,10 @@ namespace Rocket.Api.Host.Controllers
     [Authorize]
     public class ScansController(
         ILogger<ScansController> logger,
+        IUserManager userManager,
         IScannedImageHandler scannedImageHandler,
         IScannedImageRepository scannedImageRepository
-    ) : ControllerBase
+    ) : RocketControllerBase(userManager)
     {
         [HttpPost("fetch")]
         [EndpointSummary("Fetch the users scans")]
@@ -151,7 +152,67 @@ namespace Rocket.Api.Host.Controllers
                     ContentType = record.ContentType,
                     FileExtension = record.FileExtension,
                     Sha256 = record.Sha256,
-                    ImageBase64 = Convert.ToBase64String(imageData)
+                    ImageBase64 = Convert.ToBase64String(imageData),
+                    Archived = record.Archived
+                };
+
+            return
+                response
+                    .AsApiSuccess();
+        }
+        
+        [HttpDelete("{id}")]
+        [EndpointSummary("Archive a scan")]
+        [EndpointGroupName("Manage captures / scans")]
+        [EndpointDescription(
+            """
+            Manually archives a scan by its unique ID.\n
+            To preserve drive space, the original image file is permanently deleted and will no longer be available
+            for workflow processing. A stubbed record will remain with a small thumbnail image for reference.
+            """
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> ArchiveScanAsync(
+            string id,
+            CancellationToken cancellationToken
+        )
+        {
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
+
+            var userId =
+                user
+                    .Id;
+
+            logger
+                .LogInformation(
+                    "Received (manual) scan archival request for username: {userId}, id: {id}",
+                    userId,
+                    id
+                );
+
+            var result =
+                await
+                    scannedImageHandler
+                        .ArchiveAsync(
+                            userId,
+                            id,
+                            cancellationToken
+                        );
+
+            var response =
+                new ArchiveScanResponse
+                {
+                    IsArchived = result
                 };
 
             return

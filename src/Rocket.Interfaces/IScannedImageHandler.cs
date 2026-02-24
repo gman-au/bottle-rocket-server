@@ -21,5 +21,11 @@ namespace Rocket.Interfaces
             string id,
             CancellationToken cancellationToken
         );
+
+        Task<bool> ArchiveAsync(
+            string userId,
+            string id,
+            CancellationToken cancellationToken
+        );
     }
 }

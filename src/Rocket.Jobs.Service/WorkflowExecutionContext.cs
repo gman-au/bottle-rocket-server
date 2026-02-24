@@ -36,6 +36,12 @@ namespace Rocket.Jobs.Service
                     ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                 );
 
+            if (record.Archived)
+                throw new RocketException(
+                    "Record is archived and cannot be processed.",
+                    ApiStatusCodeEnum.RecordIsArchived
+                );
+
             SetCurrentArtifact(
                 new ExecutionStepArtifact
                 {
