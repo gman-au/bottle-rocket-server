@@ -18,6 +18,7 @@
         PotentiallyIrrecoverableOperation,
         RecordAlreadyExists,
         WorkflowMissingConnection,
+        RecordIsArchived,
         ServerError = 5000,
         ServerConfigurationError,
         ThirdPartyServiceError,

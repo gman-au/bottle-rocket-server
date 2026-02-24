@@ -1,9 +1,4 @@
-﻿using System.IO;
-using Achar.Infrastructure.Api.HttpClient;
-using Achar.Infrastructure.Api.HttpClient.Options;
-using Achar.Interfaces.Testing;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Reqnroll.Microsoft.Extensions.DependencyInjection;
 using Rocket.Tests.Infrastructure;
 using Rocket.Tests.Infrastructure.Contexts;

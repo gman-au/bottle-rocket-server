@@ -21,6 +21,30 @@ namespace Rocket.Infrastructure.Db.Mongo
             await
                 InsertRecordAsync(scannedImage, cancellationToken);
 
+        public async Task ArchiveScanAsync(
+            string userId,
+            string id,
+            CancellationToken cancellationToken
+        ) =>
+            await
+                ApplyUpdateToFilteredRecordFieldAsync(
+                    o => o.Archived,
+                    true,
+                    Builders<ScannedImage>
+                        .Filter
+                        .Eq(
+                            o => o.UserId,
+                            userId
+                        ) &
+                    Builders<ScannedImage>
+                        .Filter
+                        .Eq(
+                            o => o.Id,
+                            id
+                        ),
+                    cancellationToken
+                );
+
         public async Task<(IEnumerable<ScannedImage> records, long totalRecordCount)> FetchScansAsync(
             string userId,
             int startIndex,
@@ -35,6 +59,12 @@ namespace Rocket.Infrastructure.Db.Mongo
                     .Eq(
                         u => u.UserId,
                         userId
+                    ) &
+                Builders<ScannedImage>
+                    .Filter
+                    .Eq(
+                        u => u.Archived,
+                        false
                     ),
                 o => o.CaptureDate,
                 cancellationToken

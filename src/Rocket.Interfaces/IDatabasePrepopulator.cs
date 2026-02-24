@@ -6,5 +6,7 @@ namespace Rocket.Interfaces
     public interface IDatabasePrepopulator
     {
         Task PopulatePageTemplatesAsync(CancellationToken cancellationToken);
+
+        Task PopulateGlobalSettingsAsync(CancellationToken cancellationToken);
     }
 }

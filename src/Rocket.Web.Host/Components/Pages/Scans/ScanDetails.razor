@@ -17,10 +17,30 @@
         {
             <MudGrid Class="pa-4" Justify="Justify.SpaceEvenly">
                 <MudItem xs="12" sm="6">
-                    <MudImage
-                        Class="mud-paper mud-paper-outlined"
-                        src=@($"data:{_scanSpecifics.ContentType};base64,{_scanSpecifics.ImageBase64}")
-                        Fluid/>
+                    @if (_scanSpecifics.Archived)
+                    {
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.Center" Style="height:100%;">
+                            <MudIcon
+                                Size="Size.Large"
+                                Class="broken-image"
+                                Icon="@StandardIcons.NoImageIcon"
+                                Title="Scan has been archived"/>
+                            
+                            <MudText
+                                Typo="Typo.h4"
+                                Class="broken-image"
+                            >
+                                Archived
+                            </MudText>
+                        </MudStack>
+                    }
+                    else
+                    {
+                        <MudImage
+                            Class="mud-paper mud-paper-outlined"
+                            src=@($"data:{_scanSpecifics.ContentType};base64,{_scanSpecifics.ImageBase64}")
+                            Fluid/>
+                    }
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudStack
@@ -43,47 +63,55 @@
                                 <SimpleTableRowPair Title="Capture Date"
                                                     Value=@_scanSpecifics.CaptureDate?.ToString("yyyy-MM-dd HH:mm:ss")/>
                                 <SimpleTableRowPair Title="Content Type" Value=@_scanSpecifics.ContentType/>
+                                <SimpleTableRowPair
+                                    Title="Status"
+                                    Value=@(_scanSpecifics.Archived ? "Archived" : "Active")
+                                    ValueColor="@(_scanSpecifics.Archived ? Color.Warning : Color.Success)"
+                                />
                                 </tbody>
                             </MudSimpleTable>
                         </div>
-                        <div class="mud-border-secondary border p-4 rounded">
-                            <MudText
-                                Typo="Typo.h5"
-                                Color="Color.Primary">
-                                Manually trigger workflow
-                            </MudText>
-                            <MudText
-                                Typo="Typo.body1">
-                                Select a workflow from the list and click the button to run the workflow against this scan.
-                            </MudText>
-                            <MudGrid Class="mt-2" Justify="Justify.SpaceBetween">
-                                <MudItem xs="12">
-                                    <MudSelect
-                                        T="string"
-                                        Label="Workflow"
-                                        @bind-Value="@_workflowIdToTrigger"
-                                        HelperText="Select a workflow to trigger against this scan"
-                                        Clearable="true"
-                                        Required="false">
-                                        @foreach (var workflow in _availableWorkflows ?? [])
-                                        {
-                                            <MudSelectItem Value="@workflow.Id">
-                                                @workflow.Name
-                                            </MudSelectItem>
-                                        }
-                                    </MudSelect>
-                                </MudItem>
-                                <MudItem xs="12">
-                                    <MudButton
-                                        Disabled="@(string.IsNullOrEmpty(_workflowIdToTrigger))"
-                                        OnClick="@(async () => await ConfirmTriggerWorkflowAsync())"
-                                        Variant="Variant.Outlined"
-                                        Color="Color.Success">
-                                        Run workflow
-                                    </MudButton>
-                                </MudItem>
-                            </MudGrid>
-                        </div>
+                        @if (!_scanSpecifics.Archived)
+                        {
+                            <div class="mud-border-secondary border p-4 rounded">
+                                <MudText
+                                    Typo="Typo.h5"
+                                    Color="Color.Primary">
+                                    Manually trigger workflow
+                                </MudText>
+                                <MudText
+                                    Typo="Typo.body1">
+                                    Select a workflow from the list and click the button to run the workflow against this scan.
+                                </MudText>
+                                <MudGrid Class="mt-2" Justify="Justify.SpaceBetween">
+                                    <MudItem xs="12">
+                                        <MudSelect
+                                            T="string"
+                                            Label="Workflow"
+                                            @bind-Value="@_workflowIdToTrigger"
+                                            HelperText="Select a workflow to trigger against this scan"
+                                            Clearable="true"
+                                            Required="false">
+                                            @foreach (var workflow in _availableWorkflows ?? [])
+                                            {
+                                                <MudSelectItem Value="@workflow.Id">
+                                                    @workflow.Name
+                                                </MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs="12">
+                                        <MudButton
+                                            Disabled="@(string.IsNullOrEmpty(_workflowIdToTrigger))"
+                                            OnClick="@(async () => await ConfirmTriggerWorkflowAsync())"
+                                            Variant="Variant.Outlined"
+                                            Color="Color.Success">
+                                            Run workflow
+                                        </MudButton>
+                                    </MudItem>
+                                </MudGrid>
+                            </div>
+                        }
                         <MudDivider/>
                         <GoBackButton BackPath="/MyScans"/>
                     </MudStack>

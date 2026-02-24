@@ -38,6 +38,9 @@ namespace Rocket.Api.Contracts.Executions
         
         [JsonPropertyName("content_type")]
         public string ContentType { get; set; }
+
+        [JsonPropertyName("archived")]
+        public bool Archived { get; set; }
         
         [JsonPropertyName("steps")]
         public IEnumerable<ExecutionStepSummary> Steps { get; set; }

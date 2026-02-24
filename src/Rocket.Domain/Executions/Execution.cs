@@ -30,6 +30,8 @@ namespace Rocket.Domain.Executions
         public string ThumbnailBase64 { get; set; }
         
         public string ContentType { get; set; }
+
+        public bool Archived { get; set; }
         
         public IEnumerable<BaseExecutionStep> Steps { get; set; }
     }

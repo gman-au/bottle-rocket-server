@@ -16,5 +16,10 @@ namespace Rocket.Interfaces
             string fileExtension,
             CancellationToken cancellationToken
         );
+
+        Task<bool> DeleteImageAsync(
+            string blobId,
+            string fileExtension,
+            CancellationToken cancellationToken);
     }
 }

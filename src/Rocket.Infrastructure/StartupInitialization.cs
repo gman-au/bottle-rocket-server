@@ -23,6 +23,10 @@ namespace Rocket.Infrastructure
                 databasePrepopulator
                     .PopulatePageTemplatesAsync(cancellationToken);
 
+            await
+                databasePrepopulator
+                    .PopulateGlobalSettingsAsync(cancellationToken);
+
             logger
                 .LogInformation("Checking first-start initialization...");
 

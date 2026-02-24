@@ -77,22 +77,22 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Executions =
                         records
-                            .Select(
-                                o =>
-                                    new ExecutionSummary
-                                    {
-                                        Id = o.Id,
-                                        UserId = o.UserId,
-                                        ScanId = o.ScanId,
-                                        WorkflowId = o.WorkflowId,
-                                        MatchingPageSymbol = o.MatchingPageSymbol,
-                                        CreatedAt = o.CreatedAt.ToLocalTime(),
-                                        RunDate = o.RunDate?.ToLocalTime(),
-                                        Name = o.Name,
-                                        ExecutionStatus = o.ExecutionStatus,
-                                        ThumbnailBase64 = o.ThumbnailBase64,
-                                        ContentType = o.ContentType
-                                    }
+                            .Select(o =>
+                                new ExecutionSummary
+                                {
+                                    Id = o.Id,
+                                    UserId = o.UserId,
+                                    ScanId = o.ScanId,
+                                    WorkflowId = o.WorkflowId,
+                                    MatchingPageSymbol = o.MatchingPageSymbol,
+                                    CreatedAt = o.CreatedAt.ToLocalTime(),
+                                    RunDate = o.RunDate?.ToLocalTime(),
+                                    Name = o.Name,
+                                    ExecutionStatus = o.ExecutionStatus,
+                                    ThumbnailBase64 = o.ThumbnailBase64,
+                                    ContentType = o.ContentType,
+                                    Archived = o.Archived
+                                }
                             ),
                     TotalRecords = (int)totalRecordCount
                 };
@@ -268,6 +268,12 @@ namespace Rocket.Api.Host.Controllers
                 );
             }
 
+            if (execution.Archived)
+                throw new RocketException(
+                    "The execution is archived and cannot be modified.",
+                    ApiStatusCodeEnum.RecordIsArchived
+                );
+
             var result =
                 await
                     workflowExecutionManager
@@ -332,6 +338,12 @@ namespace Rocket.Api.Host.Controllers
                     ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                 );
             }
+
+            if (execution.Archived)
+                throw new RocketException(
+                    "The execution is archived and cannot be modified.",
+                    ApiStatusCodeEnum.RecordIsArchived
+                );
 
             var result =
                 await
@@ -416,10 +428,10 @@ namespace Rocket.Api.Host.Controllers
                     ExecutionStatus = execution.ExecutionStatus,
                     ThumbnailBase64 = execution.ThumbnailBase64,
                     ContentType = execution.ContentType,
+                    Archived = execution.Archived,
                     Steps =
                         (execution.Steps ?? [])
-                        .Select(
-                            o =>
+                        .Select(o =>
                             {
                                 var mapper =
                                     executionStepModelMapperRegistry

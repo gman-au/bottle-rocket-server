@@ -26,6 +26,7 @@ namespace Rocket.Infrastructure.Mapping
                 MatchingPageSymbol = workflow.MatchingPageSymbol,
                 CreatedAt = DateTime.UtcNow,
                 RunDate = null,
+                Archived = false,
                 Name = workflow.Name,
                 ExecutionStatus = (int)ExecutionStatusEnum.NotRun,
                 Steps =

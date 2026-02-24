@@ -24,5 +24,11 @@ namespace Rocket.Interfaces
             ScannedImage scannedImage,
             CancellationToken cancellationToken
         );
+
+        Task ArchiveScanAsync(
+            string userId,
+            string id,
+            CancellationToken cancellationToken
+        );
     }
 }

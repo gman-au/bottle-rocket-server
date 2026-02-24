@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Connectors;
 using Rocket.Api.Contracts.Executions;
+using Rocket.Api.Contracts.GlobalSettings;
 using Rocket.Api.Contracts.Scans;
 using Rocket.Api.Contracts.Users;
 using Rocket.Api.Contracts.Workflows;
@@ -173,7 +174,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         );
 
-        public Task<VersionResponse> GetSystemVersionsAsync(
+        public Task<VersionResponse> GetSystemVersionsAsync(CancellationToken cancellationToken);
+
+        public Task<GlobalSettingsSpecifics> GetGlobalSettingsAsync(CancellationToken cancellationToken);
+
+        Task<ApiResponse> UpdateGlobalSettingsAsync(
+            GlobalSettingsSpecifics globalSettings,
             CancellationToken cancellationToken
         );
     }

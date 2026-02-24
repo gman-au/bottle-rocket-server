@@ -1,0 +1,188 @@
+﻿@page "/GlobalSettings"
+@using Rocket.Api.Contracts.GlobalSettings
+@using Rocket.Web.Client
+@using Rocket.Web.Host.Infrastructure
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject ISnackbar Snackbar
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_newModel != null)
+    {
+        <MudForm
+            Model="@_newModel"
+            @ref="_form">
+            <MudPaper Class="p-4" elevation="2">
+                <MudText
+                    Align="Align.Center"
+                    Typo="Typo.h4"
+                    Color="Color.Primary"
+                    Class="mb-4">
+                    System Settings
+                </MudText>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <div class="mud-border-primary border p-4 mb-4 rounded">
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudText
+                                        Color="Color.Secondary"
+                                        GutterBottom
+                                        Typo="Typo.h5">
+                                        Automatic archival (sweeping)
+                                    </MudText>
+                                    <MudText
+                                        Typo="Typo.body2">
+                                        <p>
+                                            Configure the system to "sweep" successfully processed scans after a specified amount of days.
+                                        </p>
+                                        <p>
+                                            When a workflow has been successfully run for a given scan, that scan will be archived after the amount of 
+                                            days configured below.
+                                        </p>
+                                        <p>
+                                            You can enable or disable sweeping entirely using the checkbox.
+                                        </p>
+                                    </MudText>
+                                </MudItem>
+                                <MudItem xs="12">
+                                    <MudCheckBox
+                                        Disabled="@(_isLoading)"
+                                        @bind-Value="@_newModel.EnableSweeping">
+                                        Enable sweeping
+                                    </MudCheckBox>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudNumericField
+                                        Disabled="@(!_newModel.EnableSweeping.GetValueOrDefault())"
+                                        @bind-Value="_newModel.SweepSuccessfulScansAfterDays"
+                                        Label="Sweep scans after days"
+                                        Min="0"
+                                        OnlyValidateIfDirty/>
+                                </MudItem>
+                            </MudGrid>
+                        </div>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="align-start" Justify="Justify.FlexEnd">
+                    <MudItem>
+                        <GoBackButton/>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton
+                            Variant="Variant.Outlined"
+                            Color="Color.Success"
+                            Disabled="@(_isLoading)"
+                            OnClick="@SubmitAsync">
+                            Submit
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudForm>
+    }
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    MudForm _form;
+
+    private bool _isLoading;
+    private GlobalSettingsSpecifics _currentModel = null;
+    private GlobalSettingsSpecifics _newModel = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+
+            _currentModel =
+                await
+                    ApiRequestManager
+                        .GetGlobalSettingsAsync(
+                            BaseCancellationToken
+                        );
+
+            _newModel =
+                new GlobalSettingsSpecifics
+                {
+                    SweepSuccessfulScansAfterDays = _currentModel.SweepSuccessfulScansAfterDays,
+                    EnableSweeping = _currentModel.EnableSweeping
+                };
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SubmitAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                var sweepSuccessfulScansAfterDaysValue = _newModel.SweepSuccessfulScansAfterDays;
+                var enableSweepingValue = _newModel.EnableSweeping;
+
+                await
+                    ApiRequestManager
+                        .UpdateGlobalSettingsAsync(
+                            new GlobalSettingsSpecifics
+                            {
+                                SweepSuccessfulScansAfterDays = sweepSuccessfulScansAfterDaysValue,
+                                EnableSweeping = enableSweepingValue
+                            },
+                            BaseCancellationToken
+                        );
+
+                _currentModel =
+                    new GlobalSettingsSpecifics
+                    {
+                        SweepSuccessfulScansAfterDays = sweepSuccessfulScansAfterDaysValue ?? _currentModel.SweepSuccessfulScansAfterDays,
+                        EnableSweeping = enableSweepingValue ?? _currentModel.EnableSweeping
+                    };
+
+                Snackbar
+                    .Add(
+                        "The system settings have been updated.",
+                        Severity.Success
+                    );
+                
+                NavigationManager
+                    .NavigateTo("/");
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+}

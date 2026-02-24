@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -273,5 +274,55 @@ namespace Rocket.Infrastructure.Db.Mongo
                         ),
                     cancellationToken
                 );
+
+        public async Task<IEnumerable<Execution>> GetExecutionSuccessesForOlderScansAsync(
+            int daysSinceLastSuccessfulExecution,
+            CancellationToken cancellationToken)
+        {
+            var expiryDate =
+                DateTime
+                    .UtcNow
+                    .AddDays(-daysSinceLastSuccessfulExecution);
+
+            var filter =
+                Builders<Execution>
+                    .Filter
+                    .Eq(
+                        o => o.ExecutionStatus,
+                        (int)ExecutionStatusEnum.Completed
+                    ) &
+                Builders<Execution>
+                    .Filter
+                    .Lte(
+                        o => o.RunDate,
+                        expiryDate
+                    ) &
+                Builders<Execution>
+                    .Filter
+                    .Eq(
+                        o => o.Archived,
+                        false
+                    );
+
+            var (records, count) =
+                await
+                    FetchAllPagedAndFilteredRecordsAsync(
+                        null,
+                        null,
+                        filter,
+                        o => o.CreatedAt,
+                        cancellationToken
+                    );
+
+            logger
+                .LogInformation(
+                    "Fetched {count} execution records pending archival",
+                    count
+                );
+
+            return
+                records
+                    .ToList();
+        }
     }
 }

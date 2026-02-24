@@ -27,5 +27,7 @@ namespace Rocket.Domain
         public string QrBoundingBox { get; set; }
         
         public string ThumbnailBase64 { get; set; }
+
+        public bool Archived { get; set; }
     }
 }

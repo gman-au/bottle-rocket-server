@@ -40,7 +40,7 @@ namespace Rocket.Infrastructure.Blob.Local
                         nameof(LocalBlobConfigurationOptions.LocalSubfolder)
                     );
 
-                var filePath =
+                var blobId =
                     Guid
                         .NewGuid()
                         .ToString();
@@ -52,12 +52,12 @@ namespace Rocket.Infrastructure.Blob.Local
                         .Combine(
                             localBasePath,
                             localSubfolder,
-                            Path.GetDirectoryName(filePath)
+                            Path.GetDirectoryName(blobId)
                         );
 
                 EnsureFolderExists(folderPath);
 
-                var fullFilePath = $"{Path.GetFileName(filePath)}{fileExtension}";
+                var fullFilePath = $"{Path.GetFileName(blobId)}{fileExtension}";
 
                 var sourcePath =
                     Path
@@ -80,7 +80,7 @@ namespace Rocket.Infrastructure.Blob.Local
                             cancellationToken
                         );
 
-                return filePath;
+                return blobId;
             }
             catch (ConfigurationErrorsException ex)
             {
@@ -144,6 +144,39 @@ namespace Rocket.Infrastructure.Blob.Local
 
                 return [];
             }
+        }
+
+        public async Task<bool> DeleteImageAsync(
+            string blobId,
+            string fileExtension,
+            CancellationToken cancellationToken)
+        {
+            var filePath = $"{Path.GetFileName(blobId)}{fileExtension}";
+
+            var fullFilePath =
+                Path
+                    .Combine(
+                        _options.LocalBasePath,
+                        _options.LocalSubfolder,
+                        filePath
+                    );
+
+            logger
+                .LogInformation(
+                    "Using Local File storage path {path}",
+                    fullFilePath
+                );
+
+            if (!File.Exists(fullFilePath))
+                throw new RocketException(
+                    $"Could not find file to delete at path {fullFilePath}",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
+            File
+                .Delete(fullFilePath);
+
+            return true;
         }
 
         private static void EnsureFolderExists(string path)
