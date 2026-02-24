@@ -156,6 +156,15 @@
                         >
                             @(DarkMode ? "Switch to light mode" : "Switch to dark mode")
                         </MudNavLink>
+                        if (_isAdmin)
+                        {
+                            <MudNavLink
+                                Match="NavLinkMatch.Prefix"
+                                Href="/GlobalSettings"
+                                Icon="@StandardIcons.SettingsIcon">
+                                System settings
+                            </MudNavLink>
+                        }
                     }
                 </Authorized>
                 <NotAuthorized>

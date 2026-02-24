@@ -136,7 +136,7 @@ h1:focus {
     .mud-input-control-input-container {
         .mud-input {
             height: 100px;
-            
+
             .mud-input-slot {
                 height: 80px;
             }
@@ -146,4 +146,8 @@ h1:focus {
 
 .general-centered {
     text-align: center !important;
+}
+
+.broken-image {
+    opacity: 0.2;
 }

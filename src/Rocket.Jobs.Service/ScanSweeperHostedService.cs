@@ -14,7 +14,7 @@ namespace Rocket.Jobs.Service
         IGlobalSettingsChangedSignal globalSettingsChangedSignal
     ) : BackgroundService
     {
-        private const int PollingIntervalSeconds = 15;
+        private const int PollingIntervalSeconds = 900; // poll every 15 minutes
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {

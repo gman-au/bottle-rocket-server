@@ -15,7 +15,7 @@
             Typo="Typo.body1"
             Align="Align.Left"
             GutterBottom="true"
-            Color="Color.Secondary">
+            Color="@ValueColor">
             @Value
         </MudText>
     </td>
@@ -27,4 +27,8 @@
     
     [Parameter]
     public string Value { get; set; }
+
+    [Parameter]
+    public Color ValueColor { get; set; } = Color.Secondary;
+
 }
