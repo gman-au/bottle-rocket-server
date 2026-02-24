@@ -51,14 +51,14 @@
         * These interfaces should reside inside this infrastructure library and do not belong in the main Bottle Rocket code.
     * The function should return a new `ExecutionStepArtifact` of the applicable type where it is expected (e.g. if a step converts X to Y, the artifact should return of type Y).
 
-### 8. Create injection module
-* Create a single `ServiceCollectionExtension` module in the injection project, loading all of the `Abc` / vendor-specific implemented interfaces in a single function.
+### 8. Create API injection module
+* Create a single `ServiceCollectionExtension` module in the API injection project, loading all of the `Abc` / vendor-specific implemented interfaces in a single function.
 
-### 9. Add call to injector
+### 9. Add call to API injector
 * In the API `Program.cs`, you should now only need to add a single line to the injection module.
 ```
 services
-    .AddAbcIntegration();
+    .AddAbcApiIntegration();
 ```
 
 ### 10. Add entries into the JSON type discriminators
@@ -85,13 +85,16 @@ services
 * Add your new workflow step as a card under `/Components/Pages/Workflows/AddWorkflowStep.razor`.
     * Add a logo image (preferably white backgrounded instead of transparent).
 
-### 3. Add handler to WriteNested() Mermaid converter
-* In the `WorkflowMermaidConverter.cs` file, add a provision for your new `AbcStepSpecifics` class to define the "update step" route for steps of that type; typically this will look like:
+### 3. Create Web injection module
+* Create a single `ServiceCollectionExtension` module in the Web injection project.
+* Register each new connector as a `ISkuConnector`, with its own `Name`, `Href`, and `ImagePath`.
+* Register each new workflow as a `ISkuWorkflow`, setting up its name, description, categories, base path, etc.
+
+### 4. Add call to Web injector
+* In the Web `Program.cs`, you should now only need to add a single line to the injection module.
 ```
-if (step is AbcWorkflowStepSpecifics)
-{
-    route = $"/MyWorkflow/Abc/{workflowId}/Steps/{step.Id}/UpdateStep";
-}
+services
+    .AddAbcWebIntegration();
 ```
 
 > [!TIP]
