@@ -72,6 +72,26 @@ namespace Rocket.Tests.Unit
             _context.AssertBlobLoadWasNotCalled();
         }
 
+        [Fact]
+        public async Task Test_Load_Archived_Record_Data()
+        {
+            _context.ArrangeArchivedRecordFoundToLoad();
+            await _context.ActReadScanAsync();
+            _context.AssertImageRepositoryLoadWasCalledOnce();
+            _context.AssertShaCalculatorWasNotCalled();
+            _context.AssertBlobLoadWasNotCalled();
+        }
+
+        [Fact]
+        public async Task Test_Delete_Archived_Record()
+        {
+            _context.ArrangeArchivedRecordFoundToLoad();
+            await _context.AssertDeleteScanThrowsAlreadyDeletedErrorAsync();
+            _context.AssertImageRepositoryLoadWasCalledOnce();
+            _context.AssertShaCalculatorWasNotCalled();
+            _context.AssertBlobLoadWasNotCalled();
+        }
+
         private class TestContext
         {
             private readonly ScannedImageHandler _sut;
@@ -136,8 +156,24 @@ namespace Rocket.Tests.Unit
                                 _fixture
                                     .Build<ScannedImage>()
                                     .With(o => o.Sha256, "abc123")
+                                    .With(o => o.Archived, false)
                                     .Create())
-                        );
+                    );
+            }
+
+            public void ArrangeArchivedRecordFoundToLoad()
+            {
+                _scannedImageRepository
+                    .GetScanByIdAsync(null, null, CancellationToken.None)
+                    .ReturnsForAnyArgs(
+                        Task
+                            .FromResult(
+                                _fixture
+                                    .Build<ScannedImage>()
+                                    .With(o => o.Sha256, "abc123")
+                                    .With(o => o.Archived, true)
+                                    .Create())
+                    );
             }
 
             public void ArrangeMatchingSha()
@@ -188,6 +224,18 @@ namespace Rocket.Tests.Unit
                             );
             }
 
+            public async Task ActDeleteScanAsync()
+            {
+                _ =
+                    await
+                        _sut
+                            .ArchiveAsync(
+                                null,
+                                null,
+                                CancellationToken.None
+                            );
+            }
+
             public async Task AssertWriteScanThrowsNoAttachmentErrorAsync()
             {
                 var exception =
@@ -219,6 +267,17 @@ namespace Rocket.Tests.Unit
 
                 Assert
                     .Equal((int)ApiStatusCodeEnum.FileDataCorrupted, exception.ApiStatusCode);
+            }
+
+            public async Task AssertDeleteScanThrowsAlreadyDeletedErrorAsync()
+            {
+                var exception =
+                    await
+                        Assert
+                            .ThrowsAsync<RocketException>(async () => await ActDeleteScanAsync());
+
+                Assert
+                    .Equal((int)ApiStatusCodeEnum.RecordIsArchived, exception.ApiStatusCode);
             }
 
             public void AssertBlobSaveWasNotCalled()
