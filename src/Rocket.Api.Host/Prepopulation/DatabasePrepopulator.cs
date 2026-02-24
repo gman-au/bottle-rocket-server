@@ -7,6 +7,7 @@ namespace Rocket.Api.Host.Prepopulation
 {
     public class DatabasePrepopulator(
         IRocketbookPageTemplateRepository rocketbookPageTemplateRepository,
+        IGlobalSettingsRepository globalSettingsRepository,
         ILogger<DatabasePrepopulator> logger
     ) : IDatabasePrepopulator
     {
@@ -30,6 +31,19 @@ namespace Rocket.Api.Host.Prepopulation
 
             logger
                 .LogInformation("Modified {code} page template records", recordsUpdated);
+        }
+
+        public async Task PopulateGlobalSettingsAsync(CancellationToken cancellationToken)
+        {
+            logger
+                .LogInformation("Running global settings prepopulation...");
+
+            await
+                globalSettingsRepository
+                    .UpdateGlobalSettingsAsync(cancellationToken);
+
+            logger
+                .LogInformation("Completed global settings prepopulation");
         }
     }
 }

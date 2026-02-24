@@ -11,21 +11,41 @@ namespace Rocket.Jobs.Service
     public class CaptureSweeper(
         ILogger<CaptureSweeper> logger,
         IScannedImageHandler scannedImageHandler,
-        IExecutionRepository executionRepository
+        IExecutionRepository executionRepository,
+        IGlobalSettingsRepository globalSettingsRepository
     ) : ICaptureSweeper
     {
-        private const int DefaultDaysSinceLastSuccessfulExecution = 7;
-
-        public async Task<(int, int)> PerformAsync(CancellationToken cancellationToken)
+        public async Task PerformAsync(CancellationToken cancellationToken)
         {
+            var globalSettings =
+                await
+                    globalSettingsRepository
+                        .GetGlobalSettingsAsync(cancellationToken);
+
+            var sweepEnabled =
+                globalSettings?
+                    .EnableSweeping ?? false;
+
+            if (!sweepEnabled)
+            {
+                logger
+                    .LogInformation("Sweep not enabled, aborting");
+
+                return;
+            }
+
+            var daysSinceLastSuccessfulExecution =
+                globalSettings?
+                    .SweepSuccessfulScansAfterDays ?? 7;
+
             logger
-                .LogInformation("Retrieving successful executions");
+                .LogInformation("Retrieving successful executions using day threshold {days}", daysSinceLastSuccessfulExecution);
 
             var pendingExecutions =
                 await
                     executionRepository
                         .GetExecutionSuccessesForOlderScansAsync(
-                            DefaultDaysSinceLastSuccessfulExecution,
+                            daysSinceLastSuccessfulExecution,
                             cancellationToken
                         );
 
@@ -77,7 +97,12 @@ namespace Rocket.Jobs.Service
                 }
             }
 
-            return (totalScansArchived, totalExecutionsArchived);
+            logger
+                .LogInformation(
+                    "Archived {scansArchived} scans and {executionsArchived} executions",
+                    totalScansArchived,
+                    totalExecutionsArchived
+                );
         }
     }
 }

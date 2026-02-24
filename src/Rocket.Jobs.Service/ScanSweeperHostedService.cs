@@ -20,17 +20,9 @@ namespace Rocket.Jobs.Service
             {
                 try
                 {
-                    var (scansArchived, executionsArchived) =
-                        await
-                            captureSweeper
-                                .PerformAsync(cancellationToken);
-
-                    logger
-                        .LogInformation(
-                            "Archived {scansArchived} scans and {executionsArchived} executions",
-                            scansArchived,
-                            executionsArchived
-                        );
+                    await
+                        captureSweeper
+                            .PerformAsync(cancellationToken);
                 }
                 catch (Exception ex)
                 {
