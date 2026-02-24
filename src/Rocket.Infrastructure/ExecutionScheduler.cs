@@ -80,6 +80,12 @@ namespace Rocket.Infrastructure
                     ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                 );
 
+            if (scan.Archived)
+                throw new RocketException(
+                    "Scan is archived and cannot be processed.",
+                    ApiStatusCodeEnum.RecordIsArchived
+                );
+
             var newExecution =
                 workflowCloner
                     .Clone(

@@ -58,5 +58,10 @@ namespace Rocket.Interfaces
             string logMessage,
             CancellationToken cancellationToken
         );
+
+        Task<IEnumerable<Execution>> GetExecutionSuccessesForOlderScansAsync(
+            int daysSinceLastSuccessfulExecution,
+            CancellationToken cancellationToken
+        );
     }
 }
