@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.PageTemplates;
 
@@ -24,7 +25,7 @@ namespace Rocket.Api.Host.Prepopulation
 
                 foreach (var productCode in Enum.GetValues<RocketbookProductTypeEnum>())
                 {
-                    var vCode = $"V{(int)productCode:X2}";
+                    var vCode = $"V{productCode.ToCode()}";
 
                     foreach (var rocketbookPageTemplateType in Enum.GetValues<RocketbookPageTemplateTypeEnum>())
                     {
