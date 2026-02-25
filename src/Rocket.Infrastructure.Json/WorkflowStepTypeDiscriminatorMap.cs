@@ -32,6 +32,7 @@ namespace Rocket.Infrastructure.Json
             { typeof(GoogleDriveUploadWorkflowStepSpecifics), "google_drive_upload_workflow" },
             { typeof(ConvertToPdfWorkflowStepSpecifics), "convert_to_pdf_workflow" },
             { typeof(DataLabToExtractTextWorkflowStepSpecifics), "replicate_data_lab_to_extract_text_workflow" },
+            { typeof(DataLabToExtractProjectWorkflowStepSpecifics), "replicate_data_lab_to_extract_project_workflow" },
             { typeof(DeepSeekOcrExtractTextWorkflowStepSpecifics), "replicate_deep_seek_ocr_extract_text_workflow" }
         };
 

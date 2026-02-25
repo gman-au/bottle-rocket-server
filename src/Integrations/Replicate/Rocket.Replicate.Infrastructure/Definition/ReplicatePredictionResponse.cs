@@ -13,6 +13,12 @@ namespace Rocket.Replicate.Infrastructure.Definition
         [JsonPropertyName("status")]
         public string Status { get; set; }
         
+        [JsonPropertyName("error")]
+        public string Error { get; set; }
+        
+        [JsonPropertyName("logs")]
+        public string Logs { get; set; }
+        
         [JsonPropertyName("output")]
         public T Output { get; set; }
     }

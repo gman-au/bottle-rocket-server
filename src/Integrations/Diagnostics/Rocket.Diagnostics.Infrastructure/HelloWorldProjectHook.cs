@@ -34,22 +34,22 @@ namespace Rocket.Diagnostics.Infrastructure
                         {
                             Project = "PROJECT #1",
                             Task = "Say hello to the world!",
-                            DueDate = DateTime.Now.AddDays(10),
-                            EstimatedTime = 30
+                            DueDate = DateTime.Now.AddDays(10).ToString("d"),
+                            EstimatedTime = 30.ToString()
                         },
                         new ProjectTaskTrackerItem
                         {
                             Project = "PROJECT #2",
                             Task = "Buy an ice cream",
-                            DueDate = DateTime.Now.AddDays(15),
-                            EstimatedTime = 10
+                            DueDate = DateTime.Now.AddDays(15).ToString("d"),
+                            EstimatedTime = 10.ToString()
                         },
                         new ProjectTaskTrackerItem
                         {
                             Project = "PROJECT #3",
                             Task = "Run home",
-                            DueDate = DateTime.Now.AddDays(20),
-                            EstimatedTime = 1400
+                            DueDate = DateTime.Now.AddDays(20).ToString("d"),
+                            EstimatedTime = 1400.ToString()
                         }
                     ]
                 };

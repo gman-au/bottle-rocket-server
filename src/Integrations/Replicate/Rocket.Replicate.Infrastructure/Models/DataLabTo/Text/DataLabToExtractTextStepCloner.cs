@@ -2,7 +2,7 @@
 using Rocket.Infrastructure.Mapping;
 using Rocket.Replicate.Domain.Models.DataLabTo;
 
-namespace Rocket.Replicate.Infrastructure.Models.DataLabTo
+namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
 {
     public class DataLabToExtractTextStepCloner(IServiceProvider serviceProvider)
         : StepModelClonerBase<DataLabToExtractTextWorkflowStep, DataLabToExtractTextExecutionStep>(serviceProvider)

@@ -1,13 +1,13 @@
-﻿@page "/MyWorkflow/Replicate/DataLabTo/Text/{workflowId}/AddStep"
-@page "/MyWorkflow/Replicate/DataLabTo/Text/{workflowId}/Steps/{parentStepId}/AddStep"
-@page "/MyWorkflow/Replicate/DataLabTo/Text/{workflowId}/Steps/{stepId}/UpdateStep"
+﻿@page "/MyWorkflow/Replicate/DataLabTo/Project/{workflowId}/AddStep"
+@page "/MyWorkflow/Replicate/DataLabTo/Project/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/Replicate/DataLabTo/Project/{workflowId}/Steps/{stepId}/UpdateStep"
 @using Rocket.Replicate.Contracts.Models.DataLabTo
 @using Rocket.Replicate.Domain
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <UpdateWorkflowStepWrapper
-    T="DataLabToExtractTextWorkflowStepSpecifics"
-    WorkflowStepName="Extract text from image"
+    T="DataLabToExtractProjectWorkflowStepSpecifics"
+    WorkflowStepName="Extract project data from image"
     WorkflowId="@WorkflowId"
     ParentStepId="@ParentStepId"
     RequiresConnectorCode="@ReplicateDomainConstants.ConnectorCode"

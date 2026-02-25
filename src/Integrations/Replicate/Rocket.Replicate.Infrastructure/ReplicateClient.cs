@@ -193,6 +193,9 @@ namespace Rocket.Replicate.Infrastructure
             var status =
                 ReplicateDomainConstants
                     .ReplicateStatusProcessing;
+            
+            var error = string.Empty;
+            var logs = string.Empty;
 
             ReplicatePredictionResponse<T> predictionStatusResponse = null;
 
@@ -226,9 +229,17 @@ namespace Rocket.Replicate.Infrastructure
                         );
 
                 status =
-                    predictionStatusResponse
+                    predictionStatusResponse?
                         .Status;
 
+                error =
+                    predictionStatusResponse?
+                        .Error;
+
+                logs =
+                    predictionStatusResponse?
+                        .Logs;
+                
                 await
                     Task
                         .Delay(
@@ -249,7 +260,7 @@ namespace Rocket.Replicate.Infrastructure
             if (status != ReplicateDomainConstants.ReplicateStatusSucceeded)
             {
                 throw new RocketException(
-                    "There was an error processing the Replicate prediction.",
+                    $"There was an error processing the Replicate prediction. Error:[{error}], Logs:[{logs}].",
                     ApiStatusCodeEnum.ThirdPartyServiceError
                 );
             }

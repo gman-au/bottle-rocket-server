@@ -7,5 +7,8 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo
     {
         [JsonPropertyName("markdown")]
         public string Markdown { get; set; }
+        
+        [JsonPropertyName("extraction_schema_json")]
+        public string ExtractionSchemaJson { get; set; }
     }
 }

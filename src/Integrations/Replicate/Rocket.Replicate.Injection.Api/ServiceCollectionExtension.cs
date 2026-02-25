@@ -2,8 +2,10 @@
 using Rocket.Interfaces;
 using Rocket.Replicate.Infrastructure;
 using Rocket.Replicate.Infrastructure.Models.DataLabTo;
+using Rocket.Replicate.Infrastructure.Models.DataLabTo.Project;
+using Rocket.Replicate.Infrastructure.Models.DataLabTo.Text;
 using Rocket.Replicate.Infrastructure.Models.DeepSeekOcr;
-using DataLabToExtractTextHook = Rocket.Replicate.Infrastructure.Models.DataLabTo.DataLabToExtractTextHook;
+using DataLabToExtractTextHook = Rocket.Replicate.Infrastructure.Models.DataLabTo.Text.DataLabToExtractTextHook;
 
 namespace Rocket.Replicate.Injection.Api
 {
@@ -13,18 +15,22 @@ namespace Rocket.Replicate.Injection.Api
         {
             services
                 .AddTransient<IIntegrationHook, DataLabToExtractTextHook>()
+                .AddTransient<IIntegrationHook, DataLabToExtractProjectHook>()
                 .AddTransient<IIntegrationHook, DeepSeekOcrExtractTextHook>();
             
             services
                 .AddTransient<IWorkflowStepModelMapper, DataLabToExtractTextWorkflowStepMapper>()
+                .AddTransient<IWorkflowStepModelMapper, DataLabToExtractProjectWorkflowStepMapper>()
                 .AddTransient<IWorkflowStepModelMapper, DeepSeekOcrExtractTextWorkflowStepMapper>();
 
             services
                 .AddTransient<IExecutionStepModelMapper, DataLabToExtractTextExecutionStepMapper>()
+                .AddTransient<IExecutionStepModelMapper, DataLabToExtractProjectExecutionStepMapper>()
                 .AddTransient<IExecutionStepModelMapper, DeepSeekOcrExtractTextExecutionStepMapper>();
 
             services
                 .AddTransient<IStepModelCloner, DataLabToExtractTextStepCloner>()
+                .AddTransient<IStepModelCloner, DataLabToExtractProjectStepCloner>()
                 .AddTransient<IStepModelCloner, DeepSeekOcrExtractTextStepCloner>();
             
             services

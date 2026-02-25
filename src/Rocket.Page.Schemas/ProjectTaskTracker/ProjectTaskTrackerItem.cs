@@ -12,9 +12,9 @@ namespace Rocket.Page.Schemas.ProjectTaskTracker
         public string Task { get; set; }
         
         [JsonPropertyName("due_date")]
-        public DateTime? DueDate { get; set; }
+        public string DueDate { get; set; }
         
         [JsonPropertyName("est_time")]
-        public int EstimatedTime { get; set; }
+        public string EstimatedTime { get; set; }
     }
 }

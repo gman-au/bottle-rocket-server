@@ -12,7 +12,7 @@ namespace Rocket.Replicate.Injection.Web
 
         public string[] Categories => [SkuConstants.TextRecognition];
 
-        public string HrefBase => "/MyWorkflow/Replicate/DataLabTo";
+        public string HrefBase => "/MyWorkflow/Replicate/DataLabTo/Text";
 
         public string ImagePath => "/img/replicate-logo.png";
 
