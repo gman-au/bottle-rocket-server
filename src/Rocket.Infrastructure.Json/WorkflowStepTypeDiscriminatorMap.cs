@@ -25,6 +25,7 @@ namespace Rocket.Infrastructure.Json
             { typeof(NotionUploadWorkflowStepSpecifics), "notion_upload_workflow" },
             { typeof(OneDriveUploadWorkflowStepSpecifics), "one_drive_upload_workflow" },
             { typeof(HelloWorldTextWorkflowStepSpecifics), "hello_world_text_workflow" },
+            { typeof(HelloWorldProjectWorkflowStepSpecifics), "hello_world_project_workflow" },
             { typeof(GcpExtractWorkflowStepSpecifics), "gcp_extract_workflow" },
             { typeof(EmailFileAttachmentStepSpecifics), "email_file_attachment" },
             { typeof(OneNoteUploadWorkflowStepSpecifics), "one_note_upload_workflow" },

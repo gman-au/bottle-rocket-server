@@ -23,6 +23,7 @@ namespace Rocket.Infrastructure.Json
             { typeof(OllamaExtractProjectExecutionStepSpecifics), "ollama_extract_project_execution" },
             { typeof(GcpExtractExecutionStepSpecifics), "gcp_extract_execution" },
             { typeof(HelloWorldTextExecutionStepSpecifics), "hello_world_text_execution" },
+            { typeof(HelloWorldProjectExecutionStepSpecifics), "hello_world_project_execution" },
             { typeof(NotionUploadExecutionStepSpecifics), "notion_upload_execution" },
             { typeof(OneDriveUploadExecutionStepSpecifics), "one_drive_upload_execution" },
             { typeof(GoogleDriveUploadExecutionStepSpecifics), "google_drive_upload_execution" },

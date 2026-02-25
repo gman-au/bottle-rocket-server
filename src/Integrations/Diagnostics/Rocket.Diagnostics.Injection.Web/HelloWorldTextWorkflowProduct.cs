@@ -12,7 +12,7 @@ namespace Rocket.Diagnostics.Injection.Web
 
         public string[] Categories => [SkuConstants.Diagnostics];
 
-        public string HrefBase => "/MyWorkflow/Diagnostic";
+        public string HrefBase => "/MyWorkflow/Diagnostic/Text";
 
         public string ImagePath => "/img/bottle-rocket-logo.png";
 

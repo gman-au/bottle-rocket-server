@@ -1,12 +1,12 @@
-﻿@page "/MyWorkflow/Diagnostic/Text/{workflowId}/AddStep"
-@page "/MyWorkflow/Diagnostic/Text/{workflowId}/Steps/{parentStepId}/AddStep"
-@page "/MyWorkflow/Diagnostic/Text/{workflowId}/Steps/{stepId}/UpdateStep"
+﻿@page "/MyWorkflow/Diagnostic/Project/{workflowId}/AddStep"
+@page "/MyWorkflow/Diagnostic/Project/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/Diagnostic/Project/{workflowId}/Steps/{stepId}/UpdateStep"
 @using Rocket.Diagnostics.Contracts
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <UpdateWorkflowStepWrapper
-    T="HelloWorldTextWorkflowStepSpecifics"
-    WorkflowStepName="Hello world (text output)"
+    T="HelloWorldProjectWorkflowStepSpecifics"
+    WorkflowStepName="Hello world (project output)"
     WorkflowId="@WorkflowId"
     ParentStepId="@ParentStepId"
     StepId="@StepId"

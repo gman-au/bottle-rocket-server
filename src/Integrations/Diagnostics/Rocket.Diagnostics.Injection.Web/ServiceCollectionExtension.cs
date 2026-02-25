@@ -8,7 +8,8 @@ namespace Rocket.Diagnostics.Injection.Web
         public static IServiceCollection AddDiagnosticWebIntegration(this IServiceCollection services)
         {
             services
-                .AddTransient<ISkuWorkflow, HelloWorldTextWorkflowProduct>();
+                .AddTransient<ISkuWorkflow, HelloWorldTextWorkflowProduct>()
+                .AddTransient<ISkuWorkflow, HelloWorldProjectWorkflowProduct>();
 
             return services;
         }
