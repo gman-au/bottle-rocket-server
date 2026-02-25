@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain.Enum;
@@ -12,10 +15,17 @@ namespace Rocket.Ollama.Infrastructure
 {
     public class OllamaClient(
         ISchemaResponseBuilder schemaResponseBuilder,
+        ISchemaGenerator schemaGenerator,
+        ISchemaDictionary schemaDictionary,
         IImageBase64Converter imageBase64Converter
     ) : IOllamaClient
     {
         private const string UserRole = "user";
+
+        private static readonly JsonSerializerOptions DefaultJsonSerializationOptions = new()
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
 
         public async Task<T>
             SendRequestAsync<T>(
@@ -24,6 +34,9 @@ namespace Rocket.Ollama.Infrastructure
                 string prompt,
                 byte[] imageBytes,
                 RocketbookPageTemplateTypeEnum pageTemplateType,
+                bool useSchema,
+                float? temperature,
+                int? maxTokens,
                 CancellationToken cancellationToken
             ) where T : class
         {
@@ -52,20 +65,49 @@ namespace Rocket.Ollama.Infrastructure
                             Images = [base64Image]
                         }
                     ],
-                    Stream = false
+                    Stream = false,
+                    Temperature = temperature,
+                    NumPredict = maxTokens
                 };
 
-            var response =
-                await
-                    httpClient
-                        .PostAsJsonAsync(
-                            "api/chat",
-                            request,
-                            cancellationToken
-                        );
+            if (useSchema)
+            {
+                var pageTemplateSchemaType =
+                    schemaDictionary
+                        .From(pageTemplateType);
 
-            response
-                .EnsureSuccessStatusCode();
+                var schemaString =
+                    schemaGenerator
+                        .Generate(pageTemplateSchemaType);
+
+                request.Format =
+                    JsonDocument
+                        .Parse(schemaString).RootElement;
+            }
+
+            HttpResponseMessage response = null;
+            try
+            {
+                response =
+                    await
+                        httpClient
+                            .PostAsJsonAsync(
+                                "api/chat",
+                                request,
+                                DefaultJsonSerializationOptions,
+                                cancellationToken
+                            );
+
+                response
+                    .EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                throw new RocketException(
+                    $"There was an error sending the request to the Ollama API: {ex.Message}",
+                    ApiStatusCodeEnum.ThirdPartyServiceError
+                );
+            }
 
             var ocrResponse =
                 await

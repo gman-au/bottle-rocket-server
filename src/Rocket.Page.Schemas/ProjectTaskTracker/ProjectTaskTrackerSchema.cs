@@ -8,7 +8,7 @@ namespace Rocket.Page.Schemas.ProjectTaskTracker
         [JsonPropertyName("notes")]
         public string Notes { get; set; }
         
-        [JsonPropertyName("notes")]
+        [JsonPropertyName("items")]
         public IEnumerable<ProjectTaskTrackerItem> Items { get; set; }
     }
 }

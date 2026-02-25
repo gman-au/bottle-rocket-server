@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain.Enum;
@@ -10,11 +11,27 @@ using Rocket.Domain.Jobs;
 using Rocket.Interfaces;
 using Rocket.Ollama.Domain;
 using Rocket.Ollama.Domain.Project;
+using Rocket.Page.Schemas.ProjectTaskTracker;
 
 namespace Rocket.Ollama.Infrastructure.Project
 {
     public class OllamaExtractProjectHook(IOllamaClient ollamaClient) : IIntegrationHook
     {
+        private const string ExtractProjectPrompt = """
+                                                    You are an OCR assistant. Extract all text exactly as written from this handwritten task tracker image, 
+                                                    even if values appear unusual, incomplete, or ambiguous. 
+                                                    Do not leave any field empty if there is any text visible in that cell. 
+                                                    If a value is unclear, transcribe your best guess. 
+                                                    Never return empty strings or null for cells that contain visible text.
+                                                    """;
+        
+        /*
+You are an OCR assistant. This image shows a handwritten project task tracker. 
+The table has 4 columns: PROJECT, TASK, DUE (date), and EST. TIME (estimated time). 
+Extract every row that has data written in it. Transcribe faithfully, including any 
+unusual characters or unclear text. The NOTES section at the bottom contains free text.
+         */
+
         public bool IsApplicable(BaseExecutionStep step) => step is OllamaExtractProjectExecutionStep;
 
         public async Task<ExecutionStepArtifact> ProcessAsync(
@@ -57,19 +74,26 @@ namespace Rocket.Ollama.Infrastructure.Project
             var response =
                 await
                     ollamaClient
-                        .SendRequestAsync<string>(
+                        .SendRequestAsync<ProjectTaskTrackerSchema>(
                             endpoint,
                             ollamaStep.ModelName,
-                            "Perform OCR on this image and return only the text.",
+                            ExtractProjectPrompt,
                             imageBytes,
-                            RocketbookPageTemplateTypeEnum.StandardLined,
+                            RocketbookPageTemplateTypeEnum.ProjectTaskTracker,
+                            useSchema: true,
+                            temperature: 0.8F,
+                            maxTokens: 2048, 
                             cancellationToken
                         );
+
+            var responseJson =
+                JsonSerializer
+                    .Serialize(response);
 
             await
                 appendLogMessageCallback(
                     step.Id,
-                    response
+                    responseJson
                 );
 
             var resultArtifact =
@@ -81,9 +105,9 @@ namespace Rocket.Ollama.Infrastructure.Project
                         Encoding
                             .Default
                             .GetBytes(
-                                response
+                                responseJson
                             ),
-                    FileExtension = ".txt"
+                    FileExtension = ".json"
                 };
 
             return resultArtifact;

@@ -139,6 +139,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IUserManager, UserManager>()
                 .AddTransient<ISchemaDictionary, SchemaDictionary>()
                 .AddTransient<ISchemaResponseBuilder, SchemaResponseBuilder>()
+                .AddTransient<ISchemaGenerator, SchemaGenerator>()
                 .AddTransient<IImageBase64Converter, ImageBase64Converter>()
                 .AddTransient<IExecutionWorkflowValidator, ExecutionWorkflowValidator>()
                 .AddTransient<IWorkflowStepModelMapperRegistry, WorkflowStepModelMapperRegistry>()

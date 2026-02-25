@@ -12,6 +12,9 @@ namespace Rocket.Ollama.Infrastructure
             string prompt,
             byte[] imageBytes,
             RocketbookPageTemplateTypeEnum pageTemplateType,
+            bool useSchema,
+            float? temperature,
+            int? maxTokens,
             CancellationToken cancellationToken
         ) where T : class;
     }

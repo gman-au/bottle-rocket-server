@@ -63,6 +63,9 @@ namespace Rocket.Ollama.Infrastructure.Text
                             "Perform OCR on this image and return only the text.",
                             imageBytes,
                             RocketbookPageTemplateTypeEnum.StandardLined,
+                            useSchema: false,
+                            null,
+                            null,
                             cancellationToken
                         );
 
