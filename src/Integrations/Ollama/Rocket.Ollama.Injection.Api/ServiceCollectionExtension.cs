@@ -14,6 +14,7 @@ namespace Rocket.Ollama.Injection.Api
                 .AddTransient<IExecutionStepModelMapper, OllamaExtractExecutionStepMapper>()
                 .AddTransient<IConnectorModelMapper, OllamaConnectorMapper>()
                 .AddTransient<IStepModelCloner, OllamaExtractStepCloner>()
+                .AddTransient<IOllamaClient, OllamaClient>()
                 .AddTransient<IBsonMapper, OllamaBsonMapper>();
 
             return services;

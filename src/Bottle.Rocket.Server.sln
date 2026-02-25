@@ -154,6 +154,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.QuestPdf.Injection.W
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Replicate.Injection.Web", "Integrations\Replicate\Rocket.Replicate.Injection.Web\Rocket.Replicate.Injection.Web.csproj", "{F810449A-5EE2-4CA1-AD46-CC5F8B3CE30E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Page.Schemas", "Rocket.Page.Schemas\Rocket.Page.Schemas.csproj", "{F8F72D36-5839-41DC-B53E-43F3D1CC6091}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -424,6 +426,10 @@ Global
 		{F810449A-5EE2-4CA1-AD46-CC5F8B3CE30E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F810449A-5EE2-4CA1-AD46-CC5F8B3CE30E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F810449A-5EE2-4CA1-AD46-CC5F8B3CE30E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8F72D36-5839-41DC-B53E-43F3D1CC6091}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8F72D36-5839-41DC-B53E-43F3D1CC6091}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8F72D36-5839-41DC-B53E-43F3D1CC6091}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8F72D36-5839-41DC-B53E-43F3D1CC6091}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{42CB70A2-68E4-4EB7-8AAD-4E2F987D01BA} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
