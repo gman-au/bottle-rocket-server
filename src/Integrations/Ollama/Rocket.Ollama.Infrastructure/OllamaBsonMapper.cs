@@ -1,6 +1,8 @@
 ﻿using MongoDB.Bson.Serialization;
 using Rocket.Interfaces;
 using Rocket.Ollama.Domain;
+using Rocket.Ollama.Domain.Project;
+using Rocket.Ollama.Domain.Text;
 
 namespace Rocket.Ollama.Infrastructure
 {
@@ -24,9 +26,25 @@ namespace Rocket.Ollama.Infrastructure
                 });
             }
             
+            if (!BsonClassMap.IsClassMapRegistered(typeof(OllamaExtractProjectExecutionStep)))
+            {
+                BsonClassMap.RegisterClassMap<OllamaExtractProjectExecutionStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
             if (!BsonClassMap.IsClassMapRegistered(typeof(OllamaExtractTextWorkflowStep)))
             {
                 BsonClassMap.RegisterClassMap<OllamaExtractTextWorkflowStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(OllamaExtractProjectWorkflowStep)))
+            {
+                BsonClassMap.RegisterClassMap<OllamaExtractProjectWorkflowStep>(cm =>
                 {
                     cm.AutoMap();
                 });

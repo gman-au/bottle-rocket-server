@@ -9,7 +9,8 @@ namespace Rocket.Ollama.Injection.Web
         {
             services
                 .AddTransient<ISkuConnector, OllamaConnectorProduct>()
-                .AddTransient<ISkuWorkflow, OllamaExtractWorkflowTextProduct>();
+                .AddTransient<ISkuWorkflow, OllamaExtractTextWorkflowProduct>()
+                .AddTransient<ISkuWorkflow, OllamaExtractProjectWorkflowProduct>();
 
             return services;
         }

@@ -1,12 +1,12 @@
-﻿@page "/MyWorkflow/Ollama/ExtractText/{workflowId}/AddStep"
-@page "/MyWorkflow/Ollama/ExtractText/{workflowId}/Steps/{parentStepId}/AddStep"
-@page "/MyWorkflow/Ollama/ExtractText/{workflowId}/Steps/{stepId}/UpdateStep"
-@using Rocket.Ollama.Contracts.Text
+﻿@page "/MyWorkflow/Ollama/ExtractProject/{workflowId}/AddStep"
+@page "/MyWorkflow/Ollama/ExtractProject/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/Ollama/ExtractProject/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.Ollama.Contracts.Project
 @using Rocket.Ollama.Domain
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <UpdateWorkflowStepWrapper
-    T="OllamaExtractTextWorkflowStepSpecifics"
+    T="OllamaExtractProjectWorkflowStepSpecifics"
     WorkflowStepName="Extract text from image"
     WorkflowId="@WorkflowId"
     ParentStepId="@ParentStepId"

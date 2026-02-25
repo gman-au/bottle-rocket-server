@@ -4,7 +4,7 @@ using Rocket.Ollama.Domain;
 
 namespace Rocket.Ollama.Injection.Web
 {
-    public class OllamaExtractWorkflowTextProduct : ISkuWorkflow
+    public class OllamaExtractTextWorkflowProduct : ISkuWorkflow
     {
         public string Name => "Extract raw text from image (Ollama)";
 
@@ -12,12 +12,12 @@ namespace Rocket.Ollama.Injection.Web
 
         public string[] Categories => [SkuConstants.TextRecognition];
 
-        public string HrefBase => "/MyWorkflow/Ollama";
+        public string HrefBase => "/MyWorkflow/Ollama/ExtractText";
 
         public string ImagePath => "/img/ollama-logo.png";
 
         public bool DataLeavesYourServer => false;
 
-        public string StepCode => OllamaDomainConstants.OllamaExtractWorkflowCode;
+        public string StepCode => OllamaDomainConstants.OllamaExtractTextWorkflowCode;
     }
 }

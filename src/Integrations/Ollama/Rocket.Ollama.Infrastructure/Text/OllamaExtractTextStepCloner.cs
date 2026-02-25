@@ -1,8 +1,8 @@
 ﻿using System;
 using Rocket.Infrastructure.Mapping;
-using Rocket.Ollama.Domain;
+using Rocket.Ollama.Domain.Text;
 
-namespace Rocket.Ollama.Infrastructure
+namespace Rocket.Ollama.Infrastructure.Text
 {
     public class OllamaExtractTextStepCloner(IServiceProvider serviceProvider)
         : StepModelClonerBase<OllamaExtractTextWorkflowStep, OllamaExtractTextExecutionStep>(serviceProvider)

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rocket.Interfaces;
 using Rocket.Ollama.Infrastructure;
+using Rocket.Ollama.Infrastructure.Project;
+using Rocket.Ollama.Infrastructure.Text;
 
 namespace Rocket.Ollama.Injection.Api
 {
@@ -10,10 +12,22 @@ namespace Rocket.Ollama.Injection.Api
         {
             services
                 .AddTransient<IIntegrationHook, OllamaExtractTextHook>()
+                .AddTransient<IIntegrationHook, OllamaExtractProjectHook>();
+            
+            services
                 .AddTransient<IWorkflowStepModelMapper, OllamaExtractTextWorkflowStepMapper>()
+                .AddTransient<IWorkflowStepModelMapper, OllamaExtractProjectWorkflowStepMapper>();
+            
+            services
                 .AddTransient<IExecutionStepModelMapper, OllamaExtractTextExecutionStepMapper>()
-                .AddTransient<IConnectorModelMapper, OllamaConnectorMapper>()
+                .AddTransient<IExecutionStepModelMapper, OllamaExtractProjectExecutionStepMapper>();
+            
+            services
                 .AddTransient<IStepModelCloner, OllamaExtractTextStepCloner>()
+                .AddTransient<IStepModelCloner, OllamaExtractProjectStepCloner>();
+            
+            services
+                .AddTransient<IConnectorModelMapper, OllamaConnectorMapper>()
                 .AddTransient<IOllamaClient, OllamaClient>()
                 .AddTransient<IBsonMapper, OllamaBsonMapper>();
 

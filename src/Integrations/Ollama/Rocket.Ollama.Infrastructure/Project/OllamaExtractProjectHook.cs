@@ -9,12 +9,13 @@ using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Interfaces;
 using Rocket.Ollama.Domain;
+using Rocket.Ollama.Domain.Project;
 
-namespace Rocket.Ollama.Infrastructure
+namespace Rocket.Ollama.Infrastructure.Project
 {
-    public class OllamaExtractTextHook(IOllamaClient ollamaClient) : IIntegrationHook
+    public class OllamaExtractProjectHook(IOllamaClient ollamaClient) : IIntegrationHook
     {
-        public bool IsApplicable(BaseExecutionStep step) => step is OllamaExtractTextExecutionStep;
+        public bool IsApplicable(BaseExecutionStep step) => step is OllamaExtractProjectExecutionStep;
 
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
@@ -41,7 +42,7 @@ namespace Rocket.Ollama.Infrastructure
                 artifact
                     .Artifact;
 
-            if (step is not OllamaExtractTextExecutionStep ollamaStep)
+            if (step is not OllamaExtractProjectExecutionStep ollamaStep)
                 throw new RocketException(
                     "Unexpected step format, please check configuration",
                     ApiStatusCodeEnum.DeveloperError
@@ -75,7 +76,7 @@ namespace Rocket.Ollama.Infrastructure
                 new ExecutionStepArtifact
                 {
                     Result = (int)ExecutionStatusEnum.Completed,
-                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
+                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData,
                     Artifact =
                         Encoding
                             .Default

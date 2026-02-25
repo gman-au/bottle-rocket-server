@@ -6,6 +6,6 @@
         ImageData,
         RawTextData,
         File,
-        ProjectTaskTracker
+        ProjectTaskTrackerData
     }
 }

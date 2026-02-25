@@ -1,9 +1,9 @@
 ﻿using System;
 using Rocket.Infrastructure.Mapping;
-using Rocket.Ollama.Contracts;
-using Rocket.Ollama.Domain;
+using Rocket.Ollama.Contracts.Text;
+using Rocket.Ollama.Domain.Text;
 
-namespace Rocket.Ollama.Infrastructure
+namespace Rocket.Ollama.Infrastructure.Text
 {
     public class OllamaExtractTextWorkflowStepMapper(IServiceProvider serviceProvider)
         : WorkflowStepModelMapperBase<OllamaExtractTextWorkflowStep, OllamaExtractTextWorkflowStepSpecifics>(serviceProvider)

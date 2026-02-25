@@ -6,7 +6,8 @@ using Rocket.Gcp.Contracts;
 using Rocket.Google.Contracts;
 using Rocket.Microsofts.Contracts;
 using Rocket.Notion.Contracts;
-using Rocket.Ollama.Contracts;
+using Rocket.Ollama.Contracts.Project;
+using Rocket.Ollama.Contracts.Text;
 using Rocket.QuestPdf.Contracts;
 using Rocket.Replicate.Contracts.Models.DataLabTo;
 using Rocket.Replicate.Contracts.Models.DeepSeekOcr;
@@ -19,6 +20,7 @@ namespace Rocket.Infrastructure.Json
         {
             { typeof(DropboxUploadExecutionStepSpecifics), "dropbox_upload_execution" },
             { typeof(OllamaExtractTextExecutionStepSpecifics), "ollama_extract_text_execution" },
+            { typeof(OllamaExtractProjectExecutionStepSpecifics), "ollama_extract_project_execution" },
             { typeof(GcpExtractExecutionStepSpecifics), "gcp_extract_execution" },
             { typeof(HelloWorldTextExecutionStepSpecifics), "hello_world_text_execution" },
             { typeof(NotionUploadExecutionStepSpecifics), "notion_upload_execution" },

@@ -1,6 +1,6 @@
 ﻿using Rocket.Domain.Executions;
 
-namespace Rocket.Ollama.Domain
+namespace Rocket.Ollama.Domain.Text
 {
     public record OllamaExtractTextExecutionStep : BaseExecutionStep
     {

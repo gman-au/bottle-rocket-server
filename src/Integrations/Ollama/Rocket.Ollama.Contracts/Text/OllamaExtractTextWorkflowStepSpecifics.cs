@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Rocket.Api.Contracts.Workflows;
 
-namespace Rocket.Ollama.Contracts
+namespace Rocket.Ollama.Contracts.Text
 {
     public class OllamaExtractTextWorkflowStepSpecifics : WorkflowStepSummary
     {
