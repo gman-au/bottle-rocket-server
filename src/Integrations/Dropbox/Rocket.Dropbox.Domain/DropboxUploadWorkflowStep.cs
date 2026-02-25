@@ -9,7 +9,8 @@ namespace Rocket.Dropbox.Domain
         [
             (int)WorkflowFormatTypeEnum.File,
             (int)WorkflowFormatTypeEnum.RawTextData,
-            (int)WorkflowFormatTypeEnum.ImageData
+            (int)WorkflowFormatTypeEnum.ImageData,
+            (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData
         ];
 
         public override int OutputType { get; set; } = (int)WorkflowFormatTypeEnum.Void;

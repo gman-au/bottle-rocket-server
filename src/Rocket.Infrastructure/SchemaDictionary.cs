@@ -10,6 +10,7 @@ namespace Rocket.Infrastructure
     {
         private readonly Dictionary<RocketbookPageTemplateTypeEnum, Type> _schemaTypes = new()
         {
+            { RocketbookPageTemplateTypeEnum.NotSet, typeof(string) },
             { RocketbookPageTemplateTypeEnum.StandardLined, typeof(string) },
             { RocketbookPageTemplateTypeEnum.StandardDotted, typeof(string) },
             { RocketbookPageTemplateTypeEnum.ProjectTaskTracker, typeof(ProjectTaskTrackerSchema) }

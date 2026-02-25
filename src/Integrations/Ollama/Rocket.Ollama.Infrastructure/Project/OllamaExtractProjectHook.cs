@@ -17,20 +17,16 @@ namespace Rocket.Ollama.Infrastructure.Project
 {
     public class OllamaExtractProjectHook(IOllamaClient ollamaClient) : IIntegrationHook
     {
-        private const string ExtractProjectPrompt = """
-                                                    You are an OCR assistant. Extract all text exactly as written from this handwritten task tracker image, 
-                                                    even if values appear unusual, incomplete, or ambiguous. 
-                                                    Do not leave any field empty if there is any text visible in that cell. 
-                                                    If a value is unclear, transcribe your best guess. 
-                                                    Never return empty strings or null for cells that contain visible text.
-                                                    """;
+        private const string FirstPassPrompt = """
+                                               Extract all text from this image. 
+                                               For each row in the table, identify which column each value belongs to. 
+                                               Return as plain text in the format: ROW n: PROJECT=x, TASK=x, DUE=x, EST_TIME=x. Also extract any NOTES.
+                                               """;
         
-        /*
-You are an OCR assistant. This image shows a handwritten project task tracker. 
-The table has 4 columns: PROJECT, TASK, DUE (date), and EST. TIME (estimated time). 
-Extract every row that has data written in it. Transcribe faithfully, including any 
-unusual characters or unclear text. The NOTES section at the bottom contains free text.
-         */
+        private const string SecondPassPrompt = """
+                                               "Structure the following extracted text into JSON:\n\n{0}"
+                                               """;        
+
 
         public bool IsApplicable(BaseExecutionStep step) => step is OllamaExtractProjectExecutionStep;
 
@@ -71,24 +67,39 @@ unusual characters or unclear text. The NOTES section at the bottom contains fre
                     nameof(connector.Endpoint)
                 );
 
-            var response =
+            var firstPassResponse =
+                await
+                    ollamaClient
+                        .SendRequestAsync<string>(
+                            endpoint,
+                            ollamaStep.ModelName,
+                            FirstPassPrompt,
+                            imageBytes,
+                            RocketbookPageTemplateTypeEnum.NotSet,
+                            useSchema: false,
+                            temperature: 0.1F,
+                            maxTokens: 1024,
+                            cancellationToken
+                        );
+
+            var secondPassResponse =
                 await
                     ollamaClient
                         .SendRequestAsync<ProjectTaskTrackerSchema>(
                             endpoint,
                             ollamaStep.ModelName,
-                            ExtractProjectPrompt,
-                            imageBytes,
+                            string.Format(SecondPassPrompt, firstPassResponse),
+                            imageBytes: null,
                             RocketbookPageTemplateTypeEnum.ProjectTaskTracker,
                             useSchema: true,
-                            temperature: 0.8F,
-                            maxTokens: 2048, 
+                            temperature: 0.1F,
+                            maxTokens: 1024,
                             cancellationToken
                         );
 
             var responseJson =
                 JsonSerializer
-                    .Serialize(response);
+                    .Serialize(secondPassResponse);
 
             await
                 appendLogMessageCallback(

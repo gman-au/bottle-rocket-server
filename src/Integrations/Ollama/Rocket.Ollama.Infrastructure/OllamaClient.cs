@@ -40,9 +40,14 @@ namespace Rocket.Ollama.Infrastructure
                 CancellationToken cancellationToken
             ) where T : class
         {
-            var base64Image =
-                imageBase64Converter
-                    .Perform(imageBytes);
+            string base64Image = null;
+
+            if (imageBytes != null)
+            {
+                base64Image =
+                    imageBase64Converter
+                        .Perform(imageBytes);
+            }
 
             using var httpClient = new HttpClient();
 
@@ -62,7 +67,7 @@ namespace Rocket.Ollama.Infrastructure
                         {
                             Role = UserRole,
                             Content = prompt,
-                            Images = [base64Image]
+                            Images = string.IsNullOrEmpty(base64Image) ? null : [base64Image]
                         }
                     ],
                     Stream = false,
@@ -85,29 +90,18 @@ namespace Rocket.Ollama.Infrastructure
                         .Parse(schemaString).RootElement;
             }
 
-            HttpResponseMessage response = null;
-            try
-            {
-                response =
-                    await
-                        httpClient
-                            .PostAsJsonAsync(
-                                "api/chat",
-                                request,
-                                DefaultJsonSerializationOptions,
-                                cancellationToken
-                            );
+            var response =
+                await
+                    httpClient
+                        .PostAsJsonAsync(
+                            "api/chat",
+                            request,
+                            DefaultJsonSerializationOptions,
+                            cancellationToken
+                        );
 
-                response
-                    .EnsureSuccessStatusCode();
-            }
-            catch (Exception ex)
-            {
-                throw new RocketException(
-                    $"There was an error sending the request to the Ollama API: {ex.Message}",
-                    ApiStatusCodeEnum.ThirdPartyServiceError
-                );
-            }
+            response
+                .EnsureSuccessStatusCode();
 
             var ocrResponse =
                 await
