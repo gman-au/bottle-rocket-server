@@ -4,11 +4,11 @@ using Rocket.Ollama.Domain;
 
 namespace Rocket.Ollama.Injection.Web
 {
-    public class OllamaExtractWorkflowProduct : ISkuWorkflow
+    public class OllamaExtractWorkflowTextProduct : ISkuWorkflow
     {
-        public string Name => "Extract text from image (Ollama)";
+        public string Name => "Extract raw text from image (Ollama)";
 
-        public string Description => "Extract text from an image using an Ollama model.";
+        public string Description => "Extract raw text from an image using an Ollama model.";
 
         public string[] Categories => [SkuConstants.TextRecognition];
 

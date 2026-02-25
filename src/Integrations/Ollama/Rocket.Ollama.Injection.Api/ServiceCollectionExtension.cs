@@ -9,11 +9,11 @@ namespace Rocket.Ollama.Injection.Api
         public static IServiceCollection AddOllamaApiIntegration(this IServiceCollection services)
         {
             services
-                .AddTransient<IIntegrationHook, OllamaHook>()
-                .AddTransient<IWorkflowStepModelMapper, OllamaExtractWorkflowStepMapper>()
-                .AddTransient<IExecutionStepModelMapper, OllamaExtractExecutionStepMapper>()
+                .AddTransient<IIntegrationHook, OllamaExtractTextHook>()
+                .AddTransient<IWorkflowStepModelMapper, OllamaExtractTextWorkflowStepMapper>()
+                .AddTransient<IExecutionStepModelMapper, OllamaExtractTextExecutionStepMapper>()
                 .AddTransient<IConnectorModelMapper, OllamaConnectorMapper>()
-                .AddTransient<IStepModelCloner, OllamaExtractStepCloner>()
+                .AddTransient<IStepModelCloner, OllamaExtractTextStepCloner>()
                 .AddTransient<IOllamaClient, OllamaClient>()
                 .AddTransient<IBsonMapper, OllamaBsonMapper>();
 

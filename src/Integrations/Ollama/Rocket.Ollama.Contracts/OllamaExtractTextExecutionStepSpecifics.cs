@@ -3,7 +3,7 @@ using Rocket.Api.Contracts.Executions;
 
 namespace Rocket.Ollama.Contracts
 {
-    public class OllamaExtractExecutionStepSpecifics : ExecutionStepSummary
+    public class OllamaExtractTextExecutionStepSpecifics : ExecutionStepSummary
     {
         [JsonPropertyName("model_name")]
         public string ModelName { get; set; }

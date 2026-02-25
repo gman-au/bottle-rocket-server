@@ -5,10 +5,10 @@ using Rocket.Ollama.Domain;
 
 namespace Rocket.Ollama.Infrastructure
 {
-    public class OllamaExtractWorkflowStepMapper(IServiceProvider serviceProvider)
-        : WorkflowStepModelMapperBase<OllamaExtractWorkflowStep, OllamaExtractWorkflowStepSpecifics>(serviceProvider)
+    public class OllamaExtractTextExecutionStepMapper(IServiceProvider serviceProvider)
+        : ExecutionStepModelMapperBase<OllamaExtractTextExecutionStep, OllamaExtractTextExecutionStepSpecifics>(serviceProvider)
     {
-        public override OllamaExtractWorkflowStep For(OllamaExtractWorkflowStepSpecifics value)
+        public override OllamaExtractTextExecutionStep For(OllamaExtractTextExecutionStepSpecifics value)
         {
             var result =
                 base
@@ -19,7 +19,7 @@ namespace Rocket.Ollama.Infrastructure
             return result;
         }
 
-        public override OllamaExtractWorkflowStepSpecifics From(OllamaExtractWorkflowStep value)
+        public override OllamaExtractTextExecutionStepSpecifics From(OllamaExtractTextExecutionStep value)
         {
             var result =
                 base

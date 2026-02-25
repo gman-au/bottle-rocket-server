@@ -16,17 +16,17 @@ namespace Rocket.Ollama.Infrastructure
                 });
             }
             
-            if (!BsonClassMap.IsClassMapRegistered(typeof(OllamaExtractExecutionStep)))
+            if (!BsonClassMap.IsClassMapRegistered(typeof(OllamaExtractTextExecutionStep)))
             {
-                BsonClassMap.RegisterClassMap<OllamaExtractExecutionStep>(cm =>
+                BsonClassMap.RegisterClassMap<OllamaExtractTextExecutionStep>(cm =>
                 {
                     cm.AutoMap();
                 });
             }
             
-            if (!BsonClassMap.IsClassMapRegistered(typeof(OllamaExtractWorkflowStep)))
+            if (!BsonClassMap.IsClassMapRegistered(typeof(OllamaExtractTextWorkflowStep)))
             {
-                BsonClassMap.RegisterClassMap<OllamaExtractWorkflowStep>(cm =>
+                BsonClassMap.RegisterClassMap<OllamaExtractTextWorkflowStep>(cm =>
                 {
                     cm.AutoMap();
                 });

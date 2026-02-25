@@ -12,9 +12,9 @@ using Rocket.Ollama.Domain;
 
 namespace Rocket.Ollama.Infrastructure
 {
-    public class OllamaHook(IOllamaClient ollamaClient) : IIntegrationHook
+    public class OllamaExtractTextHook(IOllamaClient ollamaClient) : IIntegrationHook
     {
-        public bool IsApplicable(BaseExecutionStep step) => step is OllamaExtractExecutionStep;
+        public bool IsApplicable(BaseExecutionStep step) => step is OllamaExtractTextExecutionStep;
 
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
@@ -41,7 +41,7 @@ namespace Rocket.Ollama.Infrastructure
                 artifact
                     .Artifact;
 
-            if (step is not OllamaExtractExecutionStep ollamaStep)
+            if (step is not OllamaExtractTextExecutionStep ollamaStep)
                 throw new RocketException(
                     "Unexpected step format, please check configuration",
                     ApiStatusCodeEnum.DeveloperError

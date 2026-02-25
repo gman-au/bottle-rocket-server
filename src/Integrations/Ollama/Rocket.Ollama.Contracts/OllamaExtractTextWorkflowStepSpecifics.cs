@@ -3,7 +3,7 @@ using Rocket.Api.Contracts.Workflows;
 
 namespace Rocket.Ollama.Contracts
 {
-    public class OllamaExtractWorkflowStepSpecifics : WorkflowStepSummary
+    public class OllamaExtractTextWorkflowStepSpecifics : WorkflowStepSummary
     {
         [JsonPropertyName("model_name")]
         public string ModelName { get; set; }

@@ -2,7 +2,7 @@
 
 namespace Rocket.Ollama.Domain
 {
-    public record OllamaExtractExecutionStep : BaseExecutionStep
+    public record OllamaExtractTextExecutionStep : BaseExecutionStep
     {
         public string ModelName { get; set; }
     }

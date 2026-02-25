@@ -4,10 +4,10 @@ using Rocket.Ollama.Domain;
 
 namespace Rocket.Ollama.Infrastructure
 {
-    public class OllamaExtractStepCloner(IServiceProvider serviceProvider)
-        : StepModelClonerBase<OllamaExtractWorkflowStep, OllamaExtractExecutionStep>(serviceProvider)
+    public class OllamaExtractTextStepCloner(IServiceProvider serviceProvider)
+        : StepModelClonerBase<OllamaExtractTextWorkflowStep, OllamaExtractTextExecutionStep>(serviceProvider)
     {
-        public override OllamaExtractExecutionStep Clone(OllamaExtractWorkflowStep value)
+        public override OllamaExtractTextExecutionStep Clone(OllamaExtractTextWorkflowStep value)
         {
             var result =
                 base

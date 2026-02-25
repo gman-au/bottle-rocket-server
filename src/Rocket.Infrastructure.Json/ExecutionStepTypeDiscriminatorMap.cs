@@ -18,7 +18,7 @@ namespace Rocket.Infrastructure.Json
         public static readonly Dictionary<Type, string> TypeDiscriminatorMap = new()
         {
             { typeof(DropboxUploadExecutionStepSpecifics), "dropbox_upload_execution" },
-            { typeof(OllamaExtractExecutionStepSpecifics), "ollama_extract_execution" },
+            { typeof(OllamaExtractTextExecutionStepSpecifics), "ollama_extract_text_execution" },
             { typeof(GcpExtractExecutionStepSpecifics), "gcp_extract_execution" },
             { typeof(HelloWorldTextExecutionStepSpecifics), "hello_world_text_execution" },
             { typeof(NotionUploadExecutionStepSpecifics), "notion_upload_execution" },
