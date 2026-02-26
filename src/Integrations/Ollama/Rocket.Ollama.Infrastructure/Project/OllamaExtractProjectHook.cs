@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -15,17 +16,19 @@ using Rocket.Page.Schemas.ProjectTaskTracker;
 
 namespace Rocket.Ollama.Infrastructure.Project
 {
-    public class OllamaExtractProjectHook(IOllamaClient ollamaClient) : IIntegrationHook
+    public class OllamaExtractProjectHook : OllamaHookBase, IIntegrationHook
     {
+        public OllamaExtractProjectHook(IOllamaClient ollamaClient) : base(ollamaClient) { }
+
         private const string FirstPassPrompt = """
                                                Extract all text from this image. 
                                                For each row in the table, identify which column each value belongs to. 
                                                Return as plain text in the format: ROW n: PROJECT=x, TASK=x, DUE=x, EST_TIME=x. Also extract any NOTES.
                                                """;
-        
+
         private const string SecondPassPrompt = """
-                                               "Structure the following extracted text into JSON:\n\n{0}"
-                                               """;        
+                                                "Structure the following extracted text into JSON:\n\n{0}"
+                                                """;
 
 
         public bool IsApplicable(BaseExecutionStep step) => step is OllamaExtractProjectExecutionStep;
@@ -67,9 +70,17 @@ namespace Rocket.Ollama.Infrastructure.Project
                     nameof(connector.Endpoint)
                 );
 
+            await
+                EnsureModelsExistAsync(
+                    endpoint,
+                    cancellationToken,
+                    ollamaStep.FirstPassModelName,
+                    ollamaStep.SecondPassModelName
+                );
+
             var firstPassResponse =
                 await
-                    ollamaClient
+                    OllamaClient
                         .SendRequestAsync<string>(
                             endpoint,
                             ollamaStep.FirstPassModelName,
@@ -85,11 +96,14 @@ namespace Rocket.Ollama.Infrastructure.Project
 
             var secondPassResponse =
                 await
-                    ollamaClient
+                    OllamaClient
                         .SendRequestAsync<ProjectTaskTrackerSchema>(
                             endpoint,
                             ollamaStep.SecondPassModelName,
-                            string.Format(SecondPassPrompt, firstPassResponse),
+                            string.Format(
+                                SecondPassPrompt,
+                                firstPassResponse
+                            ),
                             imageBytes: null,
                             RocketbookPageTemplateTypeEnum.ProjectTaskTracker,
                             useSchema: true,

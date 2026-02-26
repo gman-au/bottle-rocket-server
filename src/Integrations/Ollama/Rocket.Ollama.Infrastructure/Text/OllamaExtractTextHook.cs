@@ -13,8 +13,10 @@ using Rocket.Ollama.Domain.Text;
 
 namespace Rocket.Ollama.Infrastructure.Text
 {
-    public class OllamaExtractTextHook(IOllamaClient ollamaClient) : IIntegrationHook
+    public class OllamaExtractTextHook : OllamaHookBase, IIntegrationHook
     {
+        public OllamaExtractTextHook(IOllamaClient ollamaClient) : base(ollamaClient) {}
+        
         public bool IsApplicable(BaseExecutionStep step) => step is OllamaExtractTextExecutionStep;
 
         public async Task<ExecutionStepArtifact> ProcessAsync(
@@ -54,9 +56,16 @@ namespace Rocket.Ollama.Infrastructure.Text
                     nameof(connector.Endpoint)
                 );
 
+            await
+                EnsureModelsExistAsync(
+                    endpoint,
+                    cancellationToken,
+                    ollamaStep.ModelName
+                );
+
             var response =
                 await
-                    ollamaClient
+                    OllamaClient
                         .SendRequestAsync<string>(
                             endpoint,
                             ollamaStep.ModelName,

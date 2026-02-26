@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -27,6 +29,37 @@ namespace Rocket.Ollama.Infrastructure
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
+
+        public async Task<IEnumerable<string>> GetModelListAsync(string endpoint, CancellationToken cancellationToken)
+        {
+            using var httpClient = new HttpClient();
+
+            httpClient.BaseAddress = new Uri(endpoint);
+            
+            var response =
+                await
+                    httpClient
+                        .GetAsync(
+                            "api/tags",
+                            cancellationToken
+                        );
+
+            response
+                .EnsureSuccessStatusCode();
+
+            var tagsListResponse =
+                await
+                    response
+                        .Content
+                        .ReadFromJsonAsync<OllamaTagsResponse>(cancellationToken);
+
+            var results =
+                (tagsListResponse
+                    .Models ?? [])
+                .Select(o => o.Model);
+
+            return results;
+        }
 
         public async Task<T>
             SendRequestAsync<T>(
@@ -109,14 +142,14 @@ namespace Rocket.Ollama.Infrastructure
             response
                 .EnsureSuccessStatusCode();
 
-            var ocrResponse =
+            var ollamaResponse =
                 await
                     response
                         .Content
                         .ReadFromJsonAsync<OllamaOcrResponse>(cancellationToken);
 
             var messageContent =
-                ocrResponse?
+                ollamaResponse?
                     .Message?
                     .Content;
 
