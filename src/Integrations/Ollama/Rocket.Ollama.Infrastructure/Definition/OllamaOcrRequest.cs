@@ -23,5 +23,8 @@ namespace Rocket.Ollama.Infrastructure.Definition
 
         [JsonPropertyName("num_predict")]
         public int? NumPredict { get; set; }
+        
+        [JsonPropertyName("num_ctx")]
+        public int? NumCtx { get; set; }
     }
 }

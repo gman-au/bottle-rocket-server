@@ -15,6 +15,7 @@ namespace Rocket.Ollama.Infrastructure
             bool useSchema,
             float? temperature,
             int? maxTokens,
+            int? numCtx,
             CancellationToken cancellationToken
         ) where T : class;
     }

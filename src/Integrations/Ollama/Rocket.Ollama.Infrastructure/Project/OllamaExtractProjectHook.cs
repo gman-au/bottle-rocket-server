@@ -79,6 +79,7 @@ namespace Rocket.Ollama.Infrastructure.Project
                             useSchema: false,
                             temperature: 0.1F,
                             maxTokens: 1024,
+                            numCtx: null,
                             cancellationToken
                         );
 
@@ -92,8 +93,9 @@ namespace Rocket.Ollama.Infrastructure.Project
                             imageBytes: null,
                             RocketbookPageTemplateTypeEnum.ProjectTaskTracker,
                             useSchema: true,
-                            temperature: 0.1F,
+                            temperature: 0.3F,
                             maxTokens: 1024,
+                            numCtx: 4096,
                             cancellationToken
                         );
 

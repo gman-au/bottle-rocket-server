@@ -2,10 +2,10 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Interfaces;
@@ -17,7 +17,8 @@ namespace Rocket.Ollama.Infrastructure
         ISchemaResponseBuilder schemaResponseBuilder,
         ISchemaGenerator schemaGenerator,
         ISchemaDictionary schemaDictionary,
-        IImageBase64Converter imageBase64Converter
+        IImageBase64Converter imageBase64Converter,
+        ILogger<OllamaClient> logger
     ) : IOllamaClient
     {
         private const string UserRole = "user";
@@ -37,6 +38,7 @@ namespace Rocket.Ollama.Infrastructure
                 bool useSchema,
                 float? temperature,
                 int? maxTokens,
+                int? numCtx,
                 CancellationToken cancellationToken
             ) where T : class
         {
@@ -57,6 +59,9 @@ namespace Rocket.Ollama.Infrastructure
                 TimeSpan
                     .FromMinutes(10);
 
+            logger
+                .LogDebug("Ollama prompt:\r\n{prompt}", prompt);
+            
             var request =
                 new OllamaOcrRequest
                 {
@@ -72,7 +77,8 @@ namespace Rocket.Ollama.Infrastructure
                     ],
                     Stream = false,
                     Temperature = temperature,
-                    NumPredict = maxTokens
+                    NumPredict = maxTokens,
+                    NumCtx = numCtx
                 };
 
             if (useSchema)
