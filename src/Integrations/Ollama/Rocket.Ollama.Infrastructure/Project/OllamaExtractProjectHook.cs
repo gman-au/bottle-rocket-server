@@ -72,7 +72,7 @@ namespace Rocket.Ollama.Infrastructure.Project
                     ollamaClient
                         .SendRequestAsync<string>(
                             endpoint,
-                            ollamaStep.ModelName,
+                            ollamaStep.FirstPassModelName,
                             FirstPassPrompt,
                             imageBytes,
                             RocketbookPageTemplateTypeEnum.NotSet,
@@ -88,7 +88,7 @@ namespace Rocket.Ollama.Infrastructure.Project
                     ollamaClient
                         .SendRequestAsync<ProjectTaskTrackerSchema>(
                             endpoint,
-                            ollamaStep.ModelName,
+                            ollamaStep.SecondPassModelName,
                             string.Format(SecondPassPrompt, firstPassResponse),
                             imageBytes: null,
                             RocketbookPageTemplateTypeEnum.ProjectTaskTracker,

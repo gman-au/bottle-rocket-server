@@ -17,13 +17,23 @@
         <MudItem sm="12" lg="6">
             <MudTextField
                 T="string"
-                Label="Model Name"
+                Label="Model Name (first pass)"
                 Required="true"
-                RequiredError="Model name is required"
-                HelperText="Enter the Ollama model name to use for OCR extraction"
-                @bind-Value="stepSpecifics.ModelName"
-                For="@(() => stepSpecifics.ModelName)"/>
+                RequiredError="Model name (first pass) is required"
+                HelperText="Enter the Ollama model name to use for the first pass (OCR extraction)"
+                @bind-Value="stepSpecifics.FirstPassModelName"
+                For="@(() => stepSpecifics.FirstPassModelName)"/>
         </MudItem>
+        <MudItem sm="12" lg="6">
+            <MudTextField
+                T="string"
+                Label="Model Name (second pass)"
+                Required="true"
+                RequiredError="Model name (second pass) is required"
+                HelperText="Enter the Ollama model name to use for the second pass (text -> schema)"
+                @bind-Value="stepSpecifics.SecondPassModelName"
+                For="@(() => stepSpecifics.SecondPassModelName)"/>
+        </MudItem>        
     </MudGrid>
 </UpdateWorkflowStepWrapper>
 

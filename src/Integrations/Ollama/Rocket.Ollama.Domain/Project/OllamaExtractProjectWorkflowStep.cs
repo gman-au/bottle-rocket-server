@@ -15,6 +15,8 @@ namespace Rocket.Ollama.Domain.Project
 
         public override string RequiresConnectorCode { get; set; } = OllamaDomainConstants.ConnectorCode;
 
-        public string ModelName { get; set; }
+        public string FirstPassModelName { get; set; }
+        
+        public string SecondPassModelName { get; set; }
     }
 }

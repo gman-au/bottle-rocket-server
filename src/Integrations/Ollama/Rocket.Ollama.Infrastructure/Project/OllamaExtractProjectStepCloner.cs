@@ -13,7 +13,8 @@ namespace Rocket.Ollama.Infrastructure.Project
                 base
                     .Clone(value);
 
-            result.ModelName = value.ModelName;
+            result.FirstPassModelName = value.FirstPassModelName;
+            result.SecondPassModelName = value.SecondPassModelName;
 
             return result;
         }
