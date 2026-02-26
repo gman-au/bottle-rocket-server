@@ -6,6 +6,7 @@ using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Integrations.Common;
+using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 using Rocket.Notion.Domain;
 
@@ -15,7 +16,7 @@ namespace Rocket.Notion.Infrastructure
         ILogger<NotionHook> logger,
         INotionNoteUploader notionNoteUploader,
         INotionImageUploader notionImageUploader
-    ) : HookBase<NotionUploadExecutionStep, NotionConnector>(logger), IIntegrationHook
+    ) : HookWithConnectorBase<NotionUploadExecutionStep, NotionConnector>(logger), IIntegrationHook
     {
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
@@ -25,11 +26,16 @@ namespace Rocket.Notion.Infrastructure
             CancellationToken cancellationToken
         )
         {
-            await
-                InitializeHookElementsAsync(
+            context
+                .InitializeStep(
+                    this,
+                    step
+                )
+                .InitializeArtifact(this)
+                .InitializeConnector(
+                    this,
                     userId,
                     step,
-                    context,
                     cancellationToken
                 );
 

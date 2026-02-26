@@ -11,23 +11,22 @@ using Rocket.Interfaces;
 
 namespace Rocket.Integrations.Common
 {
-    public abstract class HookBase<TExecutionStep, TConnector>(ILogger logger)
+    public abstract class HookBase<TExecutionStep>
         where TExecutionStep : BaseExecutionStep
-        where TConnector : BaseConnector
-
     {
+        protected readonly ILogger Logger;
+
         protected ExecutionStepArtifact Artifact;
         protected TExecutionStep ExecutionStep;
-        protected TConnector Connector;
+
+        protected HookBase(ILogger logger)
+        {
+            Logger = logger;
+        }
 
         public virtual bool IsApplicable(BaseExecutionStep step) => step is TExecutionStep;
 
-        protected virtual async Task InitializeHookElementsAsync(
-            string userId,
-            BaseExecutionStep step,
-            IWorkflowExecutionContext context,
-            CancellationToken cancellationToken
-        )
+        public void SetExecutionStep(BaseExecutionStep step)
         {
             if (step is not TExecutionStep typedStep)
                 throw new RocketException(
@@ -36,55 +35,34 @@ namespace Rocket.Integrations.Common
                 );
 
             ExecutionStep = typedStep;
-            
-            Artifact =
-                context
-                    .GetInputArtifact();
+        }
 
-            logger
+        public void SetArtifact(ExecutionStepArtifact artifact)
+        {
+            Artifact =
+                artifact;
+
+            Logger
                 .LogDebug(
                     "Artifact of type {fileExtension} set for hook type {type}",
-                    Artifact.FileExtension,
-                    typeof(TExecutionStep).Name
-                );
-
-            var connector =
-                await
-                    context
-                        .GetConnectorAsync<TConnector>(
-                            userId,
-                            step,
-                            cancellationToken
-                        );
-
-            Connector =
-                connector ??
-                throw new RocketException(
-                    $"Unexpected connector provided to hook [{typeof(TExecutionStep)}: {typeof(TConnector)}], please check configuration",
-                    ApiStatusCodeEnum.DeveloperError
-                );
-
-            logger
-                .LogDebug(
-                    "Connector of type {connector} set for hook type {type}",
-                    typeof(TConnector).Name,
+                    Artifact?.FileExtension,
                     typeof(TExecutionStep).Name
                 );
         }
 
         protected string ArtifactAsText()
         {
-            var textBytes = 
+            var textBytes =
                 Artifact
                     .Artifact;
 
             if (textBytes == null)
                 throw new RocketException(
-                    $"Artifact data for hook [{typeof(TExecutionStep)}: {typeof(TConnector)}] is empty or not initialized; please check configuration",
+                    $"Artifact data for hook [{typeof(TExecutionStep)}] is empty or not initialized; please check configuration",
                     ApiStatusCodeEnum.DeveloperError
                 );
-            
-            return                 
+
+            return
                 Encoding
                     .Default
                     .GetString(textBytes);
@@ -92,13 +70,13 @@ namespace Rocket.Integrations.Common
 
         protected byte[] ArtifactAsBytes()
         {
-            var bytes = 
+            var bytes =
                 Artifact
                     .Artifact;
 
             if (bytes == null)
                 throw new RocketException(
-                    $"Artifact data for hook [{typeof(TExecutionStep)}: {typeof(TConnector)}] is empty or not initialized; please check configuration",
+                    $"Artifact data for hook [{typeof(TExecutionStep)}] is empty or not initialized; please check configuration",
                     ApiStatusCodeEnum.DeveloperError
                 );
 
