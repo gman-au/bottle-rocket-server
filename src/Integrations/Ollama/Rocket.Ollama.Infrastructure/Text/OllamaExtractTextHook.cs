@@ -66,6 +66,7 @@ namespace Rocket.Ollama.Infrastructure.Text
                             useSchema: false,
                             null,
                             null,
+                            null,
                             cancellationToken
                         );
 
