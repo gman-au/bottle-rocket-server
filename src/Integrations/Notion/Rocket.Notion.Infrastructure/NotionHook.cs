@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
-using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
+using Rocket.Integrations.Common;
 using Rocket.Interfaces;
 using Rocket.Notion.Domain;
 
@@ -16,10 +15,8 @@ namespace Rocket.Notion.Infrastructure
         ILogger<NotionHook> logger,
         INotionNoteUploader notionNoteUploader,
         INotionImageUploader notionImageUploader
-    ) : IIntegrationHook
+    ) : HookBase<NotionUploadExecutionStep, NotionConnector>(logger), IIntegrationHook
     {
-        public bool IsApplicable(BaseExecutionStep step) => step is NotionUploadExecutionStep;
-
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
@@ -28,60 +25,42 @@ namespace Rocket.Notion.Infrastructure
             CancellationToken cancellationToken
         )
         {
-            var artifact =
-                context
-                    .GetInputArtifact();
-
-            var connector =
-                await
-                    context
-                        .GetConnectorAsync<NotionConnector>(
-                            userId,
-                            step,
-                            cancellationToken
-                        );
-            
-            if (step is not NotionUploadExecutionStep notionStep)
-                throw new RocketException(
-                    "Unexpected step format, please check configuration",
-                    ApiStatusCodeEnum.DeveloperError
+            await
+                InitializeHookElementsAsync(
+                    userId,
+                    step,
+                    context,
+                    cancellationToken
                 );
 
-            if (artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.RawTextData)
+            if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.RawTextData)
             {
-                var textBytes =
-                    artifact
-                        .Artifact;
-
                 var textData =
-                    Encoding
-                        .Default
-                        .GetString(textBytes);
+                    ArtifactAsText();
 
                 await
                     notionNoteUploader
                         .UploadTextNoteAsync(
-                            connector.IntegrationSecret,
-                            notionStep.ParentNoteId,
+                            Connector.IntegrationSecret,
+                            ExecutionStep.ParentNoteId,
                             null,
                             textData,
                             cancellationToken
                         );
             }
-            else if (artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.ImageData)
+            else if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.ImageData)
             {
                 var imageBytes =
-                    artifact
-                        .Artifact;
+                    ArtifactAsBytes();
 
                 await
                     notionImageUploader
                         .UploadImageNoteAsync(
-                            connector.IntegrationSecret,
-                            notionStep.ParentNoteId,
+                            Connector.IntegrationSecret,
+                            ExecutionStep.ParentNoteId,
                             null,
                             imageBytes,
-                            artifact.FileExtension,
+                            Artifact.FileExtension,
                             cancellationToken
                         );
             }

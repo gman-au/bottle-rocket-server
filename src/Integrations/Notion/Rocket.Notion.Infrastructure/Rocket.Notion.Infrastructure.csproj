@@ -7,6 +7,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\Rocket.Infrastructure.Mapping\Rocket.Infrastructure.Mapping.csproj" />
       <ProjectReference Include="..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
+      <ProjectReference Include="..\..\Common\Rocket.Integrations.Common\Rocket.Integrations.Common.csproj" />
       <ProjectReference Include="..\Rocket.Notion.Contracts\Rocket.Notion.Contracts.csproj" />
       <ProjectReference Include="..\Rocket.Notion.Domain\Rocket.Notion.Domain.csproj" />
     </ItemGroup>
