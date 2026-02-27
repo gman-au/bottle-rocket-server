@@ -6,6 +6,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\Rocket.Infrastructure.Mapping\Rocket.Infrastructure.Mapping.csproj" />
+      <ProjectReference Include="..\..\..\Common\Rocket.Integrations.Common\Rocket.Integrations.Common.csproj" />
       <ProjectReference Include="..\Rocket.Google.Contracts\Rocket.Google.Contracts.csproj" />
       <ProjectReference Include="..\Rocket.Google.Domain\Rocket.Google.Domain.csproj" />
     </ItemGroup>

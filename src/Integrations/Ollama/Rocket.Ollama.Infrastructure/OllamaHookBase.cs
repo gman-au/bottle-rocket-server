@@ -1,16 +1,27 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Rocket.Domain.Connectors;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Domain.Executions;
+using Rocket.Integrations.Common;
 
 namespace Rocket.Ollama.Infrastructure
 {
-    public class OllamaHookBase
+    public abstract class OllamaHookBase<TExecutionStep, TConnector>
+        : HookWithConnectorBase<TExecutionStep, TConnector>
+        where TExecutionStep : BaseExecutionStep
+        where TConnector : BaseConnector
     {
         protected readonly IOllamaClient OllamaClient;
 
-        protected OllamaHookBase(IOllamaClient ollamaClient)
+        protected OllamaHookBase(
+            IOllamaClient ollamaClient,
+            ILogger logger
+        )
+            : base(logger)
         {
             OllamaClient = ollamaClient;
         }

@@ -2,19 +2,23 @@
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
-using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
+using Rocket.Integrations.Common;
+using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 using Rocket.QuestPdf.Domain;
 
 namespace Rocket.QuestPdf.Infrastructure
 {
-    public class ConvertToPdfHook(IPdfGenerator pdfGenerator) : IIntegrationHook
+    public class ConvertToPdfHook(
+        IPdfGenerator pdfGenerator,
+        ILogger<ConvertToPdfHook> logger
+    )
+        : HookBase<ConvertToPdfExecutionStep>(logger), IIntegrationHook
     {
-        public bool IsApplicable(BaseExecutionStep step) => step is ConvertToPdfExecutionStep;
-
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
@@ -23,29 +27,26 @@ namespace Rocket.QuestPdf.Infrastructure
             CancellationToken cancellationToken
         )
         {
-            var artifact =
-                context
-                    .GetInputArtifact();
-
-            if (step is not ConvertToPdfExecutionStep)
-                throw new RocketException(
-                    "Unexpected step format, please check configuration",
-                    ApiStatusCodeEnum.DeveloperError
-                );
+            context
+                .InitializeStep(
+                    this,
+                    step
+                )
+                .InitializeArtifact(this);
 
             byte[] fileData = null;
 
             var fileBytes =
-                artifact
+                Artifact
                     .Artifact;
 
-            if (artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.RawTextData)
+            if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.RawTextData)
             {
                 var textData =
                     Encoding
                         .Default
                         .GetString(fileBytes);
-                
+
                 fileData =
                     await
                         pdfGenerator
@@ -54,7 +55,7 @@ namespace Rocket.QuestPdf.Infrastructure
                                 cancellationToken
                             );
             }
-            else if (artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.ImageData)
+            else if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.ImageData)
             {
                 fileData =
                     await
@@ -66,13 +67,8 @@ namespace Rocket.QuestPdf.Infrastructure
             }
 
             return
-                new ExecutionStepArtifact
-                {
-                    Result = (int)ExecutionStatusEnum.Completed,
-                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.File,
-                    Artifact = fileData,
-                    FileExtension = ".pdf"
-                };
+                fileData
+                    .AsCompletedPdfArtifact();
         }
     }
 }

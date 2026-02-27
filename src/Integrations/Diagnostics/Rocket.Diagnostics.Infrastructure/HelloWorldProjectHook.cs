@@ -3,19 +3,19 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Rocket.Diagnostics.Domain;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
+using Rocket.Integrations.Common;
 using Rocket.Interfaces;
 using Rocket.Page.Schemas.ProjectTaskTracker;
 
 namespace Rocket.Diagnostics.Infrastructure
 {
-    public class HelloWorldProjectHook : IIntegrationHook
+    public class HelloWorldProjectHook(ILogger<HelloWorldProjectHook> logger) : HookBase<HelloWorldProjectExecutionStep>(logger), IIntegrationHook
     {
-        public bool IsApplicable(BaseExecutionStep step) => step is HelloWorldProjectExecutionStep;
-
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
             BaseExecutionStep step,

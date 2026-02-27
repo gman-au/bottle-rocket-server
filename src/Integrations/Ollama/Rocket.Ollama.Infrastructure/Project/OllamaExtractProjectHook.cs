@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Configuration;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
-using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
+using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 using Rocket.Ollama.Domain;
 using Rocket.Ollama.Domain.Project;
@@ -16,10 +15,15 @@ using Rocket.Page.Schemas.ProjectTaskTracker;
 
 namespace Rocket.Ollama.Infrastructure.Project
 {
-    public class OllamaExtractProjectHook : OllamaHookBase, IIntegrationHook
+    public class OllamaExtractProjectHook(
+        IOllamaClient ollamaClient,
+        ILogger<OllamaExtractProjectHook> logger
+    )
+        : OllamaHookBase<OllamaExtractProjectExecutionStep, OllamaConnector>(
+            ollamaClient,
+            logger
+        ), IIntegrationHook
     {
-        public OllamaExtractProjectHook(IOllamaClient ollamaClient) : base(ollamaClient) { }
-
         private const string FirstPassPrompt = """
                                                Extract all text from this image. 
                                                For each row in the table, identify which column each value belongs to. 
@@ -30,9 +34,6 @@ namespace Rocket.Ollama.Infrastructure.Project
                                                 "Structure the following extracted text into JSON:\n\n{0}"
                                                 """;
 
-
-        public bool IsApplicable(BaseExecutionStep step) => step is OllamaExtractProjectExecutionStep;
-
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
@@ -41,41 +42,35 @@ namespace Rocket.Ollama.Infrastructure.Project
             CancellationToken cancellationToken
         )
         {
-            var artifact =
-                context
-                    .GetInputArtifact();
-
-            var connector =
-                await
-                    context
-                        .GetConnectorAsync<OllamaConnector>(
-                            userId,
-                            step,
-                            cancellationToken
-                        );
-
-            var imageBytes =
-                artifact
-                    .Artifact;
-
-            if (step is not OllamaExtractProjectExecutionStep ollamaStep)
-                throw new RocketException(
-                    "Unexpected step format, please check configuration",
-                    ApiStatusCodeEnum.DeveloperError
+            context
+                .InitializeStep(
+                    this,
+                    step
+                )
+                .InitializeArtifact(this)
+                .InitializeConnector(
+                    this,
+                    userId,
+                    step,
+                    cancellationToken
                 );
 
+            var imageBytes =
+                Artifact
+                    .Artifact;
+
             var endpoint =
-                connector.Endpoint ??
+                Connector.Endpoint ??
                 throw new ConfigurationErrorsException(
-                    nameof(connector.Endpoint)
+                    nameof(Connector.Endpoint)
                 );
 
             await
                 EnsureModelsExistAsync(
                     endpoint,
                     cancellationToken,
-                    ollamaStep.FirstPassModelName,
-                    ollamaStep.SecondPassModelName
+                    ExecutionStep.FirstPassModelName,
+                    ExecutionStep.SecondPassModelName
                 );
 
             var firstPassResponse =
@@ -83,7 +78,7 @@ namespace Rocket.Ollama.Infrastructure.Project
                     OllamaClient
                         .SendRequestAsync<string>(
                             endpoint,
-                            ollamaStep.FirstPassModelName,
+                            ExecutionStep.FirstPassModelName,
                             FirstPassPrompt,
                             imageBytes,
                             RocketbookPageTemplateTypeEnum.NotSet,
@@ -99,7 +94,7 @@ namespace Rocket.Ollama.Infrastructure.Project
                     OllamaClient
                         .SendRequestAsync<ProjectTaskTrackerSchema>(
                             endpoint,
-                            ollamaStep.SecondPassModelName,
+                            ExecutionStep.SecondPassModelName,
                             string.Format(
                                 SecondPassPrompt,
                                 firstPassResponse
@@ -113,31 +108,16 @@ namespace Rocket.Ollama.Infrastructure.Project
                             cancellationToken
                         );
 
-            var responseJson =
-                JsonSerializer
-                    .Serialize(secondPassResponse);
-
             await
                 appendLogMessageCallback(
                     step.Id,
-                    responseJson
+                    JsonSerializer
+                        .Serialize(secondPassResponse)
                 );
 
-            var resultArtifact =
-                new ExecutionStepArtifact
-                {
-                    Result = (int)ExecutionStatusEnum.Completed,
-                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData,
-                    Artifact =
-                        Encoding
-                            .Default
-                            .GetBytes(
-                                responseJson
-                            ),
-                    FileExtension = ".json"
-                };
-
-            return resultArtifact;
+            return
+                secondPassResponse
+                    .AsCompletedProjectTaskTrackerDataArtifact();
         }
     }
 }

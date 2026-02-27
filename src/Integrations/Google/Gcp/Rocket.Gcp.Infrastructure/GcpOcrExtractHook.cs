@@ -1,24 +1,22 @@
 ﻿using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Rocket.Domain.Enum;
-using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Gcp.Domain;
+using Rocket.Integrations.Common;
+using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 
 namespace Rocket.Gcp.Infrastructure
 {
     public class GcpOcrExtractHook(
-        ILogger<GcpOcrExtractHook> logger,
-        IVisionOcrService visionOcrService
-    ) : IIntegrationHook
+        IVisionOcrService visionOcrService,
+        ILogger<GcpOcrExtractHook> logger
+    )
+        : HookWithConnectorBase<GcpExtractExecutionStep, GcpConnector>(logger), IIntegrationHook
     {
-        public bool IsApplicable(BaseExecutionStep step) => step is GcpExtractExecutionStep;
-
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
@@ -27,29 +25,24 @@ namespace Rocket.Gcp.Infrastructure
             CancellationToken cancellationToken
         )
         {
-            var artifact =
-                context
-                    .GetInputArtifact();
-
-            var connector =
-                await
-                    context
-                        .GetConnectorAsync<GcpConnector>(
-                            userId,
-                            step,
-                            cancellationToken
-                        );
-
-            var imageBytes = artifact.Artifact;
-
-            if (step is not GcpExtractExecutionStep)
-                throw new RocketException(
-                    "Unexpected step format, please check configuration",
-                    ApiStatusCodeEnum.DeveloperError
+            context
+                .InitializeStep(
+                    this,
+                    step
+                )
+                .InitializeArtifact(this)
+                .InitializeConnector(
+                    this,
+                    userId,
+                    step,
+                    cancellationToken
                 );
 
-            var credential = 
-                connector
+            var imageBytes =
+                GetArtifactAsBytes();
+
+            var credential =
+                Connector
                     .Credential;
 
             var result =
@@ -66,22 +59,10 @@ namespace Rocket.Gcp.Infrastructure
                     step.Id,
                     result
                 );
-            
-            var resultArtifact =
-                new ExecutionStepArtifact
-                {
-                    Result = (int)ExecutionStatusEnum.Completed,
-                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
-                    Artifact =
-                        Encoding
-                            .Default
-                            .GetBytes(
-                                result
-                            ),
-                    FileExtension = ".txt"
-                };
 
-            return resultArtifact;
+            return
+                result
+                    .AsCompletedRawTextArtifact();
         }
     }
 }

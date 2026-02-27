@@ -13,9 +13,9 @@ using Rocket.Notion.Domain;
 namespace Rocket.Notion.Infrastructure
 {
     public class NotionHook(
-        ILogger<NotionHook> logger,
         INotionNoteUploader notionNoteUploader,
-        INotionImageUploader notionImageUploader
+        INotionImageUploader notionImageUploader,
+        ILogger<NotionHook> logger
     ) : HookWithConnectorBase<NotionUploadExecutionStep, NotionConnector>(logger), IIntegrationHook
     {
         public async Task<ExecutionStepArtifact> ProcessAsync(
@@ -42,7 +42,7 @@ namespace Rocket.Notion.Infrastructure
             if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.RawTextData)
             {
                 var textData =
-                    ArtifactAsText();
+                    GetArtifactAsText();
 
                 await
                     notionNoteUploader
@@ -57,7 +57,7 @@ namespace Rocket.Notion.Infrastructure
             else if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.ImageData)
             {
                 var imageBytes =
-                    ArtifactAsBytes();
+                    GetArtifactAsBytes();
 
                 await
                     notionImageUploader

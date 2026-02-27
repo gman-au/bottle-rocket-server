@@ -2,10 +2,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Rocket.Domain.Enum;
-using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
+using Rocket.Integrations.Common;
+using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 using Rocket.Microsofts.Domain;
 
@@ -14,10 +14,9 @@ namespace Rocket.Microsofts.Infrastructure
     public class OneDriveHook(
         IOneDriveUploader oneDriveUploader,
         ILogger<OneDriveHook> logger
-    ) : IIntegrationHook
+    )
+        : HookWithConnectorBase<OneDriveUploadExecutionStep, MicrosoftConnector>(logger), IIntegrationHook
     {
-        public bool IsApplicable(BaseExecutionStep step) => step is OneDriveUploadExecutionStep;
-
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
@@ -26,35 +25,29 @@ namespace Rocket.Microsofts.Infrastructure
             CancellationToken cancellationToken
         )
         {
-            var artifact =
-                context
-                    .GetInputArtifact();
-
-            var connector =
-                await
-                    context
-                        .GetConnectorAsync<MicrosoftConnector>(
-                            userId,
-                            step,
-                            cancellationToken
-                        );
-
-            if (step is not OneDriveUploadExecutionStep oneDriveStep)
-                throw new RocketException(
-                    "Unexpected step format, please check configuration",
-                    ApiStatusCodeEnum.DeveloperError
+            context
+                .InitializeStep(
+                    this,
+                    step
+                )
+                .InitializeArtifact(this)
+                .InitializeConnector(
+                    this,
+                    userId,
+                    step,
+                    cancellationToken
                 );
 
             var noteTitle = $"BR_Note_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
-            var fileName = noteTitle + artifact.FileExtension;
+            var fileName = noteTitle + Artifact.FileExtension;
 
             await
                 oneDriveUploader
                     .UploadFileAsync(
-                        connector,
+                        Connector,
                         fileName,
-                        oneDriveStep.Subfolder ?? "/",
-                        artifact.Artifact,
+                        ExecutionStep.Subfolder ?? "/",
+                        Artifact.Artifact,
                         cancellationToken
                     );
 

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Rocket.Domain.Enum;
-using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
+using Rocket.Integrations.Common;
+using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 using Rocket.Replicate.Domain;
 using Rocket.Replicate.Domain.Models.DataLabTo;
@@ -14,13 +13,11 @@ using Rocket.Replicate.Domain.Models.DataLabTo;
 namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
 {
     public class DataLabToExtractTextHook(
-        ILogger<DataLabToExtractTextHook> logger,
-        IReplicateClient replicateClient
-    ) : IIntegrationHook
+        IReplicateClient replicateClient,
+        ILogger<DataLabToExtractTextHook> logger
+    ) : HookWithConnectorBase<DataLabToExtractTextExecutionStep, ReplicateConnector>(logger), IIntegrationHook
     {
         private const string DataLabToCustomEndpoint = "v1/models/datalab-to/marker/predictions";
-        
-        public bool IsApplicable(BaseExecutionStep step) => step is DataLabToExtractTextExecutionStep;
 
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
@@ -30,38 +27,34 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
             CancellationToken cancellationToken
         )
         {
-            var artifact =
-                context
-                    .GetInputArtifact();
-
-            var connector =
-                await
-                    context
-                        .GetConnectorAsync<ReplicateConnector>(
-                            userId,
-                            step,
-                            cancellationToken
-                        );
-
-            var imageBytes = artifact.Artifact;
-
-            if (step is not DataLabToExtractTextExecutionStep)
-                throw new RocketException(
-                    "Unexpected step format, please check configuration",
-                    ApiStatusCodeEnum.DeveloperError
+            context
+                .InitializeStep(
+                    this,
+                    step
+                )
+                .InitializeArtifact(this)
+                .InitializeConnector(
+                    this,
+                    userId,
+                    step,
+                    cancellationToken
                 );
 
+            var imageBytes =
+                Artifact
+                    .Artifact;
+
             var apiToken =
-                connector
+                Connector
                     .ApiToken;
 
-            var fileName = $"{Guid.NewGuid()}{artifact.FileExtension}";
+            var fileName = $"{Guid.NewGuid()}{Artifact.FileExtension}";
 
             var imageIdToDelete = string.Empty;
 
             try
             {
-                // upload the file
+                // Upload the file
                 var (imageUrl, imageId) =
                     await
                         replicateClient
@@ -69,16 +62,19 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
                                 apiToken,
                                 imageBytes,
                                 fileName,
-                                artifact.FileExtension,
+                                Artifact.FileExtension,
                                 cancellationToken
                             );
 
                 imageIdToDelete = imageId;
-                
-                logger
-                    .LogInformation("Uploaded image to Replicate: {imageUrl}", imageUrl);
 
-                // create the prediction
+                logger
+                    .LogInformation(
+                        "Uploaded image to Replicate: {imageUrl}",
+                        imageUrl
+                    );
+
+                // Create the prediction
                 var predictionId =
                     await
                         replicateClient
@@ -93,9 +89,12 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
                                 cancellationToken,
                                 DataLabToCustomEndpoint
                             );
-                
+
                 logger
-                    .LogInformation("Created prediction in Replicate: {predictionId}", predictionId);
+                    .LogInformation(
+                        "Created prediction in Replicate: {predictionId}",
+                        predictionId
+                    );
 
                 var result =
                     await
@@ -106,33 +105,22 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
                                 cancellationToken
                             );
 
-                var extractedText = result?.Markdown ?? string.Empty;
+                var extractedText =
+                    result?.Markdown ?? string.Empty;
 
                 await
                     appendLogMessageCallback(
                         step.Id,
                         extractedText
                     );
-                
-                var resultArtifact =
-                    new ExecutionStepArtifact
-                    {
-                        Result = (int)ExecutionStatusEnum.Completed,
-                        ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
-                        Artifact =
-                            Encoding
-                                .Default
-                                .GetBytes(
-                                    extractedText
-                                ),
-                        FileExtension = ".txt"
-                    };
 
-                return resultArtifact;
+                return
+                    extractedText
+                        .AsCompletedRawTextArtifact();
             }
             finally
             {
-                // delete uploads
+                // Delete upload
                 if (!string.IsNullOrEmpty(imageIdToDelete))
                     await
                         replicateClient
@@ -140,9 +128,12 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
                                 apiToken,
                                 imageIdToDelete
                             );
-                
+
                 logger
-                    .LogInformation("Deleted image in Replicate: {imageIdToDelete}", imageIdToDelete);
+                    .LogInformation(
+                        "Deleted image in Replicate: {imageIdToDelete}",
+                        imageIdToDelete
+                    );
             }
         }
     }

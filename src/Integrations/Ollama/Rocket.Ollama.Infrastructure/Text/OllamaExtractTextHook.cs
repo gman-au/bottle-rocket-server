@@ -3,22 +3,26 @@ using System.Configuration;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
-using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
+using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 using Rocket.Ollama.Domain;
 using Rocket.Ollama.Domain.Text;
 
 namespace Rocket.Ollama.Infrastructure.Text
 {
-    public class OllamaExtractTextHook : OllamaHookBase, IIntegrationHook
+    public class OllamaExtractTextHook(
+        IOllamaClient ollamaClient,
+        ILogger<OllamaExtractTextHook> logger
+    )
+        : OllamaHookBase<OllamaExtractTextExecutionStep, OllamaConnector>(
+            ollamaClient,
+            logger
+        ), IIntegrationHook
     {
-        public OllamaExtractTextHook(IOllamaClient ollamaClient) : base(ollamaClient) {}
-        
-        public bool IsApplicable(BaseExecutionStep step) => step is OllamaExtractTextExecutionStep;
-
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
@@ -27,40 +31,34 @@ namespace Rocket.Ollama.Infrastructure.Text
             CancellationToken cancellationToken
         )
         {
-            var artifact =
-                context
-                    .GetInputArtifact();
-
-            var connector =
-                await
-                    context
-                        .GetConnectorAsync<OllamaConnector>(
-                            userId,
-                            step,
-                            cancellationToken
-                        );
-
-            var imageBytes =
-                artifact
-                    .Artifact;
-
-            if (step is not OllamaExtractTextExecutionStep ollamaStep)
-                throw new RocketException(
-                    "Unexpected step format, please check configuration",
-                    ApiStatusCodeEnum.DeveloperError
+            context
+                .InitializeStep(
+                    this,
+                    step
+                )
+                .InitializeArtifact(this)
+                .InitializeConnector(
+                    this,
+                    userId,
+                    step,
+                    cancellationToken
                 );
 
+            var imageBytes =
+                Artifact
+                    .Artifact;
+
             var endpoint =
-                connector.Endpoint ??
+                Connector.Endpoint ??
                 throw new ConfigurationErrorsException(
-                    nameof(connector.Endpoint)
+                    nameof(Connector.Endpoint)
                 );
 
             await
                 EnsureModelsExistAsync(
                     endpoint,
                     cancellationToken,
-                    ollamaStep.ModelName
+                    ExecutionStep.ModelName
                 );
 
             var response =
@@ -68,7 +66,7 @@ namespace Rocket.Ollama.Infrastructure.Text
                     OllamaClient
                         .SendRequestAsync<string>(
                             endpoint,
-                            ollamaStep.ModelName,
+                            ExecutionStep.ModelName,
                             "Perform OCR on this image and return only the text.",
                             imageBytes,
                             RocketbookPageTemplateTypeEnum.StandardLined,

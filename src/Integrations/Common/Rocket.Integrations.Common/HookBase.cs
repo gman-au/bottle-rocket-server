@@ -1,13 +1,9 @@
 ﻿using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Rocket.Domain.Connectors;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
-using Rocket.Interfaces;
 
 namespace Rocket.Integrations.Common
 {
@@ -50,7 +46,7 @@ namespace Rocket.Integrations.Common
                 );
         }
 
-        protected string ArtifactAsText()
+        protected string GetArtifactAsText()
         {
             var textBytes =
                 Artifact
@@ -68,7 +64,7 @@ namespace Rocket.Integrations.Common
                     .GetString(textBytes);
         }
 
-        protected byte[] ArtifactAsBytes()
+        protected byte[] GetArtifactAsBytes()
         {
             var bytes =
                 Artifact
