@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -25,11 +26,10 @@ namespace Rocket.Notion.Infrastructure
         {
             using var httpClient = GetBaseHttpClient(integrationSecret);
 
-            if ((dataSourcePairs ?? []).Any(o => string.IsNullOrEmpty(o.Item1)))
-                throw new RocketException(
-                    "One or more data source column names supplied in the Notion upload were empty. Please check the workflow configuration.",
-                    ApiStatusCodeEnum.ServerConfigurationError
-                );
+            var nonEmptyPairs =
+                dataSourcePairs
+                    .Where(o => !string.IsNullOrEmpty(o.Item1))
+                    .ToList();
             
             var request = new DataSourceRequest
             {
@@ -38,7 +38,7 @@ namespace Rocket.Notion.Infrastructure
                     DataSourceId = dataSourceId
                 },
                 Properties =
-                    dataSourcePairs
+                    nonEmptyPairs
                         .ToDictionary(
                             o => o.Item1,
                             o => new NotionRichTextProperty
@@ -60,7 +60,7 @@ namespace Rocket.Notion.Infrastructure
             logger
                 .LogDebug(
                     "Sending POST Json: {json}",
-                    JsonSerializer.Serialize(request)
+                    JsonSerializer.Serialize(request, DefaultJsonSerializationOptions)
                 );
 
             HttpResponseMessage response = null;
@@ -72,6 +72,7 @@ namespace Rocket.Notion.Infrastructure
                             .PostAsJsonAsync(
                                 "v1/pages",
                                 request,
+                                DefaultJsonSerializationOptions,
                                 cancellationToken
                             );
 

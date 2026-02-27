@@ -43,6 +43,83 @@
                     }
                 </MudSelect>
             </MudItem>
+            <MudFlexBreak/>
+            <MudItem sm="12" lg="6">
+                <MudSelect
+                    T="NotionDataSourceProperty"
+                    Label=@(_isLoading ? "Loading..." : "Select a field to set as the project code")
+                    @bind-Value="@_projectCodeColumnSelected"
+                    @bind-Value:after="() => ProjectCodeColumnChangedAsync(stepSpecifics)"
+                    Disabled="@(_isLoading || string.IsNullOrEmpty(_connectorId))"
+                    Clearable
+                >
+                    @foreach (var dataSourceProperty in _dataSourceProperties ?? [])
+                    {
+                        <MudSelectItem
+                            T="NotionDataSourceProperty"
+                            Value="@dataSourceProperty">
+                            @dataSourceProperty.Name
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem sm="12" lg="6">
+                <MudSelect
+                    T="NotionDataSourceProperty"
+                    Label=@(_isLoading ? "Loading..." : "Select a field to set as the task name")
+                    @bind-Value="@_taskColumnSelected"
+                    @bind-Value:after="() => TaskColumnChangedAsync(stepSpecifics)"
+                    Disabled="@(_isLoading || string.IsNullOrEmpty(_connectorId))"
+                    Clearable
+                >
+                    @foreach (var dataSourceProperty in _dataSourceProperties ?? [])
+                    {
+                        <MudSelectItem
+                            T="NotionDataSourceProperty"
+                            Value="@dataSourceProperty">
+                            @dataSourceProperty.Name
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem sm="12" lg="6">
+                <MudSelect
+                    T="NotionDataSourceProperty"
+                    Label=@(_isLoading ? "Loading..." : "Select a field to set as the due date")
+                    @bind-Value="@_dueDateColumnSelected"
+                    @bind-Value:after="() => DueDateColumnChangedAsync(stepSpecifics)"
+                    Disabled="@(_isLoading || string.IsNullOrEmpty(_connectorId))"
+                    Clearable
+                >
+                    @foreach (var dataSourceProperty in _dataSourceProperties ?? [])
+                    {
+                        <MudSelectItem
+                            T="NotionDataSourceProperty"
+                            Value="@dataSourceProperty">
+                            @dataSourceProperty.Name
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem sm="12" lg="6">
+                <MudSelect
+                    T="NotionDataSourceProperty"
+                    Label=@(_isLoading ? "Loading..." : "Select a field to set as the estimated time")
+                    @bind-Value="@_estTimeColumnSelected"
+                    @bind-Value:after="() => EstTimeColumnChangedAsync(stepSpecifics)"
+                    Disabled="@(_isLoading || string.IsNullOrEmpty(_connectorId))"
+                    Clearable
+                >
+                    @foreach (var dataSourceProperty in _dataSourceProperties ?? [])
+                    {
+                        <MudSelectItem
+                            T="NotionDataSourceProperty"
+                            Value="@dataSourceProperty">
+                            @dataSourceProperty.Name
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
         </MudGrid>
     </UpdateWorkflowStepWrapper>
 </BottleRocketLoadingOverlay>
@@ -66,7 +143,17 @@
 
     private NotionDataSourceSummary _dataSourceSummary;
 
+    private NotionDataSourceProperty _projectCodeColumnSelected;
+
+    private NotionDataSourceProperty _taskColumnSelected;
+
+    private NotionDataSourceProperty _dueDateColumnSelected;
+
+    private NotionDataSourceProperty _estTimeColumnSelected;
+
     private IEnumerable<NotionDataSourceSummary> _dataSources = [];
+
+    private IEnumerable<NotionDataSourceProperty> _dataSourceProperties = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -103,7 +190,7 @@
             {
                 _isLoading = true;
                 StateHasChanged();
-                
+
                 var response =
                     await
                         ApiRequestManager
@@ -116,12 +203,38 @@
                             );
 
                 _dataSources =
-                    response?
-                        .DataSources ?? [];
+                    (response?
+                        .DataSources ?? [])
+                    .ToList();
 
                 _dataSourceSummary =
                     _dataSources
                         .FirstOrDefault(o => _wrapper?.StepSpecifics?.DataSourceId == o.DataSourceId);
+
+                _dataSourceProperties =
+                    _dataSources
+                        .FirstOrDefault(o => o.DataSourceId == _dataSourceSummary?.DataSourceId)?
+                        .Fields ?? [];
+
+                _projectCodeColumnSelected =
+                    (_dataSourceSummary?
+                        .Fields ?? [])
+                    .FirstOrDefault(o => o.Name == _wrapper?.StepSpecifics?.ProjectCodeColumn);
+
+                _taskColumnSelected =
+                    (_dataSourceSummary?
+                        .Fields ?? [])
+                    .FirstOrDefault(o => o.Name == _wrapper?.StepSpecifics?.TaskColumn);
+
+                _dueDateColumnSelected =
+                    (_dataSourceSummary?
+                        .Fields ?? [])
+                    .FirstOrDefault(o => o.Name == _wrapper?.StepSpecifics?.DueDateColumn);
+
+                _estTimeColumnSelected =
+                    (_dataSourceSummary?
+                        .Fields ?? [])
+                    .FirstOrDefault(o => o.Name == _wrapper?.StepSpecifics?.EstTimeColumn);
             }
             else
             {
@@ -147,6 +260,28 @@
         stepSpecifics.DataSourceId =
             _dataSourceSummary?
                 .DataSourceId;
+
+        _dataSourceProperties =
+            _dataSources
+                .FirstOrDefault(o => o.DataSourceId == _dataSourceSummary?.DataSourceId)?
+                .Fields ?? [];
+
+        if (_dataSourceSummary?.DataSourceId == null)
+        {
+            await NullifyAllProperties();
+        }
+    }
+
+    private async Task NullifyAllProperties()
+    {
+        _projectCodeColumnSelected = null;
+        await ProjectCodeColumnChangedAsync(_wrapper?.StepSpecifics);
+        _taskColumnSelected = null;
+        await TaskColumnChangedAsync(_wrapper?.StepSpecifics);
+        _dueDateColumnSelected = null;
+        await DueDateColumnChangedAsync(_wrapper?.StepSpecifics);
+        _estTimeColumnSelected = null;
+        await EstTimeColumnChangedAsync(_wrapper?.StepSpecifics);
     }
 
     private async Task ConnectorChangedAsync(string connectorId)
@@ -156,10 +291,39 @@
         if (string.IsNullOrEmpty(connectorId))
         {
             _dataSourceSummary = null;
+            await NullifyAllProperties();
         }
 
         await
             RefreshDataSourceAsync();
+    }
+
+    private async Task ProjectCodeColumnChangedAsync(NotionUploadProjectTaskWorkflowStepSpecifics stepSpecifics)
+    {
+        stepSpecifics.ProjectCodeColumn =
+            _projectCodeColumnSelected?
+                .Name;
+    }
+
+    private async Task TaskColumnChangedAsync(NotionUploadProjectTaskWorkflowStepSpecifics stepSpecifics)
+    {
+        stepSpecifics.TaskColumn =
+            _taskColumnSelected?
+                .Name;
+    }
+
+    private async Task DueDateColumnChangedAsync(NotionUploadProjectTaskWorkflowStepSpecifics stepSpecifics)
+    {
+        stepSpecifics.DueDateColumn =
+            _dueDateColumnSelected?
+                .Name;
+    }
+
+    private async Task EstTimeColumnChangedAsync(NotionUploadProjectTaskWorkflowStepSpecifics stepSpecifics)
+    {
+        stepSpecifics.EstTimeColumn =
+            _estTimeColumnSelected?
+                .Name;
     }
 
 }

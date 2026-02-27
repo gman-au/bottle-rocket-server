@@ -10,7 +10,7 @@ namespace Rocket.Notion.Injection.Web
 
         public string Description => "Upload a project task data to a Notion data source.";
 
-        public string[] Categories => [SkuConstants.FileUpload];
+        public string[] Categories => [SkuConstants.FileUpload, SkuConstants.ProjectManagement];
 
         public string HrefBase => "/MyWorkflow/Notion/ProjectTask";
 
