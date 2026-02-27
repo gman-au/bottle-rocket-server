@@ -3,7 +3,7 @@ using Rocket.Notion.Infrastructure.Definition.Common;
 
 namespace Rocket.Notion.Infrastructure.Definition.Searching
 {
-    public class SearchResult
+    public class PageSearchResult
     {
         [JsonPropertyName("object")] 
         public string Object { get; set; }

@@ -16,7 +16,7 @@ namespace Rocket.Notion.Domain
 
         public override string StepName { get; set; } = "Upload note to Notion";
 
-        public override string StepCode { get; set; } = NotionDomainConstants.NotionUploadWorkflowCode;
+        public override string StepCode { get; set; } = NotionDomainConstants.NotionUploadNoteWorkflowCode;
 
         public override string RequiresConnectorCode { get; set; } = NotionDomainConstants.ConnectorCode;
 

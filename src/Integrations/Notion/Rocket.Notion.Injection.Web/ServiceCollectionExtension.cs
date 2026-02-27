@@ -9,7 +9,8 @@ namespace Rocket.Notion.Injection.Web
         {
             services
                 .AddTransient<ISkuConnector, NotionConnectorProduct>()
-                .AddTransient<ISkuWorkflow, NotionUploadNoteWorkflowProduct>();
+                .AddTransient<ISkuWorkflow, NotionUploadNoteWorkflowProduct>()
+                .AddTransient<ISkuWorkflow, NotionUploadProjectTaskWorkflowProduct>();
 
             return services;
         }

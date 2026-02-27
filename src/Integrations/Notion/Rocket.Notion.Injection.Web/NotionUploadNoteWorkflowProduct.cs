@@ -18,6 +18,6 @@ namespace Rocket.Notion.Injection.Web
 
         public bool DataLeavesYourServer => true;
 
-        public string StepCode => NotionDomainConstants.NotionUploadWorkflowCode;
+        public string StepCode => NotionDomainConstants.NotionUploadNoteWorkflowCode;
     }
 }

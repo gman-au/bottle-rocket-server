@@ -2,7 +2,7 @@
 
 namespace Rocket.Notion.Infrastructure.Definition.Searching
 {
-    public class PageSearchRequest
+    public class SearchRequest
     {
         [JsonPropertyName("filter")] 
         public SearchFilter Filter { get; set; }

@@ -149,6 +149,11 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         );
 
+        Task<GetAllNotionDataSourcesResponse> GetNotionDataSourcesAsync(
+            GetAllNotionDataSourcesRequest request,
+            CancellationToken cancellationToken
+        );
+
         public Task<MicrosoftAuthInitiateResponse> InitiateMicrosoftConnectorAuthAsync(
             MicrosoftAuthInitiateRequest request,
             CancellationToken cancellationToken

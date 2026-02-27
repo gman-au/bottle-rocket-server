@@ -1,9 +1,11 @@
 ﻿using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
+using Rocket.Page.Schemas.ProjectTaskTracker;
 
 namespace Rocket.Integrations.Common
 {
@@ -78,6 +80,35 @@ namespace Rocket.Integrations.Common
 
             return
                 bytes;
+        }
+
+        protected ProjectTaskTrackerSchema GetArtifactAsProjectTaskTrackerData()
+        {
+            var bytes =
+                Artifact
+                    .Artifact;
+
+            if (bytes == null)
+                throw new RocketException(
+                    $"Artifact data for hook [{typeof(TExecutionStep)}] is empty or not initialized; please check configuration",
+                    ApiStatusCodeEnum.DeveloperError
+                );
+            
+            try
+            {
+                var schema =
+                    JsonSerializer
+                        .Deserialize<ProjectTaskTrackerSchema>(bytes);
+
+                return schema;
+            }
+            catch (JsonException)
+            {
+                throw new RocketException(
+                    $"There was a problem loading the project task tracker artifact during step [{typeof(TExecutionStep)}]",
+                    ApiStatusCodeEnum.DeveloperError
+                );
+            }
         }
     }
 }

@@ -31,6 +31,22 @@ namespace Rocket.Notion.Infrastructure
                     cm.AutoMap();
                 });
             }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(NotionUploadProjectTaskExecutionStep)))
+            {
+                BsonClassMap.RegisterClassMap<NotionUploadProjectTaskExecutionStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(NotionUploadProjectTaskWorkflowStep)))
+            {
+                BsonClassMap.RegisterClassMap<NotionUploadProjectTaskWorkflowStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
         }
     }
 }

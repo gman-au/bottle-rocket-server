@@ -21,6 +21,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
     public class NotionController(
         ILogger<NotionController> logger,
         INotionNoteSearcher notionNoteSearcher,
+        INotionDataSourceSearcher notionDataSourceSearcher,
         IConnectorRepository connectorRepository,
         IUserManager userManager
     ) : RocketControllerBase(userManager)
@@ -92,6 +93,77 @@ namespace Rocket.Api.Host.Controllers.Vendors
                 new GetAllNotionParentNotesResponse
                     {
                         ParentNotes = parentNotes
+                    }
+                    .AsApiSuccess();
+        }
+        
+        [HttpPost, Route("/api/notion/workflows/getDataSources")]
+        [EndpointSummary("Get all data sources accessible via a Notion connector")]
+        [EndpointGroupName("Manage connectors")]
+        [EndpointDescription(
+            """
+            Retrieves a set of (permitted) data sources for the given Notion connector.\n
+            The data sources that a Notion integration has access to are explicitly defined in the Notion integration.
+            """
+        )]
+        [ProducesResponseType(
+            typeof(GetAllNotionParentNotesResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetAllNotionDataSourcesAsync(
+            [FromBody] GetAllNotionParentNotesRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
+
+            logger
+                .LogInformation(
+                    "Received (Notion) parent notes request for username: {username}",
+                    user.Username
+                );
+
+            var userId =
+                user
+                    .Id;
+
+            var connectorId = request.ConnectorId;
+
+            var connector =
+                await
+                    connectorRepository
+                        .GetConnectorByIdAsync<NotionConnector>(
+                            userId,
+                            connectorId,
+                            cancellationToken
+                        );
+
+            if (connector == null)
+                throw new RocketException(
+                    "Connector entry not found",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
+            // connect to notion and search for pages
+            var dataSources =
+                await
+                    notionDataSourceSearcher
+                        .GetDataSourcesAsync(
+                            connector.IntegrationSecret,
+                            cancellationToken
+                        );
+
+            return
+                new GetAllNotionDataSourcesResponse
+                    {
+                        DataSources = dataSources
                     }
                     .AsApiSuccess();
         }

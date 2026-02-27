@@ -38,5 +38,36 @@ namespace Rocket.Web.Client
 
             return result;
         }
+        
+        public async Task<GetAllNotionDataSourcesResponse> GetNotionDataSourcesAsync(
+            GetAllNotionDataSourcesRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation("Received Get (Notion) data sources request");
+
+            var response =
+                await
+                    authenticatedApiClient
+                        .PostAsJsonAsync(
+                            "/api/notion/workflows/getDataSources",
+                            request,
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<GetAllNotionDataSourcesResponse>(
+                            logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
     }
 }

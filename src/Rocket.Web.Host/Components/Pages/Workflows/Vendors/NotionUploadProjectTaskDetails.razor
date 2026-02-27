@@ -1,0 +1,165 @@
+﻿@page "/MyWorkflow/Notion/ProjectTask/{workflowId}/AddStep"
+@page "/MyWorkflow/Notion/ProjectTask/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/Notion/ProjectTask/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.Notion.Contracts
+@using Rocket.Notion.Domain
+@using Rocket.Web.Host.Infrastructure
+@inject IWebHostErrorHandler WebHostErrorHandler
+
+@using Rocket.Web.Client
+@inject IApiRequestManager ApiRequestManager
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    <UpdateWorkflowStepWrapper
+        @ref="_wrapper"
+        T="NotionUploadProjectTaskWorkflowStepSpecifics"
+        WorkflowStepName="Upload project task to Notion"
+        WorkflowId="@WorkflowId"
+        ParentStepId="@ParentStepId"
+        RequiresConnectorCode="@NotionDomainConstants.ConnectorCode"
+        OnConnectorIdChanged="ConnectorChangedAsync"
+        StepId="@StepId"
+        Context="stepSpecifics">
+        <MudGrid>
+            <MudItem sm="12" lg="6">
+                <MudSelect
+                    T="NotionDataSourceSummary"
+                    Label=@(_isLoading ? "Loading..." : "Select a data source")
+                    @bind-Value="@_dataSourceSummary"
+                    @bind-Value:after="() => DataSourceChangedAsync(stepSpecifics)"
+                    Disabled="@_isLoading"
+                    Clearable
+                    Required
+                    RequiredError="Data source is required">
+                    @foreach (var dataSource in _dataSources ?? [])
+                    {
+                        <MudSelectItem
+                            T="NotionDataSourceSummary"
+                            Value="@dataSource"
+                        >
+                            @dataSource.DataSourceName
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+        </MudGrid>
+    </UpdateWorkflowStepWrapper>
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+    private bool _isLoading;
+
+    private string _connectorId;
+
+    private UpdateWorkflowStepWrapper<NotionUploadProjectTaskWorkflowStepSpecifics> _wrapper;
+
+    private NotionDataSourceSummary _dataSourceSummary;
+
+    private IEnumerable<NotionDataSourceSummary> _dataSources = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+
+            await
+                RefreshDataSourceAsync();
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RefreshDataSourceAsync()
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(_connectorId))
+            {
+                _isLoading = true;
+                StateHasChanged();
+                
+                var response =
+                    await
+                        ApiRequestManager
+                            .GetNotionDataSourcesAsync(
+                                new GetAllNotionDataSourcesRequest
+                                {
+                                    ConnectorId = _connectorId
+                                },
+                                BaseCancellationToken
+                            );
+
+                _dataSources =
+                    response?
+                        .DataSources ?? [];
+
+                _dataSourceSummary =
+                    _dataSources
+                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.DataSourceId == o.DataSourceId);
+            }
+            else
+            {
+                _dataSources = [];
+            }
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task DataSourceChangedAsync(NotionUploadProjectTaskWorkflowStepSpecifics stepSpecifics)
+    {
+        stepSpecifics.DataSourceId =
+            _dataSourceSummary?
+                .DataSourceId;
+    }
+
+    private async Task ConnectorChangedAsync(string connectorId)
+    {
+        _connectorId = connectorId;
+
+        if (string.IsNullOrEmpty(connectorId))
+        {
+            _dataSourceSummary = null;
+        }
+
+        await
+            RefreshDataSourceAsync();
+    }
+
+}

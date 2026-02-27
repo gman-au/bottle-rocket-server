@@ -8,21 +8,21 @@ using Rocket.Notion.Infrastructure.Definition.Searching;
 
 namespace Rocket.Notion.Infrastructure
 {
-    public class NotionNoteSearcher : BaseNotionClient, INotionNoteSearcher
+    public class NotionDataSourceSearcher : BaseNotionClient, INotionDataSourceSearcher
     {
-        public async Task<IEnumerable<NotionParentNoteSummary>> GetParentNotesAsync(
+        public async Task<IEnumerable<NotionDataSourceSummary>> GetDataSourcesAsync(
             string integrationSecret,
             CancellationToken cancellationToken
         )
         {
             using var httpClient = GetBaseHttpClient(integrationSecret);
-            
+
             var request = new SearchRequest
             {
                 Filter = new SearchFilter
                 {
                     Property = "object",
-                    Value = "page"
+                    Value = "data_source"
                 }
             };
 
@@ -42,21 +42,32 @@ namespace Rocket.Notion.Infrastructure
                 await
                     response
                         .Content
-                        .ReadFromJsonAsync<PageSearchResponse>(cancellationToken);
+                        .ReadFromJsonAsync<DataSourceSearchResponse>(cancellationToken);
 
             var searchResults = notionResponse?.Results ?? [];
 
             var results =
                 searchResults
                     .Select(
-                        o => new NotionParentNoteSummary
+                        o => new NotionDataSourceSummary
                         {
-                            ParentNoteId = o.Id,
-                            ParentNoteName =
-                                (o.Properties?.Title?.Title ?? [])
+                            DataSourceId = o.Id,
+                            DataSourceName =
+                                (o.Title ?? [])
                                 .FirstOrDefault()?
                                 .Text?
-                                .Content
+                                .Content,
+                            Fields =
+                                o
+                                    .Properties
+                                    .Select(
+                                        kvp =>
+                                            new NotionDataSourceProperty
+                                            {
+                                                DataSourceId = kvp.Value?.Id,
+                                                Name = kvp.Value?.Name
+                                            }
+                                    )
                         }
                     );
 
