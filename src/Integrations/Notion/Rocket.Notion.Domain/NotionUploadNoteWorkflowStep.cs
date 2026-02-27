@@ -3,7 +3,7 @@ using Rocket.Domain.Workflows;
 
 namespace Rocket.Notion.Domain
 {
-    public record NotionUploadWorkflowStep : BaseWorkflowStep
+    public record NotionUploadNoteWorkflowStep : BaseWorkflowStep
     {
         public override int[] InputTypes { get; set; } =
         [

@@ -1,6 +1,6 @@
-﻿@page "/MyWorkflow/Notion/{workflowId}/AddStep"
-@page "/MyWorkflow/Notion/{workflowId}/Steps/{parentStepId}/AddStep"
-@page "/MyWorkflow/Notion/{workflowId}/Steps/{stepId}/UpdateStep"
+﻿@page "/MyWorkflow/Notion/Note/{workflowId}/AddStep"
+@page "/MyWorkflow/Notion/Note/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/Notion/Note/{workflowId}/Steps/{stepId}/UpdateStep"
 @using Rocket.Notion.Contracts
 @using Rocket.Notion.Domain
 @using Rocket.Web.Host.Infrastructure
@@ -13,7 +13,7 @@
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
     <UpdateWorkflowStepWrapper
         @ref="_wrapper"
-        T="NotionUploadWorkflowStepSpecifics"
+        T="NotionUploadNoteWorkflowStepSpecifics"
         WorkflowStepName="Upload file to Notion"
         WorkflowId="@WorkflowId"
         ParentStepId="@ParentStepId"
@@ -62,7 +62,7 @@
 
     private string _connectorId;
 
-    private UpdateWorkflowStepWrapper<NotionUploadWorkflowStepSpecifics> _wrapper;
+    private UpdateWorkflowStepWrapper<NotionUploadNoteWorkflowStepSpecifics> _wrapper;
 
     private NotionParentNoteSummary _parentNoteSelected;
 
@@ -142,7 +142,7 @@
         StateHasChanged();
     }
 
-    private async Task ParentNoteChangedAsync(NotionUploadWorkflowStepSpecifics stepSpecifics)
+    private async Task ParentNoteChangedAsync(NotionUploadNoteWorkflowStepSpecifics stepSpecifics)
     {
         stepSpecifics.ParentNoteId =
             _parentNoteSelected?

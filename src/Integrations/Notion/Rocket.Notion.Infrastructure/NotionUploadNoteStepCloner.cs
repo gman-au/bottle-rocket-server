@@ -4,10 +4,10 @@ using Rocket.Notion.Domain;
 
 namespace Rocket.Notion.Infrastructure
 {
-    public class NotionUploadStepCloner(IServiceProvider serviceProvider)
-        : StepModelClonerBase<NotionUploadWorkflowStep, NotionUploadExecutionStep>(serviceProvider)
+    public class NotionUploadNoteStepCloner(IServiceProvider serviceProvider)
+        : StepModelClonerBase<NotionUploadNoteWorkflowStep, NotionUploadNoteExecutionStep>(serviceProvider)
     {
-        public override NotionUploadExecutionStep Clone(NotionUploadWorkflowStep value)
+        public override NotionUploadNoteExecutionStep Clone(NotionUploadNoteWorkflowStep value)
         {
             var result =
                 base

@@ -22,7 +22,7 @@ namespace Rocket.Infrastructure.Json
             { typeof(DropboxUploadWorkflowStepSpecifics), "dropbox_upload_workflow" },
             { typeof(OllamaExtractTextWorkflowStepSpecifics), "ollama_extract_text_workflow" },
             { typeof(OllamaExtractProjectWorkflowStepSpecifics), "ollama_extract_project_workflow" },
-            { typeof(NotionUploadWorkflowStepSpecifics), "notion_upload_workflow" },
+            { typeof(NotionUploadNoteWorkflowStepSpecifics), "notion_upload_workflow" },
             { typeof(OneDriveUploadWorkflowStepSpecifics), "one_drive_upload_workflow" },
             { typeof(HelloWorldTextWorkflowStepSpecifics), "hello_world_text_workflow" },
             { typeof(HelloWorldProjectWorkflowStepSpecifics), "hello_world_project_workflow" },

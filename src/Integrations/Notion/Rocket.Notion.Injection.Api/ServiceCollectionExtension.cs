@@ -9,11 +9,11 @@ namespace Rocket.Notion.Injection.Api
         public static IServiceCollection AddNotionApiIntegration(this IServiceCollection services)
         {
             services
-                .AddTransient<IIntegrationHook, NotionHook>()
-                .AddTransient<IWorkflowStepModelMapper, NotionUploadWorkflowStepMapper>()
-                .AddTransient<IExecutionStepModelMapper, NotionUploadExecutionStepMapper>()
+                .AddTransient<IIntegrationHook, NotionNoteUploadHook>()
+                .AddTransient<IWorkflowStepModelMapper, NotionUploadNoteWorkflowStepMapper>()
+                .AddTransient<IExecutionStepModelMapper, NotionUploadNoteExecutionStepMapper>()
                 .AddTransient<IConnectorModelMapper, NotionConnectorMapper>()
-                .AddTransient<IStepModelCloner, NotionUploadStepCloner>()
+                .AddTransient<IStepModelCloner, NotionUploadNoteStepCloner>()
                 .AddTransient<INotionNoteSearcher, NotionNoteSearcher>()
                 .AddTransient<INotionNoteUploader, NotionNoteUploader>()
                 .AddTransient<INotionImageUploader, NotionImageUploader>()

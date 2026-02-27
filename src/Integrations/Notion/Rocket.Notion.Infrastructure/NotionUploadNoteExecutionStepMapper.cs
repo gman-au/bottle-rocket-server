@@ -5,10 +5,10 @@ using Rocket.Notion.Domain;
 
 namespace Rocket.Notion.Infrastructure
 {
-    public class NotionUploadExecutionStepMapper(IServiceProvider serviceProvider)
-        : ExecutionStepModelMapperBase<NotionUploadExecutionStep, NotionUploadExecutionStepSpecifics>(serviceProvider)
+    public class NotionUploadNoteExecutionStepMapper(IServiceProvider serviceProvider)
+        : ExecutionStepModelMapperBase<NotionUploadNoteExecutionStep, NotionUploadNoteExecutionStepSpecifics>(serviceProvider)
     {
-        public override NotionUploadExecutionStep For(NotionUploadExecutionStepSpecifics value)
+        public override NotionUploadNoteExecutionStep For(NotionUploadNoteExecutionStepSpecifics value)
         {
             var result =
                 base
@@ -19,7 +19,7 @@ namespace Rocket.Notion.Infrastructure
             return result;
         }
 
-        public override NotionUploadExecutionStepSpecifics From(NotionUploadExecutionStep value)
+        public override NotionUploadNoteExecutionStepSpecifics From(NotionUploadNoteExecutionStep value)
         {
             var result =
                 base

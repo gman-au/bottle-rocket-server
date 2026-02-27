@@ -12,11 +12,11 @@ using Rocket.Notion.Domain;
 
 namespace Rocket.Notion.Infrastructure
 {
-    public class NotionHook(
+    public class NotionNoteUploadHook(
         INotionNoteUploader notionNoteUploader,
         INotionImageUploader notionImageUploader,
-        ILogger<NotionHook> logger
-    ) : HookWithConnectorBase<NotionUploadExecutionStep, NotionConnector>(logger), IIntegrationHook
+        ILogger<NotionNoteUploadHook> logger
+    ) : HookWithConnectorBase<NotionUploadNoteExecutionStep, NotionConnector>(logger), IIntegrationHook
     {
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,

@@ -4,7 +4,7 @@ using Rocket.Notion.Domain;
 
 namespace Rocket.Notion.Injection.Web
 {
-    public class NotionUploadWorkflowProduct : ISkuWorkflow
+    public class NotionUploadNoteWorkflowProduct : ISkuWorkflow
     {
         public string Name => "Upload file to Notion";
 
@@ -12,7 +12,7 @@ namespace Rocket.Notion.Injection.Web
 
         public string[] Categories => [SkuConstants.FileUpload];
 
-        public string HrefBase => "/MyWorkflow/Notion";
+        public string HrefBase => "/MyWorkflow/Notion/Note";
 
         public string ImagePath => "/img/notion-logo.png";
 

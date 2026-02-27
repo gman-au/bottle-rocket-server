@@ -3,7 +3,7 @@ using Rocket.Api.Contracts.Executions;
 
 namespace Rocket.Notion.Contracts
 {
-    public class NotionUploadExecutionStepSpecifics : ExecutionStepSummary
+    public class NotionUploadNoteExecutionStepSpecifics : ExecutionStepSummary
     {
         [JsonPropertyName("parent_note_id")]
         public string ParentNoteId { get; set; }

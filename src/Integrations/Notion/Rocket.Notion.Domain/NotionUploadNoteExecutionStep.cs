@@ -2,7 +2,7 @@
 
 namespace Rocket.Notion.Domain
 {
-    public record NotionUploadExecutionStep : BaseExecutionStep
+    public record NotionUploadNoteExecutionStep : BaseExecutionStep
     {
         public string ParentNoteId { get; set; }
     }
