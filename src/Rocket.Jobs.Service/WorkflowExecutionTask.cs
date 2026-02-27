@@ -47,11 +47,11 @@ namespace Rocket.Jobs.Service
                                 cancellationToken
                             );
 
-                context
-                    .SetCurrentArtifact(artifactResult);
-
                 foreach (var childStep in step?.ChildSteps ?? [])
                 {
+                    context
+                        .SetCurrentArtifact(artifactResult);
+                    
                     cancellationToken
                         .ThrowIfCancellationRequested();
                     
