@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rocket.Interfaces;
 using Rocket.Microsofts.Infrastructure;
+using Rocket.Microsofts.Injection.Serialization;
 
 namespace Rocket.Microsofts.Injection.Api
 {
@@ -24,6 +25,9 @@ namespace Rocket.Microsofts.Injection.Api
                 .AddTransient<IOneNoteSectionSearcher, OneNoteSectionSearcher>()
                 .AddTransient<IOneNoteUploader, OneNoteUploader>()
                 .AddTransient<IBsonMapper, MicrosoftBsonMapper>();
+
+            services
+                .AddMicrosoftJsonSerialization();
 
             return services;
         }

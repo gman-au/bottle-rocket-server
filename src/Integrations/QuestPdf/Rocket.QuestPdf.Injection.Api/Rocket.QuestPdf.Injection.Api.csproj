@@ -6,6 +6,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Rocket.QuestPdf.Infrastructure\Rocket.QuestPdf.Infrastructure.csproj" />
+      <ProjectReference Include="..\Rocket.QuestPdf.Injection.Serialization\Rocket.QuestPdf.Injection.Serialization.csproj" />
     </ItemGroup>
 
 </Project>

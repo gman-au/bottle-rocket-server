@@ -29,6 +29,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<GetAllNotionParentNotesResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );
@@ -60,6 +61,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<GetAllNotionDataSourcesResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );

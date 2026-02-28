@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 using MudBlazor.Services;
 using Rocket.Infrastructure;
+using Rocket.Infrastructure.Json;
 using Rocket.Infrastructure.Mermaid;
 using Rocket.Interfaces;
 using Rocket.Web.Client;
@@ -50,6 +51,9 @@ namespace Rocket.Web.Host.Injection
                 .AddTransient<IExecutionMermaidConverter, ExecutionMermaidConverter>()
                 .AddTransient<IWebHostErrorHandler, WebHostErrorHandler>()
                 .AddScoped<IThemeService, ThemeService>();
+
+            services
+                .AddSingleton<IJsonResolverInstanceProvider, RocketJsonResolverInstanceProvider>();
 
             return services;
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rocket.Interfaces;
+using Rocket.Replicate.Injection.Serialization;
 
 namespace Rocket.Replicate.Injection.Web
 {
@@ -13,6 +14,9 @@ namespace Rocket.Replicate.Injection.Web
                 .AddTransient<ISkuWorkflow, DeepSeekOcrExtractTextWorkflowProduct>()
                 .AddTransient<ISkuConnector, ReplicateConnectorProduct>();
 
+            services
+                .AddReplicateJsonSerialization();
+            
             return services;
         }
     }

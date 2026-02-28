@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rocket.Interfaces;
 using Rocket.Notion.Infrastructure;
+using Rocket.Notion.Injection.Serialization;
 
 namespace Rocket.Notion.Injection.Api
 {
@@ -36,6 +37,9 @@ namespace Rocket.Notion.Injection.Api
             services
                 .AddTransient<IConnectorModelMapper, NotionConnectorMapper>()
                 .AddTransient<IBsonMapper, NotionBsonMapper>();
+
+            services
+                .AddNotionJsonSerialization();
 
             return services;
         }

@@ -26,6 +26,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<GlobalSettingsSpecifics>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );
@@ -57,6 +58,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<ApiResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );

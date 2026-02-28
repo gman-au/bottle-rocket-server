@@ -4,7 +4,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Rocket.Infrastructure.Json;
 
 namespace Rocket.Web.Client.Extensions
 {
@@ -12,6 +11,7 @@ namespace Rocket.Web.Client.Extensions
     {
         public static async Task<T> TryParseResponse<T>(
             this HttpResponseMessage httpResponseMessage,
+            JsonSerializerOptions jsonSerializerOptions = null,
             ILogger logger = null,
             CancellationToken cancellationToken = default
         )
@@ -23,8 +23,7 @@ namespace Rocket.Web.Client.Extensions
                         httpResponseMessage
                             .Content
                             .ReadFromJsonAsync<T>(
-                                RocketTypeInfoResolver
-                                    .DefaultJsonSerializationOptions,
+                                jsonSerializerOptions,
                                 cancellationToken
                             );
 

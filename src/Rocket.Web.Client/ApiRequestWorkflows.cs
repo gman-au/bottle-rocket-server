@@ -30,6 +30,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<FetchWorkflowsResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );
@@ -60,6 +61,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<WorkflowSummary>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );
@@ -91,6 +93,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<UpdateWorkflowResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );
@@ -122,6 +125,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<CreateWorkflowResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );
@@ -152,6 +156,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<ApiResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );

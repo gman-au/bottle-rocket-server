@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rocket.Interfaces;
+using Rocket.Notion.Injection.Serialization;
 
 namespace Rocket.Notion.Injection.Web
 {
@@ -11,6 +12,9 @@ namespace Rocket.Notion.Injection.Web
                 .AddTransient<ISkuConnector, NotionConnectorProduct>()
                 .AddTransient<ISkuWorkflow, NotionUploadNoteWorkflowProduct>()
                 .AddTransient<ISkuWorkflow, NotionUploadProjectTaskWorkflowProduct>();
+
+            services
+                .AddNotionJsonSerialization();
 
             return services;
         }

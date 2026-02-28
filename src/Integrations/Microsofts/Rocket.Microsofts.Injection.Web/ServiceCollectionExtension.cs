@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rocket.Interfaces;
+using Rocket.Microsofts.Injection.Serialization;
 
 namespace Rocket.Microsofts.Injection.Web
 {
@@ -12,6 +13,9 @@ namespace Rocket.Microsofts.Injection.Web
                 .AddTransient<ISkuConnector, MicrosoftPreMadeConnectorProduct>()
                 .AddTransient<ISkuWorkflow, OneDriveUploadWorkflowProduct>()
                 .AddTransient<ISkuWorkflow, OneNoteUploadWorkflowProduct>();
+
+            services
+                .AddMicrosoftJsonSerialization();
 
             return services;
         }

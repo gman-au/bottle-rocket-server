@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rocket.Interfaces;
+using Rocket.QuestPdf.Injection.Serialization;
 
 namespace Rocket.QuestPdf.Injection.Web
 {
@@ -10,6 +11,9 @@ namespace Rocket.QuestPdf.Injection.Web
             services
                 .AddTransient<ISkuWorkflow, ConvertToPdfWorkflowProduct>();
 
+            services
+                .AddQuestPdfJsonSerialization();
+            
             return services;
         }
     }

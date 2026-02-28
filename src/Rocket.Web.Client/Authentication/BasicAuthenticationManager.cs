@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
@@ -27,11 +28,13 @@ namespace Rocket.Web.Client.Authentication
         private string _cachedUsername;
         private Task _initializationTask;
         private bool _initialized;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public BasicAuthenticationManager(
             IOptions<ApiConfigurationOptions> apiConfigurationOptionsAccessor,
             ILogger<BasicAuthenticationManager> logger,
-            ProtectedSessionStorage sessionStorage, 
+            ProtectedSessionStorage sessionStorage,
+            IJsonResolverInstanceProvider jsonResolverInstanceProvider,
             IThemeService themeService
         )
         {
@@ -40,7 +43,7 @@ namespace Rocket.Web.Client.Authentication
             _themeService = themeService;
 
             var options = apiConfigurationOptionsAccessor.Value;
-            
+
             _httpClient = new HttpClient();
             _httpClient.BaseAddress =
                 new Uri(
@@ -49,6 +52,10 @@ namespace Rocket.Web.Client.Authentication
                         nameof(options.BaseUrl)
                     )
                 );
+
+            _jsonSerializerOptions =
+                jsonResolverInstanceProvider
+                    .GetSerializationOptions();
         }
 
         public event Action OnAuthenticationStateChanged;
@@ -92,6 +99,7 @@ namespace Rocket.Web.Client.Authentication
                         await
                             response
                                 .TryParseResponse<ConnectionTestResponse>(
+                                    _jsonSerializerOptions,
                                     _logger,
                                     cancellationToken
                                 );
@@ -99,15 +107,26 @@ namespace Rocket.Web.Client.Authentication
                     _cachedAuthHeader = authHeader;
                     _cachedUsername = connectionTestResponse.UserName;
                     _cachedRole = connectionTestResponse.Role;
-                    
+
                     _themeService
                         .SetDarkMode(connectionTestResponse.DarkMode);
 
                     try
                     {
-                        await _sessionStorage.SetAsync(DomainConstants.AuthHeaderKey, authHeader);
-                        await _sessionStorage.SetAsync(DomainConstants.UsernameKey, connectionTestResponse.UserName);
-                        await _sessionStorage.SetAsync(DomainConstants.RoleKey, connectionTestResponse.Role);
+                        await _sessionStorage.SetAsync(
+                            DomainConstants.AuthHeaderKey,
+                            authHeader
+                        );
+                        
+                        await _sessionStorage.SetAsync(
+                            DomainConstants.UsernameKey,
+                            connectionTestResponse.UserName
+                        );
+                        
+                        await _sessionStorage.SetAsync(
+                            DomainConstants.RoleKey,
+                            connectionTestResponse.Role
+                        );
                     }
                     catch (InvalidOperationException ex) when (ex.Message.Contains("prerendering"))
                     {
@@ -189,16 +208,16 @@ namespace Rocket.Web.Client.Authentication
             await
                 EnsureInitializedAsync();
 
-            return 
+            return
                 _cachedUsername;
         }
 
         public async Task<string> GetRoleAsync()
         {
-            await 
+            await
                 EnsureInitializedAsync();
-            
-            return 
+
+            return
                 _cachedRole;
         }
 

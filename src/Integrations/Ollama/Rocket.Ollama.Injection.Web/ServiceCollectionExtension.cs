@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rocket.Interfaces;
+using Rocket.Ollama.Injection.Serialization;
 
 namespace Rocket.Ollama.Injection.Web
 {
@@ -11,6 +12,9 @@ namespace Rocket.Ollama.Injection.Web
                 .AddTransient<ISkuConnector, OllamaConnectorProduct>()
                 .AddTransient<ISkuWorkflow, OllamaExtractTextWorkflowProduct>()
                 .AddTransient<ISkuWorkflow, OllamaExtractProjectWorkflowProduct>();
+
+            services
+                .AddOllamaJsonSerialization();
 
             return services;
         }

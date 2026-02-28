@@ -10,8 +10,10 @@
     
     <ItemGroup>
       <ProjectReference Include="..\Integrations\Dropbox\Rocket.Dropbox.Contracts\Rocket.Dropbox.Contracts.csproj" />
+      <ProjectReference Include="..\Integrations\Google\Google\Rocket.Google.Contracts\Rocket.Google.Contracts.csproj" />
+      <ProjectReference Include="..\Integrations\Microsofts\Rocket.Microsofts.Contracts\Rocket.Microsofts.Contracts.csproj" />
+      <ProjectReference Include="..\Integrations\Notion\Rocket.Notion.Contracts\Rocket.Notion.Contracts.csproj" />
       <ProjectReference Include="..\Rocket.Api.Contracts\Rocket.Api.Contracts.csproj" />
-      <ProjectReference Include="..\Rocket.Infrastructure.Json\Rocket.Infrastructure.Json.csproj" />
       <ProjectReference Include="..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
     </ItemGroup>
 

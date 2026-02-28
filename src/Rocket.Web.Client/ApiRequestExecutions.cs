@@ -29,6 +29,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<FetchExecutionsResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );
@@ -59,6 +60,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<ExecutionSummary>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );
@@ -90,6 +92,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<CreateExecutionResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );
@@ -121,6 +124,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<StartExecutionResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );
@@ -152,6 +156,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<CancelExecutionResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );

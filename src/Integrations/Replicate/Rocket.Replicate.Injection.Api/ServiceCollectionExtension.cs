@@ -5,6 +5,7 @@ using Rocket.Replicate.Infrastructure.Models.DataLabTo;
 using Rocket.Replicate.Infrastructure.Models.DataLabTo.Project;
 using Rocket.Replicate.Infrastructure.Models.DataLabTo.Text;
 using Rocket.Replicate.Infrastructure.Models.DeepSeekOcr;
+using Rocket.Replicate.Injection.Serialization;
 using DataLabToExtractTextHook = Rocket.Replicate.Infrastructure.Models.DataLabTo.Text.DataLabToExtractTextHook;
 
 namespace Rocket.Replicate.Injection.Api
@@ -41,6 +42,9 @@ namespace Rocket.Replicate.Injection.Api
                 .AddTransient<IConnectorModelMapper, ReplicateConnectorMapper>()
                 .AddTransient<IBsonMapper, ReplicateBsonMapper>()
                 .AddTransient<IReplicateClient, ReplicateClient>();
+
+            services
+                .AddReplicateJsonSerialization();
 
             return services;
         }

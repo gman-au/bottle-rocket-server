@@ -7,7 +7,7 @@ namespace Rocket.Replicate.Domain.Models.DataLabTo
     {
         public override int[] InputTypes { get; set; } = [(int)WorkflowFormatTypeEnum.ImageData];
 
-        public override int OutputType { get; set; } = (int)WorkflowFormatTypeEnum.RawTextData;
+        public override int OutputType { get; set; } = (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData;
 
         public override string StepName { get; set; } = "Extract project data from image using Replicate (model: datalab-to/marker)";
 

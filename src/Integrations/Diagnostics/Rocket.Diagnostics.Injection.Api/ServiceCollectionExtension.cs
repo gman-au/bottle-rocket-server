@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rocket.Diagnostics.Infrastructure;
+using Rocket.Diagnostics.Injection.Serialization;
 using Rocket.Interfaces;
 
 namespace Rocket.Diagnostics.Injection.Api
@@ -26,6 +27,9 @@ namespace Rocket.Diagnostics.Injection.Api
 
             services
                 .AddTransient<IBsonMapper, DiagnosticsBsonMapper>();
+
+            services
+                .AddDiagnosticsJsonSerialization();
 
             return services;
         }

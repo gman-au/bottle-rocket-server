@@ -14,6 +14,7 @@
       <ProjectReference Include="..\Integrations\Ollama\Rocket.Ollama.Contracts\Rocket.Ollama.Contracts.csproj" />
       <ProjectReference Include="..\Integrations\QuestPdf\Rocket.QuestPdf.Contracts\Rocket.QuestPdf.Contracts.csproj" />
       <ProjectReference Include="..\Integrations\Replicate\Rocket.Replicate.Contracts\Rocket.Replicate.Contracts.csproj" />
+      <ProjectReference Include="..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
     </ItemGroup>
 
 </Project>

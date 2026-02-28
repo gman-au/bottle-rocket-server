@@ -21,6 +21,7 @@ using Rocket.Infrastructure.Db.Mongo;
 using Rocket.Infrastructure.Db.Mongo.Options;
 using Rocket.Infrastructure.Detection;
 using Rocket.Infrastructure.Hashing;
+using Rocket.Infrastructure.Json;
 using Rocket.Infrastructure.Mapping;
 using Rocket.Infrastructure.QrCode;
 using Rocket.Infrastructure.Thumbnails;
@@ -155,6 +156,9 @@ namespace Rocket.Api.Host.Injection
             else
                 services
                     .AddTransient<IPasswordGenerator, RandomPasswordGenerator>();
+
+            services
+                .AddSingleton<IJsonResolverInstanceProvider, RocketJsonResolverInstanceProvider>();
 
             return services;
         }

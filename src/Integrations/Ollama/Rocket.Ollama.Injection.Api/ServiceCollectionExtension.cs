@@ -3,6 +3,7 @@ using Rocket.Interfaces;
 using Rocket.Ollama.Infrastructure;
 using Rocket.Ollama.Infrastructure.Project;
 using Rocket.Ollama.Infrastructure.Text;
+using Rocket.Ollama.Injection.Serialization;
 
 namespace Rocket.Ollama.Injection.Api
 {
@@ -30,6 +31,9 @@ namespace Rocket.Ollama.Injection.Api
                 .AddTransient<IConnectorModelMapper, OllamaConnectorMapper>()
                 .AddTransient<IOllamaClient, OllamaClient>()
                 .AddTransient<IBsonMapper, OllamaBsonMapper>();
+
+            services
+                .AddOllamaJsonSerialization();
 
             return services;
         }

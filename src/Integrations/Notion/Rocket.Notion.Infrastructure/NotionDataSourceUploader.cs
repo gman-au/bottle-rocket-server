@@ -4,12 +4,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Rocket.Domain.Enum;
-using Rocket.Domain.Exceptions;
 using Rocket.Notion.Infrastructure.Definition.Common;
 using Rocket.Notion.Infrastructure.Definition.DataSource;
 

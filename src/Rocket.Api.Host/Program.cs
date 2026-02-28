@@ -12,7 +12,7 @@ using Rocket.Domain.Utils;
 using Rocket.Dropbox.Injection.Api;
 using Rocket.Gcp.Injection.Api;
 using Rocket.Google.Injection.Api;
-using Rocket.Infrastructure.Json;
+using Rocket.Interfaces;
 using Rocket.Microsofts.Injection.Api;
 using Rocket.Notion.Injection.Api;
 using Rocket.Ollama.Injection.Api;
@@ -37,11 +37,17 @@ services
     );
 
 services
-    .AddControllers()
-    .AddJsonOptions(
-        options =>
-            options.JsonSerializerOptions.TypeInfoResolver = RocketTypeInfoResolver.Instance
+    .AddControllers();
+
+services
+    .AddOptions<Microsoft.AspNetCore.Mvc.JsonOptions>()
+    .Configure<IJsonResolverInstanceProvider>(
+        (jsonOptions, resolverProvider) => { jsonOptions.JsonSerializerOptions.TypeInfoResolver = resolverProvider.GetInstance(); }
     );
+/*.AddJsonOptions(
+    options =>
+        options.JsonSerializerOptions.TypeInfoResolver = RocketTypeInfoResolver.Instance
+);*/
 
 services
     .AddMvc(options => options.Filters.Add<RocketExceptionFilter>());
