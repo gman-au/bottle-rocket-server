@@ -10,6 +10,7 @@
     * `Rocket.Abc.Infrastructure` - define all of the integration-specific interfaces and implementations here - this project should contain everything needed to complete integration actions e.g. uploading a note, emailing a file, etc.
     * `Rocket.Abc.Injection.Api` - this is the injection library that should define a single extension method to inject all of the ABC integration into the main Bottle Rocket (API) system.
     * `Rocket.Abc.Injection.Web` - this is the injection library that should define a single extension method to inject all of the ABC integration into the main Bottle Rocket (Web) system.
+    * `Rocket.Abc.Injection.Serialization` - this is the injection library referenced by both API and Web injection libraries to ensure that JSON serialization type discriminators are used on startup of both services.
 
 ### 2. Create connectors
 * Derive new connectors from `BaseConnector`.
@@ -51,19 +52,21 @@
         * These interfaces should reside inside this infrastructure library and do not belong in the main Bottle Rocket code.
     * The function should return a new `ExecutionStepArtifact` of the applicable type where it is expected (e.g. if a step converts X to Y, the artifact should return of type Y).
 
-### 8. Create API injection module
-* Create a single `ServiceCollectionExtension` module in the API injection project, loading all of the `Abc` / vendor-specific implemented interfaces in a single function.
+### 8. Create Serialization injection module
+* Create a single `ServiceCollectionExtension` module in the Serialization injection project, loading all of the `Abc` / vendor-specific implemented interfaces in a single function.
+* For each instance of `BaseWorkflowStep`, `BaseExecutionStep`, and `BaseConnector`, implement an instance of `IJsonTypeDiscriminator<T>`, specifying the type T, and the `$type` string key for serialization. 
+  * It can be anything, it just needs to be unique; typically it is in _kebab_case_.
 
-### 9. Add call to API injector
+### 9. Create API injection module
+* Create a single `ServiceCollectionExtension` module in the API injection project, loading all of the `Abc` / vendor-specific implemented interfaces in a single function.
+* Ensure that a call is made to register the serialization module in the step above.
+
+### 10. Add call to API injector
 * In the API `Program.cs`, you should now only need to add a single line to the injection module.
 ```
 services
     .AddAbcApiIntegration();
 ```
-
-### 10. Add entries into the JSON type discriminators
-* In order for the API contracts to distinguish the derived types as supplied (Connector, WorkflowStep, ExecutionStep), entries for each need to be added to the `ConnectorTypeDiscriminatorMap`, `ExecutionStepTypeDiscriminatorMap`, and `WorkflowStepTypeDiscriminatorMap` classes in the `Rocket.Infrastructure.Json` project.
-    * Add the related API class (e.g. `AbcConnectorSpecifics`) and a unique string in that list to ensure that the type discriminator successfully parses the derived class type.
 
 ## Web Steps / Checklist
 
@@ -89,6 +92,7 @@ services
 * Create a single `ServiceCollectionExtension` module in the Web injection project.
 * Register each new connector as a `ISkuConnector`, with its own `Name`, `Href`, and `ImagePath`.
 * Register each new workflow as a `ISkuWorkflow`, setting up its name, description, categories, base path, etc.
+* Ensure that a call is made to register the serialization module in the serialization injection step above.
 
 ### 4. Add call to Web injector
 * In the Web `Program.cs`, you should now only need to add a single line to the injection module.
