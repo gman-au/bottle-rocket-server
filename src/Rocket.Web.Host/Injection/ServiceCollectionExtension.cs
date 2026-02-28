@@ -98,5 +98,15 @@ namespace Rocket.Web.Host.Injection
 
             return services;
         }
+
+        public static IServiceCollection AddJsonSupport(this IServiceCollection services)
+        {
+            services
+                .AddSingleton<CreateWorkflowStepRequestConverter, CreateWorkflowStepRequestConverter>()
+                .AddSingleton<UpdateWorkflowStepRequestConverter, UpdateWorkflowStepRequestConverter>()
+                .AddSingleton<CreateConnectorRequestConverter, CreateConnectorRequestConverter>();
+
+            return services;
+        }
     }
 }

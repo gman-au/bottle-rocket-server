@@ -1,12 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Rocket.Api.Contracts.Workflows;
+using Rocket.Domain.Workflows;
+using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Json
 {
-    public class CreateWorkflowStepRequestConverter : JsonConverterFactory
+    public class CreateWorkflowStepRequestConverter(IEnumerable<IJsonTypeDiscriminator<BaseWorkflowStep>> typeDiscriminators)
+        : JsonConverterFactory
     {
+        private readonly Dictionary<Type, string> _typeDiscriminators =
+            typeDiscriminators
+                .ToDictionary(
+                    o => o.Key,
+                    o => o.Value
+                );
+
         public override bool CanConvert(Type typeToConvert)
         {
             if (!typeToConvert.IsGenericType)
@@ -22,10 +34,14 @@ namespace Rocket.Infrastructure.Json
             var converterType = typeof(CreateWorkflowStepRequestConverterInner<>)
                 .MakeGenericType(stepType);
 
-            return (JsonConverter)Activator.CreateInstance(converterType);
+            return (JsonConverter)Activator.CreateInstance(
+                converterType,
+                _typeDiscriminators
+            );
         }
 
-        private class CreateWorkflowStepRequestConverterInner<T> : JsonConverter<CreateWorkflowStepRequest<T>>
+        private class CreateWorkflowStepRequestConverterInner<T>(Dictionary<Type, string> typeDiscriminators)
+            : JsonConverter<CreateWorkflowStepRequest<T>>
             where T : WorkflowStepSummary
         {
             public override CreateWorkflowStepRequest<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -54,22 +70,25 @@ namespace Rocket.Infrastructure.Json
                 writer.WritePropertyName("step");
                 writer.WriteStartObject();
 
-                // Use the shared mapping
                 var stepTypeName =
-                    value
-                        .Step
-                        .GetType()
-                        .GetWorkflowStepTypeDiscriminator();
+                    typeDiscriminators
+                        .GetValueOrDefault(
+                            value.Step.GetType(),
+                            "base"
+                        );
 
-                writer.WriteString(
-                    "$type",
-                    stepTypeName
-                );
+                writer
+                    .WriteString(
+                        "$type",
+                        stepTypeName
+                    );
 
-                var stepJson = JsonSerializer.SerializeToElement(
-                    value.Step,
-                    options
-                );
+                var stepJson =
+                    JsonSerializer
+                        .SerializeToElement(
+                            value.Step,
+                            options
+                        );
                 foreach (var property in stepJson.EnumerateObject())
                 {
                     property.WriteTo(writer);

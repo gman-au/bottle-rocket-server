@@ -1,12 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Rocket.Api.Contracts.Connectors;
+using Rocket.Domain.Connectors;
+using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Json
 {
-    public class CreateConnectorRequestConverter : JsonConverterFactory
+    public class CreateConnectorRequestConverter(IEnumerable<IJsonTypeDiscriminator<BaseConnector>> typeDiscriminators)
+        : JsonConverterFactory
     {
+        private readonly Dictionary<Type, string> _typeDiscriminators =
+            typeDiscriminators
+                .ToDictionary(
+                    o => o.Key,
+                    o => o.Value
+                );
+
         public override bool CanConvert(Type typeToConvert)
         {
             if (!typeToConvert.IsGenericType)
@@ -22,10 +34,14 @@ namespace Rocket.Infrastructure.Json
             var converterType = typeof(CreateConnectorRequestConverterInner<>)
                 .MakeGenericType(stepType);
 
-            return (JsonConverter)Activator.CreateInstance(converterType);
+            return (JsonConverter)Activator.CreateInstance(
+                converterType,
+                _typeDiscriminators
+            );
         }
 
-        private class CreateConnectorRequestConverterInner<T> : JsonConverter<CreateConnectorRequest<T>>
+        private class CreateConnectorRequestConverterInner<T>(Dictionary<Type, string> typeDiscriminators)
+            : JsonConverter<CreateConnectorRequest<T>>
             where T : ConnectorSummary
         {
             public override CreateConnectorRequest<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -40,12 +56,12 @@ namespace Rocket.Infrastructure.Json
                 writer.WritePropertyName("connector");
                 writer.WriteStartObject();
 
-                // Use the shared mapping
                 var stepTypeName =
-                    value
-                        .Connector
-                        .GetType()
-                        .GetConnectorTypeDiscriminator();
+                    typeDiscriminators
+                        .GetValueOrDefault(
+                            value.Connector.GetType(),
+                            "base"
+                        );
 
                 writer.WriteString(
                     "$type",

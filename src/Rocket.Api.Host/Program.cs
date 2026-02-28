@@ -44,10 +44,9 @@ services
     .Configure<IJsonResolverInstanceProvider>(
         (jsonOptions, resolverProvider) => { jsonOptions.JsonSerializerOptions.TypeInfoResolver = resolverProvider.GetInstance(); }
     );
-/*.AddJsonOptions(
-    options =>
-        options.JsonSerializerOptions.TypeInfoResolver = RocketTypeInfoResolver.Instance
-);*/
+
+services
+    .AddJsonSupport();
 
 services
     .AddMvc(options => options.Filters.Add<RocketExceptionFilter>());
