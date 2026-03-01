@@ -29,7 +29,7 @@ namespace Rocket.Jobs.Service
                         step,
                         null
                     );
-                
+
                 // base execution step should have the connection ID
                 // we only need the applicable hook
                 var hook =
@@ -47,14 +47,23 @@ namespace Rocket.Jobs.Service
                                 cancellationToken
                             );
 
+                await
+                    updateExecutionStepCallbackFunc(
+                        userId,
+                        executionId,
+                        (int)ExecutionStatusEnum.Completed,
+                        step,
+                        null
+                    );
+
                 foreach (var childStep in step?.ChildSteps ?? [])
                 {
                     context
                         .SetCurrentArtifact(artifactResult);
-                    
+
                     cancellationToken
                         .ThrowIfCancellationRequested();
-                    
+
                     await
                         childStep
                             .AsTask(
@@ -66,15 +75,6 @@ namespace Rocket.Jobs.Service
                                 cancellationToken
                             );
                 }
-                
-                await
-                    updateExecutionStepCallbackFunc(
-                        userId,
-                        executionId,
-                        (int)ExecutionStatusEnum.Completed,
-                        step,
-                        null
-                    );
             }
             catch (OperationCanceledException)
             {
@@ -86,7 +86,11 @@ namespace Rocket.Jobs.Service
                         step,
                         null
                     );
-                
+
+                throw;
+            }
+            catch (ChildStepFailedException)
+            {
                 throw;
             }
             catch (Exception ex)
@@ -99,6 +103,8 @@ namespace Rocket.Jobs.Service
                         step,
                         ex
                     );
+
+                throw new ChildStepFailedException();
             }
         }
     }
