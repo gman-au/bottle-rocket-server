@@ -8,5 +8,5 @@
 
 ![GitHub Release](https://img.shields.io/github/v/release/gman-au/bottle-rocket-server?include_prereleases)
 
-* ### [Installation documentation](https://gman-au.github.io/bottle-rocket-documentation/docs/docs-general/installation-and-setup/server-installation)
+* ### [Installation documentation](https://bottle-rocket.app/docs/docs-general/installation-and-setup/server-installation)
 * ### [API Reference](https://gman-au.github.io/bottle-rocket-documentation/api)
