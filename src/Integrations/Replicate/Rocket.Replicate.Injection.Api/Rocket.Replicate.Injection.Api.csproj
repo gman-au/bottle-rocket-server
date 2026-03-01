@@ -10,6 +10,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Rocket.Replicate.Infrastructure\Rocket.Replicate.Infrastructure.csproj" />
+      <ProjectReference Include="..\Rocket.Replicate.Injection.Serialization\Rocket.Replicate.Injection.Serialization.csproj" />
     </ItemGroup>
 
 </Project>

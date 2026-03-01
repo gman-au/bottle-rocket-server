@@ -19,5 +19,9 @@ namespace Rocket.QuestPdf.Injection.Web
         public bool DataLeavesYourServer => false;
 
         public string StepCode => QuestPdfDomainConstants.ConvertToPdfWorkflowCode;
+        
+        public int[] InputTypes => QuestPdfDomainConstants.ConvertToPdfInputTypes;
+
+        public int OutputType => QuestPdfDomainConstants.ConvertToPdfOutputType;
     }
 }

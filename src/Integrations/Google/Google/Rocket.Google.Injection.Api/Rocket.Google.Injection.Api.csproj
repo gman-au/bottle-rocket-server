@@ -7,6 +7,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
       <ProjectReference Include="..\Rocket.Google.Infrastructure\Rocket.Google.Infrastructure.csproj" />
+      <ProjectReference Include="..\Rocket.Google.Injection.Serialization\Rocket.Google.Injection.Serialization.csproj" />
     </ItemGroup>
 
 </Project>

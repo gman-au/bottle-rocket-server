@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rocket.Interfaces;
 using Rocket.Notion.Infrastructure;
+using Rocket.Notion.Injection.Serialization;
 
 namespace Rocket.Notion.Injection.Api
 {
@@ -9,15 +10,36 @@ namespace Rocket.Notion.Injection.Api
         public static IServiceCollection AddNotionApiIntegration(this IServiceCollection services)
         {
             services
-                .AddTransient<IIntegrationHook, NotionHook>()
-                .AddTransient<IWorkflowStepModelMapper, NotionUploadWorkflowStepMapper>()
-                .AddTransient<IExecutionStepModelMapper, NotionUploadExecutionStepMapper>()
-                .AddTransient<IConnectorModelMapper, NotionConnectorMapper>()
-                .AddTransient<IStepModelCloner, NotionUploadStepCloner>()
+                .AddTransient<IIntegrationHook, NotionNoteUploadHook>()
+                .AddTransient<IIntegrationHook, NotionProjectTaskUploadHook>();
+
+            services
+                .AddTransient<IWorkflowStepModelMapper, NotionUploadNoteWorkflowStepMapper>()
+                .AddTransient<IWorkflowStepModelMapper, NotionUploadProjectTaskWorkflowStepMapper>();
+
+            services
+                .AddTransient<IExecutionStepModelMapper, NotionUploadNoteExecutionStepMapper>()
+                .AddTransient<IExecutionStepModelMapper, NotionUploadProjectTaskExecutionStepMapper>();
+
+            services
+                .AddTransient<IStepModelCloner, NotionUploadNoteStepCloner>()
+                .AddTransient<IStepModelCloner, NotionUploadProjectTaskStepCloner>();
+
+            services
                 .AddTransient<INotionNoteSearcher, NotionNoteSearcher>()
+                .AddTransient<INotionDataSourceSearcher, NotionDataSourceSearcher>();
+
+            services
                 .AddTransient<INotionNoteUploader, NotionNoteUploader>()
                 .AddTransient<INotionImageUploader, NotionImageUploader>()
+                .AddTransient<INotionDataSourceUploader, NotionDataSourceUploader>();
+
+            services
+                .AddTransient<IConnectorModelMapper, NotionConnectorMapper>()
                 .AddTransient<IBsonMapper, NotionBsonMapper>();
+
+            services
+                .AddNotionJsonSerialization();
 
             return services;
         }

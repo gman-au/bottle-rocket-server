@@ -5,6 +5,7 @@
         Void = 0,
         ImageData,
         RawTextData,
-        File
+        File,
+        ProjectTaskTrackerData
     }
 }

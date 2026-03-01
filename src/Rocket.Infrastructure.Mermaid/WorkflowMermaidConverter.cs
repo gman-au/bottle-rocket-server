@@ -53,6 +53,7 @@ namespace Rocket.Infrastructure.Mermaid
                 workflow.Steps,
                 aliasEnumerator,
                 DomainConstants.WorkflowFormatTypes[(int)WorkflowFormatTypeEnum.ImageData],
+                (int)WorkflowFormatTypeEnum.ImageData,
                 null,
                 skuWorkflows
             );
@@ -71,7 +72,7 @@ namespace Rocket.Infrastructure.Mermaid
 
             clicksBuilder
                 .AppendLine(
-                    $"click {aliasEnumerator.Current} call blazorNavigateToRoute(\"/MyWorkflow/{workflowId}/AddStep\")"
+                    $"click {aliasEnumerator.Current} call blazorNavigateToRoute(\"/MyWorkflow/{workflowId}/AddStep?OutputType={(int)WorkflowFormatTypeEnum.ImageData}\")"
                 );
 
             styleBuilder
@@ -105,6 +106,7 @@ namespace Rocket.Infrastructure.Mermaid
             IEnumerable<WorkflowStepSummary> steps,
             IEnumerator<string> aliasEnumerator,
             string currentParentOutputTypeName,
+            int currentParentOutputType,
             string currentParentId,
             IEnumerable<ISkuWorkflow> skuWorkflows
         )
@@ -174,6 +176,7 @@ namespace Rocket.Infrastructure.Mermaid
                     step.ChildSteps,
                     aliasEnumerator,
                     step.OutputTypeName,
+                    step.OutputType,
                     step.Id,
                     skuWorkflows
                 );
@@ -195,7 +198,7 @@ namespace Rocket.Infrastructure.Mermaid
 
                     clicksBuilder
                         .AppendLine(
-                            $"click {aliasEnumerator.Current} call blazorNavigateToRoute(\"/MyWorkflow/{workflowId}/Steps/{currentParentId}/AddStep\")"
+                            $"click {aliasEnumerator.Current} call blazorNavigateToRoute(\"/MyWorkflow/{workflowId}/Steps/{currentParentId}/AddStep?OutputType={currentParentOutputType}\")"
                         );
 
                     styleBuilder

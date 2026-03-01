@@ -2,22 +2,21 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Rocket.Domain.Enum;
-using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Google.Domain;
+using Rocket.Integrations.Common;
+using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 
 namespace Rocket.Google.Infrastructure
 {
     public class GoogleDriveUploadHook(
-        ILogger<GoogleDriveUploadHook> logger,
-        IDriveUploadService driveUploadService
-    ) : IIntegrationHook
+        IDriveUploadService driveUploadService,
+        ILogger<GoogleDriveUploadHook> logger
+    )
+        : HookWithConnectorBase<GoogleDriveUploadExecutionStep, GoogleConnector>(logger), IIntegrationHook
     {
-        public bool IsApplicable(BaseExecutionStep step) => step is GoogleDriveUploadExecutionStep;
-
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
@@ -26,34 +25,30 @@ namespace Rocket.Google.Infrastructure
             CancellationToken cancellationToken
         )
         {
-            var artifact =
-                context
-                    .GetInputArtifact();
-
-            var connector =
-                await
-                    context
-                        .GetConnectorAsync<GoogleConnector>(
-                            userId,
-                            step,
-                            cancellationToken
-                        );
-
-            var fileBytes = artifact.Artifact;
-
-            if (step is not GoogleDriveUploadExecutionStep googleDriveUploadExecutionStep)
-                throw new RocketException(
-                    "Unexpected step format, please check configuration",
-                    ApiStatusCodeEnum.DeveloperError
+            context
+                .InitializeStep(
+                    this,
+                    step
+                )
+                .InitializeArtifact(this)
+                .InitializeConnector(
+                    this,
+                    userId,
+                    step,
+                    cancellationToken
                 );
+
+            var fileBytes = 
+                Artifact
+                    .Artifact;
 
             await
                 driveUploadService
                     .UploadFileAsync(
                         fileBytes,
-                        artifact.FileExtension,
-                        googleDriveUploadExecutionStep.ParentFolderId,
-                        connector,
+                        Artifact.FileExtension,
+                        ExecutionStep.ParentFolderId,
+                        Connector,
                         cancellationToken
                     );
 

@@ -21,6 +21,7 @@ using Rocket.Infrastructure.Db.Mongo;
 using Rocket.Infrastructure.Db.Mongo.Options;
 using Rocket.Infrastructure.Detection;
 using Rocket.Infrastructure.Hashing;
+using Rocket.Infrastructure.Json;
 using Rocket.Infrastructure.Mapping;
 using Rocket.Infrastructure.QrCode;
 using Rocket.Infrastructure.Thumbnails;
@@ -137,6 +138,9 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IConnectorScrubber, ConnectorScrubber>()
                 .AddTransient<IThumbnailer, Thumbnailer>()
                 .AddTransient<IUserManager, UserManager>()
+                .AddTransient<ISchemaDictionary, SchemaDictionary>()
+                .AddTransient<ISchemaResponseBuilder, SchemaResponseBuilder>()
+                .AddTransient<ISchemaGenerator, SchemaGenerator>()
                 .AddTransient<IImageBase64Converter, ImageBase64Converter>()
                 .AddTransient<IExecutionWorkflowValidator, ExecutionWorkflowValidator>()
                 .AddTransient<IWorkflowStepModelMapperRegistry, WorkflowStepModelMapperRegistry>()
@@ -152,6 +156,9 @@ namespace Rocket.Api.Host.Injection
             else
                 services
                     .AddTransient<IPasswordGenerator, RandomPasswordGenerator>();
+
+            services
+                .AddSingleton<IJsonResolverInstanceProvider, RocketJsonResolverInstanceProvider>();
 
             return services;
         }
@@ -280,6 +287,16 @@ namespace Rocket.Api.Host.Injection
             services.AddTransient<IWorkflowExecutionContext, WorkflowExecutionContext>();
             services.AddHostedService<QueuedHostedService>();
             services.AddHostedService<ScanSweeperHostedService>();
+
+            return services;
+        }
+        
+        public static IServiceCollection AddJsonSupport(this IServiceCollection services)
+        {
+            services
+                .AddSingleton<CreateWorkflowStepRequestConverter, CreateWorkflowStepRequestConverter>()
+                .AddSingleton<UpdateWorkflowStepRequestConverter, UpdateWorkflowStepRequestConverter>()
+                .AddSingleton<CreateConnectorRequestConverter, CreateConnectorRequestConverter>();
 
             return services;
         }

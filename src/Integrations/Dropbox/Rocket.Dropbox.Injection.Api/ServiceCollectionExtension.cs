@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rocket.Dropbox.Infrastructure;
+using Rocket.Dropbox.Injection.Serialization;
 using Rocket.Interfaces;
 
 namespace Rocket.Dropbox.Injection.Api
@@ -16,6 +17,9 @@ namespace Rocket.Dropbox.Injection.Api
                 .AddTransient<IConnectorModelMapper, DropboxConnectorMapper>()
                 .AddTransient<IStepModelCloner, DropboxUploadStepCloner>()
                 .AddTransient<IBsonMapper, DropboxBsonMapper>();
+
+            services
+                .AddDropboxJsonSerialization();
 
             return services;
         }

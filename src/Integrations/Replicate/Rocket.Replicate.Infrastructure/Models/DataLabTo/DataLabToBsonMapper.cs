@@ -16,9 +16,25 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo
                 });
             }
             
+            if (!BsonClassMap.IsClassMapRegistered(typeof(DataLabToExtractProjectExecutionStep)))
+            {
+                BsonClassMap.RegisterClassMap<DataLabToExtractProjectExecutionStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
             if (!BsonClassMap.IsClassMapRegistered(typeof(DataLabToExtractTextWorkflowStep)))
             {
                 BsonClassMap.RegisterClassMap<DataLabToExtractTextWorkflowStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(DataLabToExtractProjectWorkflowStep)))
+            {
+                BsonClassMap.RegisterClassMap<DataLabToExtractProjectWorkflowStep>(cm =>
                 {
                     cm.AutoMap();
                 });

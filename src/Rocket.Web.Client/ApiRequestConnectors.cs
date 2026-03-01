@@ -29,6 +29,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<CreateConnectorResponse<T>>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );
@@ -60,6 +61,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<FetchConnectorsResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );
@@ -90,6 +92,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<ApiResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );

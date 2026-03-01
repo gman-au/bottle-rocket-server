@@ -16,9 +16,25 @@ namespace Rocket.Diagnostics.Infrastructure
                 });
             }
             
+            if (!BsonClassMap.IsClassMapRegistered(typeof(HelloWorldProjectExecutionStep)))
+            {
+                BsonClassMap.RegisterClassMap<HelloWorldProjectExecutionStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
             if (!BsonClassMap.IsClassMapRegistered(typeof(HelloWorldTextWorkflowStep)))
             {
                 BsonClassMap.RegisterClassMap<HelloWorldTextWorkflowStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(HelloWorldProjectWorkflowStep)))
+            {
+                BsonClassMap.RegisterClassMap<HelloWorldProjectWorkflowStep>(cm =>
                 {
                     cm.AutoMap();
                 });

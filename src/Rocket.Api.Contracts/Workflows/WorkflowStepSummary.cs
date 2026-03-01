@@ -20,6 +20,9 @@ namespace Rocket.Api.Contracts.Workflows
         [JsonPropertyName("output_type_name")]
         public string OutputTypeName { get; set; }
 
+        [JsonPropertyName("output_type")]
+        public int OutputType { get; set; }
+
         [JsonPropertyName("step_name")]
         public string StepName { get; set; }
 

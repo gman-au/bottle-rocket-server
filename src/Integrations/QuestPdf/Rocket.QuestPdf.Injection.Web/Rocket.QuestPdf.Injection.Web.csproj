@@ -11,6 +11,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
         <ProjectReference Include="..\Rocket.QuestPdf.Domain\Rocket.QuestPdf.Domain.csproj" />
+        <ProjectReference Include="..\Rocket.QuestPdf.Injection.Serialization\Rocket.QuestPdf.Injection.Serialization.csproj" />
     </ItemGroup>
 
 </Project>

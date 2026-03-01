@@ -6,6 +6,7 @@
         public const string FileConversion = "File Conversion";
         public const string FileUpload = "File Upload";
         public const string TextRecognition = "Text Recognition";
+        public const string ProjectManagement = "Project Management";
         public const string Google = "Google";
         public const string Microsoft = "Microsoft";
     }

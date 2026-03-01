@@ -76,6 +76,7 @@ namespace Rocket.Infrastructure.Mapping
                             value.OutputType,
                             DomainConstants.UnknownType
                         ),
+                OutputType = value.OutputType,
                 ChildSteps =
                     (value.ChildSteps ?? [])
                     .Select(

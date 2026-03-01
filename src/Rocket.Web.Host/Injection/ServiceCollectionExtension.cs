@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 using MudBlazor.Services;
 using Rocket.Infrastructure;
+using Rocket.Infrastructure.Json;
 using Rocket.Infrastructure.Mermaid;
 using Rocket.Interfaces;
 using Rocket.Web.Client;
@@ -51,6 +52,9 @@ namespace Rocket.Web.Host.Injection
                 .AddTransient<IWebHostErrorHandler, WebHostErrorHandler>()
                 .AddScoped<IThemeService, ThemeService>();
 
+            services
+                .AddSingleton<IJsonResolverInstanceProvider, RocketJsonResolverInstanceProvider>();
+
             return services;
         }
 
@@ -91,6 +95,16 @@ namespace Rocket.Web.Host.Injection
                     sp =>
                         sp.GetRequiredService<ApiAuthenticationStateProvider>()
                 );
+
+            return services;
+        }
+
+        public static IServiceCollection AddJsonSupport(this IServiceCollection services)
+        {
+            services
+                .AddSingleton<CreateWorkflowStepRequestConverter, CreateWorkflowStepRequestConverter>()
+                .AddSingleton<UpdateWorkflowStepRequestConverter, UpdateWorkflowStepRequestConverter>()
+                .AddSingleton<CreateConnectorRequestConverter, CreateConnectorRequestConverter>();
 
             return services;
         }

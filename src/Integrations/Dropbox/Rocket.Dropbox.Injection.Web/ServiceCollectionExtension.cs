@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Rocket.Dropbox.Injection.Serialization;
 using Rocket.Interfaces;
 
 namespace Rocket.Dropbox.Injection.Web
@@ -10,6 +11,9 @@ namespace Rocket.Dropbox.Injection.Web
             services
                 .AddTransient<ISkuConnector, DropboxConnectorProduct>()
                 .AddTransient<ISkuWorkflow, DropboxUploadWorkflowProduct>();
+
+            services
+                .AddDropboxJsonSerialization();
 
             return services;
         }

@@ -1,0 +1,51 @@
+﻿@page "/MyWorkflow/Ollama/ExtractProject/{workflowId}/AddStep"
+@page "/MyWorkflow/Ollama/ExtractProject/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/Ollama/ExtractProject/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.Ollama.Contracts.Project
+@using Rocket.Ollama.Domain
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<UpdateWorkflowStepWrapper
+    T="OllamaExtractProjectWorkflowStepSpecifics"
+    WorkflowStepName="Extract text from image"
+    WorkflowId="@WorkflowId"
+    ParentStepId="@ParentStepId"
+    RequiresConnectorCode="@OllamaDomainConstants.ConnectorCode"
+    StepId="@StepId"
+    Context="stepSpecifics">
+    <MudGrid>
+        <MudItem sm="12" lg="6">
+            <MudTextField
+                T="string"
+                Label="Model Name (first pass)"
+                Required="true"
+                RequiredError="Model name (first pass) is required"
+                HelperText="Enter the Ollama model name to use for the first pass (OCR extraction)"
+                @bind-Value="stepSpecifics.FirstPassModelName"
+                For="@(() => stepSpecifics.FirstPassModelName)"/>
+        </MudItem>
+        <MudItem sm="12" lg="6">
+            <MudTextField
+                T="string"
+                Label="Model Name (second pass)"
+                Required="true"
+                RequiredError="Model name (second pass) is required"
+                HelperText="Enter the Ollama model name to use for the second pass (text -> schema)"
+                @bind-Value="stepSpecifics.SecondPassModelName"
+                For="@(() => stepSpecifics.SecondPassModelName)"/>
+        </MudItem>        
+    </MudGrid>
+</UpdateWorkflowStepWrapper>
+
+@code {
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+}

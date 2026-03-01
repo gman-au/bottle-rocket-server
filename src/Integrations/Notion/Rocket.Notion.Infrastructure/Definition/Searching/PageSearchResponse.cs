@@ -9,6 +9,6 @@ namespace Rocket.Notion.Infrastructure.Definition.Searching
         public string Object { get; set; }
         
         [JsonPropertyName("results")] 
-        public IEnumerable<SearchResult> Results { get; set; }
+        public IEnumerable<PageSearchResult> Results { get; set; }
     }
 }

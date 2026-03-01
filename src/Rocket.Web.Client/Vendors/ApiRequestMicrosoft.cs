@@ -29,6 +29,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<MicrosoftAuthInitiateResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );
@@ -60,6 +61,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<GetOneNoteSectionsResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );

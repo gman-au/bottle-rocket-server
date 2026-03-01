@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rocket.Diagnostics.Infrastructure;
+using Rocket.Diagnostics.Injection.Serialization;
 using Rocket.Interfaces;
 
 namespace Rocket.Diagnostics.Injection.Api
@@ -10,10 +11,25 @@ namespace Rocket.Diagnostics.Injection.Api
         {
             services
                 .AddTransient<IIntegrationHook, HelloWorldTextHook>()
+                .AddTransient<IIntegrationHook, HelloWorldProjectHook>();
+
+            services
                 .AddTransient<IWorkflowStepModelMapper, HelloWorldTextWorkflowStepMapper>()
+                .AddTransient<IWorkflowStepModelMapper, HelloWorldProjectWorkflowStepMapper>();
+
+            services
                 .AddTransient<IExecutionStepModelMapper, HelloWorldTextExecutionStepMapper>()
+                .AddTransient<IExecutionStepModelMapper, HelloWorldProjectExecutionStepMapper>();
+
+            services
                 .AddTransient<IStepModelCloner, HelloWorldTextStepCloner>()
+                .AddTransient<IStepModelCloner, HelloWorldProjectStepCloner>();
+
+            services
                 .AddTransient<IBsonMapper, DiagnosticsBsonMapper>();
+
+            services
+                .AddDiagnosticsJsonSerialization();
 
             return services;
         }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rocket.Interfaces;
 using Rocket.Gcp.Infrastructure;
+using Rocket.Gcp.Injection.Serialization;
 
 namespace Rocket.Gcp.Injection.Api
 {
@@ -16,6 +17,9 @@ namespace Rocket.Gcp.Injection.Api
                 .AddTransient<IStepModelCloner, GcpExtractStepCloner>()
                 .AddTransient<IVisionOcrService, VisionOcrService>()
                 .AddTransient<IBsonMapper, GcpBsonMapper>();
+
+            services
+                .AddGcpJsonSerialization();
 
             return services;
         }

@@ -17,7 +17,7 @@ namespace Rocket.Notion.Infrastructure
         {
             using var httpClient = GetBaseHttpClient(integrationSecret);
             
-            var request = new PageSearchRequest
+            var request = new SearchRequest
             {
                 Filter = new SearchFilter
                 {

@@ -7,6 +7,8 @@ using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
+using Rocket.Integrations.Common;
+using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 using Rocket.Microsofts.Domain;
 
@@ -14,11 +16,10 @@ namespace Rocket.Microsofts.Infrastructure
 {
     public class OneNoteHook(
         IOneNoteUploader oneNoteUploader,
-        ILogger<OneNoteHook> logger
-    ) : IIntegrationHook
+        ILogger<OneDriveHook> logger
+    )
+        : HookWithConnectorBase<OneNoteUploadExecutionStep, MicrosoftConnector>(logger), IIntegrationHook
     {
-        public bool IsApplicable(BaseExecutionStep step) => step is OneNoteUploadExecutionStep;
-
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
@@ -27,26 +28,20 @@ namespace Rocket.Microsofts.Infrastructure
             CancellationToken cancellationToken
         )
         {
-            var artifact =
-                context
-                    .GetInputArtifact();
-
-            var connector =
-                await
-                    context
-                        .GetConnectorAsync<MicrosoftConnector>(
-                            userId,
-                            step,
-                            cancellationToken
-                        );
-
-            if (step is not OneNoteUploadExecutionStep oneNoteStep)
-                throw new RocketException(
-                    "Unexpected step format, please check configuration",
-                    ApiStatusCodeEnum.DeveloperError
+            context
+                .InitializeStep(
+                    this,
+                    step
+                )
+                .InitializeArtifact(this)
+                .InitializeConnector(
+                    this,
+                    userId,
+                    step,
+                    cancellationToken
                 );
 
-            if (string.IsNullOrEmpty(oneNoteStep.SectionId))
+            if (string.IsNullOrEmpty(ExecutionStep.SectionId))
                 throw new RocketException(
                     "Section ID not found for OneNote workflow step",
                     ApiStatusCodeEnum.ValidationError
@@ -54,10 +49,10 @@ namespace Rocket.Microsofts.Infrastructure
 
             var noteTitle = $"BR_Note_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
 
-            if (artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.RawTextData)
+            if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.RawTextData)
             {
                 var textBytes =
-                    artifact
+                    Artifact
                         .Artifact;
 
                 var textData =
@@ -68,23 +63,23 @@ namespace Rocket.Microsofts.Infrastructure
                 await
                     oneNoteUploader
                         .UploadTextNoteAsync(
-                            connector,
-                            oneNoteStep.SectionId,
+                            Connector,
+                            ExecutionStep.SectionId,
                             noteTitle,
                             textData,
                             cancellationToken
                         );
             }
-            else if (artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.ImageData)
+            else if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.ImageData)
             {
                 await
                     oneNoteUploader
                         .UploadImageNoteAsync(
-                            connector,
-                            oneNoteStep.SectionId,
-                            artifact.FileExtension,
+                            Connector,
+                            ExecutionStep.SectionId,
+                            Artifact.FileExtension,
                             noteTitle,
-                            artifact.Artifact,
+                            Artifact.Artifact,
                             cancellationToken
                         );
             }

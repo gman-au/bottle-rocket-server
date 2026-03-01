@@ -30,6 +30,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<ApiResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );

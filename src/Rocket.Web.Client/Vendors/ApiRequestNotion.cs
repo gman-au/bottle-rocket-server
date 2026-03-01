@@ -29,6 +29,39 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<GetAllNotionParentNotesResponse>(
+                            _jsonSerializerOptions,
+                            logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
+        
+        public async Task<GetAllNotionDataSourcesResponse> GetNotionDataSourcesAsync(
+            GetAllNotionDataSourcesRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation("Received Get (Notion) data sources request");
+
+            var response =
+                await
+                    authenticatedApiClient
+                        .PostAsJsonAsync(
+                            "/api/notion/workflows/getDataSources",
+                            request,
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<GetAllNotionDataSourcesResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );

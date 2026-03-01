@@ -11,6 +11,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
       <ProjectReference Include="..\Rocket.Gcp.Domain\Rocket.Gcp.Domain.csproj" />
+      <ProjectReference Include="..\Rocket.Gcp.Injection.Serialization\Rocket.Gcp.Injection.Serialization.csproj" />
     </ItemGroup>
 
 </Project>

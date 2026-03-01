@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Rocket.Google.Injection.Serialization;
 using Rocket.Interfaces;
 
 namespace Rocket.Google.Injection.Web
@@ -10,6 +11,9 @@ namespace Rocket.Google.Injection.Web
             services
                 .AddTransient<ISkuConnector, GoogleConnectorProduct>()
                 .AddTransient<ISkuWorkflow, GoogleDriveUploadWorkflowProduct>();
+
+            services
+                .AddGoogleJsonSerialization();
 
             return services;
         }

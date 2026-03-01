@@ -12,12 +12,16 @@ namespace Rocket.Diagnostics.Injection.Web
 
         public string[] Categories => [SkuConstants.Diagnostics];
 
-        public string HrefBase => "/MyWorkflow/Diagnostic";
+        public string HrefBase => "/MyWorkflow/Diagnostic/Text";
 
         public string ImagePath => "/img/bottle-rocket-logo.png";
 
         public bool DataLeavesYourServer => false;
 
         public string StepCode => DiagnosticDomainConstants.HelloWorldTextWorkflowCode;
+        
+        public int[] InputTypes => DiagnosticDomainConstants.HelloWorldTextInputTypes;
+        
+        public int OutputType => DiagnosticDomainConstants.HelloWorldTextOutputType;
     }
 }

@@ -10,6 +10,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Rocket.Ollama.Infrastructure\Rocket.Ollama.Infrastructure.csproj" />
+      <ProjectReference Include="..\Rocket.Ollama.Injection.Serialization\Rocket.Ollama.Injection.Serialization.csproj" />
     </ItemGroup>
 
 </Project>

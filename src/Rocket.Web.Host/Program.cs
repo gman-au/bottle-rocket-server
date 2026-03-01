@@ -73,6 +73,9 @@ services
 services
     .AddSignalRClientServices();
 
+services
+    .AddJsonSupport();
+
 var app = 
     builder
         .Build();

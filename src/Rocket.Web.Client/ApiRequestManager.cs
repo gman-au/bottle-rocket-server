@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -13,9 +14,14 @@ namespace Rocket.Web.Client
 {
     public partial class ApiRequestManager(
         ILogger<ApiRequestManager> logger,
+        IJsonResolverInstanceProvider jsonResolverInstanceProvider,
         IAuthenticatedApiClient authenticatedApiClient
     ) : IApiRequestManager
     {
+        private readonly JsonSerializerOptions _jsonSerializerOptions =
+            jsonResolverInstanceProvider
+                .GetSerializationOptions();
+
         public async Task<StartupPhaseResponse> GetStartupPhaseAsync(CancellationToken cancellationToken)
         {
             logger
@@ -36,6 +42,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<StartupPhaseResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );
@@ -64,6 +71,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<VersionResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );

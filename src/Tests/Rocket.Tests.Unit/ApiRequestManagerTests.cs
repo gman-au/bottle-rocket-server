@@ -84,6 +84,7 @@ namespace Rocket.Tests.Unit
                 _sut =
                     new ApiRequestManager(
                         _logger,
+                        _fixture.Freeze<IJsonResolverInstanceProvider>(),
                         _authenticatedApiClient
                     );
             }

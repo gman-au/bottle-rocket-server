@@ -29,6 +29,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<MyScansResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );
@@ -58,6 +59,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<ScanSpecifics>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );

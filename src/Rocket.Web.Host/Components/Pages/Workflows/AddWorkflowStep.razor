@@ -22,7 +22,7 @@
                                            FilterByCategory();
                                        })"
                 SelectionMode="SelectionMode.MultiSelection"
-                CheckMark="_checkMark"
+                CheckMark
                 Variant="Variant.Text"
                 Color="Color.Info">
                 @foreach (var category in AllCategories ?? [])
@@ -67,13 +67,14 @@
                         <MudButton
                             Variant="Variant.Text"
                             Color="Color.Success"
-                            @onclick="@(() => NavigationManager.NavigateTo(
-                                          BuildHref(
-                                              template.HrefBase,
-                                              WorkflowId,
-                                              StepId
-                                          )
-                                      ))">
+                            @onclick="@(() =>
+                                          NavigationManager.NavigateTo(
+                                              BuildHref(
+                                                  template.HrefBase,
+                                                  WorkflowId,
+                                                  StepId
+                                              )
+                                          ))">
                             + Add step
                         </MudButton>
                     </MudCardActions>
@@ -95,7 +96,8 @@
     [Parameter]
     public string StepId { get; set; }
 
-    private bool _checkMark = true;
+    [SupplyParameterFromQuery]
+    public int? OutputType { get; set; }
 
     private IReadOnlyCollection<string> _selectedCategories;
 
@@ -105,9 +107,13 @@
 
     private IEnumerable<ISkuWorkflow> FilteredSkus { get; set; }
 
+    private int? _outputTypeToFilter;
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
+
+        _outputTypeToFilter = OutputType;
 
         AllSkus = WorkflowSkus;
 
@@ -121,6 +127,19 @@
         FilterByCategory();
 
         StateHasChanged();
+    }
+
+    private void FilterByOutputType()
+    {
+        if (_outputTypeToFilter.HasValue)
+        {
+            FilteredSkus =
+                FilteredSkus
+                    .Where(
+                        o =>
+                            o.InputTypes.Contains(_outputTypeToFilter.Value)
+                    );
+        }
     }
 
     private void FilterByCategory()
@@ -144,6 +163,8 @@
         {
             FilteredSkus = AllSkus;
         }
+
+        FilterByOutputType();
 
         StateHasChanged();
     }

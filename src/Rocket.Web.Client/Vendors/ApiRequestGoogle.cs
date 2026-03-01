@@ -30,6 +30,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<GoogleAuthInitiateResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );
@@ -61,6 +62,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<ApiResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );
@@ -92,6 +94,7 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<GetGoogleDriveFoldersResponse>(
+                            _jsonSerializerOptions,
                             logger,
                             cancellationToken
                         );

@@ -7,6 +7,8 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\Rocket.Infrastructure.Mapping\Rocket.Infrastructure.Mapping.csproj" />
       <ProjectReference Include="..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
+      <ProjectReference Include="..\..\..\Rocket.Page.Schemas\Rocket.Page.Schemas.csproj" />
+      <ProjectReference Include="..\..\Common\Rocket.Integrations.Common\Rocket.Integrations.Common.csproj" />
       <ProjectReference Include="..\Rocket.Ollama.Contracts\Rocket.Ollama.Contracts.csproj" />
       <ProjectReference Include="..\Rocket.Ollama.Domain\Rocket.Ollama.Domain.csproj" />
     </ItemGroup>

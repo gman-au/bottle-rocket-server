@@ -5,11 +5,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
+        <ProjectReference Include="..\Rocket.Interfaces\Rocket.Interfaces.csproj"/>
+        <ProjectReference Include="..\Rocket.Page.Schemas\Rocket.Page.Schemas.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.11" />
+        <PackageReference Include="NJsonSchema" Version="11.3.2"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.11"/>
     </ItemGroup>
 
 </Project>

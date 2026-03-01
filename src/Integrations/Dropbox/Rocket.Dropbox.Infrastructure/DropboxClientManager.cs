@@ -110,7 +110,7 @@ namespace Rocket.Dropbox.Infrastructure
                     Path
                         .Combine(
                             "/",
-                            uploadFolder,
+                            uploadFolder ?? string.Empty,
                             $"{Guid.NewGuid()}{fileExtension}"
                         );
 

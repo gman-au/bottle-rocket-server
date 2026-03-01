@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Rocket.Diagnostics.Injection.Serialization;
 using Rocket.Interfaces;
 
 namespace Rocket.Diagnostics.Injection.Web
@@ -8,7 +9,11 @@ namespace Rocket.Diagnostics.Injection.Web
         public static IServiceCollection AddDiagnosticWebIntegration(this IServiceCollection services)
         {
             services
-                .AddTransient<ISkuWorkflow, HelloWorldTextWorkflowProduct>();
+                .AddTransient<ISkuWorkflow, HelloWorldTextWorkflowProduct>()
+                .AddTransient<ISkuWorkflow, HelloWorldProjectWorkflowProduct>();
+
+            services
+                .AddDiagnosticsJsonSerialization();
 
             return services;
         }

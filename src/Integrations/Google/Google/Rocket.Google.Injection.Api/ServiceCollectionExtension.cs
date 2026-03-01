@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rocket.Google.Infrastructure;
+using Rocket.Google.Injection.Serialization;
 using Rocket.Interfaces;
 
 namespace Rocket.Google.Injection.Api
@@ -18,6 +19,9 @@ namespace Rocket.Google.Injection.Api
                 .AddTransient<IDriveFolderSearcher, DriveFolderSearcher>()
                 .AddTransient<IGoogleTokenAcquirer, GoogleTokenAcquirer>()
                 .AddTransient<IBsonMapper, GoogleBsonMapper>();
+
+            services
+                .AddGoogleJsonSerialization();
 
             return services;
         }

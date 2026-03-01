@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Rocket.Gcp.Injection.Serialization;
 using Rocket.Interfaces;
 
 namespace Rocket.Gcp.Injection.Web
@@ -10,6 +11,9 @@ namespace Rocket.Gcp.Injection.Web
             services
                 .AddTransient<ISkuConnector, GcpConnectorProduct>()
                 .AddTransient<ISkuWorkflow, GcpExtractWorkflowProduct>();
+
+            services
+                .AddGcpJsonSerialization();
 
             return services;
         }

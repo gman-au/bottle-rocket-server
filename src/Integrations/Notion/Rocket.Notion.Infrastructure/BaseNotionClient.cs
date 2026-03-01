@@ -15,7 +15,7 @@ namespace Rocket.Notion.Infrastructure
     public class BaseNotionClient
     {
         private const string NotionEndpoint = "https://api.notion.com";
-        private const string NotionVersion = "2022-06-28";
+        private const string NotionVersion = "2025-09-03";
 
         protected HttpClient GetBaseHttpClient(string integrationSecret)
         {

@@ -16,17 +16,33 @@ namespace Rocket.Notion.Infrastructure
                 });
             }
             
-            if (!BsonClassMap.IsClassMapRegistered(typeof(NotionUploadExecutionStep)))
+            if (!BsonClassMap.IsClassMapRegistered(typeof(NotionUploadNoteExecutionStep)))
             {
-                BsonClassMap.RegisterClassMap<NotionUploadExecutionStep>(cm =>
+                BsonClassMap.RegisterClassMap<NotionUploadNoteExecutionStep>(cm =>
                 {
                     cm.AutoMap();
                 });
             }
             
-            if (!BsonClassMap.IsClassMapRegistered(typeof(NotionUploadWorkflowStep)))
+            if (!BsonClassMap.IsClassMapRegistered(typeof(NotionUploadNoteWorkflowStep)))
             {
-                BsonClassMap.RegisterClassMap<NotionUploadWorkflowStep>(cm =>
+                BsonClassMap.RegisterClassMap<NotionUploadNoteWorkflowStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(NotionUploadProjectTaskExecutionStep)))
+            {
+                BsonClassMap.RegisterClassMap<NotionUploadProjectTaskExecutionStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(NotionUploadProjectTaskWorkflowStep)))
+            {
+                BsonClassMap.RegisterClassMap<NotionUploadProjectTaskWorkflowStep>(cm =>
                 {
                     cm.AutoMap();
                 });

@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
-using Rocket.Infrastructure.Json;
 using Rocket.Interfaces;
 using Rocket.Web.Client.Options;
 
@@ -26,7 +25,8 @@ namespace Rocket.Web.Client.Authentication
         public AuthenticatedApiClient(
             ILogger<AuthenticatedApiClient> logger,
             IOptions<ApiConfigurationOptions> apiConfigurationOptionsAccessor,
-            IAuthenticationManager authenticationManager
+            IAuthenticationManager authenticationManager,
+            IJsonResolverInstanceProvider jsonResolverInstanceProvider
         )
         {
             _authenticationManager = authenticationManager;
@@ -43,9 +43,9 @@ namespace Rocket.Web.Client.Authentication
                     )
                 );
 
-            _jsonOptions = 
-                RocketTypeInfoResolver
-                    .DefaultJsonSerializationOptions;
+            _jsonOptions =
+                jsonResolverInstanceProvider
+                    .GetSerializationOptions();
         }
 
         public async Task<HttpResponseMessage> GetAsync(string requestUri, CancellationToken cancellationToken)

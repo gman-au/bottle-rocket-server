@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Rocket.Diagnostics.Domain;
-using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
+using Rocket.Integrations.Common;
+using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 
 namespace Rocket.Diagnostics.Infrastructure
 {
-    public class HelloWorldTextHook : IIntegrationHook
+    public class HelloWorldTextHook(ILogger<HelloWorldTextHook> logger) : HookBase<HelloWorldTextExecutionStep>(logger), IIntegrationHook
     {
-        public bool IsApplicable(BaseExecutionStep step) => step is HelloWorldTextExecutionStep;
-
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
@@ -23,13 +22,8 @@ namespace Rocket.Diagnostics.Infrastructure
         )
         {
             return
-                new ExecutionStepArtifact
-                {
-                    Result = (int)ExecutionStatusEnum.Completed,
-                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
-                    Artifact = Encoding.Default.GetBytes("Hello, world!"),
-                    FileExtension = ".txt"
-                };
+                "Hello, world!"
+                    .AsCompletedRawTextArtifact();
         }
     }
 }
