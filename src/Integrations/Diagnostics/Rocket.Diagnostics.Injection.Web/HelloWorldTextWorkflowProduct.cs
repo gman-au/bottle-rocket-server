@@ -19,5 +19,9 @@ namespace Rocket.Diagnostics.Injection.Web
         public bool DataLeavesYourServer => false;
 
         public string StepCode => DiagnosticDomainConstants.HelloWorldTextWorkflowCode;
+        
+        public int[] InputTypes => DiagnosticDomainConstants.HelloWorldTextInputTypes;
+        
+        public int OutputType => DiagnosticDomainConstants.HelloWorldTextOutputType;
     }
 }

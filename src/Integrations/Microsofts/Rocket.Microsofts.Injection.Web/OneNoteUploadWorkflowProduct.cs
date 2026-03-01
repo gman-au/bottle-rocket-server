@@ -19,5 +19,9 @@ namespace Rocket.Microsofts.Injection.Web
         public bool DataLeavesYourServer => true;
 
         public string StepCode => MicrosoftDomainConstants.OneNoteUploadWorkflowCode;
+        
+        public int[] InputTypes => MicrosoftDomainConstants.OneNoteUploadInputTypes;
+
+        public int OutputType => MicrosoftDomainConstants.OneNoteUploadOutputType;
     }
 }

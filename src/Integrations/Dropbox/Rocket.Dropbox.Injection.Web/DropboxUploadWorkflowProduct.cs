@@ -19,5 +19,9 @@ namespace Rocket.Dropbox.Injection.Web
         public bool DataLeavesYourServer => true;
 
         public string StepCode => DropboxDomainConstants.UploadWorkflowCode;
+        
+        public int[] InputTypes => DropboxDomainConstants.DropboxUploadInputTypes;
+
+        public int OutputType => DropboxDomainConstants.DropboxUploadOutputType;
     }
 }

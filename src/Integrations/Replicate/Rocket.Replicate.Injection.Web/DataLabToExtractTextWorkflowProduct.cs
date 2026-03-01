@@ -19,5 +19,9 @@ namespace Rocket.Replicate.Injection.Web
         public bool DataLeavesYourServer => true;
 
         public string StepCode => ReplicateDomainConstants.DataLabToExtractTextWorkflowCode;
+        
+        public int[] InputTypes => ReplicateDomainConstants.ReplicateExtractInputTypes;
+
+        public int OutputType => ReplicateDomainConstants.ReplicateExtractTextOutputType;
     }
 }

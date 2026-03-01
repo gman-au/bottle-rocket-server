@@ -1,18 +1,12 @@
-﻿using Rocket.Domain.Enum;
-using Rocket.Domain.Workflows;
+﻿using Rocket.Domain.Workflows;
 
 namespace Rocket.Google.Domain
 {
     public record GoogleDriveUploadWorkflowStep : BaseWorkflowStep
     {
-        public override int[] InputTypes { get; set; } =
-        [
-            (int)WorkflowFormatTypeEnum.File,
-            (int)WorkflowFormatTypeEnum.RawTextData,
-            (int)WorkflowFormatTypeEnum.ImageData
-        ];
+        public override int[] InputTypes { get; set; } = GoogleDomainConstants.GoogleDriveUploadInputTypes;
 
-        public override int OutputType { get; set; } = (int)WorkflowFormatTypeEnum.Void;
+        public override int OutputType { get; set; } = GoogleDomainConstants.GoogleDriveUploadOutputType;
 
         public override string StepName { get; set; } = "Upload note to Google Drive";
 

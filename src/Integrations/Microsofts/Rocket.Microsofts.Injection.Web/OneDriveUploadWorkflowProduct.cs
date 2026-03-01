@@ -19,5 +19,9 @@ namespace Rocket.Microsofts.Injection.Web
         public bool DataLeavesYourServer => true;
 
         public string StepCode => MicrosoftDomainConstants.OneDriveUploadWorkflowCode;
+        
+        public int[] InputTypes => MicrosoftDomainConstants.OneDriveUploadInputTypes;
+
+        public int OutputType => MicrosoftDomainConstants.OneDriveUploadOutputType;
     }
 }

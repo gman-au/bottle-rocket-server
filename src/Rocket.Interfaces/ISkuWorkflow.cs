@@ -15,5 +15,9 @@
         public bool DataLeavesYourServer { get; }
 
         public string StepCode { get; }
+        
+        public int[] InputTypes { get; }
+        
+        public int OutputType { get; }
     }
 }

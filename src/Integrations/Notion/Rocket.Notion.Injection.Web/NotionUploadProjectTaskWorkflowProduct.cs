@@ -19,5 +19,9 @@ namespace Rocket.Notion.Injection.Web
         public bool DataLeavesYourServer => true;
 
         public string StepCode => NotionDomainConstants.NotionUploadProjectTaskWorkflowCode;
+        
+        public int[] InputTypes { get; set; } = NotionDomainConstants.NotionUploadProjectTaskInputTypes;
+
+        public int OutputType => NotionDomainConstants.NotionUploadProjectTaskOutputType;
     }
 }

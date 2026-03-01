@@ -1,13 +1,12 @@
-﻿using Rocket.Domain.Enum;
-using Rocket.Domain.Workflows;
+﻿using Rocket.Domain.Workflows;
 
 namespace Rocket.Replicate.Domain.Models.DeepSeekOcr
 {
     public record DeepSeekOcrExtractTextWorkflowStep : BaseWorkflowStep
     {
-        public override int[] InputTypes { get; set; } = [(int)WorkflowFormatTypeEnum.ImageData];
+        public override int[] InputTypes { get; set; } = ReplicateDomainConstants.ReplicateExtractInputTypes;
 
-        public override int OutputType { get; set; } = (int)WorkflowFormatTypeEnum.RawTextData;
+        public override int OutputType { get; set; } = ReplicateDomainConstants.ReplicateExtractTextOutputType;
 
         public override string StepName { get; set; } = "Extract text from image using Replicate (model: lucataco/deepseek-ocr)";
 

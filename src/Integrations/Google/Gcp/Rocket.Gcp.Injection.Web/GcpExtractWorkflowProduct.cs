@@ -19,5 +19,9 @@ namespace Rocket.Gcp.Injection.Web
         public bool DataLeavesYourServer => true;
 
         public string StepCode => GcpDomainConstants.ExtractTextWorkflowCode;
+        
+        public int[] InputTypes => GcpDomainConstants.GcpExtractInputTypes;
+        
+        public int OutputType => GcpDomainConstants.GcpExtractOutputType;
     }
 }

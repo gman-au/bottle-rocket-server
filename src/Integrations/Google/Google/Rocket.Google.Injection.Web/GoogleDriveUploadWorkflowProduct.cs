@@ -19,5 +19,9 @@ namespace Rocket.Google.Injection.Web
         public bool DataLeavesYourServer => true;
 
         public string StepCode => GoogleDomainConstants.UploadFileWorkflowCode;
+        
+        public int[] InputTypes => GoogleDomainConstants.GoogleDriveUploadInputTypes;
+        
+        public int OutputType => GoogleDomainConstants.GoogleDriveUploadOutputType;
     }
 }

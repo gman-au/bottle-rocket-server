@@ -19,5 +19,9 @@ namespace Rocket.Ollama.Injection.Web
         public bool DataLeavesYourServer => false;
 
         public string StepCode => OllamaDomainConstants.OllamaExtractTextWorkflowCode;
+        
+        public int[] InputTypes => OllamaDomainConstants.OllamaExtractTextInputTypes;
+
+        public int OutputType => OllamaDomainConstants.OllamaExtractTextOutputType;
     }
 }

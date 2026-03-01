@@ -1,18 +1,12 @@
-﻿using Rocket.Domain.Enum;
-using Rocket.Domain.Workflows;
+﻿using Rocket.Domain.Workflows;
 
 namespace Rocket.Microsofts.Domain
 {
     public record OneDriveUploadWorkflowStep : BaseWorkflowStep
     {
-        public override int[] InputTypes { get; set; } =
-        [
-            (int)WorkflowFormatTypeEnum.File,
-            (int)WorkflowFormatTypeEnum.RawTextData,
-            (int)WorkflowFormatTypeEnum.ImageData
-        ];
+        public override int[] InputTypes { get; set; } = MicrosoftDomainConstants.OneDriveUploadInputTypes;
 
-        public override int OutputType { get; set; } = (int)WorkflowFormatTypeEnum.Void;
+        public override int OutputType { get; set; } = MicrosoftDomainConstants.OneDriveUploadOutputType;
 
         public override string StepName { get; set; } = "Upload note to OneDrive";
 
