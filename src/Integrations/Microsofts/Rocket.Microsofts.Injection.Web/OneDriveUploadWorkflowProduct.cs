@@ -16,7 +16,7 @@ namespace Rocket.Microsofts.Injection.Web
 
         public string ImagePath => "/img/onedrive-logo.png";
 
-        public bool DataLeavesYourServer => true;
+        public int DataLeavesYourServer => (int)SkuDataExposureEnum.DataWillLeaveYourServer;
 
         public string StepCode => MicrosoftDomainConstants.OneDriveUploadWorkflowCode;
         

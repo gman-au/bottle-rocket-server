@@ -16,7 +16,7 @@ namespace Rocket.Notion.Injection.Web
 
         public string ImagePath => "/img/notion-logo.png";
 
-        public bool DataLeavesYourServer => true;
+        public int DataLeavesYourServer => (int)SkuDataExposureEnum.DataWillLeaveYourServer;
 
         public string StepCode => NotionDomainConstants.NotionUploadProjectTaskWorkflowCode;
         

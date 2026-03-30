@@ -16,7 +16,7 @@ namespace Rocket.Ollama.Injection.Web
 
         public string ImagePath => "/img/ollama-logo.png";
 
-        public bool DataLeavesYourServer => false;
+        public int DataLeavesYourServer => (int)SkuDataExposureEnum.DataMightLeaveYourServer;
 
         public string StepCode => OllamaDomainConstants.OllamaExtractTextWorkflowCode;
         

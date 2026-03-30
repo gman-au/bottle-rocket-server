@@ -16,7 +16,7 @@ namespace Rocket.Replicate.Injection.Web
 
         public string ImagePath => "/img/replicate-logo.png";
 
-        public bool DataLeavesYourServer => true;
+        public int DataLeavesYourServer => (int)SkuDataExposureEnum.DataWillLeaveYourServer;
 
         public string StepCode => ReplicateDomainConstants.DataLabToExtractTextWorkflowCode;
         

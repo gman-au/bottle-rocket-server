@@ -16,7 +16,7 @@ namespace Rocket.Google.Injection.Web
 
         public string ImagePath => "/img/google-drive-logo.png";
 
-        public bool DataLeavesYourServer => true;
+        public int DataLeavesYourServer => (int)SkuDataExposureEnum.DataWillLeaveYourServer;
 
         public string StepCode => GoogleDomainConstants.UploadFileWorkflowCode;
         

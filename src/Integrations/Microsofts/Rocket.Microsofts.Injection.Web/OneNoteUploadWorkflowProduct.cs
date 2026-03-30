@@ -16,7 +16,7 @@ namespace Rocket.Microsofts.Injection.Web
 
         public string ImagePath => "/img/onenote-logo.png";
 
-        public bool DataLeavesYourServer => true;
+        public int DataLeavesYourServer => (int)SkuDataExposureEnum.DataWillLeaveYourServer;
 
         public string StepCode => MicrosoftDomainConstants.OneNoteUploadWorkflowCode;
         

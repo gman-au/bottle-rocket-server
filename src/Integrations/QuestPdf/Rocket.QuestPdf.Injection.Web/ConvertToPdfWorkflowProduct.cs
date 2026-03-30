@@ -16,7 +16,7 @@ namespace Rocket.QuestPdf.Injection.Web
 
         public string ImagePath => "/img/pdf-logo.png";
 
-        public bool DataLeavesYourServer => false;
+        public int DataLeavesYourServer => (int)SkuDataExposureEnum.DataWillNotLeaveYourServer;
 
         public string StepCode => QuestPdfDomainConstants.ConvertToPdfWorkflowCode;
         

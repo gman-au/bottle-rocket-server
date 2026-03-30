@@ -16,7 +16,7 @@ namespace Rocket.Diagnostics.Injection.Web
 
         public string ImagePath => "/img/bottle-rocket-logo.png";
 
-        public bool DataLeavesYourServer => false;
+        public int DataLeavesYourServer => (int)SkuDataExposureEnum.DataWillNotLeaveYourServer;
 
         public string StepCode => DiagnosticDomainConstants.HelloWorldTextWorkflowCode;
         

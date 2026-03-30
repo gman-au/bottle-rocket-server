@@ -1,0 +1,37 @@
+﻿@page "/MyWorkflow/LocalUpload/{workflowId}/AddStep"
+@page "/MyWorkflow/LocalUpload/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/LocalUpload/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.Local.Contracts
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<UpdateWorkflowStepWrapper
+    T="LocalUploadWorkflowStepSpecifics"
+    WorkflowStepName="Upload file to server folder"
+    WorkflowId="@WorkflowId"
+    ParentStepId="@ParentStepId"
+    StepId="@StepId"
+    Context="stepSpecifics">
+    <MudGrid>
+        <MudItem sm="12" lg="6">
+            <MudTextField
+                T="string"
+                Label="Upload path"
+                HelperText="Enter the server path to upload to e.g. /mnt/media_files/uploads"
+                @bind-Value="stepSpecifics.UploadPath"
+                For="@(() => stepSpecifics.UploadPath)"/>
+        </MudItem>
+    </MudGrid>
+</UpdateWorkflowStepWrapper>
+
+@code {
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+}

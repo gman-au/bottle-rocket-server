@@ -1,5 +1,6 @@
 ﻿@page "/MyWorkflow/{workflowId}/AddStep"
 @page "/MyWorkflow/{workflowId}/Steps/{stepId}/AddStep"
+@using Rocket.Api.Contracts
 @using Rocket.Interfaces
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 @inject IEnumerable<ISkuWorkflow> WorkflowSkus
@@ -46,17 +47,6 @@
                         >
                             @template.Name
                         </MudText>
-                        @if (template.DataLeavesYourServer)
-                        {
-                            <MudChip
-                                T="string"
-                                Size="Size.Small"
-                                Variant="Variant.Outlined"
-                                Icon="@StandardIcons.CloudIcon"
-                                Color="Color.Warning">
-                                Data leaves your server
-                            </MudChip>
-                        }
                         <p>
                             <MudText Typo="Typo.caption">
                                 @template.Description
@@ -64,19 +54,58 @@
                         </p>
                     </MudCardContent>
                     <MudCardActions Class="justify-end">
-                        <MudButton
-                            Variant="Variant.Text"
-                            Color="Color.Success"
-                            @onclick="@(() =>
-                                          NavigationManager.NavigateTo(
-                                              BuildHref(
-                                                  template.HrefBase,
-                                                  WorkflowId,
-                                                  StepId
-                                              )
-                                          ))">
-                            + Add step
-                        </MudButton>
+                        <MudGrid>
+                            <MudItem xs="12">
+                                @if (template.DataLeavesYourServer == (int)SkuDataExposureEnum.DataWillLeaveYourServer)
+                                {
+                                    <MudChip
+                                        T="string"
+                                        Size="Size.Small"
+                                        Variant="Variant.Outlined"
+                                        Icon="@StandardIcons.CloudIcon"
+                                        Color="Color.Warning">
+                                        Data&nbsp;<b><u>will</u></b>&nbsp;leave your server
+                                    </MudChip>
+                                }
+                                else if (template.DataLeavesYourServer == (int)SkuDataExposureEnum.DataMightLeaveYourServer)
+                                {
+                                    <MudChip
+                                        T="string"
+                                        Size="Size.Small"
+                                        Variant="Variant.Outlined"
+                                        Icon="@StandardIcons.CloudIcon"
+                                        Color="Color.Info">
+                                        Data&nbsp;<b><u>might</u></b>&nbsp;leave your server
+                                    </MudChip>
+                                }
+                                else
+                                {
+                                    <MudChip
+                                        T="string"
+                                        Size="Size.Small"
+                                        Variant="Variant.Outlined"
+                                        Icon="@StandardIcons.CloudIcon"
+                                        Color="Color.Success">
+                                        Data&nbsp;<b><u>will not</u></b>&nbsp;leave your server
+                                    </MudChip>
+                                }
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudButton
+                                    Variant="Variant.Text"
+                                    Color="Color.Success"
+                                    @onclick="@(() =>
+                                                  NavigationManager.NavigateTo(
+                                                      BuildHref(
+                                                          template.HrefBase,
+                                                          WorkflowId,
+                                                          StepId
+                                                      )
+                                                  ))">
+                                    + Add step
+                                </MudButton>
+                            </MudItem>
+                        </MudGrid>
                     </MudCardActions>
                 </MudCard>
             </MudItem>
