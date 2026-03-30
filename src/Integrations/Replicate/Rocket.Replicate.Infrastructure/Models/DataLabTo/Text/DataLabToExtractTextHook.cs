@@ -14,6 +14,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
 {
     public class DataLabToExtractTextHook(
         IReplicateClient replicateClient,
+        IMarkdownStripper markdownStripper,
         ILogger<DataLabToExtractTextHook> logger
     ) : HookWithConnectorBase<DataLabToExtractTextExecutionStep, ReplicateConnector>(logger), IIntegrationHook
     {
@@ -84,7 +85,11 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
                                 new DataLabToInput
                                 {
                                     File = imageUrl,
-                                    DisableImageExtraction = true
+                                    DisableImageExtraction = true,
+                                    UseLlm = true,
+                                    SkipCache = true,
+                                    ForceOcr = true,
+                                    IncludeMetadata = false
                                 },
                                 cancellationToken,
                                 DataLabToCustomEndpoint
@@ -108,14 +113,30 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
                 var extractedText =
                     result?.Markdown ?? string.Empty;
 
-                await
-                    appendLogMessageCallback(
-                        step.Id,
+                logger
+                    .LogDebug(
+                        "Extracted markdown: {extractedText}",
                         extractedText
                     );
 
+                var strippedText =
+                    markdownStripper
+                        .StripFooter(extractedText);
+
+                logger
+                    .LogDebug(
+                        "Stripped markdown: {strippedText}",
+                        strippedText
+                    );
+                
+                await
+                    appendLogMessageCallback(
+                        step.Id,
+                        strippedText
+                    );
+
                 return
-                    extractedText
+                    strippedText
                         .AsCompletedRawTextArtifact();
             }
             finally

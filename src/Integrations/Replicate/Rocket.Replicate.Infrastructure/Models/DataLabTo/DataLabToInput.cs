@@ -22,5 +22,11 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo
         
         [JsonPropertyName("use_llm")]
         public bool UseLlm { get; set; }
+        
+        [JsonPropertyName("skip_cache")]
+        public bool SkipCache { get; set; }
+        
+        [JsonPropertyName("force_ocr")]
+        public bool ForceOcr { get; set; }
     }
 }
