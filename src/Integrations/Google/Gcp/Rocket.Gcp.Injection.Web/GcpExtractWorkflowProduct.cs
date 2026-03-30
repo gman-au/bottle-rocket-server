@@ -16,7 +16,7 @@ namespace Rocket.Gcp.Injection.Web
 
         public string ImagePath => "/img/gcp-logo.png";
 
-        public bool DataLeavesYourServer => true;
+        public int DataLeavesYourServer => (int)SkuDataExposureEnum.DataWillLeaveYourServer;
 
         public string StepCode => GcpDomainConstants.ExtractTextWorkflowCode;
         

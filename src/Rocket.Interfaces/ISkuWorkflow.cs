@@ -12,7 +12,7 @@
 
         public string ImagePath { get; }
 
-        public bool DataLeavesYourServer { get; }
+        public int DataLeavesYourServer { get; }
 
         public string StepCode { get; }
         

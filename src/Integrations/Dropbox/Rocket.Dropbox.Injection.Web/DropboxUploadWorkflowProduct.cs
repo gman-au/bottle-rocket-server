@@ -16,7 +16,7 @@ namespace Rocket.Dropbox.Injection.Web
 
         public string ImagePath => "/img/dropbox-logo.webp";
 
-        public bool DataLeavesYourServer => true;
+        public int DataLeavesYourServer => (int)SkuDataExposureEnum.DataWillLeaveYourServer;
 
         public string StepCode => DropboxDomainConstants.UploadWorkflowCode;
         
