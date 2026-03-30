@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.11"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
+      <ProjectReference Include="..\Rocket.Local.Domain\Rocket.Local.Domain.csproj" />
+      <ProjectReference Include="..\Rocket.Local.Injection.Serialization\Rocket.Local.Injection.Serialization.csproj" />
+    </ItemGroup>
+
+</Project>

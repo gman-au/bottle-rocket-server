@@ -6,6 +6,7 @@ using Rocket.Diagnostics.Injection.Web;
 using Rocket.Dropbox.Injection.Web;
 using Rocket.Gcp.Injection.Web;
 using Rocket.Google.Injection.Web;
+using Rocket.Local.Injection.Web;
 using Rocket.Microsofts.Injection.Web;
 using Rocket.Notion.Injection.Web;
 using Rocket.Ollama.Injection.Web;
@@ -68,7 +69,8 @@ services
     .AddNotionWebIntegration()
     .AddOllamaWebIntegration()
     .AddQuestPdfWebIntegration()
-    .AddReplicateWebIntegration();
+    .AddReplicateWebIntegration()
+    .AddLocalWebIntegration();
 
 services
     .AddSignalRClientServices();

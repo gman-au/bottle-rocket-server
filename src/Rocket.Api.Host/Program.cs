@@ -13,6 +13,7 @@ using Rocket.Dropbox.Injection.Api;
 using Rocket.Gcp.Injection.Api;
 using Rocket.Google.Injection.Api;
 using Rocket.Interfaces;
+using Rocket.Local.Injection.Api;
 using Rocket.Microsofts.Injection.Api;
 using Rocket.Notion.Injection.Api;
 using Rocket.Ollama.Injection.Api;
@@ -84,7 +85,8 @@ services
     .AddGoogleApiIntegration()
     .AddDiagnosticApiIntegration()
     .AddQuestPdfApiIntegration()
-    .AddReplicateApiIntegration();
+    .AddReplicateApiIntegration()
+    .AddLocalApiIntegration();
 
 services
     .AddWorkflowBackgroundJob();

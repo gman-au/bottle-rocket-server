@@ -15,6 +15,8 @@
         <ProjectReference Include="..\Integrations\Google\Google\Rocket.Google.Contracts\Rocket.Google.Contracts.csproj" />
         <ProjectReference Include="..\Integrations\Google\Google\Rocket.Google.Domain\Rocket.Google.Domain.csproj" />
         <ProjectReference Include="..\Integrations\Google\Google\Rocket.Google.Injection.Web\Rocket.Google.Injection.Web.csproj" />
+        <ProjectReference Include="..\Integrations\Local\Rocket.Local.Contracts\Rocket.Local.Contracts.csproj" />
+        <ProjectReference Include="..\Integrations\Local\Rocket.Local.Injection.Web\Rocket.Local.Injection.Web.csproj" />
         <ProjectReference Include="..\Integrations\Microsofts\Rocket.Microsofts.Domain\Rocket.Microsofts.Domain.csproj" />
         <ProjectReference Include="..\Integrations\Microsofts\Rocket.Microsofts.Injection.Web\Rocket.Microsofts.Injection.Web.csproj" />
         <ProjectReference Include="..\Integrations\Notion\Rocket.Notion.Domain\Rocket.Notion.Domain.csproj" />
