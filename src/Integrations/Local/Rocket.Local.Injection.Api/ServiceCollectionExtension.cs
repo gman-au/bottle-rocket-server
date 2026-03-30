@@ -14,6 +14,7 @@ namespace Rocket.Local.Injection.Api
                 .AddTransient<IWorkflowStepModelMapper, LocalUploadWorkflowStepMapper>()
                 .AddTransient<IExecutionStepModelMapper, LocalUploadExecutionStepMapper>()
                 .AddTransient<IStepModelCloner, LocalUploadStepCloner>()
+                .AddTransient<IFileWriter, FileWriter>()
                 .AddTransient<IBsonMapper, LocalBsonMapper>();
 
             services

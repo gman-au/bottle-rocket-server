@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Text;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Integrations.Common;
@@ -14,6 +13,7 @@ using Rocket.Local.Domain;
 namespace Rocket.Local.Infrastructure
 {
     public class LocalUploadHook(
+        IFileWriter fileWriter,
         ILogger<LocalUploadHook> logger
     )
         : HookBase<LocalUploadExecutionStep>(logger), IIntegrationHook
@@ -33,37 +33,30 @@ namespace Rocket.Local.Infrastructure
                 )
                 .InitializeArtifact(this);
 
-            byte[] fileData = null;
-
             var fileBytes =
                 Artifact
                     .Artifact;
 
-            /*if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.RawTextData)
-            {
-                var textData =
-                    Encoding
-                        .Default
-                        .GetString(fileBytes);
+            var filePath =
+                ExecutionStep
+                    .UploadPath;
 
-                fileData =
-                    await
-                        pdfGenerator
-                            .GeneratePdfFromTextAsync(
-                                textData,
-                                cancellationToken
-                            );
-            }
-            else if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.ImageData)
-            {
-                fileData =
-                    await
-                        pdfGenerator
-                            .GeneratePdfFromImageAsync(
-                                fileBytes,
-                                cancellationToken
-                            );
-            }*/
+            var fileName = $"{Guid.NewGuid()}{Artifact.FileExtension}";
+
+            var fullFilePath =
+                Path
+                    .Combine(
+                        filePath,
+                        fileName
+                    );
+
+            await
+                fileWriter
+                    .WriteAsync(
+                        fullFilePath,
+                        fileBytes,
+                        cancellationToken
+                    );
 
             return
                 ExecutionStepArtifact
