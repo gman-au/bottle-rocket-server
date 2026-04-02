@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
+using Rocket.Domain.Utils;
 using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 using Rocket.Ollama.Domain;
@@ -17,6 +18,7 @@ namespace Rocket.Ollama.Infrastructure.Project
 {
     public class OllamaExtractProjectHook(
         IOllamaClient ollamaClient,
+        IGlobalSettingsRepository globalSettingsRepository,
         ILogger<OllamaExtractProjectHook> logger
     )
         : OllamaHookBase<OllamaExtractProjectExecutionStep, OllamaConnector>(
@@ -72,6 +74,15 @@ namespace Rocket.Ollama.Infrastructure.Project
                     ExecutionStep.FirstPassModelName,
                     ExecutionStep.SecondPassModelName
                 );
+            
+            var globalSettings =
+                await
+                    globalSettingsRepository
+                        .GetGlobalSettingsAsync(cancellationToken);
+
+            var timeoutInMinutes =
+                globalSettings?.DefaultModelTimeoutInMinutes ??
+                DomainConstants.GlobalDefaultModelTimeoutInMinutes;
 
             var firstPassResponse =
                 await
@@ -86,7 +97,8 @@ namespace Rocket.Ollama.Infrastructure.Project
                             temperature: 0.1F,
                             maxTokens: 1024,
                             numCtx: null,
-                            cancellationToken
+                            timeoutInMinutes,
+                            cancellationToken: cancellationToken
                         );
 
             var secondPassResponse =
@@ -100,12 +112,13 @@ namespace Rocket.Ollama.Infrastructure.Project
                                 firstPassResponse
                             ),
                             imageBytes: null,
-                            RocketbookPageTemplateTypeEnum.ProjectTaskTracker,
+                            pageTemplateType: RocketbookPageTemplateTypeEnum.ProjectTaskTracker,
                             useSchema: true,
                             temperature: 0.3F,
                             maxTokens: 1024,
                             numCtx: 4096,
-                            cancellationToken
+                            timeoutInMinutes,
+                            cancellationToken: cancellationToken
                         );
 
             await

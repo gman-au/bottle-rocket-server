@@ -12,5 +12,7 @@ namespace Rocket.Domain
         public int SweepSuccessfulScansAfterDays { get; set; }
 
         public bool EnableSweeping { get; set; }
+
+        public int? DefaultModelTimeoutInMinutes { get; set; }
     }
 }

@@ -22,6 +22,7 @@ namespace Rocket.Ollama.Infrastructure
             float? temperature,
             int? maxTokens,
             int? numCtx,
+            int timeoutInMinutes,
             CancellationToken cancellationToken
         ) where T : class;
     }

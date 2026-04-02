@@ -61,19 +61,19 @@ namespace Rocket.Ollama.Infrastructure
             return results;
         }
 
-        public async Task<T>
-            SendRequestAsync<T>(
-                string endpoint,
-                string modelName,
-                string prompt,
-                byte[] imageBytes,
-                RocketbookPageTemplateTypeEnum pageTemplateType,
-                bool useSchema,
-                float? temperature,
-                int? maxTokens,
-                int? numCtx,
-                CancellationToken cancellationToken
-            ) where T : class
+        public async Task<T> SendRequestAsync<T>(
+            string endpoint,
+            string modelName,
+            string prompt,
+            byte[] imageBytes,
+            RocketbookPageTemplateTypeEnum pageTemplateType,
+            bool useSchema,
+            float? temperature,
+            int? maxTokens,
+            int? numCtx,
+            int timeoutInMinutes,
+            CancellationToken cancellationToken
+        ) where T : class
         {
             string base64Image = null;
 
@@ -90,7 +90,7 @@ namespace Rocket.Ollama.Infrastructure
 
             httpClient.Timeout =
                 TimeSpan
-                    .FromMinutes(10);
+                    .FromMinutes(timeoutInMinutes);
 
             logger
                 .LogDebug("Ollama prompt:\r\n{prompt}", prompt);

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
+using Rocket.Domain.Utils;
 using Rocket.Integrations.Common;
 using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
@@ -15,6 +16,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
     public class DataLabToExtractTextHook(
         IReplicateClient replicateClient,
         IMarkdownStripper markdownStripper,
+        IGlobalSettingsRepository globalSettingsRepository,
         ILogger<DataLabToExtractTextHook> logger
     ) : HookWithConnectorBase<DataLabToExtractTextExecutionStep, ReplicateConnector>(logger), IIntegrationHook
     {
@@ -101,12 +103,22 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
                         predictionId
                     );
 
+                var globalSettings =
+                    await
+                        globalSettingsRepository
+                            .GetGlobalSettingsAsync(cancellationToken);
+
+                var timeoutInMinutes =
+                    globalSettings?.DefaultModelTimeoutInMinutes ??
+                    DomainConstants.GlobalDefaultModelTimeoutInMinutes;
+                
                 var result =
                     await
                         replicateClient
                             .WaitUntilPredictionCompletesAsync<DataLabToOutput>(
                                 apiToken,
                                 predictionId,
+                                timeoutInMinutes,
                                 cancellationToken
                             );
 

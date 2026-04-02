@@ -9,6 +9,7 @@ namespace Rocket.Gcp.Infrastructure
         Task<string> ExtractHandwrittenTextAsync(
             byte[] imageBytes,
             GcpCredential gcpCredential,
+            int timeoutInMinutes,
             CancellationToken cancellationToken
         );
     }

@@ -23,12 +23,14 @@ namespace Rocket.Infrastructure.Db.Mongo
             new()
             {
                 { nameof(GlobalSettings.SweepSuccessfulScansAfterDays), 10 },
-                { nameof(GlobalSettings.EnableSweeping), true }
+                { nameof(GlobalSettings.EnableSweeping), true },
+                { nameof(GlobalSettings.DefaultModelTimeoutInMinutes), (int?)null }
             };
 
         public async Task UpdateGlobalSettingsAsync(
             int? sweepSuccessfulScansAfterDays,
             bool? enableSweeping,
+            int? defaultModelTimeoutInMinutes,
             CancellationToken cancellationToken
         )
         {
@@ -64,9 +66,20 @@ namespace Rocket.Infrastructure.Db.Mongo
                     );
             }
 
+            updates
+                .Add(
+                    updateBuilder
+                        .Set(
+                            o => o.DefaultModelTimeoutInMinutes,
+                            defaultModelTimeoutInMinutes
+                        )
+                );
+
             if (updates.Count == 0) return;
 
-            var combinedUpdate = updateBuilder.Combine(updates);
+            var combinedUpdate =
+                updateBuilder
+                    .Combine(updates);
 
             var collection =
                 GetMongoCollection();

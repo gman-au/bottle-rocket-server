@@ -64,7 +64,8 @@ namespace Rocket.Api.Host.Controllers
                 new GlobalSettingsSpecifics
                 {
                     SweepSuccessfulScansAfterDays = record.SweepSuccessfulScansAfterDays,
-                    EnableSweeping = record.EnableSweeping
+                    EnableSweeping = record.EnableSweeping,
+                    DefaultModelTimeoutInMinutes = record.DefaultModelTimeoutInMinutes
                 };
 
             return
@@ -108,7 +109,8 @@ namespace Rocket.Api.Host.Controllers
                 globalSettingsRepository
                     .UpdateGlobalSettingsAsync(
                         request.SweepSuccessfulScansAfterDays,
-                        request.EnableSweeping,
+                        request.EnableSweeping, 
+                        request.DefaultModelTimeoutInMinutes,
                         cancellationToken
                     );
 
