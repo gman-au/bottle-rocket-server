@@ -7,6 +7,7 @@ using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
+using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 using Rocket.Replicate.Domain;
 using Rocket.Replicate.Domain.Models.DeepSeekOcr;
@@ -15,6 +16,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
 {
     public class DeepSeekOcrExtractTextHook(
         ILogger<DeepSeekOcrExtractTextHook> logger,
+        IGlobalSettingsRepository globalSettingsRepository,
         IReplicateClient replicateClient
     ) : IIntegrationHook
     {
@@ -95,12 +97,22 @@ namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
                 logger
                     .LogInformation("Created prediction in Replicate: {predictionId}", predictionId);
 
+                var globalSettings =
+                    await
+                        globalSettingsRepository
+                            .GetGlobalSettingsAsync(cancellationToken);
+
+                var timeoutInMinutes =
+                    globalSettings?.DefaultModelTimeoutInMinutes ??
+                    DomainConstants.GlobalDefaultModelTimeoutInMinutes;
+                
                 var result =
                     await
                         replicateClient
                             .WaitUntilPredictionCompletesAsync(
                                 apiToken,
                                 predictionId,
+                                timeoutInMinutes,
                                 cancellationToken
                             );
 

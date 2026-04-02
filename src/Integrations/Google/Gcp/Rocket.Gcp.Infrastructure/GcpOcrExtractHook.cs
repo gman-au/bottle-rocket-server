@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
+using Rocket.Domain.Utils;
 using Rocket.Gcp.Domain;
 using Rocket.Integrations.Common;
 using Rocket.Integrations.Common.Extensions;
@@ -13,6 +14,7 @@ namespace Rocket.Gcp.Infrastructure
 {
     public class GcpOcrExtractHook(
         IVisionOcrService visionOcrService,
+        IGlobalSettingsRepository globalSettingsRepository,
         ILogger<GcpOcrExtractHook> logger
     )
         : HookWithConnectorBase<GcpExtractExecutionStep, GcpConnector>(logger), IIntegrationHook
@@ -44,6 +46,15 @@ namespace Rocket.Gcp.Infrastructure
             var credential =
                 Connector
                     .Credential;
+            
+            var globalSettings =
+                await
+                    globalSettingsRepository
+                        .GetGlobalSettingsAsync(cancellationToken);
+
+            var timeoutInMinutes =
+                globalSettings?.DefaultModelTimeoutInMinutes ??
+                DomainConstants.GlobalDefaultModelTimeoutInMinutes;
 
             var result =
                 await
@@ -51,6 +62,7 @@ namespace Rocket.Gcp.Infrastructure
                         .ExtractHandwrittenTextAsync(
                             imageBytes,
                             credential,
+                            timeoutInMinutes,
                             cancellationToken
                         );
 

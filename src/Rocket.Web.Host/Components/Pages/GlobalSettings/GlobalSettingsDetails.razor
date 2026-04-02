@@ -64,6 +64,37 @@
                             </MudGrid>
                         </div>
                     </MudItem>
+                    <MudItem xs="12">
+                        <div class="mud-border-primary border p-4 mb-4 rounded">
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudText
+                                        Color="Color.Secondary"
+                                        GutterBottom
+                                        Typo="Typo.h5">
+                                        LLM timeout
+                                    </MudText>
+                                    <MudText
+                                        Typo="Typo.body2">
+                                        <p>
+                                            Configure the timeout (in minutes) for LLM operations (i.e. OCR extraction from models).
+                                        </p>
+                                        <p>
+                                            If left empty, the default timeout is 10 minutes.
+                                        </p>
+                                    </MudText>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudNumericField
+                                        @bind-Value="_newModel.DefaultModelTimeoutInMinutes"
+                                        Label="Model timeout (in minutes)"
+                                        Min="1"
+                                        Clearable
+                                        OnlyValidateIfDirty/>
+                                </MudItem>
+                            </MudGrid>
+                        </div>
+                    </MudItem>
                 </MudGrid>
                 <MudGrid Class="align-start" Justify="Justify.FlexEnd">
                     <MudItem>
@@ -114,7 +145,8 @@
                 new GlobalSettingsSpecifics
                 {
                     SweepSuccessfulScansAfterDays = _currentModel.SweepSuccessfulScansAfterDays,
-                    EnableSweeping = _currentModel.EnableSweeping
+                    EnableSweeping = _currentModel.EnableSweeping,
+                    DefaultModelTimeoutInMinutes = _currentModel.DefaultModelTimeoutInMinutes
                 };
         }
         catch (Exception ex)
@@ -144,6 +176,7 @@
             {
                 var sweepSuccessfulScansAfterDaysValue = _newModel.SweepSuccessfulScansAfterDays;
                 var enableSweepingValue = _newModel.EnableSweeping;
+                var defaultModelTimeoutInMinutes = _newModel.DefaultModelTimeoutInMinutes;
 
                 await
                     ApiRequestManager
@@ -151,7 +184,8 @@
                             new GlobalSettingsSpecifics
                             {
                                 SweepSuccessfulScansAfterDays = sweepSuccessfulScansAfterDaysValue,
-                                EnableSweeping = enableSweepingValue
+                                EnableSweeping = enableSweepingValue,
+                                DefaultModelTimeoutInMinutes = defaultModelTimeoutInMinutes
                             },
                             BaseCancellationToken
                         );
@@ -160,7 +194,8 @@
                     new GlobalSettingsSpecifics
                     {
                         SweepSuccessfulScansAfterDays = sweepSuccessfulScansAfterDaysValue ?? _currentModel.SweepSuccessfulScansAfterDays,
-                        EnableSweeping = enableSweepingValue ?? _currentModel.EnableSweeping
+                        EnableSweeping = enableSweepingValue ?? _currentModel.EnableSweeping,
+                        DefaultModelTimeoutInMinutes = _currentModel.DefaultModelTimeoutInMinutes
                     };
 
                 Snackbar

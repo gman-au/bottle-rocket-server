@@ -49,5 +49,6 @@ namespace Rocket.Domain.Utils
             { (int)BookVendorTypeEnum.Rocketbook, "Rocketbook" }
         };
 
+        public const int GlobalDefaultModelTimeoutInMinutes = 10;
     }
 }

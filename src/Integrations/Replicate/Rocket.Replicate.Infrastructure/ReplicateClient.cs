@@ -157,38 +157,40 @@ namespace Rocket.Replicate.Infrastructure
         public async Task<string> WaitUntilPredictionCompletesAsync(
             string apiToken,
             string predictionId,
-            CancellationToken cancellationToken,
-            int timeoutInSeconds = 300
+            int timeoutInMinutes,
+            CancellationToken cancellationToken
         ) =>
             await
                 GetPredictionStatusAsync<string>(
                     apiToken,
                     predictionId,
-                    cancellationToken,
-                    timeoutInSeconds
+                    timeoutInMinutes,
+                    cancellationToken
                 );
 
         public async Task<T> WaitUntilPredictionCompletesAsync<T>(
             string apiToken,
             string predictionId,
-            CancellationToken cancellationToken,
-            int timeoutInSeconds = 300
+            int timeoutInMinutes,
+            CancellationToken cancellationToken
         ) where T : IReplicateOutput =>
             await
                 GetPredictionStatusAsync<T>(
                     apiToken,
                     predictionId,
-                    cancellationToken,
-                    timeoutInSeconds
+                    timeoutInMinutes,
+                    cancellationToken
                 );
 
         private async Task<T> GetPredictionStatusAsync<T>(
             string apiToken,
             string predictionId,
-            CancellationToken cancellationToken,
-            int timeoutInSeconds = 300
+            int timeoutInMinutes,
+            CancellationToken cancellationToken
         )
         {
+            var timeoutInSeconds = timeoutInMinutes * 60;
+            
             // loop (this is a background job so patience is OK)
             var status =
                 ReplicateDomainConstants
@@ -216,7 +218,7 @@ namespace Rocket.Replicate.Infrastructure
             {
                 if (stopwatch.Elapsed.TotalSeconds > timeoutInSeconds)
                     throw new RocketException(
-                        $"The Replicate prediction timed out ({timeoutInSeconds} seconds).",
+                        $"The Replicate prediction timed out after {timeoutInMinutes} minutes.",
                         ApiStatusCodeEnum.ThirdPartyServiceError
                     );
 

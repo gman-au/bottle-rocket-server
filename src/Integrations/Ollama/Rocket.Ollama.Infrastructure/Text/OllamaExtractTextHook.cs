@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
+using Rocket.Domain.Utils;
 using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 using Rocket.Ollama.Domain;
@@ -16,6 +17,7 @@ namespace Rocket.Ollama.Infrastructure.Text
 {
     public class OllamaExtractTextHook(
         IOllamaClient ollamaClient,
+        IGlobalSettingsRepository globalSettingsRepository,
         ILogger<OllamaExtractTextHook> logger
     )
         : OllamaHookBase<OllamaExtractTextExecutionStep, OllamaConnector>(
@@ -61,6 +63,15 @@ namespace Rocket.Ollama.Infrastructure.Text
                     ExecutionStep.ModelName
                 );
 
+            var globalSettings =
+                await
+                    globalSettingsRepository
+                        .GetGlobalSettingsAsync(cancellationToken);
+
+            var timeoutInMinutes =
+                globalSettings?.DefaultModelTimeoutInMinutes ??
+                DomainConstants.GlobalDefaultModelTimeoutInMinutes;
+
             var response =
                 await
                     OllamaClient
@@ -74,6 +85,7 @@ namespace Rocket.Ollama.Infrastructure.Text
                             null,
                             null,
                             null,
+                            timeoutInMinutes,
                             cancellationToken
                         );
 

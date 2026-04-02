@@ -9,5 +9,8 @@ namespace Rocket.Api.Contracts.GlobalSettings
 
         [JsonPropertyName("enable_sweeping")]
         public bool? EnableSweeping { get; set; }
+        
+        [JsonPropertyName("default_model_timeout_in_minutes")]
+        public int? DefaultModelTimeoutInMinutes { get; set; }
     }
 }

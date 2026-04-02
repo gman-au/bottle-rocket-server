@@ -13,6 +13,7 @@ namespace Rocket.Interfaces
         Task UpdateGlobalSettingsAsync(
             int? sweepSuccessfulScansAfterDays,
             bool? enableSweeping,
+            int? defaultModelTimeoutInMinutes,
             CancellationToken cancellationToken
         );
     }

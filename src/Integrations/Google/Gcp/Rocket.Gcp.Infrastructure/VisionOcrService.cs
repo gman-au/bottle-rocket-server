@@ -1,9 +1,13 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Google.Api.Gax;
+using Google.Api.Gax.Grpc;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Vision.V1;
+using Grpc.Core;
 using Rocket.Gcp.Domain;
 
 namespace Rocket.Gcp.Infrastructure
@@ -13,6 +17,7 @@ namespace Rocket.Gcp.Infrastructure
         public async Task<string> ExtractHandwrittenTextAsync(
             byte[] imageBytes,
             GcpCredential gcpCredential,
+            int timeoutInMinutes,
             CancellationToken cancellationToken
         )
         {
@@ -47,18 +52,41 @@ namespace Rocket.Gcp.Infrastructure
                         .BuildAsync(cancellationToken);
 
             // Load the image and perform OCR
-            var image = 
+            var image =
                 Image
                     .FromBytes(imageBytes);
 
-            var response =
-                await
-                    client
-                        .DetectDocumentTextAsync(image);
+            try
+            {
+                var response =
+                    await
+                        client
+                            .DetectDocumentTextAsync(
+                                image,
+                                null,
+                                CallSettings
+                                    .FromExpiration(
+                                        Expiration
+                                            .FromTimeout(
+                                                TimeSpan
+                                                    .FromMinutes(timeoutInMinutes)
+                                            )
+                                    )
+                            );
 
-            return
-                response
-                    .Text;
+                return
+                    response
+                        .Text;
+            }
+            catch (RpcException ex)
+            {
+                if (ex.StatusCode == StatusCode.DeadlineExceeded)
+                {
+                    throw new OperationCanceledException();
+                }
+
+                throw;
+            }
         }
     }
 }

@@ -25,15 +25,15 @@ namespace Rocket.Replicate.Infrastructure
         Task<T> WaitUntilPredictionCompletesAsync<T>(
             string apiToken,
             string predictionId,
-            CancellationToken cancellationToken,
-            int timeoutInSeconds = 300
+            int timeoutInMinutes,
+            CancellationToken cancellationToken
         ) where T : IReplicateOutput;
 
         Task<string> WaitUntilPredictionCompletesAsync(
             string apiToken,
             string predictionId,
-            CancellationToken cancellationToken,
-            int timeoutInSeconds = 300
+            int timeoutInMinutes,
+            CancellationToken cancellationToken
         );
 
         Task DeleteUploadAsync(string apiToken, string fileId);
