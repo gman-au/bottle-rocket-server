@@ -1,10 +1,10 @@
-﻿FROM --platform=linux/arm64 mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+﻿FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM --platform=linux/amd64 mcr.microsoft.com/dotnet/sdk:9.0 AS publish
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0 AS publish
 ARG TARGETARCH
 
 COPY . /dotnet-app
@@ -14,7 +14,7 @@ RUN \
     dotnet restore "./Rocket.Api.Host/Rocket.Api.Host.csproj" -a $TARGETARCH && \
     dotnet publish "./Rocket.Api.Host/Rocket.Api.Host.csproj" --ignore-failed-sources --no-restore -c Release -o /app/publish -a $TARGETARCH /p:UseAppHost=false
 
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 ARG APP_VERSION=0.0.0
 ENV APP_VERSION=$APP_VERSION
