@@ -17,6 +17,7 @@
 
 <MudAppBar Elevation="1">
     <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@ToggleDrawer"/>
+    <MudImage Class="ml-2" Height="20" Src="@Assets["img/bottle-rocket-text.svg"]"/>
     <MudSpacer/>
     <MudIconButton Icon="@Icons.Custom.Brands.Reddit" Href="https://www.reddit.com/r/bottle_rocket/" Target="_blank"/>
     <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Href="https://github.com/gman-au/bottle-rocket-server" Target="_blank"/>
@@ -27,12 +28,9 @@
             <MudItem xs="12">
                 <MudContainer Class="logo-circle">
                     <MudLink Color="Color.Inherit" Href="/">
-                        <MudImage Class="logo-circle-svg" Src="@Assets["img/bottle-rocket-logo.svg"]"/>
+                        <MudImage Style="height:60px;" Class="logo-circle-svg" Src="@Assets["img/bottle-rocket-logo.svg"]"/>
                     </MudLink>
                 </MudContainer>
-            </MudItem>
-            <MudItem xs="12">
-                <MudText Align="Align.Center" Typo="Typo.h5">Bottle Rocket</MudText>
             </MudItem>
             @if (_isInitialized && !string.IsNullOrEmpty(_userName))
             {
