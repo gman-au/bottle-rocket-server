@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
+        <OpenApiGenerateDocuments Condition="'$(TARGETARCH)' == ''">true</OpenApiGenerateDocuments>
         <OpenApiDocumentsDirectory>$(ProjectDir)openapi</OpenApiDocumentsDirectory>
     </PropertyGroup>
     
