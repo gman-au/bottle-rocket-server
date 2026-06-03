@@ -1,18 +1,19 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+﻿FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS publish
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0 AS publish
+ARG TARGETARCH
 
 COPY . /dotnet-app
 RUN cd /dotnet-app && echo $(ls -1)
 RUN \
     cd /dotnet-app && \
-    dotnet restore "./Rocket.Web.Host/Rocket.Web.Host.csproj" && \
-    dotnet publish "./Rocket.Web.Host/Rocket.Web.Host.csproj" --ignore-failed-sources --no-restore -c Release -o /app/publish /p:UseAppHost=false
+    dotnet restore "./Rocket.Web.Host/Rocket.Web.Host.csproj" -a $TARGETARCH && \
+    dotnet publish "./Rocket.Web.Host/Rocket.Web.Host.csproj" --ignore-failed-sources --no-restore -c Release -o /app/publish -a $TARGETARCH /p:UseAppHost=false
     
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 ARG APP_VERSION=0.0.0
 ENV APP_VERSION=$APP_VERSION

@@ -27,32 +27,28 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: Build image
-        run: docker build --file ./src/Rocket.Web.Host/Dockerfile --build-arg APP_VERSION=${{ github.ref_name }} --tag built-image ./src
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3  
 
-      - name: Push image
+      - name: Determine version tag
+        id: version
         run: |
-          IMAGE_ID=$IMAGE_NAME          
-
-          # Change all uppercase to lowercase
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-
-          # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-
-          REGISTRY=${{ env.REGISTRY }}
-
-          # Strip "v" prefix from tag name
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-
-          # Use Docker `latest` tag convention
           [ "$VERSION" == "master" ] && VERSION=latest
+          IMAGE_ID=$(echo ${{ env.IMAGE_NAME }} | tr '[A-Z]' '[a-z]')
+          REGISTRY=${{ env.REGISTRY }}
+          echo "tags=$REGISTRY/$IMAGE_ID:$VERSION,$REGISTRY/$IMAGE_ID:latest" >> $GITHUB_OUTPUT
 
-          echo IMAGE_ID=$IMAGE_ID
-          echo VERSION=$VERSION
-          echo REGISTRY=$REGISTRY
-
-          docker tag built-image $REGISTRY/$IMAGE_ID:$VERSION
-          docker tag built-image $REGISTRY/$IMAGE_ID:latest
-          docker push $REGISTRY/$IMAGE_ID:$VERSION
-          docker push $REGISTRY/$IMAGE_ID:latest
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./src
+          file: ./src/Rocket.Web.Host/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.version.outputs.tags }}
+          build-args: APP_VERSION=${{ github.ref_name }}
