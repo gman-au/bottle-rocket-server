@@ -19,7 +19,7 @@
         {
             <tr>
                 <td>
-                    <MudLink Href="@($"/MyExecution/{execution.Id}")">@execution.Name</MudLink>
+                    <MudLink Color="Color.Secondary" Href="@($"/MyExecution/{execution.Id}")">@execution.Name</MudLink>
                 </td>
                 <td>
                     @execution.RunDate?.ToString("g")
