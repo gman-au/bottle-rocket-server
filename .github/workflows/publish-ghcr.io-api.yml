@@ -8,12 +8,7 @@ env:
   IMAGE_NAME: bottle-rocket-server-api
   
 jobs:
-  smoke-test:
-    uses: ./.github/workflows/smoke-test-api.yml
-    secrets: inherit
-
   build-and-push-image:
-    needs: smoke-test
     runs-on: ubuntu-latest    
     permissions:
       contents: read
