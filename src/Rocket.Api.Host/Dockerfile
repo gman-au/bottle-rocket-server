@@ -12,7 +12,7 @@ RUN cd /dotnet-app && echo $(ls -1)
 RUN \
     cd /dotnet-app && \
     dotnet restore "./Rocket.Api.Host/Rocket.Api.Host.csproj" -a $TARGETARCH && \
-    dotnet publish "./Rocket.Api.Host/Rocket.Api.Host.csproj" --ignore-failed-sources --no-restore -c Release -o /app/publish -a $TARGETARCH /p:UseAppHost=false /p:TARGETARCH=$TARGETARCH /p:UseOpenApiGenerators=false /p:GenerateOpenApiDocuments=false
+    dotnet publish "./Rocket.Api.Host/Rocket.Api.Host.csproj" --ignore-failed-sources --no-restore -c Release -o /app/publish -a $TARGETARCH /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
