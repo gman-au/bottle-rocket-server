@@ -24,6 +24,7 @@ namespace Rocket.Infrastructure
             string userId,
             string qrCode,
             string qrBoundingBox,
+            string vendor,
             CancellationToken cancellationToken
         )
         {
@@ -71,6 +72,7 @@ namespace Rocket.Infrastructure
                 scannedImage.QrCode = qrCode;
                 scannedImage.QrBoundingBox = qrBoundingBox;
                 scannedImage.Archived = false;
+                scannedImage.Vendor = vendor;
 
                 var result =
                     await

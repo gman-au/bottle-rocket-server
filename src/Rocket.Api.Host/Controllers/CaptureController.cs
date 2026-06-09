@@ -114,6 +114,7 @@ namespace Rocket.Api.Host.Controllers
                                 userId,
                                 model.QrCode,
                                 model.QrBoundingBox,
+                                model.Vendor,
                                 cancellationToken
                             );
 
@@ -158,6 +159,9 @@ namespace Rocket.Api.Host.Controllers
 
             [FromForm(Name = "qr_bounding_box")]
             public string QrBoundingBox { get; set; }
+
+            [FromForm(Name = "vendor")]
+            public string Vendor { get; set; }
         }
     }
 }

@@ -68,6 +68,10 @@
                                     Value=@(_scanSpecifics.Archived ? "Archived" : "Active")
                                     ValueColor="@(_scanSpecifics.Archived ? Color.Warning : Color.Success)"
                                 />
+                                <SimpleTableRowPair
+                                    Title="Vendor"
+                                    Value=@(string.IsNullOrEmpty(_scanSpecifics.Vendor) ? "Unknown" : _scanSpecifics.Vendor)
+                                />
                                 </tbody>
                             </MudSimpleTable>
                         </div>

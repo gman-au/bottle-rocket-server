@@ -31,5 +31,8 @@ namespace Rocket.Api.Contracts.Scans
 
         [JsonPropertyName("archived")]
         public bool Archived { get; set; }
+
+        [JsonPropertyName("vendor")]
+        public string Vendor { get; set; }
     }
 }
