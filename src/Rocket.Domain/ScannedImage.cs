@@ -29,5 +29,7 @@ namespace Rocket.Domain
         public string ThumbnailBase64 { get; set; }
 
         public bool Archived { get; set; }
+        
+        public string Vendor { get; set; }
     }
 }

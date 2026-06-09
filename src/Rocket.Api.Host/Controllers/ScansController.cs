@@ -153,7 +153,8 @@ namespace Rocket.Api.Host.Controllers
                     FileExtension = record.FileExtension,
                     Sha256 = record.Sha256,
                     ImageBase64 = Convert.ToBase64String(imageData),
-                    Archived = record.Archived
+                    Archived = record.Archived,
+                    Vendor = record.Vendor
                 };
 
             return

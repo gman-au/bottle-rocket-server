@@ -13,6 +13,7 @@ namespace Rocket.Interfaces
             string userId,
             string qrCode,
             string qrBoundingBox,
+            string vendor,
             CancellationToken cancellationToken
         );
 
