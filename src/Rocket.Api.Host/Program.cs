@@ -74,9 +74,6 @@ services
     .AddSignalRServerServices(configuration);
 
 services
-    .AddOpenApiServices();
-
-services
     .AddDropboxApiIntegration()
     .AddOllamaApiIntegration()
     .AddNotionApiIntegration()
@@ -112,9 +109,6 @@ app
 
 app
     .UseHttpsRedirection();
-
-app
-    .MapOpenApi(); // Available at /openapi/v1.json by default
 
 app
     .MapControllers();

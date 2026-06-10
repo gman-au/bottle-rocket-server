@@ -192,6 +192,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Local.Injection.Api"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Local.Injection.Web", "Integrations\Local\Rocket.Local.Injection.Web\Rocket.Local.Injection.Web.csproj", "{FAE02956-4CDC-4E8C-88D0-38CB5C7DDC72}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Api.Host.OpenApi", "Rocket.Api.Host.OpenApi\Rocket.Api.Host.OpenApi.csproj", "{9CF64225-1E75-4A61-9DA9-2484F0C0A2AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -530,6 +532,10 @@ Global
 		{FAE02956-4CDC-4E8C-88D0-38CB5C7DDC72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAE02956-4CDC-4E8C-88D0-38CB5C7DDC72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAE02956-4CDC-4E8C-88D0-38CB5C7DDC72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CF64225-1E75-4A61-9DA9-2484F0C0A2AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CF64225-1E75-4A61-9DA9-2484F0C0A2AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CF64225-1E75-4A61-9DA9-2484F0C0A2AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CF64225-1E75-4A61-9DA9-2484F0C0A2AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{42CB70A2-68E4-4EB7-8AAD-4E2F987D01BA} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
