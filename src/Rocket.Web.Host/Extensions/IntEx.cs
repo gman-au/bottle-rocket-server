@@ -7,7 +7,7 @@ namespace Rocket.Web.Host.Extensions
     {
         private const string BaseImagePath = "/img/icons";
         
-        public static string GetRocketbookPageSymbolImagePath(this int? pageSymbol)
+        public static string GetPageSymbolImagePath(this int? pageSymbol)
         {
             switch (pageSymbol)
             {
@@ -25,6 +25,8 @@ namespace Rocket.Web.Host.Extensions
                     return $"{BaseImagePath}/star.png";
                 case (int)PageSymbolEnum.Horseshoe:
                     return $"{BaseImagePath}/horseshoe.png";
+                case (int)PageSymbolEnum.Scribzee:
+                    return $"{BaseImagePath}/scribzee.png";
                 default:
                     return null;
             }

@@ -8,6 +8,7 @@ namespace Rocket.Interfaces
         Task<int[]> DetectSymbolMarksAsync(
             string qrCode,
             string qrCodeBoundingBox,
+            string vendor,
             byte[] imageBytes, 
             CancellationToken cancellationToken
         );

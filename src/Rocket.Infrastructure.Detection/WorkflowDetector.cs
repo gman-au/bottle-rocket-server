@@ -17,6 +17,7 @@ namespace Rocket.Infrastructure.Detection
         public async Task DetectAndScheduleWorkflowAsync(
             string scanId,
             string userId,
+            string vendor,
             string modelQrCode,
             string modelQrBoundingBox,
             byte[] imageBytes,
@@ -29,6 +30,7 @@ namespace Rocket.Infrastructure.Detection
                         .DetectSymbolMarksAsync(
                             modelQrCode,
                             modelQrBoundingBox,
+                            vendor,
                             imageBytes,
                             cancellationToken
                         );

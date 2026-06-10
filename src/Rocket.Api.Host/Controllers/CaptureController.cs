@@ -125,6 +125,7 @@ namespace Rocket.Api.Host.Controllers
                         .DetectAndScheduleWorkflowAsync(
                             scanId,
                             userId,
+                            model.Vendor,
                             model.QrCode,
                             model.QrBoundingBox,
                             ms.ToArray(),
