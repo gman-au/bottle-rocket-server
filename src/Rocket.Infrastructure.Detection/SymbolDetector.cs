@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Rocket.Domain.Enum;
 using Rocket.Infrastructure.Detection.Extensions;
 using Rocket.Interfaces;
 using SixLabors.ImageSharp;
@@ -21,14 +22,28 @@ namespace Rocket.Infrastructure.Detection
     ) : ISymbolDetector
     {
         private const int NumSymbols = 7;
+        
+        private const string ScribzeeVendor = "Scribzee";
 
         public async Task<int[]> DetectSymbolMarksAsync(
             string qrCode,
             string qrCodeBoundingBox,
+            string vendor,
             byte[] imageBytes,
             CancellationToken cancellationToken
         )
         {
+            logger
+                .LogInformation("Symbol detection requested");
+
+            if (vendor?.ToUpper() == ScribzeeVendor.ToUpper())
+            {
+                logger
+                    .LogInformation("Scribzee vendor found, skipping symbol detection");
+                
+                return [(int)PageSymbolEnum.Scribzee];
+            }
+            
             logger
                 .LogInformation("Rocketbook symbol detection requested");
 

@@ -9,6 +9,7 @@
         Bell,
         Clover,
         Star,
-        Horseshoe
+        Horseshoe,
+        Scribzee
     }
 }

@@ -106,6 +106,7 @@ namespace Rocket.Tests.Unit
             private readonly IFixture _fixture;
             private string _qrCode;
             private string _qrBoundingBox;
+            private string _vendor;
 
             public TestContext()
             {
@@ -136,6 +137,7 @@ namespace Rocket.Tests.Unit
                 _qrCode = "1234";
                 _qrBoundingBox = "1234";
                 _fileExtension = ".jpg";
+                _vendor = "vendor";
             }
 
             public void ArrangeEmptyDataToSave()
@@ -208,6 +210,7 @@ namespace Rocket.Tests.Unit
                             _userId,
                             _qrCode,
                             _qrBoundingBox,
+                            _vendor,
                             CancellationToken.None
                         );
             }
