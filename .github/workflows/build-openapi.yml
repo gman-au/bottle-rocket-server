@@ -29,7 +29,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: OPENAPI-JSON
-          path: ./src/Rocket.Api.Host/openapi/Rocket.Api.Host.json
+          path: ./src/Rocket.Api.Host.OpenApi/openapi/Rocket.Api.Host.OpenApi.json
           if-no-files-found: error
           include-hidden-files: true
           
@@ -49,8 +49,8 @@ jobs:
         run: |
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           echo "Version: $VERSION"
-          sed -i "s/##{VERSION_TAG}##/$VERSION/g" ./artifact/Rocket.Api.Host.json
-          cat ./artifact/Rocket.Api.Host.json | grep -A2 -B2 "version"
+          sed -i "s/##{VERSION_TAG}##/$VERSION/g" ./artifact/Rocket.Api.Host.OpenApi.json
+          cat ./artifact/Rocket.Api.Host.OpenApi.json | grep -A2 -B2 "version"
           
       - name: Clone documentation repository
         run: |
@@ -69,7 +69,7 @@ jobs:
           mkdir -p ./src/openapi/
           
           # Copy the updated JSON file
-          cp ../artifact/Rocket.Api.Host.json ./src/openapi/Rocket.Api.Host.json
+          cp ../artifact/Rocket.Api.Host.OpenApi.json ./src/openapi/Rocket.Api.Host.OpenApi.json
           
           git add .
           
