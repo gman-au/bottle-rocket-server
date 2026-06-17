@@ -1,9 +1,12 @@
-﻿using Rocket.Domain.Enum;
+﻿using System;
+using Rocket.Domain.Enum;
 
 namespace Rocket.Domain.Jobs
 {
     public class ExecutionStepArtifact
     {
+        private string _fileName = Guid.NewGuid().ToString();
+        
         public static readonly ExecutionStepArtifact Empty = new()
         {
             Result = (int)ExecutionStatusEnum.Completed,
@@ -19,5 +22,11 @@ namespace Rocket.Domain.Jobs
         public byte[] Artifact { get; set; }
 
         public string FileExtension { get; set; }
+
+        public string FileName
+        {
+            get => _fileName;
+            set => _fileName = string.IsNullOrWhiteSpace(value) ? Guid.NewGuid().ToString() : value;
+        }
     }
 }

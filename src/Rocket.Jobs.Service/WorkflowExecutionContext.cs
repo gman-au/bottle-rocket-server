@@ -48,7 +48,8 @@ namespace Rocket.Jobs.Service
                     Result = (int)ExecutionStatusEnum.Completed,
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.ImageData,
                     Artifact = imageData,
-                    FileExtension = record.FileExtension
+                    FileExtension = record.FileExtension,
+                    FileName = _currentArtifact?.FileName
                 }
             );
         }

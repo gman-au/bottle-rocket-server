@@ -84,6 +84,7 @@ namespace Rocket.Dropbox.Infrastructure
             string appSecret,
             string refreshToken,
             string uploadFolder,
+            string fileName,
             string fileExtension,
             byte[] fileData,
             CancellationToken cancellationToken
@@ -111,7 +112,7 @@ namespace Rocket.Dropbox.Infrastructure
                         .Combine(
                             "/",
                             uploadFolder ?? string.Empty,
-                            $"{Guid.NewGuid()}{fileExtension}"
+                            $"{fileName}{fileExtension}"
                         );
 
                 await

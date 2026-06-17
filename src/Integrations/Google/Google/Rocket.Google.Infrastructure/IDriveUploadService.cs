@@ -8,6 +8,7 @@ namespace Rocket.Google.Infrastructure
     {
         Task UploadFileAsync(
             byte[] fileBytes,
+            string fileName,
             string fileExtension,
             string targetFolderId,
             GoogleConnector googleConnector,

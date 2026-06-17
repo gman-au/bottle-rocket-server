@@ -74,7 +74,7 @@ namespace Rocket.Gcp.Infrastructure
 
             return
                 result
-                    .AsCompletedRawTextArtifact();
+                    .AsCompletedRawTextArtifact(Artifact);
         }
     }
 }

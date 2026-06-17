@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Markdown;
 
 namespace Rocket.QuestPdf.Infrastructure
 {
@@ -29,11 +30,9 @@ namespace Rocket.QuestPdf.Infrastructure
 
                                         page
                                             .Content()
-                                            .Text(
-                                                text =>
+                                            .Markdown(rawText, options =>
                                                 {
-                                                    text.ParagraphSpacing(7.5F);
-                                                    text.Span(rawText);
+                                                    options.ParagraphSpacing = 7.5F;
                                                 }
                                             );
                                     }

@@ -5,6 +5,7 @@ using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
+using Rocket.Interfaces;
 using Rocket.Page.Schemas.ProjectTaskTracker;
 
 namespace Rocket.Integrations.Common
@@ -12,13 +13,19 @@ namespace Rocket.Integrations.Common
     public abstract class HookBase<TExecutionStep>
         where TExecutionStep : BaseExecutionStep
     {
+        private readonly IFileRetitler _fileRetitler;
+
         protected readonly ILogger Logger;
 
         protected ExecutionStepArtifact Artifact;
         protected TExecutionStep ExecutionStep;
 
-        protected HookBase(ILogger logger)
+        protected HookBase(
+            ILogger logger,
+            IFileRetitler fileRetitler = null
+        )
         {
+            _fileRetitler = fileRetitler;
             Logger = logger;
         }
 
@@ -46,6 +53,18 @@ namespace Rocket.Integrations.Common
                     Artifact?.FileExtension,
                     typeof(TExecutionStep).Name
                 );
+        }
+
+        protected void RetitleFileIfApplicable(string fileText)
+        {
+            var newFileName = 
+                _fileRetitler?
+                    .Retitle(fileText);
+
+            if (!string.IsNullOrEmpty(newFileName))
+            {
+                Artifact.FileName = newFileName;
+            }
         }
 
         protected string GetArtifactAsText()
@@ -93,7 +112,7 @@ namespace Rocket.Integrations.Common
                     $"Artifact data for hook [{typeof(TExecutionStep)}] is empty or not initialized; please check configuration",
                     ApiStatusCodeEnum.DeveloperError
                 );
-            
+
             try
             {
                 var schema =

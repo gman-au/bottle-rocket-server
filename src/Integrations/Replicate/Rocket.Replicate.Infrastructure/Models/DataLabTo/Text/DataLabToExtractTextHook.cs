@@ -17,8 +17,9 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
         IReplicateClient replicateClient,
         IMarkdownStripper markdownStripper,
         IGlobalSettingsRepository globalSettingsRepository,
+        IFileRetitler fileRetitler,
         ILogger<DataLabToExtractTextHook> logger
-    ) : HookWithConnectorBase<DataLabToExtractTextExecutionStep, ReplicateConnector>(logger), IIntegrationHook
+    ) : HookWithConnectorBase<DataLabToExtractTextExecutionStep, ReplicateConnector>(logger, fileRetitler), IIntegrationHook
     {
         private const string DataLabToCustomEndpoint = "v1/models/datalab-to/marker/predictions";
 
@@ -125,6 +126,8 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
                 var extractedText =
                     result?.Markdown ?? string.Empty;
 
+                RetitleFileIfApplicable(extractedText);
+
                 logger
                     .LogDebug(
                         "Extracted markdown: {extractedText}",
@@ -149,7 +152,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
 
                 return
                     strippedText
-                        .AsCompletedRawTextArtifact();
+                        .AsCompletedRawTextArtifact(Artifact);
             }
             finally
             {

@@ -16,6 +16,7 @@ namespace Rocket.Google.Infrastructure
     {
         public async Task UploadFileAsync(
             byte[] fileBytes,
+            string fileName,
             string fileExtension,
             string targetFolderId,
             GoogleConnector googleConnector,
@@ -58,11 +59,11 @@ namespace Rocket.Google.Infrastructure
                     }
                 );
 
-            var fileName = $"{Guid.NewGuid()}{fileExtension}";
+            var fullFileName = $"{fileName}{fileExtension}";
 
             var fileMetadata = new File
             {
-                Name = fileName,
+                Name = fullFileName,
                 Parents = new List<string> { targetFolderId } // Specify the parent folder
             };
 

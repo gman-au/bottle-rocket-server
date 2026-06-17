@@ -45,6 +45,7 @@ namespace Rocket.Dropbox.Infrastructure
                         Connector.AppSecret,
                         Connector.RefreshToken,
                         ExecutionStep.Subfolder,
+                        Artifact.FileName,
                         Artifact.FileExtension,
                         Artifact.Artifact,
                         cancellationToken

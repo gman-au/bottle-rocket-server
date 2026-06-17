@@ -144,6 +144,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IConnectorModelMapperRegistry, ConnectorModelMapperRegistry>()
                 .AddTransient<IStepModelClonerRegistry, StepModelClonerRegistry>()
                 .AddTransient<IObfuscator, Obfuscator>()
+                .AddTransient<IFileRetitler, SafeFileRetitler>()
                 .AddTransient<IWorkflowCloner, WorkflowCloner>();
 
             if (environment.IsDevelopment())
