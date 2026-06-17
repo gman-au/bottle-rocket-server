@@ -68,7 +68,7 @@ namespace Rocket.QuestPdf.Infrastructure
 
             return
                 fileData
-                    .AsCompletedPdfArtifact();
+                    .AsCompletedPdfArtifact(Artifact);
         }
     }
 }

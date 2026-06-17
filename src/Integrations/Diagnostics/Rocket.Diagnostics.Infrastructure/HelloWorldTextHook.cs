@@ -23,7 +23,7 @@ namespace Rocket.Diagnostics.Infrastructure
         {
             return
                 "Hello, world!"
-                    .AsCompletedRawTextArtifact();
+                    .AsCompletedRawTextArtifact(Artifact);
         }
     }
 }

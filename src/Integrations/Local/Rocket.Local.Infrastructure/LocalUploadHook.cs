@@ -41,7 +41,7 @@ namespace Rocket.Local.Infrastructure
                 ExecutionStep
                     .UploadPath;
 
-            var fileName = $"{Guid.NewGuid()}{Artifact.FileExtension}";
+            var fileName = $"{Artifact.FileName}{Artifact.FileExtension}";
 
             var fullFilePath =
                 Path

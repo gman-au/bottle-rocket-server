@@ -15,6 +15,7 @@ using Rocket.Replicate.Domain.Models.DeepSeekOcr;
 namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
 {
     public class DeepSeekOcrExtractTextHook(
+        IFileRetitler fileRetitler,
         ILogger<DeepSeekOcrExtractTextHook> logger,
         IGlobalSettingsRepository globalSettingsRepository,
         IReplicateClient replicateClient
@@ -57,7 +58,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
                 connector
                     .ApiToken;
 
-            var fileName = $"{Guid.NewGuid()}{artifact.FileExtension}";
+            var fileName = $"{artifact.FileName}{artifact.FileExtension}";
 
             var imageIdToDelete = string.Empty;
 
@@ -135,7 +136,8 @@ namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
                                 .GetBytes(
                                     extractedText
                                 ),
-                        FileExtension = ".txt"
+                        FileExtension = ".txt",
+                        FileName = fileRetitler.Retitle(extractedText) ?? artifact.FileName
                     };
 
                 return resultArtifact;

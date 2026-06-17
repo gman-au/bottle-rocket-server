@@ -46,6 +46,7 @@ namespace Rocket.Google.Infrastructure
                 driveUploadService
                     .UploadFileAsync(
                         fileBytes,
+                        Artifact.FileName,
                         Artifact.FileExtension,
                         ExecutionStep.ParentFolderId,
                         Connector,

@@ -12,7 +12,7 @@ namespace Rocket.Integrations.Common.Extensions
         private const string PdfFileExtension = ".pdf";
         private const string JsonFileExtension = ".json";
 
-        public static ExecutionStepArtifact AsCompletedRawTextArtifact(this string value)
+        public static ExecutionStepArtifact AsCompletedRawTextArtifact(this string value, ExecutionStepArtifact artifact = null)
         {
             return
                 new ExecutionStepArtifact
@@ -20,11 +20,12 @@ namespace Rocket.Integrations.Common.Extensions
                     Result = (int)ExecutionStatusEnum.Completed,
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
                     Artifact = Encoding.Default.GetBytes(value),
-                    FileExtension = TextFileExtension
+                    FileExtension = TextFileExtension,
+                    FileName = artifact?.FileName
                 };
         }
 
-        public static ExecutionStepArtifact AsCompletedPdfArtifact(this byte[] value)
+        public static ExecutionStepArtifact AsCompletedPdfArtifact(this byte[] value, ExecutionStepArtifact artifact = null)
         {
             return
                 new ExecutionStepArtifact
@@ -32,11 +33,12 @@ namespace Rocket.Integrations.Common.Extensions
                     Result = (int)ExecutionStatusEnum.Completed,
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.File,
                     Artifact = value,
-                    FileExtension = PdfFileExtension
+                    FileExtension = PdfFileExtension,
+                    FileName = artifact?.FileName
                 };
         }
 
-        public static ExecutionStepArtifact AsCompletedProjectTaskTrackerDataArtifact(this ProjectTaskTrackerSchema schema)
+        public static ExecutionStepArtifact AsCompletedProjectTaskTrackerDataArtifact(this ProjectTaskTrackerSchema schema, ExecutionStepArtifact artifact = null)
         {
             var json =
                 JsonSerializer
@@ -48,7 +50,8 @@ namespace Rocket.Integrations.Common.Extensions
                     Result = (int)ExecutionStatusEnum.Completed,
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData,
                     Artifact = Encoding.Default.GetBytes(json),
-                    FileExtension = JsonFileExtension
+                    FileExtension = JsonFileExtension,
+                    FileName = artifact?.FileName
                 };
         }
     }
