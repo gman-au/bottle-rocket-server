@@ -5,6 +5,7 @@
         public const string Diagnostics = "Diagnostics";
         public const string FileConversion = "File Conversion";
         public const string FileUpload = "File Upload";
+        public const string FileForwarding = "File Forwarding";
         public const string TextRecognition = "Text Recognition";
         public const string ProjectManagement = "Project Management";
         public const string Google = "Google";

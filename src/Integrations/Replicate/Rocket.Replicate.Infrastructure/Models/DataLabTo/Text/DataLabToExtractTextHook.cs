@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Domain.Utils;
 using Rocket.Integrations.Common;
 using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
+using Rocket.Page.Schemas.FallbackText;
 using Rocket.Replicate.Domain;
 using Rocket.Replicate.Domain.Models.DataLabTo;
 
@@ -15,7 +19,6 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
 {
     public class DataLabToExtractTextHook(
         IReplicateClient replicateClient,
-        IMarkdownStripper markdownStripper,
         IGlobalSettingsRepository globalSettingsRepository,
         IFileRetitler fileRetitler,
         ILogger<DataLabToExtractTextHook> logger
@@ -23,6 +26,19 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
     {
         private const string DataLabToCustomEndpoint = "v1/models/datalab-to/marker/predictions";
 
+        private const string HardCodedSchemaString =
+            """
+            {
+              "type": "object",
+              "properties": {
+                "main_page": { "type": "string", "description": "All text in the main page, preserved in markdown with newlines and spaces where applicable." },
+                "bottom_navigation_bar": { "type": "string", "description": "All text and images in the bottom navigation bar." },
+                "qr_code": { "type": "string", "description": "A QR code image, if it exists." }
+              },
+              "required": ["main_page"]
+            }
+            """;
+        
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
@@ -92,7 +108,8 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
                                     UseLlm = true,
                                     SkipCache = true,
                                     ForceOcr = true,
-                                    IncludeMetadata = false
+                                    IncludeMetadata = false,
+                                    PageSchema = HardCodedSchemaString
                                 },
                                 cancellationToken,
                                 DataLabToCustomEndpoint
@@ -123,35 +140,37 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
                                 cancellationToken
                             );
 
-                var extractedText =
-                    result?.Markdown ?? string.Empty;
-
-                RetitleFileIfApplicable(extractedText);
-
-                logger
-                    .LogDebug(
-                        "Extracted markdown: {extractedText}",
-                        extractedText
+                var extractedJson = result?.ExtractionSchemaJson;
+                
+                if (string.IsNullOrEmpty(extractedJson))
+                    throw new RocketException(
+                        "The extracted text was empty. Please try again.",
+                        ApiStatusCodeEnum.ThirdPartyServiceError
                     );
-
-                var strippedText =
-                    markdownStripper
-                        .StripFooter(extractedText);
+                
+                var fallbackTextSchema =
+                    JsonSerializer
+                        .Deserialize<FallbackTextSchema>(extractedJson);
+                
+                var extractedMarkdown =
+                    fallbackTextSchema?.MainPage ?? string.Empty;
+                
+                RetitleFileIfApplicable(extractedMarkdown);
 
                 logger
                     .LogDebug(
-                        "Stripped markdown: {strippedText}",
-                        strippedText
+                        "Extracted markdown: {extractedMarkdown}",
+                        extractedMarkdown
                     );
                 
                 await
                     appendLogMessageCallback(
                         step.Id,
-                        strippedText
+                        extractedMarkdown
                     );
 
                 return
-                    strippedText
+                    extractedMarkdown
                         .AsCompletedRawTextArtifact(Artifact);
             }
             finally
