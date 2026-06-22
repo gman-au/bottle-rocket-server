@@ -45,6 +45,30 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 );
 
+        public async Task DeleteScanAsync(
+            string userId,
+            string id,
+            CancellationToken cancellationToken
+        )
+        {
+            await
+                DeleteFirstFilteredRecordAsync(
+                    Builders<ScannedImage>
+                        .Filter
+                        .Eq(
+                            o => o.UserId,
+                            userId
+                        ) &
+                    Builders<ScannedImage>
+                        .Filter
+                        .Eq(
+                            o => o.Id,
+                            id
+                        ),
+                    cancellationToken
+                );
+        }
+
         public async Task<(IEnumerable<ScannedImage> records, long totalRecordCount)> FetchScansAsync(
             string userId,
             int startIndex,
