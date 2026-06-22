@@ -12,7 +12,8 @@ using Rocket.Postmark.Domain;
 namespace Rocket.Postmark.Infrastructure
 {
     public class PostmarkSendEmailHook(
-        ILogger<PostmarkSendEmailHook> logger
+        ILogger<PostmarkSendEmailHook> logger,
+        IPostmarkEmailSender emailSender
     ) : HookWithConnectorBase<PostmarkSendEmailExecutionStep, PostmarkConnector>(logger), IIntegrationHook
     {
         public async Task<ExecutionStepArtifact> ProcessAsync(
@@ -35,6 +36,21 @@ namespace Rocket.Postmark.Infrastructure
                     step,
                     cancellationToken
                 );
+
+            var subjectName = "Bottle Rocket automated email";
+            
+            await
+                emailSender
+                    .SendEmailAsync(
+                        Connector.ServerToken,
+                        Artifact.Artifact,
+                        Artifact.FileName,
+                        Artifact.FileExtension,
+                        ExecutionStep.RecipientAddress,
+                        Connector.SenderAddress,
+                        subjectName,
+                        cancellationToken
+                    );
 
             return
                 ExecutionStepArtifact

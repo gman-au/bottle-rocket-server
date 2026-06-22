@@ -5,7 +5,10 @@ namespace Rocket.Postmark.Contracts
 {
     public class PostmarkConnectorSpecifics : ConnectorSummary
     {
-        [JsonPropertyName("credentials_file_base64")]
-        public string CredentialsFileBase64 { get; set; }
+        [JsonPropertyName("server_token")]
+        public string ServerToken { get; set; }
+        
+        [JsonPropertyName("sender_address")]
+        public string SenderAddress { get; set; }
     }
 }

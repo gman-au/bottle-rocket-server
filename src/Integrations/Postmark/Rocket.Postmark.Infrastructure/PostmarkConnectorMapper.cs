@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Infrastructure.Mapping;
 using Rocket.Interfaces;
 using Rocket.Postmark.Contracts;
 using Rocket.Postmark.Domain;
+using Rocket.Postmark.Infrastructure.Extensions;
 
 namespace Rocket.Postmark.Infrastructure
 {
@@ -19,7 +22,8 @@ namespace Rocket.Postmark.Infrastructure
                 base
                     .For(value);
 
-            //result.IntegrationSecret = value.IntegrationSecret;
+            result.ServerToken = value.ServerToken;
+            result.SenderAddress = value.SenderAddress;
 
             return result;
         }
@@ -30,20 +34,25 @@ namespace Rocket.Postmark.Infrastructure
                 base
                     .From(value);
 
-            /*result.IntegrationSecret = 
-                obfuscator
-                    .Obfuscate(value.IntegrationSecret);*/
+            result.ServerToken = obfuscator.Obfuscate(value.ServerToken);
+            result.SenderAddress = value.SenderAddress;
 
             return result;
         }
 
         public override async Task PreUpdateAsync(PostmarkConnectorSpecifics value)
         {
-            /*if (string.IsNullOrEmpty(value.IntegrationSecret))
+            if (string.IsNullOrEmpty(value.ServerToken))
                 throw new RocketException(
-                    "No integration secret was provided.",
+                    "No server token was provided.",
                     ApiStatusCodeEnum.ValidationError
-                );*/
+                );
+            
+            if (!value.SenderAddress.IsValidEmail())
+                throw new RocketException(
+                    "Sender address is not a valid email address.",
+                    ApiStatusCodeEnum.ValidationError
+                );
         }
     }
 }

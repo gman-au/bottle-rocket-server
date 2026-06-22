@@ -14,6 +14,6 @@ namespace Rocket.Postmark.Domain
 
         public override string RequiresConnectorCode { get; set; } = PostmarkDomainConstants.ConnectorCode;
 
-        public string ParentNoteId { get; set; }
+        public string RecipientAddress { get; set; }
     }
 }

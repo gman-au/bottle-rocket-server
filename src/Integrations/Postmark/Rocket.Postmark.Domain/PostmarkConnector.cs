@@ -11,11 +11,13 @@ namespace Rocket.Postmark.Domain
 
         public override string ConnectorCode { get; set; } = PostmarkDomainConstants.ConnectorCode;
 
-        public string IntegrationSecret { get; set; }
+        public string ServerToken { get; set; }
+        
+        public string SenderAddress { get; set; }
 
         public override ConnectorStatusEnum DetermineStatus()
         {
-            return !string.IsNullOrEmpty(IntegrationSecret)
+            return !string.IsNullOrEmpty(ServerToken) && !string.IsNullOrEmpty(SenderAddress)
                 ? ConnectorStatusEnum.Active
                 : ConnectorStatusEnum.Pending;
         }

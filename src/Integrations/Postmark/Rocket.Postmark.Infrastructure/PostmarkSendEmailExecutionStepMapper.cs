@@ -14,11 +14,7 @@ namespace Rocket.Postmark.Infrastructure
                 base
                     .For(value);
 
-            /*result.DataSourceId = value.DataSourceId;
-            result.ProjectCodeColumn = value.ProjectCodeColumn;
-            result.TaskColumn = value.TaskColumn;
-            result.DueDateColumn = value.DueDateColumn;
-            result.EstTimeColumn = value.EstTimeColumn;*/
+            result.RecipientAddress = value.RecipientAddress;
 
             return result;
         }
@@ -29,11 +25,7 @@ namespace Rocket.Postmark.Infrastructure
                 base
                     .From(value);
 
-            /*result.DataSourceId = value.DataSourceId;
-            result.ProjectCodeColumn = value.ProjectCodeColumn;
-            result.TaskColumn = value.TaskColumn;
-            result.DueDateColumn = value.DueDateColumn;
-            result.EstTimeColumn = value.EstTimeColumn;*/
+            result.RecipientAddress = value.RecipientAddress;
 
             return result;
         }

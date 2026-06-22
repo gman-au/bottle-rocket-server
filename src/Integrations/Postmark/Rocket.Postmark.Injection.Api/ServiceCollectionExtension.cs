@@ -14,6 +14,7 @@ namespace Rocket.Postmark.Injection.Api
                 .AddTransient<IWorkflowStepModelMapper, PostmarkSendEmailWorkflowStepMapper>()
                 .AddTransient<IExecutionStepModelMapper, PostmarkSendEmailExecutionStepMapper>()
                 .AddTransient<IStepModelCloner, PostmarkSendEmailStepCloner>()
+                .AddTransient<IPostmarkEmailSender, PostmarkEmailSender>()
                 .AddTransient<IBsonMapper, PostmarkBsonMapper>();
 
             services
