@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Rocket.Postmark.Infrastructure\Rocket.Postmark.Infrastructure.csproj" />
+      <ProjectReference Include="..\Rocket.Postmark.Injection.Serialization\Rocket.Postmark.Injection.Serialization.csproj" />
+    </ItemGroup>
+
+</Project>

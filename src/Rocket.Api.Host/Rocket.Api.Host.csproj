@@ -19,6 +19,7 @@
         <ProjectReference Include="..\Integrations\Notion\Rocket.Notion.Injection.Api\Rocket.Notion.Injection.Api.csproj" />
         <ProjectReference Include="..\Integrations\Ollama\Rocket.Ollama.Injection.Api\Rocket.Ollama.Injection.Api.csproj" />
         <ProjectReference Include="..\Integrations\Diagnostics\Rocket.Diagnostics.Injection.Api\Rocket.Diagnostics.Injection.Api.csproj" />
+        <ProjectReference Include="..\Integrations\Postmark\Rocket.Postmark.Injection.Api\Rocket.Postmark.Injection.Api.csproj" />
         <ProjectReference Include="..\Integrations\QuestPdf\Rocket.QuestPdf.Injection.Api\Rocket.QuestPdf.Injection.Api.csproj" />
         <ProjectReference Include="..\Integrations\Replicate\Rocket.Replicate.Injection.Api\Rocket.Replicate.Injection.Api.csproj" />
         <ProjectReference Include="..\Rocket.Api.Contracts\Rocket.Api.Contracts.csproj" />

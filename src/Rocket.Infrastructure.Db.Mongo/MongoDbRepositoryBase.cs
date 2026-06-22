@@ -208,6 +208,27 @@ namespace Rocket.Infrastructure.Db.Mongo
                 record
                     .DeletedCount > 0;
         }
+        
+        protected async Task<long> DeleteAllFilteredRecordsAsync(
+            FilterDefinition<T> filter,
+            CancellationToken cancellationToken
+        )
+        {
+            var collection =
+                GetMongoCollection();
+
+            var result =
+                await
+                    collection
+                        .DeleteManyAsync(
+                            filter,
+                            cancellationToken
+                        );
+
+            return
+                result
+                    .DeletedCount;
+        }
 
         protected IMongoCollection<TCustom> GetMongoCollection<TCustom>()
         {

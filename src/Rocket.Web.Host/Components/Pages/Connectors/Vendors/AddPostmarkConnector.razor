@@ -1,0 +1,181 @@
+﻿@page "/MyConnector/Postmark/Add"
+@using Rocket.Api.Contracts.Connectors
+@using Rocket.Postmark.Contracts
+@using Rocket.Web.Client
+@using Rocket.Web.Host.Infrastructure
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject ISnackbar Snackbar
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_connector != null)
+    {
+        <MudForm
+            Model="@_connector"
+            @ref="_form">
+            <MudPaper Class="p-4" elevation="2">
+                <MudText
+                    Align="Align.Center"
+                    Typo="Typo.h4"
+                    Color="Color.Primary"
+                    Class="mb-4">
+                    Add a Postmark connector
+                </MudText>
+
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5"
+                        >
+                            Step 1: Set up the Postmark integration
+                        </MudText>
+                        <MudText>
+                            <MudLink
+                                Target="_blank"
+                                Href="https://gman-au.github.io/bottle-rocket-documentation/docs/docs-general/workflow-integrations/postmark#create-and-configure-the-mail-server">
+                                Follow the instructions to set up a Postmark integration.
+                            </MudLink>
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5">
+                            Step 2: Enter the Postmark server token
+                        </MudText>
+                        <MudText>
+                            Enter the server token by the Postmark integration below.
+                        </MudText>
+                    </MudItem>
+                    <MudItem sm="12" lg="6">
+                        <MudTextField
+                            T="string"
+                            Required
+                            Label="Server token"
+                            HelperText="Enter the server token here"
+                            @bind-Value="_connector.ServerToken"
+                            For="@(() => _connector.ServerToken)"
+                            RequiredError="Server token is required."/>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5">
+                            Step 3: Validate a sender address
+                        </MudText>
+                        <MudText>
+                            Enter a (validated) sender address below.
+                        </MudText>
+                    </MudItem>
+                    <MudItem sm="12" lg="6">
+                        <MudTextField
+                            T="string"
+                            Required
+                            Label="Sender address"
+                            HelperText="Enter the sender address here"
+                            @bind-Value="_connector.SenderAddress"
+                            For="@(() => _connector.SenderAddress)"
+                            RequiredError="Sender address is required."/>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="align-start mt-2" Justify="Justify.FlexEnd">
+                    <MudItem>
+                        <GoBackButton/>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton
+                            Variant="Variant.Outlined"
+                            Color="Color.Success"
+                            Disabled="@(_isLoading)"
+                            OnClick="@SubmitAsync">
+                            Submit
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudForm>
+    }
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    MudForm _form;
+
+    private bool _isLoading;
+    private PostmarkConnectorSpecifics _connector = new();
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SubmitAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                var response =
+                    await
+                        ApiRequestManager
+                            .CreateConnectorAsync(
+                                new CreateConnectorRequest<PostmarkConnectorSpecifics>
+                                {
+                                    Connector = _connector
+                                },
+                                BaseCancellationToken
+                            );
+
+                Snackbar
+                    .Add(
+                        "The connection has been added.",
+                        Severity.Success
+                    );
+
+                NavigationManager
+                    .NavigateTo("/MyConnectors");
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+}
