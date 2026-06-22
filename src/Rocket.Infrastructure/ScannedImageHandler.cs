@@ -290,14 +290,33 @@ namespace Rocket.Infrastructure
                         ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                     );
 
-                var deleted =
-                    await
-                        blobStore
-                            .DeleteImageAsync(
-                                record.BlobId,
-                                record.FileExtension,
-                                cancellationToken
+                var deleted = false;
+                try
+                {
+                    deleted =
+                        await
+                            blobStore
+                                .DeleteImageAsync(
+                                    record.BlobId,
+                                    record.FileExtension,
+                                    cancellationToken
+                                );
+                }
+                catch (RocketException ex)
+                {
+                    if (ex.ApiStatusCode == (int)ApiStatusCodeEnum.UnknownOrInaccessibleRecord)
+                    {
+                        logger
+                            .LogWarning(
+                                "Image with user ID: {userId}, blob ID: {blobId} could not be found for deletion, continuing",
+                                userId,
+                                record.BlobId
                             );
+                        
+                        deleted = true;
+                    }
+                    else throw;
+                }
 
                 if (deleted)
                 {

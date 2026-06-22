@@ -73,6 +73,11 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         );
 
+        Task<ApiResponse> DeleteScanByIdAsync(
+            string id,
+            CancellationToken cancellationToken
+        );
+
         Task<CreateWorkflowResponse> CreateWorkflowAsync(
             CreateWorkflowRequest workflow,
             CancellationToken cancellationToken

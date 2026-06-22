@@ -26,5 +26,7 @@ namespace Rocket.Web.Host
         public const string CloudIcon = Icons.Material.Filled.CloudUpload;
         public const string SettingsIcon = Icons.Material.Filled.Settings;
         public const string NoImageIcon = Icons.Material.Filled.BrokenImage;
+        public const string InspectIcon = Icons.Material.Filled.Search;
+        public const string SubMenuIcon = Icons.Material.Filled.MoreVert;
     }
 }

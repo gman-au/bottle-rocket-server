@@ -38,8 +38,14 @@ namespace Rocket.Api.Host.Controllers
             A base64 thumbnail image string is also provided instead of the full image data in a multi-record payload.
             """
         )]
-        [ProducesResponseType(typeof(MyScansResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(
+            typeof(MyScansResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> FetchMyScansAsync(
             [FromBody] MyScansRequest request,
@@ -106,8 +112,14 @@ namespace Rocket.Api.Host.Controllers
             The full image data is provided as well as other capture and processing details. 
             """
         )]
-        [ProducesResponseType(typeof(ScanSpecifics), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(
+            typeof(ScanSpecifics),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> FetchMyScanAsync(
             string id,
@@ -161,7 +173,7 @@ namespace Rocket.Api.Host.Controllers
                 response
                     .AsApiSuccess();
         }
-        
+
         [HttpDelete("archive/{id}")]
         [EndpointSummary("Archive a scan")]
         [EndpointGroupName("Manage captures / scans")]
@@ -220,7 +232,7 @@ namespace Rocket.Api.Host.Controllers
                 response
                     .AsApiSuccess();
         }
-        
+
         [HttpDelete("delete/{id}")]
         [EndpointSummary("(Permanently) delete a scan")]
         [EndpointGroupName("Manage captures / scans")]
@@ -259,14 +271,13 @@ namespace Rocket.Api.Host.Controllers
                     id
                 );
 
-            var result =
-                await
-                    scannedImageHandler
-                        .DeleteAsync(
-                            userId,
-                            id,
-                            cancellationToken
-                        );
+            await
+                scannedImageHandler
+                    .DeleteAsync(
+                        userId,
+                        id,
+                        cancellationToken
+                    );
 
             var response =
                 new DeleteScanResponse();
