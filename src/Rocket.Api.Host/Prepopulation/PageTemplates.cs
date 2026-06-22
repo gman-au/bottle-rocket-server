@@ -4,6 +4,7 @@ using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.PageTemplates;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Rocket.Tests.Unit")]
 namespace Rocket.Api.Host.Prepopulation
 {
     internal static class PageTemplates
