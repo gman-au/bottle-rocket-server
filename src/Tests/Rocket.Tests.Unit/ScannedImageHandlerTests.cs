@@ -102,6 +102,7 @@ namespace Rocket.Tests.Unit
             private readonly IBlobStore _blobStore;
             private readonly ISha256Calculator _sha256Calculator;
             private readonly IScannedImageRepository _scannedImageRepository;
+            private readonly IExecutionRepository _executionRepository;
             private readonly IThumbnailer _thumbnailer;
             private readonly IFixture _fixture;
             private string _qrCode;
@@ -116,6 +117,7 @@ namespace Rocket.Tests.Unit
                 _blobStore = _fixture.Freeze<IBlobStore>();
                 _sha256Calculator = _fixture.Freeze<ISha256Calculator>();
                 _scannedImageRepository = _fixture.Freeze<IScannedImageRepository>();
+                _executionRepository = _fixture.Freeze<IExecutionRepository>();
                 _thumbnailer = _fixture.Freeze<IThumbnailer>();
 
                 _sut =
@@ -124,6 +126,7 @@ namespace Rocket.Tests.Unit
                         _blobStore,
                         _sha256Calculator,
                         _scannedImageRepository,
+                        _executionRepository,
                         _thumbnailer
                     );
             }

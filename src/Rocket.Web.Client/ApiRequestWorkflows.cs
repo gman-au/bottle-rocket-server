@@ -166,5 +166,36 @@ namespace Rocket.Web.Client
 
             return result;
         }
+
+        public async Task<ApiResponse> DeleteScanByIdAsync(
+            string id,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation("Received Delete Scan request");
+
+            var response =
+                await
+                    authenticatedApiClient
+                        .DeleteAsync(
+                            $"/api/scans/delete/{id}",
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<ApiResponse>(
+                            _jsonSerializerOptions,
+                            logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
     }
 }

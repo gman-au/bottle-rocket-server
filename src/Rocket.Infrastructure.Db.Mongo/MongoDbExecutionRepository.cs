@@ -96,6 +96,36 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 );
 
+        public async Task<long> DeleteExecutionsByScanIdAsync(
+            string userId,
+            string id,
+            CancellationToken cancellationToken
+        )
+        {
+            var filter =
+                Builders<Execution>
+                    .Filter
+                    .Eq(
+                        u => u.UserId,
+                        userId
+                    );
+
+            filter &=
+                Builders<Execution>
+                    .Filter
+                    .Eq(
+                        o => o.ScanId,
+                        id
+                    );
+
+            return
+                await
+                    DeleteAllFilteredRecordsAsync(
+                        filter,
+                        cancellationToken: cancellationToken
+                    );
+        }
+
         public async Task<Execution> InsertExecutionAsync(
             Execution execution,
             CancellationToken cancellationToken
@@ -277,7 +307,8 @@ namespace Rocket.Infrastructure.Db.Mongo
 
         public async Task<IEnumerable<Execution>> GetExecutionSuccessesForOlderScansAsync(
             int daysSinceLastSuccessfulExecution,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken
+        )
         {
             var expiryDate =
                 DateTime

@@ -30,5 +30,11 @@ namespace Rocket.Interfaces
             string id,
             CancellationToken cancellationToken
         );
+
+        Task DeleteScanAsync(
+            string userId,
+            string id,
+            CancellationToken cancellationToken
+        );
     }
 }

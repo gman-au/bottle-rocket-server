@@ -14,6 +14,7 @@ namespace Rocket.Infrastructure
         IBlobStore blobStore,
         ISha256Calculator sha256Calculator,
         IScannedImageRepository scannedImageRepository,
+        IExecutionRepository executionRepository,
         IThumbnailer thumbnailer
     ) : IScannedImageHandler
     {
@@ -184,7 +185,8 @@ namespace Rocket.Infrastructure
         public async Task<bool> ArchiveAsync(
             string userId,
             string id,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken
+        )
         {
             logger
                 .LogInformation("Archiving scan record and image data");
@@ -255,6 +257,118 @@ namespace Rocket.Infrastructure
                 logger
                     .LogError(
                         "There was an error archiving the scanned image: {error}",
+                        ex.Message
+                    );
+
+                throw;
+            }
+        }
+
+        public async Task<bool> DeleteAsync(
+            string userId,
+            string id,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation("Deleting scan record and image data");
+
+            try
+            {
+                var record =
+                    await
+                        scannedImageRepository
+                            .GetScanByIdAsync(
+                                userId,
+                                id,
+                                cancellationToken
+                            );
+
+                if (record == null)
+                    throw new RocketException(
+                        "The record was not found or you do not have access.",
+                        ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                    );
+
+                var deleted = false;
+                try
+                {
+                    deleted =
+                        await
+                            blobStore
+                                .DeleteImageAsync(
+                                    record.BlobId,
+                                    record.FileExtension,
+                                    cancellationToken
+                                );
+                }
+                catch (RocketException ex)
+                {
+                    if (ex.ApiStatusCode == (int)ApiStatusCodeEnum.UnknownOrInaccessibleRecord)
+                    {
+                        logger
+                            .LogWarning(
+                                "Image with user ID: {userId}, blob ID: {blobId} could not be found for deletion, continuing",
+                                userId,
+                                record.BlobId
+                            );
+                        
+                        deleted = true;
+                    }
+                    else throw;
+                }
+
+                if (deleted)
+                {
+                    logger
+                        .LogInformation(
+                            "Successfully deleted image for user ID: {userId}, id: {id}",
+                            userId,
+                            id
+                        );
+
+                    var count =
+                        await
+                            executionRepository
+                                .DeleteExecutionsByScanIdAsync(
+                                    userId,
+                                    id,
+                                    cancellationToken
+                                );
+
+                    logger
+                        .LogInformation(
+                            "Successfully deleted {count} for user ID: {userId}, scan id: {id}",
+                            count,
+                            userId,
+                            id
+                        );
+
+                    await
+                        scannedImageRepository
+                            .DeleteScanAsync(
+                                userId,
+                                id,
+                                cancellationToken
+                            );
+                }
+                else
+                {
+                    logger
+                        .LogWarning(
+                            "Image for user ID: {userId}, id: {id} was not deleted",
+                            userId,
+                            id
+                        );
+                }
+
+                return deleted;
+            }
+            catch (Exception ex)
+            {
+                logger
+                    .LogError(
+                        "There was an error deleting the scanned image: {error}",
                         ex.Message
                     );
 
