@@ -76,7 +76,7 @@ namespace Rocket.Postmark.Infrastructure
                         client
                             .SendMessageAsync(message);
 
-                return $"Status: {sendResult.Status}, Message: {sendResult.Message}";
+                return $"Status: {sendResult.Status}, Message: {sendResult.Message}, MessageID: {sendResult.MessageID}";
             }
             catch (PostmarkResponseException ex)
             {

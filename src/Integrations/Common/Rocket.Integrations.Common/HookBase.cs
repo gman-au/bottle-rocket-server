@@ -6,6 +6,7 @@ using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Interfaces;
+using Rocket.Page.Schemas.FallbackText;
 using Rocket.Page.Schemas.ProjectTaskTracker;
 
 namespace Rocket.Integrations.Common
@@ -118,6 +119,35 @@ namespace Rocket.Integrations.Common
                 var schema =
                     JsonSerializer
                         .Deserialize<ProjectTaskTrackerSchema>(bytes);
+
+                return schema;
+            }
+            catch (JsonException)
+            {
+                throw new RocketException(
+                    $"There was a problem loading the project task tracker artifact during step [{typeof(TExecutionStep)}]",
+                    ApiStatusCodeEnum.DeveloperError
+                );
+            }
+        }
+        
+        protected FallbackTextSchema GetArtifactAsFallbackTextData()
+        {
+            var bytes =
+                Artifact
+                    .Artifact;
+
+            if (bytes == null)
+                throw new RocketException(
+                    $"Artifact data for hook [{typeof(TExecutionStep)}] is empty or not initialized; please check configuration",
+                    ApiStatusCodeEnum.DeveloperError
+                );
+
+            try
+            {
+                var schema =
+                    JsonSerializer
+                        .Deserialize<FallbackTextSchema>(bytes);
 
                 return schema;
             }

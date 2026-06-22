@@ -41,7 +41,6 @@ namespace Rocket.Replicate.Injection.Api
             services
                 .AddTransient<IConnectorModelMapper, ReplicateConnectorMapper>()
                 .AddTransient<IBsonMapper, ReplicateBsonMapper>()
-                .AddTransient<IMarkdownStripper, MarkdownStripper>()
                 .AddTransient<IReplicateClient, ReplicateClient>();
 
             services
