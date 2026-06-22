@@ -17,6 +17,7 @@ using Rocket.Local.Injection.Api;
 using Rocket.Microsofts.Injection.Api;
 using Rocket.Notion.Injection.Api;
 using Rocket.Ollama.Injection.Api;
+using Rocket.Postmark.Injection.Api;
 using Rocket.QuestPdf.Injection.Api;
 using Rocket.Replicate.Injection.Api;
 
@@ -83,6 +84,7 @@ services
     .AddDiagnosticApiIntegration()
     .AddQuestPdfApiIntegration()
     .AddReplicateApiIntegration()
+    .AddPostmarkApiIntegration()
     .AddLocalApiIntegration();
 
 services

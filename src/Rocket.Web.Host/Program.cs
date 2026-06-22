@@ -10,6 +10,7 @@ using Rocket.Local.Injection.Web;
 using Rocket.Microsofts.Injection.Web;
 using Rocket.Notion.Injection.Web;
 using Rocket.Ollama.Injection.Web;
+using Rocket.Postmark.Injection.Web;
 using Rocket.QuestPdf.Injection.Web;
 using Rocket.Replicate.Injection.Web;
 using Rocket.Web.Host.Components;
@@ -70,6 +71,7 @@ services
     .AddOllamaWebIntegration()
     .AddQuestPdfWebIntegration()
     .AddReplicateWebIntegration()
+    .AddPostmarkWebIntegration()
     .AddLocalWebIntegration();
 
 services
