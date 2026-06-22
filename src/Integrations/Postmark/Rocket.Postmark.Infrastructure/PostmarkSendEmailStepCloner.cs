@@ -13,11 +13,7 @@ namespace Rocket.Postmark.Infrastructure
                 base
                     .Clone(value);
 
-           /* result.DataSourceId = value.DataSourceId;
-            result.ProjectCodeColumn = value.ProjectCodeColumn;
-            result.TaskColumn = value.TaskColumn;
-            result.DueDateColumn = value.DueDateColumn;
-            result.EstTimeColumn = value.EstTimeColumn;*/
+            result.RecipientAddress = value.RecipientAddress;
 
             return result;
         }

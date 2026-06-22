@@ -5,11 +5,10 @@ namespace Rocket.Postmark.Infrastructure
 {
     public interface IPostmarkEmailSender
     {
-        Task SendEmailAsync(
+        Task<string> SendEmailAsync(
             string serverToken,
             byte[] attachmentData,
             string attachmentName,
-            string attachmentContentType,
             string recipientAddress,
             string senderAddress,
             string subjectName,

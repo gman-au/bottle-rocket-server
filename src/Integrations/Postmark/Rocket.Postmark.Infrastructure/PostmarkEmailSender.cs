@@ -15,11 +15,10 @@ namespace Rocket.Postmark.Infrastructure
         ILogger<PostmarkEmailSender> logger
     ) : IPostmarkEmailSender
     {
-        public async Task SendEmailAsync(
+        public async Task<string> SendEmailAsync(
             string serverToken,
             byte[] attachmentData,
             string attachmentName,
-            string attachmentContentType,
             string recipientAddress,
             string senderAddress,
             string subjectName,
@@ -51,15 +50,14 @@ namespace Rocket.Postmark.Infrastructure
                         "Recipient address is not a valid email address.",
                         ApiStatusCodeEnum.ValidationError
                     );
-                
+
                 var client =
                     new PostmarkClient(serverToken);
 
                 var attachment =
                     new PostmarkMessageAttachment(
                         attachmentData,
-                        attachmentName,
-                        attachmentContentType
+                        attachmentName
                     );
 
                 var message =
@@ -69,12 +67,16 @@ namespace Rocket.Postmark.Infrastructure
                         To = recipientAddress,
                         Attachments = new List<PostmarkMessageAttachment> { attachment },
                         Subject = subjectName,
+                        TextBody = "This is an automated email from Bottle Rocket. Please find your note attached.",
+                        MessageStream = "outbound"
                     };
 
                 var sendResult =
                     await
                         client
                             .SendMessageAsync(message);
+
+                return $"Status: {sendResult.Status}, Message: {sendResult.Message}";
             }
             catch (PostmarkResponseException ex)
             {

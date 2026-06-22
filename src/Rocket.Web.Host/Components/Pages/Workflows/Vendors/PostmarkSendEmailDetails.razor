@@ -1,0 +1,39 @@
+﻿@page "/MyWorkflow/Postmark/{workflowId}/AddStep"
+@page "/MyWorkflow/Postmark/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/Postmark/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.Postmark.Contracts
+@using Rocket.Postmark.Domain
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<UpdateWorkflowStepWrapper
+    T="PostmarkSendEmailWorkflowStepSpecifics"
+    WorkflowStepName="Send email via Postmark API"
+    WorkflowId="@WorkflowId"
+    ParentStepId="@ParentStepId"
+    StepId="@StepId"
+    RequiresConnectorCode="@PostmarkDomainConstants.ConnectorCode"
+    Context="stepSpecifics">
+    <MudGrid>
+        <MudItem sm="12" lg="6">
+            <MudTextField
+                T="string"
+                Label="Recipient address"
+                HelperText="Enter the recipient email address"
+                @bind-Value="stepSpecifics.RecipientAddress"
+                For="@(() => stepSpecifics.RecipientAddress)"/>
+        </MudItem>
+    </MudGrid>
+</UpdateWorkflowStepWrapper>
+
+@code {
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+}

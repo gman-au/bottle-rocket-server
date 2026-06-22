@@ -37,20 +37,27 @@ namespace Rocket.Postmark.Infrastructure
                     cancellationToken
                 );
 
-            var subjectName = "Bottle Rocket automated email";
-            
+            var fileName = $"{Artifact.FileName}{Artifact.FileExtension}";
+            var subjectName = $"Bottle Rocket attached note - {Artifact.FileName}";
+
+            var sendResult =
+                await
+                    emailSender
+                        .SendEmailAsync(
+                            Connector.ServerToken,
+                            Artifact.Artifact,
+                            fileName,
+                            ExecutionStep.RecipientAddress,
+                            Connector.SenderAddress,
+                            subjectName,
+                            cancellationToken
+                        );
+
             await
-                emailSender
-                    .SendEmailAsync(
-                        Connector.ServerToken,
-                        Artifact.Artifact,
-                        Artifact.FileName,
-                        Artifact.FileExtension,
-                        ExecutionStep.RecipientAddress,
-                        Connector.SenderAddress,
-                        subjectName,
-                        cancellationToken
-                    );
+                appendLogMessageCallback(
+                    step.Id,
+                    sendResult
+                );
 
             return
                 ExecutionStepArtifact
