@@ -6,7 +6,6 @@ using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Interfaces;
-using Rocket.Page.Schemas.FallbackText;
 using Rocket.Page.Schemas.ProjectTaskTracker;
 
 namespace Rocket.Integrations.Common
