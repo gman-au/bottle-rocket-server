@@ -130,34 +130,5 @@ namespace Rocket.Integrations.Common
                 );
             }
         }
-        
-        protected FallbackTextSchema GetArtifactAsFallbackTextData()
-        {
-            var bytes =
-                Artifact
-                    .Artifact;
-
-            if (bytes == null)
-                throw new RocketException(
-                    $"Artifact data for hook [{typeof(TExecutionStep)}] is empty or not initialized; please check configuration",
-                    ApiStatusCodeEnum.DeveloperError
-                );
-
-            try
-            {
-                var schema =
-                    JsonSerializer
-                        .Deserialize<FallbackTextSchema>(bytes);
-
-                return schema;
-            }
-            catch (JsonException)
-            {
-                throw new RocketException(
-                    $"There was a problem loading the project task tracker artifact during step [{typeof(TExecutionStep)}]",
-                    ApiStatusCodeEnum.DeveloperError
-                );
-            }
-        }
     }
 }
