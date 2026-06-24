@@ -17,8 +17,8 @@
         <MudForm
             Model="@_accountLoginRequest"
             @ref="_form">
-            <MudGrid>
-                <MudItem xs="12">
+            <MudGrid Justify="Justify.Center">
+                <MudItem xs="12" sm="8" md="4">
                     <MudTextField
                         T="string"
                         Label="Username"
@@ -29,7 +29,8 @@
                         For="@(() => _accountLoginRequest.Username)"
                         OnlyValidateIfDirty/>
                 </MudItem>
-                <MudItem xs="12">
+                <MudFlexBreak/>
+                <MudItem xs="12" sm="8" md="4">
                     <MudTextField
                         T="string"
                         InputType="InputType.Password"

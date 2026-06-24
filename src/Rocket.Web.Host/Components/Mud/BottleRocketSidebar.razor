@@ -21,6 +21,10 @@
     <MudSpacer/>
     <MudIconButton Icon="@Icons.Custom.Brands.Reddit" Href="https://www.reddit.com/r/bottle_rocket/" Target="_blank"/>
     <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Href="https://github.com/gman-au/bottle-rocket-server" Target="_blank"/>
+    @if (!string.IsNullOrEmpty(SiteConfigurationOptions?.Value?.DocumentationUrl))
+    {
+        <MudIconButton Icon="@StandardIcons.HelpIcon" Href="@SiteConfigurationOptions?.Value?.DocumentationUrl" Target="_blank"/>
+    }
 </MudAppBar>
 <MudDrawer @bind-Open="@_open" Elevation="1">
     <MudDrawerHeader>
@@ -175,17 +179,6 @@
                     </MudNavLink>
                 </NotAuthorized>
             </AuthorizeView>
-            if (!string.IsNullOrEmpty(SiteConfigurationOptions?.Value?.DocumentationUrl))
-            {
-                <MudNavLink
-                    Href="@SiteConfigurationOptions?.Value?.DocumentationUrl"
-                    Icon="@StandardIcons.HelpIcon"
-                    ForceLoad="true"
-                    Target="_blank"
-                >
-                    Help
-                </MudNavLink>
-            }
         }
     </MudNavMenu>
     <MudSpacer/>
@@ -281,11 +274,13 @@
         {
             _userName =
                 user
-                    .FindFirst(ClaimTypes.Name)?.Value ?? "User";
+                    .FindFirst(ClaimTypes.Name)
+                    ?.Value ?? "User";
 
             _userRole =
                 user
-                    .FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
+                    .FindFirst(ClaimTypes.Role)
+                    ?.Value ?? string.Empty;
         }
         else
         {
@@ -313,11 +308,11 @@
     {
         if (OnDarkModeToggle.HasDelegate)
         {
-            await 
+            await
                 OnDarkModeToggle
                     .InvokeAsync();
         }
-        
+
         await
             ApiRequestManager
                 .UpdateDarkModeAsync(
