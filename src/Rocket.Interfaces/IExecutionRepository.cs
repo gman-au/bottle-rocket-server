@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Rocket.Domain.Dashboard;
 using Rocket.Domain.Executions;
 
 namespace Rocket.Interfaces
@@ -67,6 +68,16 @@ namespace Rocket.Interfaces
 
         Task<IEnumerable<Execution>> GetExecutionSuccessesForOlderScansAsync(
             int daysSinceLastSuccessfulExecution,
+            CancellationToken cancellationToken
+        );
+
+        Task<IEnumerable<ExecutionByWorkflowTotal>> AggregateExecutionsByWorkflowAsync(
+            string userId,
+            CancellationToken cancellationToken
+        );
+
+        Task<IEnumerable<ExecutionByStatusTotal>> AggregateExecutionsByStatusAsync(
+            string userId,
             CancellationToken cancellationToken
         );
     }

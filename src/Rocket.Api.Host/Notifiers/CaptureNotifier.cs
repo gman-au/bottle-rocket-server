@@ -9,6 +9,7 @@ namespace Rocket.Api.Host.Notifiers
 {
     public class CaptureNotifier(
         IHubContext<CaptureHub> hubContext,
+        IDashboardSnapshotProvider dashboardSnapshotProvider,
         ILogger<CaptureNotifier> logger
     )
         : ICaptureNotifier
@@ -23,6 +24,9 @@ namespace Rocket.Api.Host.Notifiers
                     "Notifying user {userId} of new capture",
                     userId
                 );
+
+            dashboardSnapshotProvider
+                .MarkAsDirty(userId);
 
             await
                 hubContext
@@ -44,6 +48,9 @@ namespace Rocket.Api.Host.Notifiers
                     "Notifying user {userId} of new execution update",
                     userId
                 );
+
+            dashboardSnapshotProvider
+                .MarkAsDirty(userId);
 
             await
                 hubContext

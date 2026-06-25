@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace Rocket.Web.Host.Components.Mud
 {
-    public static class PasswordValidation
+    internal static class PasswordValidation
     {
         public static IEnumerable<string> PasswordStrength(string pw)
         {

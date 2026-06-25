@@ -25,7 +25,8 @@ namespace Rocket.Api.Host.Controllers
         IExecutionScheduler executionScheduler,
         IWorkflowExecutionManager workflowExecutionManager,
         IExecutionRepository executionRepository,
-        IExecutionStepModelMapperRegistry executionStepModelMapperRegistry
+        IExecutionStepModelMapperRegistry executionStepModelMapperRegistry,
+        IDashboardSnapshotProvider dashboardSnapshotProvider
     ) : RocketControllerBase(userManager)
     {
         [HttpPost("fetch")]
@@ -153,6 +154,9 @@ namespace Rocket.Api.Host.Controllers
                 {
                     IsDeleted = result
                 };
+            
+            dashboardSnapshotProvider
+                .MarkAsDirty(userId);
 
             return
                 response
@@ -213,6 +217,9 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Id = executionId
                 };
+            
+            dashboardSnapshotProvider
+                .MarkAsDirty(userId);
 
             return
                 response
@@ -284,6 +291,9 @@ namespace Rocket.Api.Host.Controllers
                 {
                     IsCancelled = result
                 };
+            
+            dashboardSnapshotProvider
+                .MarkAsDirty(userId);
 
             return
                 response
@@ -359,6 +369,9 @@ namespace Rocket.Api.Host.Controllers
                 {
                     IsStarted = result
                 };
+            
+            dashboardSnapshotProvider
+                .MarkAsDirty(userId);
 
             return
                 response

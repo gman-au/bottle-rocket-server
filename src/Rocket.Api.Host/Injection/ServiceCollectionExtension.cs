@@ -145,7 +145,8 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IStepModelClonerRegistry, StepModelClonerRegistry>()
                 .AddTransient<IObfuscator, Obfuscator>()
                 .AddTransient<IFileRetitler, SafeFileRetitler>()
-                .AddTransient<IWorkflowCloner, WorkflowCloner>();
+                .AddTransient<IWorkflowCloner, WorkflowCloner>()
+                .AddSingleton<IDashboardSnapshotProvider, DashboardSnapshotProvider>();
 
             if (environment.IsDevelopment())
                 services
@@ -157,6 +158,9 @@ namespace Rocket.Api.Host.Injection
             services
                 .AddSingleton<IJsonResolverInstanceProvider, RocketJsonResolverInstanceProvider>();
 
+            services
+                .AddMemoryCache(); 
+            
             return services;
         }
 

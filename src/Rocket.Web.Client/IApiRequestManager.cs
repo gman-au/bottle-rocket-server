@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Connectors;
+using Rocket.Api.Contracts.Dashboard;
 using Rocket.Api.Contracts.Executions;
 using Rocket.Api.Contracts.GlobalSettings;
 using Rocket.Api.Contracts.Scans;
@@ -46,7 +47,9 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         );
 
-        Task<StartupPhaseResponse> GetStartupPhaseAsync(CancellationToken cancellationToken);
+        Task<StartupPhaseResponse> GetStartupPhaseAsync(
+            CancellationToken cancellationToken
+        );
 
         Task<FetchUsersResponse> GetUsersAsync(
             FetchUsersRequest request,
@@ -93,23 +96,23 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         );
 
-        public Task<CreateConnectorResponse<T>> CreateConnectorAsync<T>(
+        Task<CreateConnectorResponse<T>> CreateConnectorAsync<T>(
             CreateConnectorRequest<T> request,
             CancellationToken cancellationToken
         ) where T : ConnectorSummary;
 
-        public Task<T> GetWorkflowStepAsync<T>(
+        Task<T> GetWorkflowStepAsync<T>(
             string workflowId,
             string stepId,
             CancellationToken cancellationToken
         ) where T : WorkflowStepSummary;
 
-        public Task<CreateWorkflowStepResponse> CreateWorkflowStepAsync<T>(
+        Task<CreateWorkflowStepResponse> CreateWorkflowStepAsync<T>(
             CreateWorkflowStepRequest<T> request,
             CancellationToken cancellationToken
         ) where T : WorkflowStepSummary;
 
-        public Task<UpdateWorkflowStepResponse> UpdateWorkflowStepAsync<T>(
+        Task<UpdateWorkflowStepResponse> UpdateWorkflowStepAsync<T>(
             UpdateWorkflowStepRequest<T> request,
             CancellationToken cancellationToken
         ) where T : WorkflowStepSummary;
@@ -144,12 +147,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         );
 
-        public Task<ApiResponse> FinalizeDropboxConnectorAsync(
+        Task<ApiResponse> FinalizeDropboxConnectorAsync(
             FinalizeDropboxConnectorRequest request,
             CancellationToken cancellationToken
         );
 
-        public Task<GetAllNotionParentNotesResponse> GetNotionParentNotesAsync(
+        Task<GetAllNotionParentNotesResponse> GetNotionParentNotesAsync(
             GetAllNotionParentNotesRequest request,
             CancellationToken cancellationToken
         );
@@ -159,22 +162,22 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         );
 
-        public Task<MicrosoftAuthInitiateResponse> InitiateMicrosoftConnectorAuthAsync(
+        Task<MicrosoftAuthInitiateResponse> InitiateMicrosoftConnectorAuthAsync(
             MicrosoftAuthInitiateRequest request,
             CancellationToken cancellationToken
         );
 
-        public Task<GetOneNoteSectionsResponse> GetOneNoteSectionsAsync(
+        Task<GetOneNoteSectionsResponse> GetOneNoteSectionsAsync(
             GetOneNoteSectionsRequest request,
             CancellationToken cancellationToken
         );
 
-        public Task<GoogleAuthInitiateResponse> InitiateGoogleConnectorAuthAsync(
+        Task<GoogleAuthInitiateResponse> InitiateGoogleConnectorAuthAsync(
             GoogleAuthInitiateRequest request,
             CancellationToken cancellationToken
         );
 
-        public Task<ApiResponse> FinalizeGoogleConnectorAsync(
+        Task<ApiResponse> FinalizeGoogleConnectorAsync(
             GoogleAuthFinalizeRequest request,
             CancellationToken cancellationToken
         );
@@ -184,9 +187,17 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         );
 
-        public Task<VersionResponse> GetSystemVersionsAsync(CancellationToken cancellationToken);
+        Task<FetchDashboardResponse> GetDashboardSnapshotAsync(
+            CancellationToken cancellationToken
+        );
 
-        public Task<GlobalSettingsSpecifics> GetGlobalSettingsAsync(CancellationToken cancellationToken);
+        Task<VersionResponse> GetSystemVersionsAsync(
+            CancellationToken cancellationToken
+        );
+
+        Task<GlobalSettingsSpecifics> GetGlobalSettingsAsync(
+            CancellationToken cancellationToken
+        );
 
         Task<ApiResponse> UpdateGlobalSettingsAsync(
             GlobalSettingsSpecifics globalSettings,

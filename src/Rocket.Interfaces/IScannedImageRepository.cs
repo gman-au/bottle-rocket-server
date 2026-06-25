@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain;
+using Rocket.Domain.Dashboard;
 
 namespace Rocket.Interfaces
 {
@@ -34,6 +35,11 @@ namespace Rocket.Interfaces
         Task DeleteScanAsync(
             string userId,
             string id,
+            CancellationToken cancellationToken
+        );
+
+        Task<IEnumerable<ScanByVendorTotal>> AggregateScansByVendorAsync(
+            string userId,
             CancellationToken cancellationToken
         );
     }

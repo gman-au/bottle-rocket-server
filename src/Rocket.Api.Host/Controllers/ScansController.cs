@@ -25,7 +25,8 @@ namespace Rocket.Api.Host.Controllers
         ILogger<ScansController> logger,
         IUserManager userManager,
         IScannedImageHandler scannedImageHandler,
-        IScannedImageRepository scannedImageRepository
+        IScannedImageRepository scannedImageRepository,
+        IDashboardSnapshotProvider dashboardSnapshotProvider
     ) : RocketControllerBase(userManager)
     {
         [HttpPost("fetch")]
@@ -228,6 +229,9 @@ namespace Rocket.Api.Host.Controllers
                     IsArchived = result
                 };
 
+            dashboardSnapshotProvider
+                .MarkAsDirty(userId);
+
             return
                 response
                     .AsApiSuccess();
@@ -281,6 +285,9 @@ namespace Rocket.Api.Host.Controllers
 
             var response =
                 new DeleteScanResponse();
+
+            dashboardSnapshotProvider
+                .MarkAsDirty(userId);
 
             return
                 response
