@@ -38,6 +38,7 @@ namespace Rocket.Infrastructure
                             userId,
                             cancellationToken
                         ))
+                .OrderBy(o => o.Vendor)
                 .ToList();
 
             result.Scans =
@@ -57,6 +58,7 @@ namespace Rocket.Infrastructure
                             userId,
                             cancellationToken
                         ))
+                .OrderBy(o => o.Workflow)
                 .ToList();
 
             // Executions by status
@@ -67,6 +69,7 @@ namespace Rocket.Infrastructure
                             userId,
                             cancellationToken
                         ))
+                .OrderBy(o => o.Status)
                 .ToList();
 
             result.Executions =
