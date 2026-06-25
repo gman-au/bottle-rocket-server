@@ -8,7 +8,8 @@ namespace Rocket.Infrastructure
 {
     public class DashboardSnapshotProvider(
         IScannedImageRepository scannedImageRepository,
-        IExecutionRepository executionRepository
+        IExecutionRepository executionRepository,
+        IBlobStore blobStore
     ) : IDashboardSnapshotProvider
     {
         public async Task<DashboardSnapshot> GetSnapshotForUserAsync(
@@ -38,6 +39,7 @@ namespace Rocket.Infrastructure
                     ScansReceivedByVendor = scansByVendor
                 };
 
+            // Executions by workflow
             var executionsByWorkflow =
                 (await
                     executionRepository
@@ -47,6 +49,7 @@ namespace Rocket.Infrastructure
                         ))
                 .ToList();
 
+            // Executions by status
             var executionsByStatus =
                 (await
                     executionRepository
@@ -64,6 +67,19 @@ namespace Rocket.Infrastructure
                             .Sum(o => o.Executions),
                     ExecutionsByWorkflow = executionsByWorkflow,
                     ExecutionsByStatus = executionsByStatus
+                };
+
+            // Storage
+            var storage =
+                await
+                    blobStore
+                        .GetDriveInfoAsync(cancellationToken);
+
+            result.Storage =
+                new StorageSummary
+                {
+                    UsedStorageBytes = storage.Item1,
+                    AvailableStorageBytes = storage.Item2
                 };
 
             return result;

@@ -2,8 +2,8 @@
 {
     public class StorageSummary
     {
-        public long UsedStorageMb { get; set; }
+        public long UsedStorageBytes { get; set; }
         
-        public long AvailableStorageMb { get; set; }
+        public long AvailableStorageBytes { get; set; }
     }
 }

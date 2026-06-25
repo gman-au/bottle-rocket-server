@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Rocket.Interfaces
@@ -20,6 +21,11 @@ namespace Rocket.Interfaces
         Task<bool> DeleteImageAsync(
             string blobId,
             string fileExtension,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken
+        );
+
+        Task<Tuple<long, long>> GetDriveInfoAsync(
+            CancellationToken cancellationToken
+        );
     }
 }

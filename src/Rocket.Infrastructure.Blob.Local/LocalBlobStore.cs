@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -149,7 +150,8 @@ namespace Rocket.Infrastructure.Blob.Local
         public async Task<bool> DeleteImageAsync(
             string blobId,
             string fileExtension,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken
+        )
         {
             var filePath = $"{Path.GetFileName(blobId)}{fileExtension}";
 
@@ -179,10 +181,71 @@ namespace Rocket.Infrastructure.Blob.Local
             return true;
         }
 
-        private static void EnsureFolderExists(string path)
+        public async Task<Tuple<long, long>> GetDriveInfoAsync(
+            CancellationToken cancellationToken
+        )
+        {
+            var localBasePath =
+                _options.LocalBasePath ??
+                throw new ConfigurationErrorsException(
+                    nameof(LocalBlobConfigurationOptions.LocalBasePath)
+                );
+
+            var localSubfolder =
+                _options.LocalSubfolder ??
+                throw new ConfigurationErrorsException(
+                    nameof(LocalBlobConfigurationOptions.LocalSubfolder)
+                );
+
+            var folderPath =
+                Path
+                    .Combine(
+                        localBasePath,
+                        localSubfolder
+                    );
+
+            EnsureFolderExists(folderPath);
+
+            var drive =
+                new DriveInfo(
+                    Path.GetPathRoot(folderPath) ?? string.Empty
+                );
+
+            var availableBytes =
+                drive
+                    .AvailableFreeSpace;
+
+            var pathUsedBytes =
+                GetDirectorySize(folderPath);
+
+            return
+                new Tuple<long, long>(
+                    pathUsedBytes,
+                    availableBytes
+                );
+        }
+
+        private static void EnsureFolderExists(
+            string path
+        )
         {
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
+        }
+
+        private static long GetDirectorySize(
+            string folderPath
+        )
+        {
+            if (!Directory.Exists(folderPath)) return 0;
+
+            return
+                new DirectoryInfo(folderPath)
+                    .EnumerateFiles(
+                        "*",
+                        SearchOption.AllDirectories
+                    )
+                    .Sum(f => f.Length);
         }
     }
 }

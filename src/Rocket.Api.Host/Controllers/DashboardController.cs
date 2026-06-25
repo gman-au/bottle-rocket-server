@@ -85,38 +85,67 @@ namespace Rocket.Api.Host.Controllers
                                     }
                                 )
                         },
-                    Storage = new StorageResponse
-                    {
-                        UsedStorageMb = snapshot?.Storage?.UsedStorageMb,
-                        AvailableStorageMb = snapshot?.Storage?.AvailableStorageMb
-                    },
-                    Executions = new ExecutionsResponse
-                    {
-                        TotalExecutions = snapshot?.Executions?.TotalExecutions,
-                        ExecutionsByStatus =
-                            (snapshot?.Executions?.ExecutionsByStatus ?? [])
-                            .Select(
-                                o => new ExecutionByStatusTotalSpecifics
-                                {
-                                    Status = Enum.GetName(typeof(ExecutionStatusEnum), o.Status),
-                                    Executions = o.Executions
-                                }
-                            ),
-                        ExecutionsByWorkflow =
-                            (snapshot?.Executions?.ExecutionsByWorkflow ?? [])
-                            .Select(
-                                o => new ExecutionByWorkflowTotalSpecifics
-                                {
-                                    Workflow = o.Workflow,
-                                    Executions = o.Executions
-                                }
-                            ),
-                    }
+                    Storage =
+                        new StorageResponse
+                        {
+                            UsedStorageBytes = snapshot?.Storage?.UsedStorageBytes,
+                            UsedStorageFriendly = FormatBytes(snapshot?.Storage?.UsedStorageBytes),
+                            AvailableStorageBytes = snapshot?.Storage?.AvailableStorageBytes,
+                            AvailableStorageFriendly = FormatBytes(snapshot?.Storage?.AvailableStorageBytes)
+                        },
+                    Executions =
+                        new ExecutionsResponse
+                        {
+                            TotalExecutions = snapshot?.Executions?.TotalExecutions,
+                            ExecutionsByStatus =
+                                (snapshot?.Executions?.ExecutionsByStatus ?? [])
+                                .Select(
+                                    o => new ExecutionByStatusTotalSpecifics
+                                    {
+                                        Status = Enum.GetName(
+                                            typeof(ExecutionStatusEnum),
+                                            o.Status
+                                        ),
+                                        Executions = o.Executions
+                                    }
+                                ),
+                            ExecutionsByWorkflow =
+                                (snapshot?.Executions?.ExecutionsByWorkflow ?? [])
+                                .Select(
+                                    o => new ExecutionByWorkflowTotalSpecifics
+                                    {
+                                        Workflow = o.Workflow,
+                                        Executions = o.Executions
+                                    }
+                                ),
+                        }
                 };
 
             return
                 response
                     .AsApiSuccess();
+        }
+
+        private static string FormatBytes(
+            long? bytes
+        )
+        {
+            if (bytes == null) return "0B;";
+
+            string[] suffixes = { "B", "KB", "MB", "GB", "TB" };
+
+            var i = 0;
+
+            var value = bytes;
+
+            while (value >= 1024 && i < suffixes.Length - 1)
+            {
+                value /= 1024;
+                i++;
+            }
+
+            return
+                $"{value:0.##} {suffixes[i]}";
         }
     }
 }
