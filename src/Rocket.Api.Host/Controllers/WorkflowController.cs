@@ -25,7 +25,8 @@ namespace Rocket.Api.Host.Controllers
         ILogger<WorkflowController> logger,
         IUserManager userManager,
         IWorkflowRepository workflowRepository,
-        IWorkflowStepModelMapperRegistry workflowStepModelMapperRegistry
+        IWorkflowStepModelMapperRegistry workflowStepModelMapperRegistry,
+        IDashboardSnapshotProvider dashboardSnapshotProvider
     ) : RocketControllerBase(userManager)
     {
         [HttpPost("fetch")]
@@ -74,17 +75,18 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Workflows =
                         records
-                            .Select(o =>
-                                new MyWorkflowSummary
-                                {
-                                    Id = o.Id,
-                                    UserId = o.UserId,
-                                    MatchingPageSymbol = o.MatchingPageSymbol,
-                                    Name = o.Name,
-                                    IsActive = o.IsActive,
-                                    CreatedAt = o.CreatedAt.ToLocalTime(),
-                                    LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
-                                }
+                            .Select(
+                                o =>
+                                    new MyWorkflowSummary
+                                    {
+                                        Id = o.Id,
+                                        UserId = o.UserId,
+                                        MatchingPageSymbol = o.MatchingPageSymbol,
+                                        Name = o.Name,
+                                        IsActive = o.IsActive,
+                                        CreatedAt = o.CreatedAt.ToLocalTime(),
+                                        LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
+                                    }
                             ),
                     TotalRecords = (int)totalRecordCount
                 };
@@ -145,6 +147,9 @@ namespace Rocket.Api.Host.Controllers
                 {
                     IsDeleted = result
                 };
+
+            dashboardSnapshotProvider
+                .MarkAsDirty(userId);
 
             return
                 response
@@ -251,10 +256,14 @@ namespace Rocket.Api.Host.Controllers
                     ApiStatusCodeEnum.ServerError
                 );
 
-            var response = new CreateWorkflowResponse
-            {
-                Id = result.Id
-            };
+            var response =
+                new CreateWorkflowResponse
+                {
+                    Id = result.Id
+                };
+
+            dashboardSnapshotProvider
+                .MarkAsDirty(userId);
 
             return
                 response
@@ -387,6 +396,9 @@ namespace Rocket.Api.Host.Controllers
 
             var response =
                 new UpdateWorkflowResponse();
+            
+            dashboardSnapshotProvider
+                .MarkAsDirty(userId);
 
             return
                 response
@@ -454,7 +466,8 @@ namespace Rocket.Api.Host.Controllers
                     IsActive = workflow.IsActive,
                     Steps =
                         (workflow.Steps ?? [])
-                        .Select(o =>
+                        .Select(
+                            o =>
                             {
                                 var mapper =
                                     workflowStepModelMapperRegistry

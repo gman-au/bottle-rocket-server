@@ -21,6 +21,7 @@ namespace Rocket.Api.Host.Controllers
         IScannedImageHandler scannedImageHandler,
         ICaptureNotifier captureNotifier,
         IWorkflowDetector workflowDetector,
+        IDashboardSnapshotProvider dashboardSnapshotProvider,
         ILogger<CaptureController> logger
     ) : ControllerBase
     {
@@ -145,6 +146,9 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Id = scanId
                 };
+
+            dashboardSnapshotProvider
+                .MarkAsDirty(userId);
 
             return
                 response
