@@ -146,7 +146,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IObfuscator, Obfuscator>()
                 .AddTransient<IFileRetitler, SafeFileRetitler>()
                 .AddTransient<IWorkflowCloner, WorkflowCloner>()
-                .AddTransient<IDashboardSnapshotProvider, DashboardSnapshotProvider>();
+                .AddSingleton<IDashboardSnapshotProvider, DashboardSnapshotProvider>();
 
             if (environment.IsDevelopment())
                 services
@@ -158,6 +158,9 @@ namespace Rocket.Api.Host.Injection
             services
                 .AddSingleton<IJsonResolverInstanceProvider, RocketJsonResolverInstanceProvider>();
 
+            services
+                .AddMemoryCache(); 
+            
             return services;
         }
 

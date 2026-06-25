@@ -10,5 +10,9 @@ namespace Rocket.Interfaces
             string userId,
             CancellationToken cancellationToken
         );
+
+        void MarkAsDirty(
+            string userId
+        );
     }
 }

@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Rocket.Domain.Dashboard;
 using Rocket.Interfaces;
 
@@ -9,15 +11,23 @@ namespace Rocket.Infrastructure
     public class DashboardSnapshotProvider(
         IScannedImageRepository scannedImageRepository,
         IExecutionRepository executionRepository,
-        IBlobStore blobStore
+        IBlobStore blobStore,
+        IMemoryCache cache
     ) : IDashboardSnapshotProvider
     {
+        private const int CacheExpiryMinutes = 10;
+
         public async Task<DashboardSnapshot> GetSnapshotForUserAsync(
             string userId,
             CancellationToken cancellationToken
         )
         {
-            // TODO: get cached value prior - set this up
+            if (cache.TryGetValue(
+                    userId,
+                    out DashboardSnapshot cachedSnapshot
+                ))
+                return cachedSnapshot;
+
             var result = new DashboardSnapshot();
 
             // Scans by vendor
@@ -82,7 +92,27 @@ namespace Rocket.Infrastructure
                     AvailableStorageBytes = storage.Item2
                 };
 
+            cache
+                .Set(
+                    userId,
+                    result,
+                    TimeSpan
+                        .FromMinutes(CacheExpiryMinutes)
+                );
+
             return result;
+        }
+
+        public void MarkAsDirty(
+            string userId
+        )
+        {
+            if (cache.TryGetValue(
+                    userId,
+                    out _
+                ))
+                cache
+                    .Remove(userId);
         }
     }
 }
