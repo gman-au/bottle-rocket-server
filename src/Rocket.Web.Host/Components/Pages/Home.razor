@@ -1,7 +1,16 @@
 ﻿@page "/"
 
 <MudPaper Class="p-4" elevation="2">
-    <DashboardSnapshot />
+    <MudGrid Justify="Justify.Center">
+        <MudItem xs="6">
+            <MudImage Fluid Src="@Assets["img/dashboard-title.png"]"/>
+        </MudItem>
+        <MudFlexBreak/>
+        <MudItem xs="12">
+            <DashboardSnapshot/>
+        </MudItem>
+    </MudGrid>
+
     <MudLink
         Target="_blank"
         Href="https://play.google.com/store/apps/details?id=au.com.gman.bottlerocket">
