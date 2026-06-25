@@ -1,0 +1,16 @@
+﻿using System.Text.Json.Serialization;
+
+namespace Rocket.Api.Contracts.Dashboard
+{
+    public class FetchDashboardResponse : ApiResponse
+    {
+        [JsonPropertyName("scans")]
+        public ScansResponse Scans { get; set; }
+        
+        [JsonPropertyName("storage")]
+        public StorageResponse Storage { get; set; }
+        
+        [JsonPropertyName("executions")]
+        public ExecutionsResponse Executions { get; set; }
+    }
+}

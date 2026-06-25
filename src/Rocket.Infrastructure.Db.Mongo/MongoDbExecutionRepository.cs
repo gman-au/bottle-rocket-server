@@ -6,9 +6,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using Rocket.Domain.Dashboard;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
+using Rocket.Domain.Utils;
 using Rocket.Infrastructure.Db.Mongo.Extensions;
 using Rocket.Interfaces;
 
@@ -354,6 +356,74 @@ namespace Rocket.Infrastructure.Db.Mongo
             return
                 records
                     .ToList();
+        }
+
+        public async Task<IEnumerable<ExecutionByWorkflowTotal>> AggregateExecutionsByWorkflowAsync(
+            string userId,
+            CancellationToken cancellationToken
+        )
+        {
+            var collection =
+                GetMongoCollection();
+
+            var filter = Builders<Execution>
+                .Filter
+                .Eq(
+                    o => o.UserId,
+                    userId
+                );
+
+            var result =
+                await
+                    collection
+                        .Aggregate()
+                        .Match(filter)
+                        .Group(
+                            o => o.Name,
+                            g =>
+                                new ExecutionByWorkflowTotal
+                                {
+                                    Workflow = g.Key ?? DomainConstants.UnknownType,
+                                    Executions = g.Count()
+                                }
+                        )
+                        .ToListAsync(cancellationToken);
+
+            return result;
+        }
+
+        public async Task<IEnumerable<ExecutionByStatusTotal>> AggregateExecutionsByStatusAsync(
+            string userId,
+            CancellationToken cancellationToken
+        )
+        {
+            var collection =
+                GetMongoCollection();
+
+            var filter = Builders<Execution>
+                .Filter
+                .Eq(
+                    o => o.UserId,
+                    userId
+                );
+
+            var result =
+                await
+                    collection
+                        .Aggregate()
+                        .Match(filter)
+                        .Group(
+                            o => o.ExecutionStatus,
+                            g =>
+                                new ExecutionByStatusTotal
+                                {
+                                    Status = g.Key,
+                                    Executions = g.Count()
+                                }
+                        )
+                        .ToListAsync(cancellationToken);
+
+            return result;
         }
     }
 }

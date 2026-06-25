@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using Rocket.Domain;
+using Rocket.Domain.Dashboard;
+using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Db.Mongo
@@ -11,15 +14,22 @@ namespace Rocket.Infrastructure.Db.Mongo
     public class MongoDbScannedImageRepository(
         ILogger<MongoDbScannedImageRepository> logger,
         IMongoDbClient mongoDbClient
-    ) : MongoDbRepositoryBase<ScannedImage>(mongoDbClient, logger), IScannedImageRepository
+    ) : MongoDbRepositoryBase<ScannedImage>(
+        mongoDbClient,
+        logger
+    ), IScannedImageRepository
     {
         protected override string CollectionName => MongoConstants.ScannedImageCollection;
 
         public async Task<ScannedImage> InsertScanAsync(
             ScannedImage scannedImage,
-            CancellationToken cancellationToken) =>
+            CancellationToken cancellationToken
+        ) =>
             await
-                InsertRecordAsync(scannedImage, cancellationToken);
+                InsertRecordAsync(
+                    scannedImage,
+                    cancellationToken
+                );
 
         public async Task ArchiveScanAsync(
             string userId,
@@ -115,5 +125,38 @@ namespace Rocket.Infrastructure.Db.Mongo
                         ),
                     cancellationToken
                 );
+
+        public async Task<IEnumerable<ScanByVendorTotal>> AggregateScansByVendorAsync(
+            string userId,
+            CancellationToken cancellationToken
+        )
+        {
+            var collection =
+                GetMongoCollection();
+
+            var filter = Builders<ScannedImage>
+                .Filter
+                .Eq(
+                    o => o.UserId,
+                    userId
+                );
+
+            var result =
+                await
+                    collection
+                        .Aggregate()
+                        .Match(filter)
+                        .Group(
+                            o => o.Vendor,
+                            g => new ScanByVendorTotal
+                            {
+                                Vendor = g.Key ?? DomainConstants.UnknownType,
+                                Scans = g.Count()
+                            }
+                        )
+                        .ToListAsync(cancellationToken);
+
+            return result;
+        }
     }
 }
