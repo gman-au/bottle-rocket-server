@@ -14,26 +14,7 @@
     @if (_dashboardSnapshot != null)
     {
         <MudGrid Justify="Justify.Center" Class="pa-4">
-            @if (_dashboardSnapshot?.Lifecycle?.LifecyclesByGroup?.Count() > 0)
-            {
-                <MudItem xs="12" Class="mb-4">
-                    <MudText Typo="Typo.h6" Class="text-center">
-                        Workflows
-                    </MudText>
-                    <MudChart
-                        Nodes="@((_overviewNodes ?? []).ToList())"
-                        Edges="@((_overviewEdges ?? []).ToList())"
-                        ChartType="ChartType.Sankey"
-                        Width="100%"
-                        Height="300px"
-                        ChartOptions="@_vendorChartOptions"
-                        InputData="@((_vendorData ?? []).ToArray())"
-                        InputLabels="@((_vendorLabels ?? []).ToArray())">
-                    </MudChart>
-                </MudItem>
-                <MudFlexBreak/>
-            }
-            <MudItem xs="12" sm="12" md="6" lg="4" Class="mb-4">
+            <MudItem xs="12" sm="12" md="3" lg="3" Class="mb-4">
                 <MudText Typo="Typo.h6" Class="text-center">
                     Scanned pages
                 </MudText>
@@ -55,7 +36,7 @@
                     </CustomGraphics>
                 </MudChart>
             </MudItem>
-            <MudItem xs="12" sm="12" md="6" lg="4" Class="mb-4">
+            <MudItem xs="12" sm="12" md="3" lg="3" Class="mb-4">
                 <MudText Typo="Typo.h6" Class="text-center">
                     Storage
                 </MudText>
@@ -85,6 +66,25 @@
                     </CustomGraphics>
                 </MudChart>
             </MudItem>
+            @if (_dashboardSnapshot?.Lifecycle?.LifecyclesByGroup?.Count() > 0)
+            {
+                <MudFlexBreak/>
+                <MudItem xs="12" Class="mb-4">
+                    <MudText Typo="Typo.h6" Class="text-center">
+                        Workflows
+                    </MudText>
+                    <MudChart
+                        Nodes="@((_overviewNodes ?? []).ToList())"
+                        Edges="@((_overviewEdges ?? []).ToList())"
+                        ChartType="ChartType.Sankey"
+                        Width="100%"
+                        Height="300px"
+                        ChartOptions="@_vendorChartOptions"
+                        InputData="@((_vendorData ?? []).ToArray())"
+                        InputLabels="@((_vendorLabels ?? []).ToArray())">
+                    </MudChart>
+                </MudItem>
+            }
         </MudGrid>
     }
 </BottleRocketLoadingOverlay>
