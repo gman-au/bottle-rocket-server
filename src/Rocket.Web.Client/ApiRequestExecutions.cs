@@ -166,5 +166,36 @@ namespace Rocket.Web.Client
 
             return result;
         }
+        
+        public async Task<DeleteExecutionResponse> DeleteExecutionByIdAsync(
+            string executionId,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation("Received Delete Execution request");
+
+            var response =
+                await
+                    authenticatedApiClient
+                        .DeleteAsync(
+                            $"/api/executions/{executionId}",
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<DeleteExecutionResponse>(
+                            _jsonSerializerOptions,
+                            logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
     }
 }

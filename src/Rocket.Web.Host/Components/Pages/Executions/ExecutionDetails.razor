@@ -9,6 +9,7 @@
 @using Rocket.Web.Host.HubClients
 @using Rocket.Web.Host.Infrastructure
 @inject IJSRuntime JsRuntime
+@inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject ICaptureHubClient CaptureHubClient
 @inject IApiRequestManager ApiRequestManager
@@ -84,6 +85,14 @@
                             </MudSimpleTable>
                         </div>
                         <MudGrid Class="align-start" Justify="Justify.FlexEnd">
+                            <MudItem>
+                                <MudButton
+                                    Variant="Variant.Outlined"
+                                    Color="Color.Error"
+                                    OnClick="@(() => ConfirmDeleteAsync())">
+                                    Delete
+                                </MudButton>
+                            </MudItem>
                             <MudItem>
                                 <GoBackButton/>
                             </MudItem>
@@ -352,6 +361,58 @@
                             _currentModel.Id,
                             BaseCancellationToken
                         );
+            }
+            catch (Exception ex)
+            {
+                WebHostErrorHandler
+                    .HandleException(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+    
+    private async Task ConfirmDeleteAsync()
+    {
+        var scanId = _currentModel.ScanId;
+        
+        var dialog =
+            await
+                DialogService
+                    .ShowAsync<ConfirmDeleteExecutionDialog>(
+                        null
+                    );
+
+        var result =
+            await
+                dialog
+                    .Result;
+
+        if (!(result?.Canceled ?? true))
+        {
+            try
+            {
+                _isLoading = true;
+                StateHasChanged();
+
+                await
+                    ApiRequestManager
+                        .DeleteExecutionByIdAsync(
+                            _currentModel.Id,
+                            BaseCancellationToken
+                        );
+
+                Snackbar
+                    .Add(
+                        "The workflow run has been deleted.",
+                        Severity.Success
+                    );
+
+                NavigationManager
+                    .NavigateTo($"/MyScans/{scanId}");
             }
             catch (Exception ex)
             {

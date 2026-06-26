@@ -147,6 +147,11 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         );
 
+        Task<DeleteExecutionResponse> DeleteExecutionByIdAsync(
+            string executionId,
+            CancellationToken cancellationToken
+        );
+        
         Task<ApiResponse> FinalizeDropboxConnectorAsync(
             FinalizeDropboxConnectorRequest request,
             CancellationToken cancellationToken
