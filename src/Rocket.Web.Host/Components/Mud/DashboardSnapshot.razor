@@ -144,6 +144,36 @@
     private bool _isConnected;
     private FetchDashboardResponse _dashboardSnapshot = null;
 
+    protected override async Task OnAfterRenderAsync(
+        bool firstRender
+    )
+    {
+        if (!firstRender) return;
+
+        try
+        {
+            CaptureHubClient.OnNewCaptureReceived += HandleDashboardUpdate;
+            CaptureHubClient.OnNewExecutionUpdateReceived += HandleDashboardUpdate;
+
+            await
+                CaptureHubClient
+                    .StartAsync();
+
+            _isConnected =
+                CaptureHubClient
+                    .IsConnected;
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+    
     protected override async Task OnInitializedAsync()
     {
         try
@@ -154,19 +184,6 @@
 
             _isLoading = true;
             StateHasChanged();
-
-            // Set up SignalR listener
-            CaptureHubClient.OnNewCaptureReceived += HandleDashboardUpdate;
-            CaptureHubClient.OnNewExecutionUpdateReceived += HandleDashboardUpdate;
-
-            // Connect to hub
-            await
-                CaptureHubClient
-                    .StartAsync();
-
-            _isConnected =
-                CaptureHubClient
-                    .IsConnected;
 
             await
                 LoadDashboardAsync();
@@ -417,7 +434,7 @@
 
         await
             CaptureHubClient
-                .DisposeAsync();
+                .StopAsync();
     }
 
 }

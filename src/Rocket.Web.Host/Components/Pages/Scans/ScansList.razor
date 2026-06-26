@@ -36,7 +36,7 @@
                         </MudCardContent>
                         <MudCardActions Class="justify-end">
                             <MudMenu Dense Icon="@StandardIcons.SubMenuIcon">
-                                <MudMenuItem 
+                                <MudMenuItem
                                     Icon="@StandardIcons.InspectIcon"
                                     IconColor="Color.Secondary"
                                     Label="Details"
@@ -88,6 +88,35 @@
     private int _currentIndex = 0;
     private IEnumerable<ScanSummary> _scans = [];
 
+    protected override async Task OnAfterRenderAsync(
+        bool firstRender
+    )
+    {
+        if (!firstRender) return;
+
+        try
+        {
+            CaptureHubClient.OnNewCaptureReceived += HandleNewCapture;
+
+            await
+                CaptureHubClient
+                    .StartAsync();
+
+            _isConnected =
+                CaptureHubClient
+                    .IsConnected;
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -97,18 +126,6 @@
                     .OnInitializedAsync();
 
             _isLoading = true;
-
-            // Set up SignalR listener
-            CaptureHubClient.OnNewCaptureReceived += HandleNewCapture;
-
-            // Connect to hub
-            await
-                CaptureHubClient
-                    .StartAsync();
-
-            _isConnected =
-                CaptureHubClient
-                    .IsConnected;
 
             await
                 LoadScansAsync(
@@ -165,7 +182,10 @@
             );
     }
 
-    private async Task LoadScansAsync(int index, int count)
+    private async Task LoadScansAsync(
+        int index,
+        int count
+    )
     {
         var request =
             new MyScansRequest
@@ -199,8 +219,10 @@
                 )
                 .OrderByDescending(o => o.DateScanned);
     }
-    
-    private async Task ConfirmDeleteAsync(string id)
+
+    private async Task ConfirmDeleteAsync(
+        string id
+    )
     {
         var dialog =
             await
@@ -231,7 +253,7 @@
                 _scans =
                     _scans
                         .Where(o => o.Id != id);
-                
+
                 Snackbar
                     .Add(
                         "The scanned image was deleted successfully.",
