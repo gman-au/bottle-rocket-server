@@ -84,5 +84,47 @@ namespace Rocket.Api.Host.Notifiers
                         cancellationToken: cancellationToken
                     );
         }
+
+        public async Task NotifyScanDeleteAsync(
+            string userId,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation(
+                    "Notifying user {userId} of scan delete",
+                    userId
+                );
+
+            await
+                hubContext
+                    .Clients
+                    .Group($"user_{userId}")
+                    .SendAsync(
+                        "ScanDeletedReceived",
+                        cancellationToken: cancellationToken
+                    );
+        }
+
+        public async Task NotifyExecutionDeleteAsync(
+            string userId,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation(
+                    "Notifying user {userId} of execution delete",
+                    userId
+                );
+
+            await
+                hubContext
+                    .Clients
+                    .Group($"user_{userId}")
+                    .SendAsync(
+                        "ExecutionDeletedReceived",
+                        cancellationToken: cancellationToken
+                    );
+        }
     }
 }

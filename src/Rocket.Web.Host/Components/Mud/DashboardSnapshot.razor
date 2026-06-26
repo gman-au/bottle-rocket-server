@@ -154,6 +154,8 @@
         {
             CaptureHubClient.OnNewCaptureReceived += HandleDashboardUpdate;
             CaptureHubClient.OnNewExecutionUpdateReceived += HandleDashboardUpdate;
+            CaptureHubClient.OnScanDeletedReceived += HandleDashboardUpdate;
+            CaptureHubClient.OnExecutionDeletedReceived += HandleDashboardUpdate;
 
             await
                 CaptureHubClient

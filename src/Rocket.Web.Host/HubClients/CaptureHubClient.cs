@@ -25,6 +25,10 @@ namespace Rocket.Web.Host.HubClients
         public event Func<Task> OnNewCaptureReceived;
 
         public event Func<Task> OnNewExecutionUpdateReceived;
+        
+        public event Func<Task> OnScanDeletedReceived;
+        
+        public event Func<Task> OnExecutionDeletedReceived;
 
         public event Func<bool, Task> OnNewConnectorUpdateReceived;
 
@@ -134,6 +138,46 @@ namespace Rocket.Web.Host.HubClients
                                         await
                                             OnNewConnectorUpdateReceived
                                                 .Invoke(success);
+                                    }
+                                }
+                            )
+                    );
+                
+                _hubSubscriptions
+                    .Add(
+                        _hubConnection
+                            .On(
+                                "ExecutionDeletedReceived",
+                                async () =>
+                                {
+                                    logger
+                                        .LogInformation("Received ExecutionDeletedReceived notification");
+
+                                    if (OnExecutionDeletedReceived != null)
+                                    {
+                                        await
+                                            OnExecutionDeletedReceived
+                                                .Invoke();
+                                    }
+                                }
+                            )
+                    );
+                
+                _hubSubscriptions
+                    .Add(
+                        _hubConnection
+                            .On(
+                                "ScanDeletedReceived",
+                                async () =>
+                                {
+                                    logger
+                                        .LogInformation("Received ScanDeletedReceived notification");
+
+                                    if (OnScanDeletedReceived != null)
+                                    {
+                                        await
+                                            OnScanDeletedReceived
+                                                .Invoke();
                                     }
                                 }
                             )

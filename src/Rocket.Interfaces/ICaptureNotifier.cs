@@ -10,5 +10,9 @@ namespace Rocket.Interfaces
         Task NotifyNewExecutionUpdateAsync(string userId, CancellationToken cancellationToken);
         
         Task NotifyConnectorUpdateAsync(string userId, bool success, CancellationToken cancellationToken);
+        
+        Task NotifyScanDeleteAsync(string userId, CancellationToken cancellationToken);
+        
+        Task NotifyExecutionDeleteAsync(string userId, CancellationToken cancellationToken);
     }
 }
