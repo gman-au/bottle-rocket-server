@@ -24,6 +24,7 @@ namespace Rocket.Api.Host.Controllers
     public class ScansController(
         ILogger<ScansController> logger,
         IUserManager userManager,
+        ICaptureNotifier captureNotifier,
         IScannedImageHandler scannedImageHandler,
         IScannedImageRepository scannedImageRepository,
         IDashboardSnapshotProvider dashboardSnapshotProvider
@@ -285,9 +286,16 @@ namespace Rocket.Api.Host.Controllers
 
             var response =
                 new DeleteScanResponse();
-
+            
             dashboardSnapshotProvider
                 .MarkAsDirty(userId);
+
+            await
+                captureNotifier
+                    .NotifyScanDeleteAsync(
+                        userId,
+                        cancellationToken
+                    );
 
             return
                 response

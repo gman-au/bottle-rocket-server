@@ -14,7 +14,7 @@
     @if (_dashboardSnapshot != null)
     {
         <MudGrid Justify="Justify.Center" Class="pa-4">
-            <MudItem xs="12" sm="12" md="6" lg="3" Class="mb-4">
+            <MudItem xs="12" sm="12" md="3" lg="3" Class="mb-4">
                 <MudText Typo="Typo.h6" Class="text-center">
                     Scanned pages
                 </MudText>
@@ -36,51 +36,7 @@
                     </CustomGraphics>
                 </MudChart>
             </MudItem>
-            <MudItem xs="12" sm="12" md="6" lg="3" Class="mb-4">
-                <MudText Typo="Typo.h6" Class="text-center">
-                    Workflow runs
-                </MudText>
-                <MudChart
-                    ChartType="ChartType.Donut"
-                    Width="100%"
-                    Height="300px"
-                    ChartOptions="@_executionsByWorkflowChartOptions"
-                    InputData="@((_executionsByWorkflowData ?? []).ToArray())"
-                    InputLabels="@((_executionsByWorkflowLabels ?? []).ToArray())">
-                    <CustomGraphics>
-                        <text
-                            style="@("fill: var(--mud-palette-text-primary);")"
-                            class="mud-donut-text mud-typography-h1"
-                            x="50%"
-                            y="50%">
-                            @_dashboardSnapshot?.Executions?.TotalExecutions
-                        </text>
-                    </CustomGraphics>
-                </MudChart>
-            </MudItem>
-            <MudItem xs="12" sm="12" md="6" lg="3" Class="mb-4">
-                <MudText Typo="Typo.h6" Class="text-center">
-                    Workflow statuses
-                </MudText>
-                <MudChart
-                    ChartType="ChartType.Donut"
-                    Width="100%"
-                    Height="300px"
-                    ChartOptions="@_executionsByStatusChartOptions"
-                    InputData="@((_executionsByStatusData ?? []).ToArray())"
-                    InputLabels="@((_executionsByStatusLabels ?? []).ToArray())">
-                    <CustomGraphics>
-                        <text
-                            style="@($"fill: {_executionStyleOfNote};")"
-                            class="mud-donut-text mud-typography-h5"
-                            x="50%"
-                            y="50%">
-                            @_executionNumberOfNote
-                        </text>
-                    </CustomGraphics>
-                </MudChart>
-            </MudItem>
-            <MudItem xs="12" sm="12" md="6" lg="3" Class="mb-4">
+            <MudItem xs="12" sm="12" md="3" lg="3" Class="mb-4">
                 <MudText Typo="Typo.h6" Class="text-center">
                     Storage
                 </MudText>
@@ -110,11 +66,42 @@
                     </CustomGraphics>
                 </MudChart>
             </MudItem>
+            @if (_dashboardSnapshot?.Lifecycle?.LifecyclesByGroup?.Count() > 0)
+            {
+                <MudFlexBreak/>
+                <MudItem xs="12" Class="mb-4">
+                    <MudText Typo="Typo.h6" Class="text-center">
+                        Workflows
+                    </MudText>
+                    <MudChart
+                        Nodes="@((_overviewNodes ?? []).ToList())"
+                        Edges="@((_overviewEdges ?? []).ToList())"
+                        ChartType="ChartType.Sankey"
+                        Width="100%"
+                        Height="300px"
+                        ChartOptions="@_vendorChartOptions"
+                        InputData="@((_vendorData ?? []).ToArray())"
+                        InputLabels="@((_vendorLabels ?? []).ToArray())">
+                    </MudChart>
+                </MudItem>
+            }
         </MudGrid>
     }
 </BottleRocketLoadingOverlay>
 
 @code {
+
+    private const string StatusCompletedName = "COMPLETED";
+    private const string StatusCompletedColor = "#239543";
+    private const string StatusErroredName = "ERRORED";
+    private const string StatusErroredColor = "#FE3F60";
+    private const string StatusCancelledName = "CANCELLED";
+    private const string StatusCancelledColor = "#D58001";
+    private const string StatusRunningName = "RUNNING";
+    private const string StatusRunningColor = "#107394";
+
+    private IEnumerable<SankeyChartNode> _overviewNodes = Array.Empty<SankeyChartNode>();
+    private IEnumerable<SankeyChartEdge> _overviewEdges = Array.Empty<SankeyChartEdge>();
 
     private IEnumerable<double> _vendorData = Array.Empty<double>();
     private IEnumerable<string> _vendorLabels = Array.Empty<string>();
@@ -129,10 +116,10 @@
     private IEnumerable<double> _storageData = Array.Empty<double>();
     private IEnumerable<string> _storageLabels = Array.Empty<string>();
     private readonly ChartOptions _storageChartOptions = new();
-    
+
     private string _storageUsedTextOfNote = string.Empty;
     private string _storageUsedStyleOfNote = string.Empty;
-    
+
     private string _storageAvailableTextOfNote = string.Empty;
     private string _storageAvailableStyleOfNote = string.Empty;
 
@@ -144,6 +131,38 @@
     private bool _isConnected;
     private FetchDashboardResponse _dashboardSnapshot = null;
 
+    protected override async Task OnAfterRenderAsync(
+        bool firstRender
+    )
+    {
+        if (!firstRender) return;
+
+        try
+        {
+            CaptureHubClient.OnNewCaptureReceived += HandleDashboardUpdate;
+            CaptureHubClient.OnNewExecutionUpdateReceived += HandleDashboardUpdate;
+            CaptureHubClient.OnScanDeletedReceived += HandleDashboardUpdate;
+            CaptureHubClient.OnExecutionDeletedReceived += HandleDashboardUpdate;
+
+            await
+                CaptureHubClient
+                    .StartAsync();
+
+            _isConnected =
+                CaptureHubClient
+                    .IsConnected;
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -154,19 +173,6 @@
 
             _isLoading = true;
             StateHasChanged();
-
-            // Set up SignalR listener
-            CaptureHubClient.OnNewCaptureReceived += HandleDashboardUpdate;
-            CaptureHubClient.OnNewExecutionUpdateReceived += HandleDashboardUpdate;
-
-            // Connect to hub
-            await
-                CaptureHubClient
-                    .StartAsync();
-
-            _isConnected =
-                CaptureHubClient
-                    .IsConnected;
 
             await
                 LoadDashboardAsync();
@@ -192,6 +198,8 @@
                         BaseCancellationToken
                     );
 
+        ApplyToLifecycleTotalsChart(_dashboardSnapshot);
+
         ApplyToVendorChart(_dashboardSnapshot);
 
         ApplyToExecutionStatusChart(_dashboardSnapshot);
@@ -199,6 +207,71 @@
         ApplyToExecutionWorkflowChart(_dashboardSnapshot);
 
         ApplyToStorageChart(_dashboardSnapshot);
+    }
+
+    private void ApplyToLifecycleTotalsChart(
+        FetchDashboardResponse snapshot
+    )
+    {
+        var lifecyclesByGroup =
+            (snapshot?
+                .Lifecycle?
+                .LifecyclesByGroup ?? [])
+            .ToList();
+
+        var allWorkflowNodes =
+            lifecyclesByGroup
+                .Select(o => o.Workflow)
+                .Distinct()
+                .Select(
+                    o =>
+                        new SankeyChartNode
+                        {
+                            Name = o,
+                            Column = 0
+                        }
+                )
+                .ToList();
+
+        for (var i = 0; i < allWorkflowNodes.Count; i++)
+        {
+            allWorkflowNodes
+                    .ElementAt(i)
+                    .Color =
+                BottleRocketChartPalette
+                    .Values
+                    .ElementAt(i % BottleRocketChartPalette.Values.Count());
+        }
+
+        var allStatusNodes =
+            lifecyclesByGroup
+                .Select(o => o.Status)
+                .Distinct()
+                .Select(
+                    o =>
+                        new SankeyChartNode
+                        {
+                            Name = o,
+                            Column = 1,
+                            Color = MapStatusToColor(o)
+                        }
+                );
+
+        _overviewNodes =
+            allStatusNodes
+                .Concat(allWorkflowNodes);
+
+        _overviewEdges =
+            lifecyclesByGroup
+                .Select(
+                    o =>
+                        new SankeyChartEdge
+                        {
+                            Source = o.Workflow,
+                            Target = o.Status,
+                            Value = o.Count
+                        }
+                );
     }
 
     private void ApplyToExecutionWorkflowChart(
@@ -223,19 +296,24 @@
         }
     }
 
+    private static string MapStatusToColor(
+        string status
+    )
+    {
+        return status?.ToUpper() switch
+        {
+            StatusErroredName => StatusErroredColor,
+            StatusCompletedName => StatusCompletedColor,
+            StatusCancelledName => StatusCancelledColor,
+            StatusRunningName => StatusRunningColor,
+            _ => throw new ArgumentException("Invalid value for status")
+        };
+    }
+
     private void ApplyToExecutionStatusChart(
         FetchDashboardResponse snapshot
     )
     {
-        const string statusCompletedName = "COMPLETED";
-        const string statusCompletedColor = "#239543";
-        const string statusErroredName = "ERRORED";
-        const string statusErroredColor = "#FE3F60";
-        const string statusCancelledName = "CANCELLED";
-        const string statusCancelledColor = "#D58001";
-        const string statusRunningName = "RUNNING";
-        const string statusRunningColor = "#107394";
-
         var errorCount = 0D;
         var total =
             _dashboardSnapshot?
@@ -254,35 +332,18 @@
 
         for (var i = 0; i < _executionsByStatusLabels.Count() && i < 20; i++)
         {
-            if (_executionsByStatusLabels.ElementAt(i)
-                    ?.ToUpper() == statusCompletedName)
-            {
-                _executionsByStatusChartOptions
-                    .ChartPalette[i] = statusCompletedColor;
-            }
+            _executionsByStatusChartOptions
+                    .ChartPalette[i] =
+                MapStatusToColor(
+                    _executionsByStatusLabels.ElementAt(i)
+                );
 
             if (_executionsByStatusLabels.ElementAt(i)
-                    ?.ToUpper() == statusRunningName)
-            {
-                _executionsByStatusChartOptions
-                    .ChartPalette[i] = statusRunningColor;
-            }
-
-            if (_executionsByStatusLabels.ElementAt(i)
-                    ?.ToUpper() == statusCancelledName)
-            {
-                _executionsByStatusChartOptions
-                    .ChartPalette[i] = statusCancelledColor;
-            }
-
-            if (_executionsByStatusLabels.ElementAt(i)
-                    ?.ToUpper() == statusErroredName)
+                    ?.ToUpper() == StatusErroredName)
             {
                 errorCount =
                     _executionsByStatusData
                         .ElementAt(i);
-                _executionsByStatusChartOptions
-                    .ChartPalette[i] = statusErroredColor;
             }
         }
 
@@ -352,7 +413,7 @@
         const string statusUsedName = "Used";
         const string statusAvailableColor = "#093d4e";
         const string statusAvailableName = "Available";
-        
+
         _storageData =
             _dashboardSnapshot?.Storage != null
                 ? new[]
@@ -370,13 +431,13 @@
                     statusAvailableName
                 }
                 : [];
-        
+
         _storageUsedTextOfNote = _dashboardSnapshot?.Storage?.UsedStorageFriendly;
         _storageUsedStyleOfNote = statusUsedColor;
 
         _storageAvailableTextOfNote = _dashboardSnapshot?.Storage?.AvailableStorageFriendly;
         _storageAvailableStyleOfNote = statusAvailableColor;
-        
+
         _storageChartOptions.ChartPalette[0] = statusUsedColor;
         _storageChartOptions.ChartPalette[1] = statusAvailableColor;
     }
@@ -417,7 +478,7 @@
 
         await
             CaptureHubClient
-                .DisposeAsync();
+                .StopAsync();
     }
 
 }

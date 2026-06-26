@@ -3,12 +3,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Rocket.Domain.Dashboard;
+using Rocket.Domain.Enum;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure
 {
     public class DashboardSnapshotProvider(
+        ILogger<DashboardSnapshotProvider> logger,
         IScannedImageRepository scannedImageRepository,
         IExecutionRepository executionRepository,
         IBlobStore blobStore,
@@ -26,7 +29,12 @@ namespace Rocket.Infrastructure
                     userId,
                     out DashboardSnapshot cachedSnapshot
                 ))
+            {
+                logger
+                    .LogInformation("Returning cached dashboard snapshot for user {userId}", userId);
+                
                 return cachedSnapshot;
+            }
 
             var result = new DashboardSnapshot();
 
@@ -94,14 +102,53 @@ namespace Rocket.Infrastructure
                     UsedStorageBytes = storage.Item1,
                     AvailableStorageBytes = storage.Item2
                 };
+            
+            // Lifecycle totals
+            var executionLifecycleTotals =
+                await
+                    executionRepository
+                        .AggregateLifecycleTotalsAsync(
+                            userId,
+                            cancellationToken
+                        );
 
-            cache
-                .Set(
-                    userId,
-                    result,
-                    TimeSpan
-                        .FromMinutes(CacheExpiryMinutes)
-                );
+            result.Lifecycles =
+                new LifecycleSummary
+                {
+                    LifecyclesByGroup = 
+                        executionLifecycleTotals
+                            .Select(o => new LifecycleTotal
+                                {
+                                    Workflow = o.Workflow,
+                                    Status = o.Status,
+                                    Count = o.Count
+                                }
+                            )
+                };
+
+            var hasRunningExecutions =
+                executionsByStatus
+                    .Any(o => o.Status == (int)ExecutionStatusEnum.Running);
+            
+            // If there is a 'running' status, do not cache
+            if (!hasRunningExecutions)
+            {
+                logger
+                    .LogInformation("Caching dashboard snapshot for user {userId}", userId);
+                
+                cache
+                    .Set(
+                        userId,
+                        result,
+                        TimeSpan
+                            .FromMinutes(CacheExpiryMinutes)
+                    );
+            }
+            else
+            {
+                logger
+                    .LogWarning("Dashboard snapshot for user {userId} has running workflows - not caching", userId);
+            }
 
             return result;
         }

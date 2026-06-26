@@ -118,6 +118,23 @@ namespace Rocket.Api.Host.Controllers
                                         Executions = o.Executions
                                     }
                                 ),
+                        },
+                    Lifecycle =
+                        new LifecycleResponse
+                        {
+                            LifecyclesByGroup =
+                                (snapshot?.Lifecycles?.LifecyclesByGroup ?? [])
+                                .Select(
+                                    o => new LifecycleTotalSpecifics
+                                    {
+                                        Workflow = o.Workflow,
+                                        Status = Enum.GetName(
+                                            typeof(ExecutionStatusEnum),
+                                            o.Status
+                                        ),
+                                        Count = o.Count
+                                    }
+                                )
                         }
                 };
 

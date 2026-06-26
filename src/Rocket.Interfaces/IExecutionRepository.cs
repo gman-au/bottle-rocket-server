@@ -80,5 +80,10 @@ namespace Rocket.Interfaces
             string userId,
             CancellationToken cancellationToken
         );
+
+        public Task<IEnumerable<LifecycleTotal>> AggregateLifecycleTotalsAsync(
+            string userId,
+            CancellationToken cancellationToken
+        );
     }
 }

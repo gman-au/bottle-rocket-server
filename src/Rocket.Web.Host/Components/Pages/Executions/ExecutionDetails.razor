@@ -89,6 +89,7 @@
                                 <MudButton
                                     Variant="Variant.Outlined"
                                     Color="Color.Error"
+                                    Disabled="@(_currentModel.ExecutionStatus == (int)ExecutionStatusEnum.Running)"
                                     OnClick="@(() => ConfirmDeleteAsync())">
                                     Delete
                                 </MudButton>
@@ -160,6 +161,18 @@
             await
                 JsRuntime
                     .InvokeVoidAsync("mermaid.run");
+            
+            // Set up SignalR listener
+            CaptureHubClient.OnNewExecutionUpdateReceived += HandleExecutionUpdate;
+
+            // Connect to hub
+            await
+                CaptureHubClient
+                    .StartAsync();
+
+            _isConnected =
+                CaptureHubClient
+                    .IsConnected;
         }
     }
 
@@ -196,19 +209,7 @@
                     .OnInitializedAsync();
 
             _isLoading = true;
-
-            // Set up SignalR listener
-            CaptureHubClient.OnNewExecutionUpdateReceived += HandleExecutionUpdate;
-
-            // Connect to hub
-            await
-                CaptureHubClient
-                    .StartAsync();
-
-            _isConnected =
-                CaptureHubClient
-                    .IsConnected;
-
+            
             await
                 ReloadExecutionDetailsAsync();
         }

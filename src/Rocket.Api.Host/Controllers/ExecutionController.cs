@@ -22,6 +22,7 @@ namespace Rocket.Api.Host.Controllers
     public class ExecutionController(
         ILogger<ExecutionController> logger,
         IUserManager userManager,
+        ICaptureNotifier captureNotifier,
         IExecutionScheduler executionScheduler,
         IWorkflowExecutionManager workflowExecutionManager,
         IExecutionRepository executionRepository,
@@ -157,6 +158,13 @@ namespace Rocket.Api.Host.Controllers
             
             dashboardSnapshotProvider
                 .MarkAsDirty(userId);
+
+            await
+                captureNotifier
+                    .NotifyExecutionDeleteAsync(
+                        userId,
+                        cancellationToken
+                    );
 
             return
                 response
