@@ -7,5 +7,7 @@
         public StorageSummary Storage { get; set; }
         
         public ExecutionsSummary Executions { get; set; }
+        
+        public LifecycleSummary Lifecycles { get; set; }
     }
 }

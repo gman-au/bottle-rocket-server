@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using Rocket.Domain.Dashboard;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
@@ -424,6 +425,33 @@ namespace Rocket.Infrastructure.Db.Mongo
                         .ToListAsync(cancellationToken);
 
             return result;
+        }
+
+        public async Task<IEnumerable<LifecycleTotal>> AggregateLifecycleTotalsAsync(
+            string userId,
+            CancellationToken cancellationToken
+        )
+        {
+            var collection =
+                GetMongoCollection();
+            
+            var results =
+                await
+                    collection
+                        .AsQueryable()
+                        .Where(o => o.UserId == userId)
+                        .GroupBy(e => new { e.ExecutionStatus, e.Name })
+                        .Select(
+                            g => new LifecycleTotal
+                            {
+                                Status = g.Key.ExecutionStatus,
+                                Workflow = g.Key.Name,
+                                Count = g.Count()
+                            }
+                        )
+                        .ToListAsync(cancellationToken);
+
+            return results;
         }
     }
 }

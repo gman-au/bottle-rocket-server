@@ -94,7 +94,33 @@ namespace Rocket.Infrastructure
                     UsedStorageBytes = storage.Item1,
                     AvailableStorageBytes = storage.Item2
                 };
+            
+            // Lifecycle totals
+            var executionLifecycleTotals =
+                await
+                    executionRepository
+                        .AggregateLifecycleTotalsAsync(
+                            userId,
+                            cancellationToken
+                        );
 
+            result.Lifecycles =
+                new LifecycleSummary
+                {
+                    LifecyclesByGroup = 
+                        executionLifecycleTotals
+                            .Select(o => new LifecycleTotal
+                                {
+                                    Workflow = o.Workflow,
+                                    Status = o.Status,
+                                    Count = o.Count
+                                }
+                            )
+                };
+
+            
+            // TODO: if there is a 'running' status, do not cache
+            
             cache
                 .Set(
                     userId,
