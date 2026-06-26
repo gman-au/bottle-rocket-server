@@ -20,7 +20,7 @@
     My Scans
 </MudText>
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
-    @if (_scans.Any())
+    @if ((_scans ?? []).Any())
     {
         <MudGrid Justify="Justify.FlexStart" Class="pa-4">
             @foreach (var scan in _scans)
@@ -258,7 +258,7 @@
 
         await
             CaptureHubClient
-                .DisposeAsync();
+                .StopAsync();
     }
 
 }

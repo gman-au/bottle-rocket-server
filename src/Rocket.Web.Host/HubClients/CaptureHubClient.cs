@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -30,145 +31,184 @@ namespace Rocket.Web.Host.HubClients
         public bool IsConnected =>
             _hubConnection?.State == HubConnectionState.Connected;
 
+        private readonly List<IDisposable> _hubSubscriptions = [];
+        
         public async Task StartAsync()
         {
-            if (_hubConnection != null)
+            try
             {
-                await StopAsync();
-            }
+                if (_hubConnection != null)
+                {
+                    await StopAsync();
+                }
 
-            var authHeader =
-                await
-                    authenticationManager
-                        .GetAuthorizationHeaderAsync();
+                var authHeader =
+                    await
+                        authenticationManager
+                            .GetAuthorizationHeaderAsync();
 
-            var apiBaseUrl =
-                _options?.BaseUrl ??
-                throw new ConfigurationErrorsException(
-                    nameof(_options.BaseUrl)
-                );
+                var apiBaseUrl =
+                    _options?.BaseUrl ??
+                    throw new ConfigurationErrorsException(
+                        nameof(_options.BaseUrl)
+                    );
 
-            _hubConnection =
-                new HubConnectionBuilder()
-                    .WithUrl(
-                        $"{apiBaseUrl}/hubs/capture",
-                        options =>
-                        {
-                            options.HttpMessageHandlerFactory = handler =>
-                                new AuthHeaderHandler(authHeader)
+                _hubConnection =
+                    new HubConnectionBuilder()
+                        .WithUrl(
+                            $"{apiBaseUrl}/hubs/capture",
+                            options =>
+                            {
+                                options.HttpMessageHandlerFactory = handler =>
+                                    new AuthHeaderHandler(authHeader)
+                                    {
+                                        InnerHandler = handler
+                                    };
+                            }
+                        )
+                        .WithAutomaticReconnect()
+                        .Build();
+
+                foreach (var sub in _hubSubscriptions)
+                    sub
+                        .Dispose();
+
+                _hubSubscriptions
+                    .Clear();
+
+                _hubSubscriptions
+                    .Add(
+                        _hubConnection
+                            .On(
+                                "NewCaptureReceived",
+                                async () =>
                                 {
-                                    InnerHandler = handler
-                                };
-                        }
-                    )
-                    .WithAutomaticReconnect()
-                    .Build();
+                                    logger
+                                        .LogInformation("Received NewCaptureReceived notification");
 
-            _hubConnection.On(
-                "NewCaptureReceived",
-                async () =>
+                                    if (OnNewCaptureReceived != null)
+                                    {
+                                        await
+                                            OnNewCaptureReceived
+                                                .Invoke();
+                                    }
+                                }
+                            )
+                    );
+
+                _hubSubscriptions
+                    .Add(
+                        _hubConnection
+                            .On(
+                                "NewExecutionUpdateReceived",
+                                async () =>
+                                {
+                                    logger
+                                        .LogInformation("Received NewExecutionUpdateReceived notification");
+
+                                    if (OnNewExecutionUpdateReceived != null)
+                                    {
+                                        await
+                                            OnNewExecutionUpdateReceived
+                                                .Invoke();
+                                    }
+                                }
+                            )
+                    );
+
+                _hubSubscriptions
+                    .Add(
+                        _hubConnection
+                            .On<bool>(
+                                "NewConnectorUpdateReceived",
+                                async success =>
+                                {
+                                    logger
+                                        .LogInformation(
+                                            "Received NewConnectorUpdateReceived notification with success={success}",
+                                            success
+                                        );
+
+                                    if (OnNewConnectorUpdateReceived != null)
+                                    {
+                                        await
+                                            OnNewConnectorUpdateReceived
+                                                .Invoke(success);
+                                    }
+                                }
+                            )
+                    );
+
+                _hubConnection.Reconnecting += error =>
                 {
                     logger
-                        .LogInformation("Received NewCaptureReceived notification");
+                        .LogWarning(
+                            "SignalR reconnecting: {error}",
+                            error?.Message
+                        );
 
-                    if (OnNewCaptureReceived != null)
-                    {
-                        await
-                            OnNewCaptureReceived
-                                .Invoke();
-                    }
-                }
-            );
+                    return
+                        Task
+                            .CompletedTask;
+                };
 
-            _hubConnection.On(
-                "NewExecutionUpdateReceived",
-                async () =>
-                {
-                    logger
-                        .LogInformation("Received NewExecutionUpdateReceived notification");
-
-                    if (OnNewExecutionUpdateReceived != null)
-                    {
-                        await
-                            OnNewExecutionUpdateReceived
-                                .Invoke();
-                    }
-                }
-            );
-
-            _hubConnection.On<bool>(
-                "NewConnectorUpdateReceived",
-                async success =>
+                _hubConnection.Reconnected += connectionId =>
                 {
                     logger
                         .LogInformation(
-                            "Received NewConnectorUpdateReceived notification with success={success}",
-                            success
+                            "SignalR reconnected: {connectionId}",
+                            connectionId
                         );
 
-                    if (OnNewConnectorUpdateReceived != null)
-                    {
-                        await
-                            OnNewConnectorUpdateReceived
-                                .Invoke(success);
-                    }
-                }
-            );
+                    return
+                        Task
+                            .CompletedTask;
+                };
 
-            _hubConnection.Reconnecting += error =>
+                _hubConnection.Closed += error =>
+                {
+                    logger
+                        .LogError(
+                            "SignalR connection closed: {error}",
+                            error?.Message
+                        );
+
+                    return
+                        Task
+                            .CompletedTask;
+                };
+
+                await
+                    _hubConnection
+                        .StartAsync();
+
+                logger
+                    .LogInformation("Connected to CaptureHub");
+            }
+            catch (TaskCanceledException ex)
             {
                 logger
-                    .LogWarning(
-                        "SignalR reconnecting: {error}",
-                        error?.Message
-                    );
-
-                return
-                    Task
-                        .CompletedTask;
-            };
-
-            _hubConnection.Reconnected += connectionId =>
-            {
-                logger
-                    .LogInformation(
-                        "SignalR reconnected: {connectionId}",
-                        connectionId
-                    );
-
-                return
-                    Task
-                        .CompletedTask;
-            };
-
-            _hubConnection.Closed += error =>
-            {
-                logger
-                    .LogError(
-                        "SignalR connection closed: {error}",
-                        error?.Message
-                    );
-
-                return
-                    Task
-                        .CompletedTask;
-            };
-
-            await
-                _hubConnection
-                    .StartAsync();
-
-            logger
-                .LogInformation("Connected to CaptureHub");
+                    .LogWarning("CaptureHub start task cancelled");
+            }
         }
 
         public async Task StopAsync()
         {
+            foreach (var sub in _hubSubscriptions) 
+                sub
+                    .Dispose();
+            
+            _hubSubscriptions
+                .Clear();
+            
             if (_hubConnection != null)
             {
-                await
-                    _hubConnection
-                        .StopAsync();
+                if (_hubConnection.State != HubConnectionState.Disconnected)
+                {
+                    await
+                        _hubConnection
+                            .StopAsync();
+                }
 
                 await
                     _hubConnection
