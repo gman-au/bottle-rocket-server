@@ -93,32 +93,6 @@ namespace Rocket.Api.Host.Controllers
                             AvailableStorageBytes = snapshot?.Storage?.AvailableStorageBytes,
                             AvailableStorageFriendly = FormatBytes(snapshot?.Storage?.AvailableStorageBytes)
                         },
-                    Executions =
-                        new ExecutionsResponse
-                        {
-                            TotalExecutions = snapshot?.Executions?.TotalExecutions,
-                            ExecutionsByStatus =
-                                (snapshot?.Executions?.ExecutionsByStatus ?? [])
-                                .Select(
-                                    o => new ExecutionByStatusTotalSpecifics
-                                    {
-                                        Status = Enum.GetName(
-                                            typeof(ExecutionStatusEnum),
-                                            o.Status
-                                        ),
-                                        Executions = o.Executions
-                                    }
-                                ),
-                            ExecutionsByWorkflow =
-                                (snapshot?.Executions?.ExecutionsByWorkflow ?? [])
-                                .Select(
-                                    o => new ExecutionByWorkflowTotalSpecifics
-                                    {
-                                        Workflow = o.Workflow,
-                                        Executions = o.Executions
-                                    }
-                                ),
-                        },
                     Lifecycle =
                         new LifecycleResponse
                         {

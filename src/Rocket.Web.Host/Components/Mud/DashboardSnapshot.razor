@@ -107,12 +107,6 @@
     private IEnumerable<string> _vendorLabels = Array.Empty<string>();
     private readonly ChartOptions _vendorChartOptions = new();
 
-    private IEnumerable<double> _executionsByStatusData = Array.Empty<double>();
-    private IEnumerable<string> _executionsByStatusLabels = Array.Empty<string>();
-    private readonly ChartOptions _executionsByStatusChartOptions = new();
-    private string _executionNumberOfNote = string.Empty;
-    private string _executionStyleOfNote = "var(--mud-palette-text-primary)";
-
     private IEnumerable<double> _storageData = Array.Empty<double>();
     private IEnumerable<string> _storageLabels = Array.Empty<string>();
     private readonly ChartOptions _storageChartOptions = new();
@@ -122,10 +116,6 @@
 
     private string _storageAvailableTextOfNote = string.Empty;
     private string _storageAvailableStyleOfNote = string.Empty;
-
-    private IEnumerable<double> _executionsByWorkflowData = Array.Empty<double>();
-    private IEnumerable<string> _executionsByWorkflowLabels = Array.Empty<string>();
-    private readonly ChartOptions _executionsByWorkflowChartOptions = new();
 
     private bool _isLoading = false;
     private bool _isConnected;
@@ -202,10 +192,6 @@
 
         ApplyToVendorChart(_dashboardSnapshot);
 
-        ApplyToExecutionStatusChart(_dashboardSnapshot);
-
-        ApplyToExecutionWorkflowChart(_dashboardSnapshot);
-
         ApplyToStorageChart(_dashboardSnapshot);
     }
 
@@ -272,98 +258,6 @@
                             Value = o.Count
                         }
                 );
-    }
-
-    private void ApplyToExecutionWorkflowChart(
-        FetchDashboardResponse snapshot
-    )
-    {
-        _executionsByWorkflowData =
-            (_dashboardSnapshot?.Executions?.ExecutionsByWorkflow ?? [])
-            .Select(o => (double)o.Executions);
-
-        _executionsByWorkflowLabels =
-            (_dashboardSnapshot?.Executions?.ExecutionsByWorkflow ?? [])
-            .Select(o => o.Workflow ?? string.Empty)
-            .ToList();
-
-        for (var i = 0; i < _executionsByWorkflowLabels.Count() && i < 20; i++)
-        {
-            _executionsByWorkflowChartOptions.ChartPalette[i] =
-                BottleRocketChartPalette
-                    .Values
-                    .ElementAt(i % BottleRocketChartPalette.Values.Count());
-        }
-    }
-
-    private static string MapStatusToColor(
-        string status
-    )
-    {
-        return status?.ToUpper() switch
-        {
-            StatusErroredName => StatusErroredColor,
-            StatusCompletedName => StatusCompletedColor,
-            StatusCancelledName => StatusCancelledColor,
-            StatusRunningName => StatusRunningColor,
-            _ => throw new ArgumentException("Invalid value for status")
-        };
-    }
-
-    private void ApplyToExecutionStatusChart(
-        FetchDashboardResponse snapshot
-    )
-    {
-        var errorCount = 0D;
-        var total =
-            _dashboardSnapshot?
-                .Executions?
-                .TotalExecutions;
-
-        _executionsByStatusData =
-            (_dashboardSnapshot?.Executions?.ExecutionsByStatus ?? [])
-            .Select(o => (double)o.Executions)
-            .ToList();
-
-        _executionsByStatusLabels =
-            (_dashboardSnapshot?.Executions?.ExecutionsByStatus ?? [])
-            .Select(o => o.Status ?? string.Empty)
-            .ToList();
-
-        for (var i = 0; i < _executionsByStatusLabels.Count() && i < 20; i++)
-        {
-            _executionsByStatusChartOptions
-                    .ChartPalette[i] =
-                MapStatusToColor(
-                    _executionsByStatusLabels.ElementAt(i)
-                );
-
-            if (_executionsByStatusLabels.ElementAt(i)
-                    ?.ToUpper() == StatusErroredName)
-            {
-                errorCount =
-                    _executionsByStatusData
-                        .ElementAt(i);
-            }
-        }
-
-        if (total > 0)
-        {
-            if (errorCount > 0)
-            {
-                _executionNumberOfNote = $"{errorCount} failures";
-                _executionStyleOfNote = "var(--mud-palette-error)";
-            }
-            else
-            {
-                _executionNumberOfNote = "All completed";
-                _executionStyleOfNote = "var(--mud-palette-success)";
-            }
-        }
-        else
-        {
-            _executionNumberOfNote = "No executions";
-        }
     }
 
     private void ApplyToVendorChart(
@@ -479,6 +373,20 @@
         await
             CaptureHubClient
                 .StopAsync();
+    }
+
+    private static string MapStatusToColor(
+        string status
+    )
+    {
+        return status?.ToUpper() switch
+        {
+            StatusErroredName => StatusErroredColor,
+            StatusCompletedName => StatusCompletedColor,
+            StatusCancelledName => StatusCancelledColor,
+            StatusRunningName => StatusRunningColor,
+            _ => throw new ArgumentException("Invalid value for status")
+        };
     }
 
 }
