@@ -11,11 +11,13 @@ using Rocket.Domain.Exceptions;
 
 namespace Rocket.Dropbox.Infrastructure
 {
-    public class DropboxClientManager(ILogger<DropboxClientManager> logger) : IDropboxClientManager
+    public class DropboxClientManager(
+        ILogger<DropboxClientManager> logger
+    ) : IDropboxClientManager
     {
-        private const string UploadSubfolder = "bottle_rocket_scans";
-
-        public string GetAuthorizeUrl(string appKey)
+        public string GetAuthorizeUrl(
+            string appKey
+        )
         {
             var authorizeUri =
                 DropboxOAuth2Helper
@@ -79,7 +81,7 @@ namespace Rocket.Dropbox.Infrastructure
             }
         }
 
-        public async Task<bool> UploadFileAsync(
+        public async Task<string> UploadFileAsync(
             string appKey,
             string appSecret,
             string refreshToken,
@@ -108,22 +110,23 @@ namespace Rocket.Dropbox.Infrastructure
                 using var stream = new MemoryStream(fileData);
 
                 var path =
-                    Path
-                        .Combine(
-                            "/",
-                            uploadFolder ?? string.Empty,
-                            $"{fileName}{fileExtension}"
-                        );
+                    $"{((uploadFolder ?? string.Empty).StartsWith('/') ? null : '/')}{uploadFolder}" +
+                    $"{(string.IsNullOrEmpty(uploadFolder) ? string.Empty : "/")}{fileName}{fileExtension}";
 
-                await
-                    dbx
-                        .Files
-                        .UploadAsync(
-                            new UploadArg(path: path),
-                            stream
-                        );
+                var fileMetadata =
+                    await
+                        dbx
+                            .Files
+                            .UploadAsync(
+                                path: path,
+                                mode: WriteMode.Add.Instance,
+                                autorename: true,
+                                body: stream
+                            );
 
-                return true;
+                return
+                    fileMetadata?
+                        .Name;
             }
             catch (DropboxException ex)
             {
@@ -134,7 +137,7 @@ namespace Rocket.Dropbox.Infrastructure
                     );
 
                 throw new RocketException(
-                    "There was an error uploading the file to Dropbox.",
+                    $"There was an error uploading the file to Dropbox: {ex.Message}",
                     ApiStatusCodeEnum.ThirdPartyServiceError,
                     (int)HttpStatusCode.InternalServerError,
                     ex

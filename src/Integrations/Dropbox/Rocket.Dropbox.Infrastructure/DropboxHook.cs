@@ -38,6 +38,7 @@ namespace Rocket.Dropbox.Infrastructure
                     cancellationToken
                 );
 
+            var fileData =
             await
                 dropboxClientManager
                     .UploadFileAsync(
@@ -50,6 +51,12 @@ namespace Rocket.Dropbox.Infrastructure
                         Artifact.Artifact,
                         cancellationToken
                     );
+            
+            await
+                appendLogMessageCallback(
+                    step.Id,
+                    $"File uploaded: {fileData}"
+                );
 
             return
                 ExecutionStepArtifact

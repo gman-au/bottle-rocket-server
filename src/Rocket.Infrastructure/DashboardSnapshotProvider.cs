@@ -95,7 +95,7 @@ namespace Rocket.Infrastructure
                 };
 
             var hasRunningExecutions =
-                result.Lifecycles .LifecyclesByGroup
+                result.Lifecycles.LifecyclesByGroup
                     .Any(o => o.Status == (int)ExecutionStatusEnum.Running);
             
             // If there is a 'running' status, do not cache
