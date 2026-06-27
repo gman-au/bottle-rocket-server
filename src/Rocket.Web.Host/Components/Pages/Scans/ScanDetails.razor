@@ -9,6 +9,7 @@
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
+@inject IJSRuntime JsRuntime
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
@@ -25,7 +26,7 @@
                                 Class="broken-image"
                                 Icon="@StandardIcons.NoImageIcon"
                                 Title="Scan has been archived"/>
-                            
+
                             <MudText
                                 Typo="Typo.h4"
                                 Class="broken-image"
@@ -117,7 +118,20 @@
                             </div>
                         }
                         <MudDivider/>
-                        <GoBackButton BackPath="/MyScans"/>
+                        <MudGrid Class="align-start" Justify="Justify.FlexEnd">
+                            <MudItem>
+                                <GoBackButton BackPath="/MyScans"/>
+                            </MudItem>
+                            <MudItem>
+                                <MudButton
+                                    Variant="Variant.Outlined"
+                                    Color="Color.Info"
+                                    Disabled="@(_scanSpecifics.Archived)"
+                                    OnClick="@(async () => await DownloadFileAsync())">
+                                    Download
+                                </MudButton>
+                            </MudItem>
+                        </MudGrid>
                     </MudStack>
                 </MudItem>
                 <MudFlexBreak/>
@@ -276,6 +290,48 @@
                 _isLoading = false;
                 StateHasChanged();
             }
+        }
+    }
+
+    private async Task DownloadFileAsync()
+    {
+        try
+        {
+            var fileName = _scanSpecifics.Id;
+            var contentType = _scanSpecifics.ContentType;
+
+            var base64Data = _scanSpecifics?.ImageBase64;
+
+            if (!string.IsNullOrEmpty(base64Data))
+            {
+                if (base64Data.Contains(","))
+                {
+                    base64Data = base64Data.Split(',')[1];
+                }
+
+                await
+                    JsRuntime
+                        .InvokeVoidAsync(
+                            "downloadBase64File",
+                            fileName,
+                            contentType,
+                            base64Data
+                        );
+            }
+            else
+            {
+                throw new Exception("No file data could be provided for download.");
+            }
+        }
+        catch (Exception ex)
+        {
+            WebHostErrorHandler
+                .HandleException(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
         }
     }
 
