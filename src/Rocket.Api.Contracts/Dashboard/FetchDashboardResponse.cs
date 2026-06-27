@@ -10,9 +10,6 @@ namespace Rocket.Api.Contracts.Dashboard
         [JsonPropertyName("storage")]
         public StorageResponse Storage { get; set; }
         
-        [JsonPropertyName("executions")]
-        public ExecutionsResponse Executions { get; set; }
-        
         [JsonPropertyName("lifecycle")]
         public LifecycleResponse Lifecycle { get; set; }
     }

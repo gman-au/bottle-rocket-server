@@ -58,38 +58,6 @@ namespace Rocket.Infrastructure
                     ScansReceivedByVendor = scansByVendor
                 };
 
-            // Executions by workflow
-            var executionsByWorkflow =
-                (await
-                    executionRepository
-                        .AggregateExecutionsByWorkflowAsync(
-                            userId,
-                            cancellationToken
-                        ))
-                .OrderBy(o => o.Workflow)
-                .ToList();
-
-            // Executions by status
-            var executionsByStatus =
-                (await
-                    executionRepository
-                        .AggregateExecutionsByStatusAsync(
-                            userId,
-                            cancellationToken
-                        ))
-                .OrderBy(o => o.Status)
-                .ToList();
-
-            result.Executions =
-                new ExecutionsSummary
-                {
-                    TotalExecutions =
-                        executionsByWorkflow
-                            .Sum(o => o.Executions),
-                    ExecutionsByWorkflow = executionsByWorkflow,
-                    ExecutionsByStatus = executionsByStatus
-                };
-
             // Storage
             var storage =
                 await
@@ -127,7 +95,7 @@ namespace Rocket.Infrastructure
                 };
 
             var hasRunningExecutions =
-                executionsByStatus
+                result.Lifecycles .LifecyclesByGroup
                     .Any(o => o.Status == (int)ExecutionStatusEnum.Running);
             
             // If there is a 'running' status, do not cache
