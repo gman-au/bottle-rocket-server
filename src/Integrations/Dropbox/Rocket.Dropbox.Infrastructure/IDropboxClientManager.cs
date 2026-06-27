@@ -13,7 +13,7 @@ namespace Rocket.Dropbox.Infrastructure
             string accessCode
         );
 
-        Task<bool> UploadFileAsync(
+        Task<string> UploadFileAsync(
             string appKey,
             string appSecret,
             string refreshToken,
