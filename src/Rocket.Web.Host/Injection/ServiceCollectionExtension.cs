@@ -108,5 +108,20 @@ namespace Rocket.Web.Host.Injection
 
             return services;
         }
+
+        public static IServiceCollection AddLocalizationServices(
+            this IServiceCollection services
+        )
+        {
+            services
+                .AddLocalization(
+                    options =>
+                    {
+                        options.ResourcesPath = "";
+                    }
+                );
+
+            return services;
+        }
     }
 }

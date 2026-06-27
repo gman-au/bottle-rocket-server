@@ -75,6 +75,9 @@ services
     .AddSignalRServerServices(configuration);
 
 services
+    .AddLocalizationServices();
+
+services
     .AddDropboxApiIntegration()
     .AddOllamaApiIntegration()
     .AddNotionApiIntegration()

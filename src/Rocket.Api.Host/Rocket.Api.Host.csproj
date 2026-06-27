@@ -33,6 +33,7 @@
         <ProjectReference Include="..\Rocket.Infrastructure.Thumbnails\Rocket.Infrastructure.Thumbnails.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure\Rocket.Infrastructure.csproj" />
         <ProjectReference Include="..\Rocket.Jobs.Service\Rocket.Jobs.Service.csproj" />
+        <ProjectReference Include="..\Rocket.Localization\Rocket.Localization.csproj" />
     </ItemGroup>
     
 </Project>
