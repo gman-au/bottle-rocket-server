@@ -1,6 +1,7 @@
 ﻿@using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts.Dashboard
 @using Rocket.Localization
+@using Rocket.Localization.Web
 @using Rocket.Web.Client
 @using Rocket.Web.Host.HubClients
 @using Rocket.Web.Host.Infrastructure
@@ -9,7 +10,7 @@
 @inject IApiRequestManager ApiRequestManager
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject IThemeService ThemeService
-@inject IStringLocalizer<LocalizationResource> StringLocalizer
+@inject IStringLocalizer<DashboardResource> StringLocalizer
 @implements IAsyncDisposable
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
@@ -74,7 +75,7 @@
                 <MudFlexBreak/>
                 <MudItem xs="12" Class="mb-4">
                     <MudText Typo="Typo.h6" Class="text-center">
-                        Workflows
+                        @StringLocalizer["DashboardWorkflowsCaption"]
                     </MudText>
                     <MudChart
                         Nodes="@((_overviewNodes ?? []).ToList())"

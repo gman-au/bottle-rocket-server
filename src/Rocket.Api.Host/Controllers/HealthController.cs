@@ -3,14 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Rocket.Localization;
+using Rocket.Localization.Api;
 
 namespace Rocket.Api.Host.Controllers
 {
     [ApiController]
     [Route("/api/health")]
     public class HealthCheckController(
-        IStringLocalizer<LocalizationResource> localizer,
+        IStringLocalizer<StatusResource> localizer,
         ILogger<HealthCheckController> logger
     ) : ControllerBase
     {
@@ -26,9 +26,9 @@ namespace Rocket.Api.Host.Controllers
         {
             logger
                 .LogInformation("Received health check request");
-
+            
             return
-                new OkObjectResult(localizer["HealthCheckOk"]);
+                new OkObjectResult(localizer["HealthCheckOk"].Value);
         }
     }
 }

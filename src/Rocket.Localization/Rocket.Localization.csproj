@@ -2,14 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
+        <RootNamespace>Rocket.Localization</RootNamespace>
     </PropertyGroup>
-
-    <ItemGroup>
-      <Compile Update="LocalizationResource.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>LocalizationResource.resx</DependentUpon>
-      </Compile>
-    </ItemGroup>
 
 </Project>
