@@ -123,10 +123,10 @@
                                         HelperText="Select the default language for this server"
                                         Clearable="true"
                                         Required="false">
-                                        @foreach (var languagePair in _languagePairs ?? [])
+                                        @foreach (var languagePair in Languages.AvailableLanguages ?? [])
                                         {
                                             <MudSelectItem Value="@languagePair.Value">
-                                                @languagePair.Label
+                                                @languagePair.Key
                                             </MudSelectItem>
                                         }
                                     </MudSelect>
@@ -161,12 +161,6 @@
     private bool _isLoading;
     private GlobalSettingsSpecifics _currentModel = null;
     private GlobalSettingsSpecifics _newModel = null;
-
-    private readonly IEnumerable<LanguagePair> _languagePairs =
-    [
-        new() { Label = "English", Value = "en-EN" },
-        new() { Label = "French", Value = "fr-FR" }
-    ];
 
     protected override async Task OnInitializedAsync()
     {
@@ -223,7 +217,7 @@
                 var sweepSuccessfulScansAfterDaysValue = _newModel.SweepSuccessfulScansAfterDays;
                 var enableSweepingValue = _newModel.EnableSweeping;
                 var defaultModelTimeoutInMinutes = _newModel.DefaultModelTimeoutInMinutes;
-                var defaultLanguage = _newModel.DefaultLanguage;
+                var defaultLanguage = _newModel.DefaultLanguage ?? CultureSetter.DefaultLanguage;
 
                 var languageChanged = defaultLanguage != _currentModel.DefaultLanguage;
 
@@ -276,11 +270,5 @@
             }
         }
     }
-
-    private class LanguagePair
-    {
-        public string Label { get; set; }
-        public string Value { get; set; }
-    }
-
+    
 }

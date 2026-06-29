@@ -7,11 +7,11 @@ namespace Rocket.Web.Host.Infrastructure
         IAuthenticationManager authenticationManager
     ) : ICultureSetter
     {
-        private const string DefaultLanguageCode = "en";
-
         private static readonly CultureInfo DefaultCulture =
             CultureInfo
-                .GetCultureInfo(DefaultLanguageCode);
+                .GetCultureInfo(Languages.DefaultLanguage);
+
+        public string DefaultLanguage => Languages.DefaultLanguage;
 
         public CultureInfo CurrentCulture => CultureInfo.CurrentUICulture;
 
