@@ -1,7 +1,9 @@
 ﻿@page "/MyScans/{id}"
+@using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts.Executions
 @using Rocket.Api.Contracts.Scans
 @using Rocket.Api.Contracts.Workflows
+@using Rocket.Localization.Web
 @using Rocket.Web.Client
 @using Rocket.Web.Host.Components.Dialog
 @using Rocket.Web.Host.Infrastructure
@@ -10,6 +12,7 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @inject IJSRuntime JsRuntime
+@inject IStringLocalizer<ScansResource> StringLocalizer
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
@@ -25,7 +28,7 @@
                                 Size="Size.Large"
                                 Class="broken-image"
                                 Icon="@StandardIcons.NoImageIcon"
-                                Title="Scan has been archived"/>
+                                Title="@StringLocalizer["ScansWasArchivedMessage"]"/>
 
                             <MudText
                                 Typo="Typo.h4"
@@ -54,24 +57,29 @@
                             Typo="Typo.h4"
                             Color="Color.Primary"
                             Class="mb-4">
-                            Scan Details
+                            @StringLocalizer["ScansDetailsTitle"]
                         </MudText>
                         <div style="width:100%;">
                             <MudSimpleTable
                                 Bordered
                                 Dense>
                                 <tbody>
-                                <SimpleTableRowPair Title="Capture Date"
-                                                    Value=@_scanSpecifics.CaptureDate?.ToString("yyyy-MM-dd HH:mm:ss")/>
-                                <SimpleTableRowPair Title="Content Type" Value=@_scanSpecifics.ContentType/>
                                 <SimpleTableRowPair
-                                    Title="Status"
-                                    Value=@(_scanSpecifics.Archived ? "Archived" : "Active")
+                                    Title="@StringLocalizer["ScansCaptureDateFieldHeader"]"
+                                    Value=@_scanSpecifics.CaptureDate?.ToString("yyyy-MM-dd HH:mm:ss")
+                                />
+                                <SimpleTableRowPair
+                                    Title="@StringLocalizer["ScansContentTypeFieldHeader"]"
+                                    Value=@_scanSpecifics.ContentType
+                                />
+                                <SimpleTableRowPair
+                                    Title="@StringLocalizer["ScansStatusFieldHeader"]"
+                                    Value=@(_scanSpecifics.Archived ? StringLocalizer["ScansArchivedValue"] : StringLocalizer["ScansActiveValue"])
                                     ValueColor="@(_scanSpecifics.Archived ? Color.Warning : Color.Success)"
                                 />
                                 <SimpleTableRowPair
-                                    Title="Vendor"
-                                    Value=@(string.IsNullOrEmpty(_scanSpecifics.Vendor) ? "Unknown" : _scanSpecifics.Vendor)
+                                    Title="@StringLocalizer["ScansVendorFieldHeader"]"
+                                    Value=@(string.IsNullOrEmpty(_scanSpecifics.Vendor) ? StringLocalizer["ScansUnknownValue"] : _scanSpecifics.Vendor)
                                 />
                                 </tbody>
                             </MudSimpleTable>
@@ -82,11 +90,11 @@
                                 <MudText
                                     Typo="Typo.h5"
                                     Color="Color.Primary">
-                                    Manually trigger workflow
+                                    @StringLocalizer["ScansManuallyTriggerTitle"]
                                 </MudText>
                                 <MudText
                                     Typo="Typo.body1">
-                                    Select a workflow from the list and click the button to run the workflow against this scan.
+                                    @StringLocalizer["ScansManuallyTriggerMessage"]
                                 </MudText>
                                 <MudGrid Class="mt-2" Justify="Justify.SpaceBetween">
                                     <MudItem xs="12">
@@ -94,7 +102,7 @@
                                             T="string"
                                             Label="Workflow"
                                             @bind-Value="@_workflowIdToTrigger"
-                                            HelperText="Select a workflow to trigger against this scan"
+                                            HelperText="@StringLocalizer["ScansManuallyTriggerFieldHint"]"
                                             Clearable="true"
                                             Required="false">
                                             @foreach (var workflow in _availableWorkflows ?? [])
@@ -111,7 +119,7 @@
                                             OnClick="@(async () => await ConfirmTriggerWorkflowAsync())"
                                             Variant="Variant.Outlined"
                                             Color="Color.Success">
-                                            Run workflow
+                                            @StringLocalizer["ScansRunWorkflowCaption"]
                                         </MudButton>
                                     </MudItem>
                                 </MudGrid>
@@ -128,7 +136,7 @@
                                     Color="Color.Info"
                                     Disabled="@(_scanSpecifics.Archived)"
                                     OnClick="@(async () => await DownloadFileAsync())">
-                                    Download
+                                    @StringLocalizer["ScansDownloadCaption"]
                                 </MudButton>
                             </MudItem>
                         </MudGrid>
@@ -142,7 +150,7 @@
                         Typo="Typo.h5"
                         Color="Color.Primary"
                         Class="mb-4">
-                        Previous runs
+                        @StringLocalizer["ScansPreviousRunsTitle"]
                     </MudText>
                 </MudItem>
                 <PreviousWorkflowRuns Executions="@_executions"/>
@@ -265,7 +273,7 @@
                         {
                             Snackbar
                                 .Add(
-                                    "The workflow has been triggered.",
+                                    StringLocalizer["ScansWorkflowWasTriggeredMessage"].Value,
                                     Severity.Success
                                 );
                         }
@@ -320,7 +328,7 @@
             }
             else
             {
-                throw new Exception("No file data could be provided for download.");
+                throw new Exception(StringLocalizer["ScansNoFileDataError"].Value);
             }
         }
         catch (Exception ex)

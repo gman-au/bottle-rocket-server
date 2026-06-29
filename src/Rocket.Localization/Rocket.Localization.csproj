@@ -17,6 +17,10 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>WorkflowResource.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="Web\ScansResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ScansResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
