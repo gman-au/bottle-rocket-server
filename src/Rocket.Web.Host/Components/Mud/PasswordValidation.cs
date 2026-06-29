@@ -1,11 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Localization;
+using Rocket.Localization.Web;
 
 namespace Rocket.Web.Host.Components.Mud
 {
     internal static class PasswordValidation
     {
-        public static IEnumerable<string> PasswordStrength(string pw)
+        public static IEnumerable<string> PasswordStrength(
+            string pw,
+            IStringLocalizer<UsersResource> stringLocalizer
+        )
         {
             if (string.IsNullOrWhiteSpace(pw))
             {
@@ -14,22 +19,25 @@ namespace Rocket.Web.Host.Components.Mud
             }
 
             if (pw.Length < 8)
-                yield return "Password must be at least of length 8";
+                yield return stringLocalizer["UsersPasswordTooShortError"].Value;
+
             if (!Regex.IsMatch(
                     pw,
                     @"[A-Z]"
                 ))
-                yield return "Password must contain at least one capital letter";
+                yield return stringLocalizer["UsersPasswordNoCapitalsError"].Value;
+            
             if (!Regex.IsMatch(
                     pw,
                     @"[a-z]"
                 ))
-                yield return "Password must contain at least one lowercase letter";
+                yield return stringLocalizer["UsersPasswordNoLowersError"].Value;
+            
             if (!Regex.IsMatch(
                     pw,
                     @"[0-9]"
                 ))
-                yield return "Password must contain at least one digit";
+                yield return stringLocalizer["UsersPasswordNoDigitsError"].Value;
         }
     }
 }

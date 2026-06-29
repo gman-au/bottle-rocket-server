@@ -28,7 +28,7 @@ namespace Rocket.Api.Host.Controllers
                 .LogInformation("Received health check request");
             
             return
-                new OkObjectResult(localizer["HealthCheckOk"].Value);
+                new OkObjectResult(localizer["StatusHealthCheckOk"].Value);
         }
     }
 }

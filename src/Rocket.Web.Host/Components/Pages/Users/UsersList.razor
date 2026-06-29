@@ -1,10 +1,13 @@
 ﻿@page "/Users"
+@using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts.Users
+@using Rocket.Localization.Web
 @using Rocket.Web.Client
 @using Rocket.Web.Host.Infrastructure
 @implements IAsyncDisposable
 @inject IApiRequestManager ApiRequestManager
 @inject IWebHostErrorHandler WebHostErrorHandler
+@inject IStringLocalizer<UsersResource> StringLocalizer
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <MudText
@@ -12,7 +15,7 @@
     Typo="Typo.h4"
     Color="Color.Primary"
     Class="mb-4">
-    Users
+    @StringLocalizer["UsersListTitle"]
 </MudText>
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
@@ -21,8 +24,8 @@
         <MudSimpleTable Dense>
             <thead>
             <tr>
-                <th>User Name</th>
-                <th>Date Created</th>
+                <th>@StringLocalizer["UsersUserNameFieldHeader"]</th>
+                <th>@StringLocalizer["UsersDateCreatedFieldHeader"]</th>
             </tr>
             </thead>
             <tbody>
@@ -61,7 +64,7 @@
                                   _currentIndex,
                                   DefaultPageSize
                               ))">
-                    Load More
+                    @StringLocalizer["UsersLoadMoreCaption"]
                 </MudButton>
             </MudItem>
         </MudGrid>
@@ -72,7 +75,7 @@
             Align="Align.Center"
             Typo="Typo.body2"
             Color="Color.Default">
-            No users found
+            @StringLocalizer["UsersNoUsersMessage"]
         </MudText>
     }
 </BottleRocketLoadingOverlay>

@@ -1,6 +1,8 @@
 ﻿@page "/User/{id}"
+@using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts.Users
 @using Rocket.Interfaces
+@using Rocket.Localization.Web
 @using Rocket.Web.Client
 @using Rocket.Web.Host.Components.Dialog
 @using Rocket.Web.Host.Infrastructure
@@ -9,6 +11,7 @@
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+@inject IStringLocalizer<UsersResource> StringLocalizer
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
@@ -23,14 +26,14 @@
                     Typo="Typo.h4"
                     Color="Color.Primary"
                     Class="mb-4">
-                    User Details
+                    @StringLocalizer["UsersDetailsTitle"]
                 </MudText>
 
                 <MudGrid>
                     <MudItem sm="12" lg="6" xl="4">
                         <MudTextField
                             T="string"
-                            Label="Date Created"
+                            Label="@StringLocalizer["UsersDateCreatedFieldHeader"]"
                             ReadOnly
                             Disabled
                             Text="@(_newModel.CreatedAt?.ToString("g"))"
@@ -39,7 +42,7 @@
                     <MudItem sm="12" lg="6" xl="4">
                         <MudTextField
                             T="string"
-                            Label="Last Login"
+                            Label="@StringLocalizer["UsersLastLoginFieldHeader"]"
                             ReadOnly
                             Disabled
                             Text="@(_newModel.LastLoginAt?.ToString("g"))"
@@ -49,10 +52,11 @@
                     <MudItem sm="12" lg="6" xl="4">
                         <MudTextField
                             T="string"
-                            Label="Username"
+                            Label="@StringLocalizer["UsersUserNameFieldHeader"]"
                             Required="true"
                             Validation="@(new Func<string, bool>(EmailAddressValidator.IsValid))"
-                            RequiredError="Please enter a valid email address"
+                            HelperText="@StringLocalizer["UsersUserNameFieldHint"]"
+                            RequiredError="@StringLocalizer["UsersUserNameFieldHint"]"
                             Disabled="@(_isLoading)"
                             @bind-Value="_newModel.Username"
                             For="@(() => _newModel.Username)"
@@ -61,20 +65,20 @@
                     <MudItem sm="12" lg="6" xl="4">
                         <MudTextField
                             T="string"
-                            Label="Password"
-                            HelperText="Choose a strong password"
+                            Label="@StringLocalizer["UsersPasswordFieldHeader"]"
+                            HelperText="@StringLocalizer["UsersPasswordFieldHint"]"
                             @ref="_pwField1"
                             InputType="InputType.Password"
                             @bind-Value="_newModel.NewPassword"
                             For="@(() => _newModel.NewPassword)"
-                            Validation="@(new Func<string, IEnumerable<string>>(PasswordValidation.PasswordStrength))"
-                            RequiredError="Password is required!"/>
+                            Validation="@(new Func<string, IEnumerable<string>>(o => PasswordValidation.PasswordStrength(o, StringLocalizer)))"
+                            RequiredError="@StringLocalizer["UsersPasswordFieldRequiredError"]"/>
                     </MudItem>
                     <MudItem sm="12" lg="6" xl="4">
                         <MudTextField
                             T="string"
-                            Label="Password"
-                            HelperText="Repeat the password"
+                            Label="@StringLocalizer["UsersRepeatPasswordFieldHeader"]"
+                            HelperText="@StringLocalizer["UsersRepeatPasswordFieldHint"]"
                             InputType="InputType.Password"
                             Validation="@(new Func<string, string>(PasswordMatch))"/>
                     </MudItem>
@@ -84,7 +88,7 @@
                             TriState
                             Disabled="@(_isLoading)"
                             @bind-Value="@_newModel.IsActive">
-                            This user is active
+                            @StringLocalizer["UsersActiveFieldHeader"]
                         </MudCheckBox>
                     </MudItem>
                     <MudItem sm="12" lg="6" xl="4">
@@ -92,7 +96,7 @@
                             TriState
                             Disabled="@(_isLoading)"
                             @bind-Value="@_newModel.IsAdmin">
-                            This user is the administrator
+                            @StringLocalizer["UsersIsAdminFieldHeader"]
                         </MudCheckBox>
                     </MudItem>
                 </MudGrid>
@@ -106,7 +110,7 @@
                             Color="Color.Success"
                             Disabled="@(_isLoading)"
                             OnClick="@SubmitAsync">
-                            Submit
+                            @StringLocalizer["UsersSubmitCaption"]
                         </MudButton>
                     </MudItem>
                 </MudGrid>
@@ -277,7 +281,7 @@
     private string PasswordMatch(string arg)
     {
         if (_pwField1.Value != arg)
-            return "Passwords don't match";
+            return StringLocalizer["UsersRepeatPasswordFieldMatchError"];
         return null;
     }
 

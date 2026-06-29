@@ -1,14 +1,17 @@
 ﻿@page "/CompleteSetup"
+@using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts.Users
 @using Rocket.Domain.Enum
 @using Rocket.Domain.Exceptions
 @using Rocket.Interfaces
+@using Rocket.Localization.Web
 @using Rocket.Web.Client
 @using Rocket.Web.Host.Infrastructure
 @inject IApiRequestManager ApiRequestManager
 @inject IEmailAddressValidator EmailAddressValidator
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject ISnackbar Snackbar
+@inject IStringLocalizer<UsersResource> StringLocalizer
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 @if (_newModel != null)
@@ -55,7 +58,7 @@
                             InputType="InputType.Password"
                             @bind-Value="_newModel.NewPassword"
                             For="@(() => _newModel.NewPassword)"
-                            Validation="@(new Func<string, IEnumerable<string>>(PasswordValidation.PasswordStrength))"
+                            Validation="@(new Func<string, IEnumerable<string>>(o => PasswordValidation.PasswordStrength(o, StringLocalizer)))"
                             RequiredError="Password is required!"/>
                     </MudItem>
                     <MudItem sm="12" lg="6" xl="4">

@@ -2,7 +2,17 @@
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
-        <RootNamespace>Rocket.Localization</RootNamespace>
     </PropertyGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Web\UsersResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>UsersResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\CommonResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>CommonResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
 
 </Project>
