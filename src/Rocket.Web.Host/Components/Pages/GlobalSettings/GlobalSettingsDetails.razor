@@ -38,7 +38,8 @@
                                             Configure the system to "sweep" successfully processed scans after a specified amount of days.
                                         </p>
                                         <p>
-                                            When a workflow has been successfully run for a given scan, that scan will be archived after the amount of 
+                                            When a workflow has been successfully run for a given scan, that scan will be archived after the
+                                            amount of
                                             days configured below.
                                         </p>
                                         <p>
@@ -95,6 +96,42 @@
                             </MudGrid>
                         </div>
                     </MudItem>
+                    <MudItem xs="12">
+                        <div class="mud-border-tertiary border p-4 mb-4 rounded">
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudText
+                                        Color="Color.Secondary"
+                                        GutterBottom
+                                        Typo="Typo.h5">
+                                        Default language
+                                    </MudText>
+                                    <MudText
+                                        Typo="Typo.body2">
+                                        <p>
+                                            Configure the default language for this server.
+                                        </p>
+                                    </MudText>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudSelect
+                                        T="string"
+                                        Label="Default Language"
+                                        @bind-Value="_newModel.DefaultLanguage"
+                                        HelperText="Select the default language for this server"
+                                        Clearable="true"
+                                        Required="false">
+                                        @foreach (var languagePair in _languagePairs ?? [])
+                                        {
+                                            <MudSelectItem Value="@languagePair.Value">
+                                                @languagePair.Label
+                                            </MudSelectItem>
+                                        }
+                                    </MudSelect>
+                                </MudItem>
+                            </MudGrid>
+                        </div>
+                    </MudItem>
                 </MudGrid>
                 <MudGrid Class="align-start" Justify="Justify.FlexEnd">
                     <MudItem>
@@ -123,6 +160,12 @@
     private GlobalSettingsSpecifics _currentModel = null;
     private GlobalSettingsSpecifics _newModel = null;
 
+    private IEnumerable<LanguagePair> _languagePairs =
+    [
+        new LanguagePair { Label = "English", Value = null },
+        new LanguagePair { Label = "French", Value = "fr-FR" }
+    ];
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -146,7 +189,8 @@
                 {
                     SweepSuccessfulScansAfterDays = _currentModel.SweepSuccessfulScansAfterDays,
                     EnableSweeping = _currentModel.EnableSweeping,
-                    DefaultModelTimeoutInMinutes = _currentModel.DefaultModelTimeoutInMinutes
+                    DefaultModelTimeoutInMinutes = _currentModel.DefaultModelTimeoutInMinutes,
+                    DefaultLanguage = _currentModel.DefaultLanguage
                 };
         }
         catch (Exception ex)
@@ -177,6 +221,7 @@
                 var sweepSuccessfulScansAfterDaysValue = _newModel.SweepSuccessfulScansAfterDays;
                 var enableSweepingValue = _newModel.EnableSweeping;
                 var defaultModelTimeoutInMinutes = _newModel.DefaultModelTimeoutInMinutes;
+                var defaultLanguage = _newModel.DefaultLanguage;
 
                 await
                     ApiRequestManager
@@ -185,7 +230,8 @@
                             {
                                 SweepSuccessfulScansAfterDays = sweepSuccessfulScansAfterDaysValue,
                                 EnableSweeping = enableSweepingValue,
-                                DefaultModelTimeoutInMinutes = defaultModelTimeoutInMinutes
+                                DefaultModelTimeoutInMinutes = defaultModelTimeoutInMinutes,
+                                DefaultLanguage = defaultLanguage
                             },
                             BaseCancellationToken
                         );
@@ -195,7 +241,8 @@
                     {
                         SweepSuccessfulScansAfterDays = sweepSuccessfulScansAfterDaysValue ?? _currentModel.SweepSuccessfulScansAfterDays,
                         EnableSweeping = enableSweepingValue ?? _currentModel.EnableSweeping,
-                        DefaultModelTimeoutInMinutes = _currentModel.DefaultModelTimeoutInMinutes
+                        DefaultModelTimeoutInMinutes = _currentModel.DefaultModelTimeoutInMinutes,
+                        DefaultLanguage = _currentModel.DefaultLanguage
                     };
 
                 Snackbar
@@ -203,7 +250,7 @@
                         "The system settings have been updated.",
                         Severity.Success
                     );
-                
+
                 NavigationManager
                     .NavigateTo("/");
             }
@@ -218,6 +265,12 @@
                 StateHasChanged();
             }
         }
+    }
+
+    private class LanguagePair
+    {
+        public string Label { get; set; }
+        public string Value { get; set; }
     }
 
 }

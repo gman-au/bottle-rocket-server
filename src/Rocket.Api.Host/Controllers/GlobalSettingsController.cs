@@ -65,7 +65,8 @@ namespace Rocket.Api.Host.Controllers
                 {
                     SweepSuccessfulScansAfterDays = record.SweepSuccessfulScansAfterDays,
                     EnableSweeping = record.EnableSweeping,
-                    DefaultModelTimeoutInMinutes = record.DefaultModelTimeoutInMinutes
+                    DefaultModelTimeoutInMinutes = record.DefaultModelTimeoutInMinutes,
+                    DefaultLanguage = record.DefaultLanguage
                 };
 
             return
@@ -111,6 +112,7 @@ namespace Rocket.Api.Host.Controllers
                         request.SweepSuccessfulScansAfterDays,
                         request.EnableSweeping, 
                         request.DefaultModelTimeoutInMinutes,
+                        request.DefaultLanguage,
                         cancellationToken
                     );
 

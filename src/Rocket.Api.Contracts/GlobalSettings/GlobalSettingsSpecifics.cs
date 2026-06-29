@@ -12,5 +12,8 @@ namespace Rocket.Api.Contracts.GlobalSettings
         
         [JsonPropertyName("default_model_timeout_in_minutes")]
         public int? DefaultModelTimeoutInMinutes { get; set; }
+        
+        [JsonPropertyName("default_language")]
+        public string DefaultLanguage { get; set; }
     }
 }

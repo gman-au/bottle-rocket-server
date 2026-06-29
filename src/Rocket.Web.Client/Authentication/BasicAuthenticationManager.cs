@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -110,6 +111,9 @@ namespace Rocket.Web.Client.Authentication
 
                     _themeService
                         .SetDarkMode(connectionTestResponse.DarkMode);
+                    
+                    CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(connectionTestResponse.CurrentLanguage);
+                    CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(connectionTestResponse.CurrentLanguage);
 
                     try
                     {
