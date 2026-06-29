@@ -8,6 +8,7 @@ using Rocket.Infrastructure;
 using Rocket.Infrastructure.Json;
 using Rocket.Infrastructure.Mermaid;
 using Rocket.Interfaces;
+using Rocket.Localization;
 using Rocket.Web.Client;
 using Rocket.Web.Client.Authentication;
 using Rocket.Web.Client.Options;

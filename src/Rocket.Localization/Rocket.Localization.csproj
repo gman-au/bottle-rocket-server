@@ -18,6 +18,14 @@
         <LastGenOutput>UsersResource.fr.Designer.cs</LastGenOutput>
         <DependentUpon>UsersResource.cs</DependentUpon>
       </EmbeddedResource>
+      <EmbeddedResource Update="Global\WorkflowResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>WorkflowResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
     </ItemGroup>
 
 </Project>

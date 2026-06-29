@@ -1,10 +1,10 @@
 ﻿using System.Globalization;
 using Rocket.Interfaces;
 
-namespace Rocket.Web.Host.Infrastructure
+namespace Rocket.Localization
 {
     public class CultureSetter(
-        IAuthenticationManager authenticationManager
+        IAuthenticationManager authenticationManager = null
     ) : ICultureSetter
     {
         private static readonly CultureInfo DefaultCulture =
@@ -29,7 +29,7 @@ namespace Rocket.Web.Host.Infrastructure
             CultureInfo.CurrentCulture = culture;
             CultureInfo.CurrentUICulture = culture;
 
-            authenticationManager
+            authenticationManager?
                 .SetCurrentLanguageAsync(languageCode)
                 .Wait();
         }

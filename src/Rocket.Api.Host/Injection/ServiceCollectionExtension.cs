@@ -23,6 +23,7 @@ using Rocket.Infrastructure.QrCode;
 using Rocket.Infrastructure.Thumbnails;
 using Rocket.Interfaces;
 using Rocket.Jobs.Service;
+using Rocket.Localization;
 
 namespace Rocket.Api.Host.Injection
 {

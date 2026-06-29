@@ -1,5 +1,10 @@
-﻿@using Microsoft.Extensions.Localization
+﻿@using System.Globalization
+@using System.Resources
+@using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts.Dashboard
+@using Rocket.Domain.Enum
+@using Rocket.Localization
+@using Rocket.Localization.Global
 @using Rocket.Localization.Web
 @using Rocket.Web.Client
 @using Rocket.Web.Host.HubClients
@@ -232,6 +237,52 @@
                     .ElementAt(i % BottleRocketChartPalette.Values.Count());
         }
 
+        var resourceManager =
+            new ResourceManager(
+                "Rocket.Localization.Global.WorkflowResource",
+                typeof(WorkflowResource).Assembly
+            );
+
+        var translations = new Dictionary<string, string>();
+
+        foreach (var status in Enum.GetValues<ExecutionStatusEnum>()
+                     .Select(
+                         o => Enum.GetName(
+                             typeof(ExecutionStatusEnum),
+                             o
+                         )
+                     ))
+        {
+            try
+            {
+                var defaultStatusValue =
+                    resourceManager
+                        .GetString(
+                            $"ExecutionStatus{status}Label",
+                            CultureInfo.GetCultureInfo(Languages.DefaultLanguage)
+                        );
+
+                var translatedStatusValue =
+                    resourceManager
+                        .GetString(
+                            $"ExecutionStatus{status}Label",
+                            CultureInfo.GetCultureInfo(CultureInfo.CurrentUICulture.Name)
+                        );
+
+                if (!string.IsNullOrEmpty(translatedStatusValue))
+                {
+                    translations
+                        .Add(
+                            translatedStatusValue,
+                            defaultStatusValue
+                        );
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
         var allStatusNodes =
             lifecyclesByGroup
                 .Select(o => o.Status)
@@ -242,7 +293,7 @@
                         {
                             Name = o,
                             Column = 1,
-                            Color = MapStatusToColor(o)
+                            Color = MapStatusToColor(o, translations)
                         }
                 );
 
@@ -379,17 +430,23 @@
     }
 
     private static string MapStatusToColor(
-        string status
+        string status,
+        IDictionary<string, string> translations
     )
     {
-        return status?.ToUpper() switch
+        if (translations.TryGetValue(status, out var defaultStatus))
         {
-            StatusErroredName => StatusErroredColor,
-            StatusCompletedName => StatusCompletedColor,
-            StatusCancelledName => StatusCancelledColor,
-            StatusRunningName => StatusRunningColor,
-            _ => throw new ArgumentException("Invalid value for status")
-        };
+            return defaultStatus?.ToUpper() switch
+            {
+                StatusErroredName => StatusErroredColor,
+                StatusCompletedName => StatusCompletedColor,
+                StatusCancelledName => StatusCancelledColor,
+                StatusRunningName => StatusRunningColor,
+                _ => throw new ArgumentException("Invalid value for status")
+            };
+        }
+
+        return null;
     }
 
 }
