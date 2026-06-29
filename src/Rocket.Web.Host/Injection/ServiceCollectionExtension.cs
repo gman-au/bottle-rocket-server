@@ -121,6 +121,9 @@ namespace Rocket.Web.Host.Injection
                     }
                 );
 
+            services
+                .AddScoped<ICultureSetter, CultureSetter>();
+
             return services;
         }
     }

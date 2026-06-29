@@ -1,9 +1,11 @@
 ﻿@page "/GlobalSettings"
 @using Rocket.Api.Contracts.GlobalSettings
+@using Rocket.Interfaces
 @using Rocket.Web.Client
 @using Rocket.Web.Host.Infrastructure
 @inject IApiRequestManager ApiRequestManager
 @inject IWebHostErrorHandler WebHostErrorHandler
+@inject ICultureSetter CultureSetter
 @inject ISnackbar Snackbar
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
@@ -160,10 +162,10 @@
     private GlobalSettingsSpecifics _currentModel = null;
     private GlobalSettingsSpecifics _newModel = null;
 
-    private IEnumerable<LanguagePair> _languagePairs =
+    private readonly IEnumerable<LanguagePair> _languagePairs =
     [
-        new LanguagePair { Label = "English", Value = null },
-        new LanguagePair { Label = "French", Value = "fr-FR" }
+        new() { Label = "English", Value = "en-EN" },
+        new() { Label = "French", Value = "fr-FR" }
     ];
 
     protected override async Task OnInitializedAsync()
@@ -223,6 +225,8 @@
                 var defaultModelTimeoutInMinutes = _newModel.DefaultModelTimeoutInMinutes;
                 var defaultLanguage = _newModel.DefaultLanguage;
 
+                var languageChanged = defaultLanguage != _currentModel.DefaultLanguage;
+
                 await
                     ApiRequestManager
                         .UpdateGlobalSettingsAsync(
@@ -244,6 +248,12 @@
                         DefaultModelTimeoutInMinutes = _currentModel.DefaultModelTimeoutInMinutes,
                         DefaultLanguage = _currentModel.DefaultLanguage
                     };
+
+                if (languageChanged)
+                {
+                    CultureSetter
+                        .SetCulture(defaultLanguage);
+                }
 
                 Snackbar
                     .Add(

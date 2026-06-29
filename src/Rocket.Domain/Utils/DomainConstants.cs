@@ -16,6 +16,7 @@ namespace Rocket.Domain.Utils
         public const string AuthHeaderKey = "authHeader";
         public const string UsernameKey = "userName";
         public const string RoleKey = "userRole";
+        public const string CurrentLanguageKey = "userLanguage";
         
         public const string UnknownType = "Unknown";
 

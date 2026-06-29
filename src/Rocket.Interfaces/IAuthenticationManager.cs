@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,9 +18,13 @@ namespace Rocket.Interfaces
         Task<string> GetUsernameAsync();
         
         Task<string> GetRoleAsync();
+        
+        Task<string> GetCurrentLanguageAsync();
 
         Task<bool> IsRootAdminAsync();
 
         event Action OnAuthenticationStateChanged;
+
+        Task SetCurrentLanguageAsync(string language);
     }
 }

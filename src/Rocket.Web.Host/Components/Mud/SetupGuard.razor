@@ -6,6 +6,7 @@
 @inject IAuthenticationManager AuthenticationManager
 @inject IApiRequestManager ApiRequestManager
 @inject NavigationManager NavigationManager
+@inject ICultureSetter CultureSetter
 
 @if (_isChecking)
 {
@@ -33,7 +34,10 @@ else
         await CheckAndRedirect();
     }
 
-    private async void OnLocationChanged(object sender, LocationChangedEventArgs e)
+    private async void OnLocationChanged(
+        object sender,
+        LocationChangedEventArgs e
+    )
     {
         await InvokeAsync(
             async () =>
@@ -54,7 +58,7 @@ else
             var currentPath =
                 NavigationManager
                     .ToBaseRelativePath(NavigationManager.Uri);
-            
+
             // Allow logout and login pages always
             if (currentPath.StartsWith(
                     "Account/Logout",
@@ -69,6 +73,14 @@ else
                 StateHasChanged();
                 return;
             }
+
+            var currentLanguage =
+                await
+                    AuthenticationManager
+                        .GetCurrentLanguageAsync();
+
+            CultureSetter
+                .SetCulture(currentLanguage);
 
             // Check if admin needs to complete setup
             if (await AuthenticationManager.IsRootAdminAsync())
