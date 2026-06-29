@@ -13,11 +13,6 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>CommonResource.Designer.cs</LastGenOutput>
       </EmbeddedResource>
-      <EmbeddedResource Update="Web\UsersResource.fr.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>UsersResource.fr.Designer.cs</LastGenOutput>
-        <DependentUpon>UsersResource.cs</DependentUpon>
-      </EmbeddedResource>
       <EmbeddedResource Update="Global\WorkflowResource.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>WorkflowResource.Designer.cs</LastGenOutput>

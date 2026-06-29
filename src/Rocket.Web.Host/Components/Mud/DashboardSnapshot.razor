@@ -107,6 +107,7 @@
     private const string StatusCancelledColor = "#D58001";
     private const string StatusRunningName = "RUNNING";
     private const string StatusRunningColor = "#107394";
+    private const string StatusNotRunColor = "#A9C596";
 
     private IEnumerable<SankeyChartNode> _overviewNodes = Array.Empty<SankeyChartNode>();
     private IEnumerable<SankeyChartEdge> _overviewEdges = Array.Empty<SankeyChartEdge>();
@@ -442,11 +443,11 @@
                 StatusCompletedName => StatusCompletedColor,
                 StatusCancelledName => StatusCancelledColor,
                 StatusRunningName => StatusRunningColor,
-                _ => throw new ArgumentException("Invalid value for status")
+                _ => StatusNotRunColor
             };
         }
 
-        return null;
+        return StatusNotRunColor;
     }
 
 }
