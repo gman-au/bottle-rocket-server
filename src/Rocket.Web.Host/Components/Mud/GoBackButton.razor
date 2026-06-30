@@ -1,11 +1,14 @@
-﻿@inject IJSRuntime JsRuntime
+﻿@using Microsoft.Extensions.Localization
+@using Rocket.Localization.Web
+@inject IJSRuntime JsRuntime
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<CommonResource> StringLocalizer
 
 <MudButton
     Variant="Variant.Outlined"
     Color="Color.Primary"
     @onclick="@(async () => await GoBackAsync())">
-    Go Back
+    @StringLocalizer["CommonGoBackCaption"]
 </MudButton>
 
 @code {

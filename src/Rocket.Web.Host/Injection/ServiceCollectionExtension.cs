@@ -8,6 +8,7 @@ using Rocket.Infrastructure;
 using Rocket.Infrastructure.Json;
 using Rocket.Infrastructure.Mermaid;
 using Rocket.Interfaces;
+using Rocket.Localization;
 using Rocket.Web.Client;
 using Rocket.Web.Client.Authentication;
 using Rocket.Web.Client.Options;
@@ -105,6 +106,24 @@ namespace Rocket.Web.Host.Injection
                 .AddSingleton<CreateWorkflowStepRequestConverter, CreateWorkflowStepRequestConverter>()
                 .AddSingleton<UpdateWorkflowStepRequestConverter, UpdateWorkflowStepRequestConverter>()
                 .AddSingleton<CreateConnectorRequestConverter, CreateConnectorRequestConverter>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddLocalizationServices(
+            this IServiceCollection services
+        )
+        {
+            services
+                .AddLocalization(
+                    options =>
+                    {
+                        options.ResourcesPath = "";
+                    }
+                );
+
+            services
+                .AddScoped<ICultureSetter, CultureSetter>();
 
             return services;
         }

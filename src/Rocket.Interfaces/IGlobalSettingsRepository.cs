@@ -14,6 +14,7 @@ namespace Rocket.Interfaces
             int? sweepSuccessfulScansAfterDays,
             bool? enableSweeping,
             int? defaultModelTimeoutInMinutes,
+            string defaultLanguage,
             CancellationToken cancellationToken
         );
     }

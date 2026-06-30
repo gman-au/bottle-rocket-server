@@ -1,28 +1,32 @@
-﻿<MudDialog Class="p-2">
+﻿@using Microsoft.Extensions.Localization
+@using Rocket.Localization.Web
+@inject IStringLocalizer<DialogResource> StringLocalizer
+
+<MudDialog Class="p-2">
     <TitleContent>
         <MudText
             Color="Color.Primary"
             GutterBottom
             Typo="Typo.h5">
-            Manually run workflow
+            @StringLocalizer["DialogTriggerWorkflowTitle"]
         </MudText>
     </TitleContent>
     <DialogContent>
         <MudText Typo="Typo.body1">
-            Do you wish to trigger the workflow against this scan capture?
+            @StringLocalizer["DialogTriggerWorkflowBody"]
         </MudText>
     </DialogContent>
     <DialogActions>
         <MudButton
             Variant="Variant.Outlined"
             OnClick="Cancel">
-            Cancel
+            @StringLocalizer["DialogTriggerWorkflowCancelCaption"]
         </MudButton>
         <MudButton
             Variant="Variant.Outlined"
             Color="Color.Success"
             OnClick="Submit">
-            Submit
+            @StringLocalizer["DialogTriggerWorkflowSubmitCaption"]
         </MudButton>
     </DialogActions>
 </MudDialog>

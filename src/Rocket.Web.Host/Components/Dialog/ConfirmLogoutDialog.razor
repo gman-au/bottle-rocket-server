@@ -1,28 +1,32 @@
-﻿<MudDialog Class="p-2">
+﻿@using Microsoft.Extensions.Localization
+@using Rocket.Localization.Web
+@inject IStringLocalizer<DialogResource> StringLocalizer
+
+<MudDialog Class="p-2">
     <TitleContent>
         <MudText
             Color="Color.Primary"
             GutterBottom
             Typo="Typo.h5">
-            Logout
+            @StringLocalizer["DialogLogoutTitle"]
         </MudText>
     </TitleContent>
     <DialogContent>
         <MudText Typo="Typo.body1">
-            Do you wish to logout?
+            @StringLocalizer["DialogLogoutBody"]
         </MudText>
     </DialogContent>
     <DialogActions>
         <MudButton
             Variant="Variant.Outlined"
             OnClick="Cancel">
-            Cancel
+            @StringLocalizer["DialogLogoutCancelCaption"]
         </MudButton>
         <MudButton
             Variant="Variant.Outlined"
             Color="Color.Warning"
             OnClick="Submit">
-            Log out
+            @StringLocalizer["DialogLogoutSubmitCaption"]
         </MudButton>
     </DialogActions>
 </MudDialog>

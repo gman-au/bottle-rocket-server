@@ -26,6 +26,7 @@ namespace Rocket.Web.Client.Authentication
         private string _cachedAuthHeader;
         private string _cachedRole;
         private string _cachedUsername;
+        private string _cachedCurrentLanguage;
         private Task _initializationTask;
         private bool _initialized;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
@@ -59,6 +60,13 @@ namespace Rocket.Web.Client.Authentication
         }
 
         public event Action OnAuthenticationStateChanged;
+
+        public async Task SetCurrentLanguageAsync(
+            string language
+        )
+        {
+            _cachedCurrentLanguage = language;
+        }
 
         public async Task<bool> LoginAsync(string username, string password, CancellationToken cancellationToken)
         {
@@ -107,6 +115,7 @@ namespace Rocket.Web.Client.Authentication
                     _cachedAuthHeader = authHeader;
                     _cachedUsername = connectionTestResponse.UserName;
                     _cachedRole = connectionTestResponse.Role;
+                    _cachedCurrentLanguage = connectionTestResponse.CurrentLanguage;
 
                     _themeService
                         .SetDarkMode(connectionTestResponse.DarkMode);
@@ -126,6 +135,11 @@ namespace Rocket.Web.Client.Authentication
                         await _sessionStorage.SetAsync(
                             DomainConstants.RoleKey,
                             connectionTestResponse.Role
+                        );
+                        
+                        await _sessionStorage.SetAsync(
+                            DomainConstants.CurrentLanguageKey,
+                            connectionTestResponse.CurrentLanguage
                         );
                     }
                     catch (InvalidOperationException ex) when (ex.Message.Contains("prerendering"))
@@ -174,11 +188,13 @@ namespace Rocket.Web.Client.Authentication
             _cachedAuthHeader = null;
             _cachedUsername = null;
             _cachedRole = null;
+            _cachedCurrentLanguage = null;
 
             try
             {
                 await _sessionStorage.DeleteAsync(DomainConstants.AuthHeaderKey);
                 await _sessionStorage.DeleteAsync(DomainConstants.UsernameKey);
+                await _sessionStorage.DeleteAsync(DomainConstants.CurrentLanguageKey);
                 await _sessionStorage.DeleteAsync(DomainConstants.RoleKey);
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("prerendering"))
@@ -219,6 +235,15 @@ namespace Rocket.Web.Client.Authentication
 
             return
                 _cachedRole;
+        }
+
+        public async Task<string> GetCurrentLanguageAsync()
+        {
+            await
+                EnsureInitializedAsync();
+
+            return
+                _cachedCurrentLanguage;
         }
 
         public async Task<bool> IsRootAdminAsync()
@@ -272,6 +297,7 @@ namespace Rocket.Web.Client.Authentication
                 var authResult = await _sessionStorage.GetAsync<string>(DomainConstants.AuthHeaderKey);
                 var usernameResult = await _sessionStorage.GetAsync<string>(DomainConstants.UsernameKey);
                 var roleResult = await _sessionStorage.GetAsync<string>(DomainConstants.RoleKey);
+                var currentLanguageResult = await _sessionStorage.GetAsync<string>(DomainConstants.CurrentLanguageKey);
 
                 if (authResult.Success && !string.IsNullOrEmpty(authResult.Value))
                 {
@@ -289,6 +315,12 @@ namespace Rocket.Web.Client.Authentication
                 {
                     _cachedRole = roleResult.Value;
                     _logger.LogInformation("Role restored from session storage");
+                }
+
+                if (currentLanguageResult.Success && !string.IsNullOrEmpty(currentLanguageResult.Value))
+                {
+                    _cachedCurrentLanguage = currentLanguageResult.Value;
+                    _logger.LogInformation("Current language restored from session storage");
                 }
 
                 _initialized = true;

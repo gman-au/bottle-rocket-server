@@ -1,5 +1,7 @@
 ﻿@page "/MyWorkflows"
+@using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts.Workflows
+@using Rocket.Localization.Web
 @using Rocket.Web.Client
 @using Rocket.Web.Host.Components.Dialog
 @using Rocket.Web.Host.Extensions
@@ -8,6 +10,7 @@
 @inject IApiRequestManager ApiRequestManager
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject IDialogService DialogService
+@inject IStringLocalizer<WorkflowsResource> StringLocalizer
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <MudText
@@ -15,7 +18,7 @@
     Typo="Typo.h4"
     Color="Color.Primary"
     Class="mb-4">
-    My Workflows
+    @StringLocalizer["WorkflowsListTitle"]
 </MudText>
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
@@ -24,9 +27,9 @@
         <MudSimpleTable Dense>
             <thead>
             <tr>
-                <th class="general-centered">Workflow Name</th>
-                <th class="general-centered">Matching Page Symbol</th>
-                <th class="general-centered">Date Created</th>
+                <th class="general-centered">@StringLocalizer["WorkflowsNameFieldHeader"]</th>
+                <th class="general-centered">@StringLocalizer["WorkflowsMatchingSymbolFieldHeader"]</th>
+                <th class="general-centered">@StringLocalizer["WorkflowsDateCreatedFieldHeader"]</th>
                 <th/>
             </tr>
             </thead>
@@ -67,7 +70,7 @@
                                   _currentIndex,
                                   DefaultPageSize
                               ))">
-                    Load More
+                    @StringLocalizer["WorkflowsLoadMoreCaption"]
                 </MudButton>
             </MudItem>
         </MudGrid>
@@ -78,7 +81,7 @@
             Align="Align.Center"
             Typo="Typo.body2"
             Color="Color.Default">
-            No workflows found
+            @StringLocalizer["WorkflowsNoWorkflowsMessage"]
         </MudText>
     }
 </BottleRocketLoadingOverlay>

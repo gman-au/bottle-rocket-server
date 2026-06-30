@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ using Rocket.Gcp.Injection.Api;
 using Rocket.Google.Injection.Api;
 using Rocket.Interfaces;
 using Rocket.Local.Injection.Api;
+using Rocket.Localization;
 using Rocket.Microsofts.Injection.Api;
 using Rocket.Notion.Injection.Api;
 using Rocket.Ollama.Injection.Api;
@@ -44,7 +46,13 @@ services
 services
     .AddOptions<Microsoft.AspNetCore.Mvc.JsonOptions>()
     .Configure<IJsonResolverInstanceProvider>(
-        (jsonOptions, resolverProvider) => { jsonOptions.JsonSerializerOptions.TypeInfoResolver = resolverProvider.GetInstance(); }
+        (
+            jsonOptions,
+            resolverProvider
+        ) =>
+        {
+            jsonOptions.JsonSerializerOptions.TypeInfoResolver = resolverProvider.GetInstance();
+        }
     );
 
 services
@@ -73,6 +81,9 @@ services
 
 services
     .AddSignalRServerServices(configuration);
+
+services
+    .AddLocalizationServices();
 
 services
     .AddDropboxApiIntegration()
@@ -117,5 +128,33 @@ app
 
 app
     .MapHub<CaptureHub>("/hubs/capture");
+
+app
+    .Use(
+        async (
+            context,
+            next
+        ) =>
+        {
+            var globalSettingsRepository =
+                context
+                    .RequestServices
+                    .GetRequiredService<IGlobalSettingsRepository>();
+            
+            var globalSettings =
+                await
+                    globalSettingsRepository
+                        .GetGlobalSettingsAsync(context.RequestAborted);
+
+            var culture = 
+                CultureInfo
+                    .GetCultureInfo(globalSettings?.DefaultLanguage ?? Languages.DefaultLanguage);
+            
+            CultureInfo.CurrentCulture = culture;
+            CultureInfo.CurrentUICulture = culture;
+
+            await next();
+        }
+    );
 
 app.Run();

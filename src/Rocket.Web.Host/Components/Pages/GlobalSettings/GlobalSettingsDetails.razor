@@ -1,10 +1,16 @@
 ﻿@page "/GlobalSettings"
+@using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts.GlobalSettings
+@using Rocket.Interfaces
+@using Rocket.Localization
+@using Rocket.Localization.Web
 @using Rocket.Web.Client
 @using Rocket.Web.Host.Infrastructure
 @inject IApiRequestManager ApiRequestManager
 @inject IWebHostErrorHandler WebHostErrorHandler
+@inject ICultureSetter CultureSetter
 @inject ISnackbar Snackbar
+@inject IStringLocalizer<GlobalSettingsResource> StringLocalizer
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
@@ -19,7 +25,7 @@
                     Typo="Typo.h4"
                     Color="Color.Primary"
                     Class="mb-4">
-                    System Settings
+                    @StringLocalizer["GlobalSettingsTitle"]
                 </MudText>
                 <MudGrid>
                     <MudItem xs="12">
@@ -30,19 +36,18 @@
                                         Color="Color.Secondary"
                                         GutterBottom
                                         Typo="Typo.h5">
-                                        Automatic archival (sweeping)
+                                        @StringLocalizer["GlobalSettingsSweepFieldHeader"]
                                     </MudText>
                                     <MudText
                                         Typo="Typo.body2">
                                         <p>
-                                            Configure the system to "sweep" successfully processed scans after a specified amount of days.
+                                            @StringLocalizer["GlobalSettingsSweepFieldHintP1"]
                                         </p>
                                         <p>
-                                            When a workflow has been successfully run for a given scan, that scan will be archived after the amount of 
-                                            days configured below.
+                                            @StringLocalizer["GlobalSettingsSweepFieldHintP2"]
                                         </p>
                                         <p>
-                                            You can enable or disable sweeping entirely using the checkbox.
+                                            @StringLocalizer["GlobalSettingsSweepFieldHintP3"]
                                         </p>
                                     </MudText>
                                 </MudItem>
@@ -50,14 +55,14 @@
                                     <MudCheckBox
                                         Disabled="@(_isLoading)"
                                         @bind-Value="@_newModel.EnableSweeping">
-                                        Enable sweeping
+                                        @StringLocalizer["GlobalSettingsEnableSweepingFieldHeader"]
                                     </MudCheckBox>
                                 </MudItem>
                                 <MudItem xs="6">
                                     <MudNumericField
                                         Disabled="@(!_newModel.EnableSweeping.GetValueOrDefault())"
                                         @bind-Value="_newModel.SweepSuccessfulScansAfterDays"
-                                        Label="Sweep scans after days"
+                                        Label="@StringLocalizer["GlobalSettingsEnableSweepingFieldHeader"]"
                                         Min="0"
                                         OnlyValidateIfDirty/>
                                 </MudItem>
@@ -72,25 +77,61 @@
                                         Color="Color.Secondary"
                                         GutterBottom
                                         Typo="Typo.h5">
-                                        LLM timeout
+                                        @StringLocalizer["GlobalSettingsLlmTimeoutFieldHeader"]
                                     </MudText>
                                     <MudText
                                         Typo="Typo.body2">
                                         <p>
-                                            Configure the timeout (in minutes) for LLM operations (i.e. OCR extraction from models).
+                                            @StringLocalizer["GlobalSettingsLlmTimeoutFieldHintP1"]
                                         </p>
                                         <p>
-                                            If left empty, the default timeout is 10 minutes.
+                                            @StringLocalizer["GlobalSettingsLlmTimeoutFieldHintP2"]
                                         </p>
                                     </MudText>
                                 </MudItem>
                                 <MudItem xs="6">
                                     <MudNumericField
                                         @bind-Value="_newModel.DefaultModelTimeoutInMinutes"
-                                        Label="Model timeout (in minutes)"
+                                        Label="@StringLocalizer["GlobalSettingsModelTimeoutFieldHeader"]"
                                         Min="1"
                                         Clearable
                                         OnlyValidateIfDirty/>
+                                </MudItem>
+                            </MudGrid>
+                        </div>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <div class="mud-border-tertiary border p-4 mb-4 rounded">
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudText
+                                        Color="Color.Secondary"
+                                        GutterBottom
+                                        Typo="Typo.h5">
+                                        @StringLocalizer["GlobalSettingsDefaultLanguageFieldHeader"]
+                                    </MudText>
+                                    <MudText
+                                        Typo="Typo.body2">
+                                        <p>
+                                            @StringLocalizer["GlobalSettingsDefaultLanguageFieldHintP1"]
+                                        </p>
+                                    </MudText>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudSelect
+                                        T="string"
+                                        Label="@StringLocalizer["GlobalSettingsLanguageFieldHeader"]"
+                                        @bind-Value="_newModel.DefaultLanguage"
+                                        HelperText="@StringLocalizer["GlobalSettingsLanguageFieldHint"]"
+                                        Clearable="true"
+                                        Required="false">
+                                        @foreach (var languagePair in Languages.AvailableLanguages ?? [])
+                                        {
+                                            <MudSelectItem Value="@languagePair.Value">
+                                                @languagePair.Key
+                                            </MudSelectItem>
+                                        }
+                                    </MudSelect>
                                 </MudItem>
                             </MudGrid>
                         </div>
@@ -106,7 +147,7 @@
                             Color="Color.Success"
                             Disabled="@(_isLoading)"
                             OnClick="@SubmitAsync">
-                            Submit
+                            @StringLocalizer["GlobalSettingsSubmitCaption"]
                         </MudButton>
                     </MudItem>
                 </MudGrid>
@@ -146,7 +187,8 @@
                 {
                     SweepSuccessfulScansAfterDays = _currentModel.SweepSuccessfulScansAfterDays,
                     EnableSweeping = _currentModel.EnableSweeping,
-                    DefaultModelTimeoutInMinutes = _currentModel.DefaultModelTimeoutInMinutes
+                    DefaultModelTimeoutInMinutes = _currentModel.DefaultModelTimeoutInMinutes,
+                    DefaultLanguage = _currentModel.DefaultLanguage
                 };
         }
         catch (Exception ex)
@@ -177,6 +219,9 @@
                 var sweepSuccessfulScansAfterDaysValue = _newModel.SweepSuccessfulScansAfterDays;
                 var enableSweepingValue = _newModel.EnableSweeping;
                 var defaultModelTimeoutInMinutes = _newModel.DefaultModelTimeoutInMinutes;
+                var defaultLanguage = _newModel.DefaultLanguage ?? CultureSetter.DefaultLanguage;
+
+                var languageChanged = defaultLanguage != _currentModel.DefaultLanguage;
 
                 await
                     ApiRequestManager
@@ -185,7 +230,8 @@
                             {
                                 SweepSuccessfulScansAfterDays = sweepSuccessfulScansAfterDaysValue,
                                 EnableSweeping = enableSweepingValue,
-                                DefaultModelTimeoutInMinutes = defaultModelTimeoutInMinutes
+                                DefaultModelTimeoutInMinutes = defaultModelTimeoutInMinutes,
+                                DefaultLanguage = defaultLanguage
                             },
                             BaseCancellationToken
                         );
@@ -195,15 +241,22 @@
                     {
                         SweepSuccessfulScansAfterDays = sweepSuccessfulScansAfterDaysValue ?? _currentModel.SweepSuccessfulScansAfterDays,
                         EnableSweeping = enableSweepingValue ?? _currentModel.EnableSweeping,
-                        DefaultModelTimeoutInMinutes = _currentModel.DefaultModelTimeoutInMinutes
+                        DefaultModelTimeoutInMinutes = _currentModel.DefaultModelTimeoutInMinutes,
+                        DefaultLanguage = _currentModel.DefaultLanguage
                     };
+
+                if (languageChanged)
+                {
+                    CultureSetter
+                        .SetCulture(defaultLanguage);
+                }
 
                 Snackbar
                     .Add(
-                        "The system settings have been updated.",
+                        @StringLocalizer["GlobalSettingsHasBeenUpdatedMessage"].Value,
                         Severity.Success
                     );
-                
+
                 NavigationManager
                     .NavigateTo("/");
             }
@@ -219,5 +272,5 @@
             }
         }
     }
-
+    
 }

@@ -23,45 +23,54 @@ using Rocket.Infrastructure.QrCode;
 using Rocket.Infrastructure.Thumbnails;
 using Rocket.Interfaces;
 using Rocket.Jobs.Service;
+using Rocket.Localization;
 
 namespace Rocket.Api.Host.Injection
 {
     public static class ServiceCollectionExtension
     {
-        public static void RegisterBsonDomainMappings(this IServiceCollection services)
+        public static void RegisterBsonDomainMappings(
+            this IServiceCollection services
+        )
         {
             if (!BsonClassMap.IsClassMapRegistered(typeof(BaseConnector)))
             {
-                BsonClassMap.RegisterClassMap<BaseConnector>(cm =>
-                {
-                    cm.AutoMap();
-                    cm.SetIsRootClass(true);
-                });
+                BsonClassMap.RegisterClassMap<BaseConnector>(
+                    cm =>
+                    {
+                        cm.AutoMap();
+                        cm.SetIsRootClass(true);
+                    }
+                );
             }
-            
+
             if (!BsonClassMap.IsClassMapRegistered(typeof(BaseWorkflowStep)))
             {
-                BsonClassMap.RegisterClassMap<BaseWorkflowStep>(cm =>
-                {
-                    cm.AutoMap();
-                    cm.SetIsRootClass(true);
-                });
+                BsonClassMap.RegisterClassMap<BaseWorkflowStep>(
+                    cm =>
+                    {
+                        cm.AutoMap();
+                        cm.SetIsRootClass(true);
+                    }
+                );
             }
-            
+
             if (!BsonClassMap.IsClassMapRegistered(typeof(BaseExecutionStep)))
             {
-                BsonClassMap.RegisterClassMap<BaseExecutionStep>(cm =>
-                {
-                    cm.AutoMap();
-                    cm.SetIsRootClass(true);
-                });
+                BsonClassMap.RegisterClassMap<BaseExecutionStep>(
+                    cm =>
+                    {
+                        cm.AutoMap();
+                        cm.SetIsRootClass(true);
+                    }
+                );
             }
-            
+
             var provider =
                 services
                     .BuildServiceProvider();
 
-            var bsonMappers = 
+            var bsonMappers =
                 provider
                     .GetServices<IBsonMapper>();
 
@@ -71,7 +80,7 @@ namespace Rocket.Api.Host.Injection
                     .MapApplicableBsonTypes();
             }
         }
-        
+
         public static IServiceCollection AddSignalRServerServices(
             this IServiceCollection services,
             IConfigurationRoot configuration
@@ -159,8 +168,8 @@ namespace Rocket.Api.Host.Injection
                 .AddSingleton<IJsonResolverInstanceProvider, RocketJsonResolverInstanceProvider>();
 
             services
-                .AddMemoryCache(); 
-            
+                .AddMemoryCache();
+
             return services;
         }
 
@@ -208,7 +217,9 @@ namespace Rocket.Api.Host.Injection
             return services;
         }
 
-        public static IServiceCollection AddWorkflowBackgroundJob(this IServiceCollection services)
+        public static IServiceCollection AddWorkflowBackgroundJob(
+            this IServiceCollection services
+        )
         {
             services.AddSingleton<ICaptureSweeper, CaptureSweeper>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
@@ -220,13 +231,30 @@ namespace Rocket.Api.Host.Injection
 
             return services;
         }
-        
-        public static IServiceCollection AddJsonSupport(this IServiceCollection services)
+
+        public static IServiceCollection AddJsonSupport(
+            this IServiceCollection services
+        )
         {
             services
                 .AddSingleton<CreateWorkflowStepRequestConverter, CreateWorkflowStepRequestConverter>()
                 .AddSingleton<UpdateWorkflowStepRequestConverter, UpdateWorkflowStepRequestConverter>()
                 .AddSingleton<CreateConnectorRequestConverter, CreateConnectorRequestConverter>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddLocalizationServices(
+            this IServiceCollection services
+        )
+        {
+            services
+                .AddLocalization(
+                    options =>
+                    {
+                        options.ResourcesPath = "";
+                    }
+                );
 
             return services;
         }

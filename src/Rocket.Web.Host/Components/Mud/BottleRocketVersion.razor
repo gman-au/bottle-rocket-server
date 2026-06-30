@@ -1,6 +1,8 @@
 ﻿@using System.Threading
 @using Rocket.Web.Client
+@using Rocket.Interfaces
 @inject IApiRequestManager ApiRequestManager
+@inject ICultureSetter CultureSetter
 
 <MudText
     Color="Color.Secondary"
@@ -16,13 +18,21 @@
     Typo="Typo.subtitle2">
     @_apiVersion
 </MudText>
+<MudText
+    Color="Color.Secondary"
+    Class="version-number"
+    Align="Align.Center"
+    Typo="Typo.subtitle2">
+    @_currentCulture
+</MudText>
 
 
 @code {
 
     private string _apiVersion = null;
     private string _webVersion = null;
-    
+    private string _currentCulture = null;
+
     protected override async Task OnInitializedAsync()
     {
         var versionResponse =
@@ -35,5 +45,7 @@
             _webVersion = $"web:{versionResponse.WebVersion}";
             _apiVersion = $"api:{versionResponse.ApiVersion}";
         }
+
+        _currentCulture = CultureSetter.CurrentCulture?.Name;
     }
 }

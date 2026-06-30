@@ -14,5 +14,7 @@ namespace Rocket.Domain
         public bool EnableSweeping { get; set; }
 
         public int? DefaultModelTimeoutInMinutes { get; set; }
+        
+        public string DefaultLanguage { get; set; }
     }
 }

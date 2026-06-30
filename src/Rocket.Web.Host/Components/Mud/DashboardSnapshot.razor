@@ -1,4 +1,11 @@
-﻿@using Rocket.Api.Contracts.Dashboard
+﻿@using System.Globalization
+@using System.Resources
+@using Microsoft.Extensions.Localization
+@using Rocket.Api.Contracts.Dashboard
+@using Rocket.Domain.Enum
+@using Rocket.Localization
+@using Rocket.Localization.Global
+@using Rocket.Localization.Web
 @using Rocket.Web.Client
 @using Rocket.Web.Host.HubClients
 @using Rocket.Web.Host.Infrastructure
@@ -7,6 +14,7 @@
 @inject IApiRequestManager ApiRequestManager
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject IThemeService ThemeService
+@inject IStringLocalizer<DashboardResource> StringLocalizer
 @implements IAsyncDisposable
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
@@ -16,7 +24,7 @@
         <MudGrid Justify="Justify.Center" Class="pa-4">
             <MudItem xs="12" sm="12" md="3" lg="3" Class="mb-4">
                 <MudText Typo="Typo.h6" Class="text-center">
-                    Scanned pages
+                    @StringLocalizer["DashboardScannedPagesCaption"]
                 </MudText>
                 <MudChart
                     ChartType="ChartType.Donut"
@@ -38,7 +46,7 @@
             </MudItem>
             <MudItem xs="12" sm="12" md="3" lg="3" Class="mb-4">
                 <MudText Typo="Typo.h6" Class="text-center">
-                    Storage
+                    @StringLocalizer["DashboardStorageCaption"]
                 </MudText>
                 <MudChart
                     ChartType="ChartType.Donut"
@@ -71,7 +79,7 @@
                 <MudFlexBreak/>
                 <MudItem xs="12" Class="mb-4">
                     <MudText Typo="Typo.h6" Class="text-center">
-                        Workflows
+                        @StringLocalizer["DashboardWorkflowsCaption"]
                     </MudText>
                     <MudChart
                         Nodes="@((_overviewNodes ?? []).ToList())"
@@ -99,6 +107,7 @@
     private const string StatusCancelledColor = "#D58001";
     private const string StatusRunningName = "RUNNING";
     private const string StatusRunningColor = "#107394";
+    private const string StatusNotRunColor = "#A9C596";
 
     private IEnumerable<SankeyChartNode> _overviewNodes = Array.Empty<SankeyChartNode>();
     private IEnumerable<SankeyChartEdge> _overviewEdges = Array.Empty<SankeyChartEdge>();
@@ -229,6 +238,52 @@
                     .ElementAt(i % BottleRocketChartPalette.Values.Count());
         }
 
+        var resourceManager =
+            new ResourceManager(
+                "Rocket.Localization.Global.WorkflowResource",
+                typeof(WorkflowResource).Assembly
+            );
+
+        var translations = new Dictionary<string, string>();
+
+        foreach (var status in Enum.GetValues<ExecutionStatusEnum>()
+                     .Select(
+                         o => Enum.GetName(
+                             typeof(ExecutionStatusEnum),
+                             o
+                         )
+                     ))
+        {
+            try
+            {
+                var defaultStatusValue =
+                    resourceManager
+                        .GetString(
+                            $"ExecutionStatus{status}Label",
+                            CultureInfo.GetCultureInfo(Languages.DefaultLanguage)
+                        );
+
+                var translatedStatusValue =
+                    resourceManager
+                        .GetString(
+                            $"ExecutionStatus{status}Label",
+                            CultureInfo.GetCultureInfo(CultureInfo.CurrentUICulture.Name)
+                        );
+
+                if (!string.IsNullOrEmpty(translatedStatusValue))
+                {
+                    translations
+                        .Add(
+                            translatedStatusValue,
+                            defaultStatusValue
+                        );
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
         var allStatusNodes =
             lifecyclesByGroup
                 .Select(o => o.Status)
@@ -239,7 +294,7 @@
                         {
                             Name = o,
                             Column = 1,
-                            Color = MapStatusToColor(o)
+                            Color = MapStatusToColor(o, translations)
                         }
                 );
 
@@ -376,17 +431,23 @@
     }
 
     private static string MapStatusToColor(
-        string status
+        string status,
+        IDictionary<string, string> translations
     )
     {
-        return status?.ToUpper() switch
+        if (translations.TryGetValue(status, out var defaultStatus))
         {
-            StatusErroredName => StatusErroredColor,
-            StatusCompletedName => StatusCompletedColor,
-            StatusCancelledName => StatusCancelledColor,
-            StatusRunningName => StatusRunningColor,
-            _ => throw new ArgumentException("Invalid value for status")
-        };
+            return defaultStatus?.ToUpper() switch
+            {
+                StatusErroredName => StatusErroredColor,
+                StatusCompletedName => StatusCompletedColor,
+                StatusCancelledName => StatusCancelledColor,
+                StatusRunningName => StatusRunningColor,
+                _ => StatusNotRunColor
+            };
+        }
+
+        return StatusNotRunColor;
     }
 
 }

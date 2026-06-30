@@ -31,6 +31,7 @@ namespace Rocket.Infrastructure.Db.Mongo
             int? sweepSuccessfulScansAfterDays,
             bool? enableSweeping,
             int? defaultModelTimeoutInMinutes,
+            string defaultLanguage,
             CancellationToken cancellationToken
         )
         {
@@ -62,6 +63,18 @@ namespace Rocket.Infrastructure.Db.Mongo
                             .Set(
                                 o => o.SweepSuccessfulScansAfterDays,
                                 sweepSuccessfulScansAfterDays.Value
+                            )
+                    );
+            }
+
+            if (!string.IsNullOrEmpty(defaultLanguage))
+            {
+                updates
+                    .Add(
+                        updateBuilder
+                            .Set(
+                                o => o.DefaultLanguage,
+                                defaultLanguage
                             )
                     );
             }

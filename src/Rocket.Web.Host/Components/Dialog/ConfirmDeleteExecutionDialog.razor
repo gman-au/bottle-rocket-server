@@ -1,37 +1,39 @@
-﻿<MudDialog Class="p-2">
+﻿@using Microsoft.Extensions.Localization
+@using Rocket.Localization.Web
+@inject IStringLocalizer<DialogResource> StringLocalizer
+
+<MudDialog Class="p-2">
     <TitleContent>
         <MudText
             Color="Color.Primary"
             GutterBottom
             Typo="Typo.h5">
-            Delete workflow run
+            @StringLocalizer["DialogDeleteExecutionTitle"]
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudText 
+        <MudText
             Typo="Typo.h6"
-            Color="Color.Default"
-        >
-            Do you wish to delete this workflow run?
+            Color="Color.Default">
+            @StringLocalizer["DialogDeleteExecutionBody"]
         </MudText>
         <MudText
             Typo="Typo.body1"
-            Color="Color.Error"
-        >
-            You will not be able to recover this workflow run after deletion.
+            Color="Color.Error">
+            @StringLocalizer["DialogDeleteExecutionWarning"]
         </MudText>
     </DialogContent>
     <DialogActions>
         <MudButton
             Variant="Variant.Outlined"
             OnClick="Cancel">
-            Cancel
+            @StringLocalizer["DialogDeleteExecutionCancelCaption"]
         </MudButton>
         <MudButton
             Variant="Variant.Outlined"
             Color="Color.Error"
             OnClick="Submit">
-            Delete
+            @StringLocalizer["DialogDeleteExecutionSubmitCaption"]
         </MudButton>
     </DialogActions>
 </MudDialog>

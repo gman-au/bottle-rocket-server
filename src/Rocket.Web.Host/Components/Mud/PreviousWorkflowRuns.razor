@@ -1,7 +1,11 @@
-﻿@using Rocket.Api.Contracts.Executions
+﻿@using Microsoft.Extensions.Localization
+@using Rocket.Api.Contracts.Executions
 @using Rocket.Domain.Enum
 @using Rocket.Domain.Utils
+@using Rocket.Localization.Web
 @using Rocket.Web.Host.Extensions
+@inject IStringLocalizer<PreviousWorkflowRunsResource> StringLocalizer
+
 @if ((Executions ?? []).Any())
 {
     <MudSimpleTable
@@ -9,9 +13,9 @@
         Dense>
         <thead>
         <tr>
-            <th>Workflow</th>
-            <th>Run Date</th>
-            <th>Status</th>
+            <th>@StringLocalizer["PreviousWorkflowRunsWorkflowNameFieldHeader"]</th>
+            <th>@StringLocalizer["PreviousWorkflowRunsRunDateFieldHeader"]</th>
+            <th>@StringLocalizer["PreviousWorkflowRunsStatusFieldHeader"]</th>
         </tr>
         </thead>
         <tbody>
@@ -54,7 +58,7 @@ else
         Align="Align.Center"
         Typo="Typo.body2"
         Color="Color.Default">
-        No previous runs found
+        @StringLocalizer["PreviousWorkflowRunsNoPreviousWorkflowRunsMessage"]
     </MudText>
 }
 

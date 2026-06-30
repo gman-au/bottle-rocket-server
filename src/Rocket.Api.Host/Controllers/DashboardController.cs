@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,12 +7,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Dashboard;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Interfaces;
+using Rocket.Localization.Global;
 
 namespace Rocket.Api.Host.Controllers
 {
@@ -21,6 +24,7 @@ namespace Rocket.Api.Host.Controllers
     public class DashboardController(
         ILogger<DashboardController> logger,
         IDashboardSnapshotProvider dashboardSnapshotProvider,
+        IStringLocalizer<WorkflowResource> stringLocalizer,
         IUserManager userManager
     ) : RocketControllerBase(userManager)
     {
@@ -68,6 +72,14 @@ namespace Rocket.Api.Host.Controllers
                             cancellationToken
                         );
 
+            var culture = 
+                CultureInfo
+                    .CurrentUICulture
+                    .Name;
+            
+            logger
+                .LogInformation("Current culture: {Culture}", culture);
+            
             var response =
                 new FetchDashboardResponse
                 {
@@ -102,10 +114,7 @@ namespace Rocket.Api.Host.Controllers
                                     o => new LifecycleTotalSpecifics
                                     {
                                         Workflow = o.Workflow,
-                                        Status = Enum.GetName(
-                                            typeof(ExecutionStatusEnum),
-                                            o.Status
-                                        ),
+                                        Status = stringLocalizer[$"ExecutionStatus{Enum.GetName(typeof(ExecutionStatusEnum), o.Status)}Label"],
                                         Count = o.Count
                                     }
                                 )

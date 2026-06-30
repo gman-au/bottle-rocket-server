@@ -1,38 +1,47 @@
-﻿@using Rocket.Api.Contracts.Connectors
+﻿@using Microsoft.Extensions.Localization
+@using Rocket.Api.Contracts.Connectors
+@using Rocket.Localization.Web
+@inject IStringLocalizer<DialogResource> StringLocalizer
+
 <MudDialog Class="p-2">
     <TitleContent>
         <MudText
             Color="Color.Primary"
             GutterBottom
             Typo="Typo.h5">
-            Delete connector
+            @StringLocalizer["DialogDeleteConnectorTitle"]
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudText 
+        <MudText
+            Typo="Typo.body1"
+            Color="Color.Default">
+            @StringLocalizer["DialogDeleteConnectorBody"]
+        </MudText>
+        <MudText
+            Class="mt-2 mb-2"
             Typo="Typo.h6"
-            Color="Color.Default"
-        >
-            Do you wish to delete this <b>@Connector?.ConnectorName</b> connector?
+            Color="Color.Info">
+            @Connector?.ConnectorName
         </MudText>
         <MudText
             Typo="Typo.body1"
             Color="Color.Warning"
         >
-            Any existing workflows using this connector will no longer function correctly.
+            @StringLocalizer["DialogDeleteConnectorWarning"]
         </MudText>
     </DialogContent>
     <DialogActions>
         <MudButton
             Variant="Variant.Outlined"
             OnClick="Cancel">
-            Cancel
+            @StringLocalizer["DialogDeleteConnectorCancelCaption"]
         </MudButton>
         <MudButton
             Variant="Variant.Outlined"
             Color="Color.Error"
             OnClick="Submit">
-            Delete
+            @StringLocalizer["DialogDeleteConnectorSubmitCaption"]
         </MudButton>
     </DialogActions>
 </MudDialog>

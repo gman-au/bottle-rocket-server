@@ -78,7 +78,8 @@ services
     .AddSignalRClientServices();
 
 services
-    .AddJsonSupport();
+    .AddJsonSupport()
+    .AddLocalizationServices();
 
 var app = 
     builder

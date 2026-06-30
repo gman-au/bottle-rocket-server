@@ -12,5 +12,8 @@ namespace Rocket.Api.Contracts
         
         [JsonPropertyName("dark_mode")]
         public bool DarkMode { get; set; }
+        
+        [JsonPropertyName("current_language")]
+        public string CurrentLanguage { get; set; }
     }
 }

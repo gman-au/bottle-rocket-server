@@ -16,6 +16,7 @@ namespace Rocket.Api.Host.Controllers
     [Route("/api/connection")]
     public class ConnectionController(
         ILogger<ConnectionController> logger,
+        IGlobalSettingsRepository globalSettingsRepository,
         IUserManager userManager
     ) : RocketControllerBase(userManager)
     {
@@ -54,12 +55,18 @@ namespace Rocket.Api.Host.Controllers
                 await
                     GetLoggedInUserAsync(cancellationToken);
 
+            var globalSettings =
+                await
+                    globalSettingsRepository
+                        .GetGlobalSettingsAsync(cancellationToken);
+            
             return
                 new ConnectionTestResponse
                     {
                         UserName = user.Username,
                         Role = user.IsAdmin ? DomainConstants.AdminRole : DomainConstants.UserRole,
-                        DarkMode = user.DarkMode
+                        DarkMode = user.DarkMode,
+                        CurrentLanguage = globalSettings?.DefaultLanguage
                     }
                     .AsApiSuccess();
         }

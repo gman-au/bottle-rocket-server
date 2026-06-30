@@ -1,6 +1,9 @@
 ﻿@page "/error"
+@using Microsoft.Extensions.Localization
 @using Rocket.Domain.Exceptions
+@using Rocket.Localization.Web
 @inject IJSRuntime JsRuntime
+@inject IStringLocalizer<ErrorsResource> StringLocalizer
 <MudGrid Justify="Justify.Center" Class="mt-8">
     <MudItem xs="7">
 
@@ -11,7 +14,7 @@
                 Align="Align.Center"
                 GutterBottom="true"
                 Color="Color.Secondary">
-                Not found
+                @StringLocalizer["ErrorsNotFoundMessage"]
             </MudText>
         }
         else
@@ -21,7 +24,7 @@
                 Align="Align.Center"
                 GutterBottom="true"
                 Color="Color.Secondary">
-                Error
+                @StringLocalizer["ErrorsErrorMessage"]
             </MudText>
         }
     </MudItem>
@@ -43,21 +46,21 @@
         @if (Exception == null)
         {
             <MudText Align="Align.Center">
-                The page or record you are looking for can no longer be found, or you do not have access.
+                @StringLocalizer["ErrorsNoRecordFoundMessage"]
             </MudText>
         }
         else
         {
             <MudText Align="Align.Center">
-                An error has occurred. Please contact your administrator.
+                @StringLocalizer["ErrorsGeneralErrorMessage"]
             </MudText>
             if (Exception is RocketException rex)
             {
                 <MudDivider Class="mt-4"/>
                 <MudSimpleTable Dense size="Size.Small" Class="mt-4">
                     <tbody>
-                    <SimpleTableRowPair Title="API Status code" Value=@rex.ApiStatusCode.ToString()/>
-                    <SimpleTableRowPair Title="API Message" Value=@rex.Message/>
+                    <SimpleTableRowPair Title="@StringLocalizer["ErrorsStatusCodeFieldHeader"]" Value=@rex.ApiStatusCode.ToString()/>
+                    <SimpleTableRowPair Title="@StringLocalizer["ErrorsMessageFieldHeader"]" Value=@rex.Message/>
                     </tbody>
                 </MudSimpleTable>
             }
@@ -69,7 +72,7 @@
                 Variant="Variant.Outlined"
                 Color="Color.Primary"
                 @onclick="@(async () => await GoBack())">
-                Go Back
+                @StringLocalizer["ErrorsGoBackCaption"]
             </MudButton>
         </div>
     </MudItem>

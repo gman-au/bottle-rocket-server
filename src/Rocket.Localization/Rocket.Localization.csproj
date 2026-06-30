@@ -1,0 +1,82 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Web\UsersResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>UsersResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\CommonResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>CommonResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Global\WorkflowResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>WorkflowResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\ScansResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ScansResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\ConnectorsResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ConnectorsResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\WorkflowsResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>WorkflowsResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\WorkflowStepsResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>WorkflowStepsResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\ExecutionsResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ExecutionsResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\GlobalSettingsResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>GlobalSettingsResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\SidebarResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>SidebarResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\ErrorsResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ErrorResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\PreviousWorkflowRunsResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>PreviousWorkflowRunsResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\DialogResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>DialogResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\LoginResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>LoginResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\LogoutResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>LogoutResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\CompleteSetupResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>CompleteSetupResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\PasswordResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>PasswordResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
+    </ItemGroup>
+
+</Project>

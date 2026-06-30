@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <!-- TITLES -->
+    <data name="WorkflowsStepsAddTitle" xml:space="preserve">
+        <value>Add New Workflow Step</value>
+    </data>
+    <!-- FIELDS & HINTS -->
+    <data name="WorkflowsStepsConnectorFieldHeader" xml:space="preserve">
+        <value>Connector</value>
+    </data>
+    <data name="WorkflowsStepsConnectorFieldHint" xml:space="preserve">
+        <value>Select a connector to use for this step</value>
+    </data>
+    <!-- CAPTIONS & MESSAGES -->
+    <data name="WorkflowStepsAddCaption" xml:space="preserve">
+        <value>Add step</value>
+    </data>
+    <data name="WorkflowStepsDeleteCaption" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="WorkflowStepsSubmitCaption" xml:space="preserve">
+        <value>Submit</value>
+    </data>
+    <data name="WorkflowsStepsDataWillLeaveMessage" xml:space="preserve">
+        <value>Data will leave your server</value>
+    </data>
+    <data name="WorkflowsStepsDataMightLeaveMessage" xml:space="preserve">
+        <value>Data might leave your server</value>
+    </data>
+    <data name="WorkflowsStepsDataWontLeaveMessage" xml:space="preserve">
+        <value>Data will not leave your server</value>
+    </data>
+    <data name="WorkflowsStepsHasBeenUpdatedMessage" xml:space="preserve">
+        <value>The step has been updated.</value>
+    </data>
+    <data name="WorkflowsStepsHasBeenDeletedMessage" xml:space="preserve">
+        <value>The step has been deleted.</value>
+    </data>
+    <!-- VALUES -->
+    <data name="WorkflowsStepsNewValue" xml:space="preserve">
+        <value>New</value>
+    </data>
+    <data name="WorkflowsStepsUpdateValue" xml:space="preserve">
+        <value>Update</value>
+    </data>
+</root>

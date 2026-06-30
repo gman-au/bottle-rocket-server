@@ -1,10 +1,14 @@
-﻿<MudDialog Class="p-2">
+﻿@using Microsoft.Extensions.Localization
+@using Rocket.Localization.Web
+@inject IStringLocalizer<DialogResource> StringLocalizer
+
+<MudDialog Class="p-2">
     <TitleContent>
         <MudText
             Color="Color.Primary"
             GutterBottom
             Typo="Typo.h5">
-            Delete scan
+            @StringLocalizer["DialogDeleteScanTitle"]
         </MudText>
     </TitleContent>
     <DialogContent>
@@ -12,26 +16,26 @@
             Typo="Typo.h6"
             Color="Color.Default"
         >
-            Do you wish to delete this scan?
+            @StringLocalizer["DialogDeleteScanBody"]
         </MudText>
         <MudText
             Typo="Typo.body1"
             Color="Color.Error"
         >
-            This scanned image will be permanently deleted, as well as all workflow execution history.
+            @StringLocalizer["DialogDeleteScanWarning"]
         </MudText>
     </DialogContent>
     <DialogActions>
         <MudButton
             Variant="Variant.Outlined"
             OnClick="Cancel">
-            Cancel
+            @StringLocalizer["DialogDeleteScanCancelCaption"]
         </MudButton>
         <MudButton
             Variant="Variant.Outlined"
             Color="Color.Error"
             OnClick="Submit">
-            Delete
+            @StringLocalizer["DialogDeleteScanSubmitCaption"]
         </MudButton>
     </DialogActions>
 </MudDialog>

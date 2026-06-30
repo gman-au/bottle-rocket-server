@@ -1,5 +1,7 @@
 ﻿@page "/MyScans"
+@using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts.Scans
+@using Rocket.Localization.Web
 @using Rocket.Web.Client
 @using Rocket.Web.Host.Components.Dialog
 @using Rocket.Web.Host.HubClients
@@ -10,6 +12,7 @@
 @inject ICaptureHubClient CaptureHubClient
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject IDialogService DialogService
+@inject IStringLocalizer<ScansResource> StringLocalizer
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <MudText
@@ -17,7 +20,7 @@
     Typo="Typo.h4"
     Color="Color.Primary"
     Class="mb-4">
-    My Scans
+    @StringLocalizer["ScansListTitle"]
 </MudText>
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
     @if ((_scans ?? []).Any())
@@ -39,12 +42,12 @@
                                 <MudMenuItem
                                     Icon="@StandardIcons.InspectIcon"
                                     IconColor="Color.Secondary"
-                                    Label="Details"
+                                    Label="@StringLocalizer["ScansDetailsCaption"]"
                                     @onclick="@(() => NavigationManager.NavigateTo($"/MyScans/{scan.Id}"))"
                                 />
                                 <MudMenuItem
                                     Icon="@StandardIcons.DeleteIcon"
-                                    Label="Delete"
+                                    Label="@StringLocalizer["ScansDeleteCaption"]"
                                     OnClick="@(() => ConfirmDeleteAsync(scan.Id))"
                                 />
                             </MudMenu>
@@ -64,7 +67,7 @@
                                   _currentIndex,
                                   DefaultPageSize
                               ))">
-                    Load More
+                    @StringLocalizer["ScansLoadMoreCaption"]
                 </MudButton>
             </MudItem>
         </MudGrid>
@@ -75,7 +78,7 @@
             Align="Align.Center"
             Typo="Typo.body2"
             Color="Color.Default">
-            No scans found
+            @StringLocalizer["ScansNoScansMessage"]
         </MudText>
     }
 </BottleRocketLoadingOverlay>
@@ -164,7 +167,7 @@
 
                         Snackbar
                             .Add(
-                                "New scan received!",
+                                StringLocalizer["ScansNewScanReceivedMessage"].Value,
                                 Severity.Success
                             );
                     }
@@ -256,7 +259,7 @@
 
                 Snackbar
                     .Add(
-                        "The scanned image was deleted successfully.",
+                        StringLocalizer["ScansWasDeletedMessage"].Value,
                         Severity.Success
                     );
             }

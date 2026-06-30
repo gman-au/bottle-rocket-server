@@ -1,9 +1,12 @@
 ﻿@page "/account/login"
+@using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts
 @using Rocket.Interfaces
+@using Rocket.Localization.Web
 @inject IAuthenticationManager AuthenticationManager
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
+@inject IStringLocalizer<LoginResource> StringLocalizer
 @inherits Rocket.Web.Host.Infrastructure.BaseCancellableComponent
 
 <MudPaper Class="p-4" elevation="2">
@@ -11,7 +14,7 @@
         Color="Color.Primary"
         GutterBottom
         Typo="Typo.h5">
-        Login
+        @StringLocalizer["LoginTitle"]
     </MudText>
     <BottleRocketLoadingOverlay IsLoading="@_isLoading">
         <MudForm
@@ -21,9 +24,10 @@
                 <MudItem xs="12" sm="8" md="4">
                     <MudTextField
                         T="string"
-                        Label="Username"
+                        Label="@StringLocalizer["LoginUserNameFieldHeader"]"
+                        HelperText="@StringLocalizer["LoginUserNameFieldHint"]"
                         Required="true"
-                        RequiredError="Please enter a user name"
+                        RequiredError="@StringLocalizer["LoginUserNameFieldRequiredError"]"
                         Disabled="@(_isLoading)"
                         @bind-Value="_accountLoginRequest.Username"
                         For="@(() => _accountLoginRequest.Username)"
@@ -34,9 +38,10 @@
                     <MudTextField
                         T="string"
                         InputType="InputType.Password"
-                        Label="Password"
+                        Label="@StringLocalizer["LoginPasswordFieldHeader"]"
+                        HelperText="@StringLocalizer["LoginPasswordFieldHint"]"
                         Required="true"
-                        RequiredError="Password is required!"
+                        RequiredError="@StringLocalizer["LoginPasswordFieldRequiredError"]"
                         Disabled="@(_isLoading)"
                         @bind-Value="_accountLoginRequest.Password"
                         For="@(() => _accountLoginRequest.Password)"
@@ -51,7 +56,7 @@
                         Disabled="@(_isLoading)"
                         Class="mt-4 mr"
                         OnClick="@HandleLoginAsync">
-                        Login
+                        @StringLocalizer["LoginSubmitCaption"]
                     </MudButton>
                 </MudItem>
             </MudGrid>
@@ -106,7 +111,7 @@
                 }
                 else
                 {
-                    throw new Exception("Invalid username or password");
+                    throw new Exception(StringLocalizer["LoginInvalidCredentialsError"].Value);
                 }
             }
             catch (Exception ex)

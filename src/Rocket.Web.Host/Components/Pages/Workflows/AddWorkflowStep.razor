@@ -1,9 +1,12 @@
 ﻿@page "/MyWorkflow/{workflowId}/AddStep"
 @page "/MyWorkflow/{workflowId}/Steps/{stepId}/AddStep"
+@using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts
 @using Rocket.Interfaces
+@using Rocket.Localization.Web
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 @inject IEnumerable<ISkuWorkflow> WorkflowSkus
+@inject IStringLocalizer<WorkflowStepsResource> StringLocalizer
 
 <MudPaper Class="p-4" elevation="2">
     <MudText
@@ -11,7 +14,7 @@
         Color="Color.Primary"
         GutterBottom
         Typo="Typo.h4">
-        Add New Workflow Step
+        @StringLocalizer["WorkflowsStepsAddTitle"]
     </MudText>
     <MudGrid Justify="Justify.Center" Class="pa-4">
         <MudItem xs="8">
@@ -64,7 +67,7 @@
                                         Variant="Variant.Outlined"
                                         Icon="@StandardIcons.CloudIcon"
                                         Color="Color.Warning">
-                                        Data&nbsp;<b><u>will</u></b>&nbsp;leave your server
+                                        @StringLocalizer["WorkflowsStepsDataWillLeaveMessage"]
                                     </MudChip>
                                 }
                                 else if (template.DataLeavesYourServer == (int)SkuDataExposureEnum.DataMightLeaveYourServer)
@@ -75,7 +78,7 @@
                                         Variant="Variant.Outlined"
                                         Icon="@StandardIcons.CloudIcon"
                                         Color="Color.Info">
-                                        Data&nbsp;<b><u>might</u></b>&nbsp;leave your server
+                                        @StringLocalizer["WorkflowsStepsDataMightLeaveMessage"]
                                     </MudChip>
                                 }
                                 else
@@ -86,7 +89,7 @@
                                         Variant="Variant.Outlined"
                                         Icon="@StandardIcons.CloudIcon"
                                         Color="Color.Success">
-                                        Data&nbsp;<b><u>will not</u></b>&nbsp;leave your server
+                                        @StringLocalizer["WorkflowsStepsDataWontLeaveMessage"]
                                     </MudChip>
                                 }
                             </MudItem>
@@ -102,7 +105,7 @@
                                                           StepId
                                                       )
                                                   ))">
-                                    + Add step
+                                    @StringLocalizer["WorkflowStepsAddCaption"]
                                 </MudButton>
                             </MudItem>
                         </MudGrid>

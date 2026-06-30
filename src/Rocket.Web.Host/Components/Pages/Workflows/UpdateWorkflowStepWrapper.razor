@@ -1,5 +1,7 @@
-﻿@using Rocket.Api.Contracts.Connectors
+﻿@using Microsoft.Extensions.Localization
+@using Rocket.Api.Contracts.Connectors
 @using Rocket.Api.Contracts.Workflows
+@using Rocket.Localization.Web
 @using Rocket.Web.Client
 @using Rocket.Web.Host.Components.Dialog
 @using Rocket.Web.Host.Infrastructure
@@ -7,6 +9,7 @@
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+@inject IStringLocalizer<WorkflowStepsResource> StringLocalizer
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 @typeparam T where T : WorkflowStepSummary, new()
 
@@ -22,7 +25,7 @@
                     Typo="Typo.h4"
                     Color="Color.Primary"
                     Class="mb-4">
-                    @WorkflowStepName - @(_isNew ? "New" : "Update")
+                    @WorkflowStepName - @(_isNew ? StringLocalizer["WorkflowsStepsNewValue"] : StringLocalizer["WorkflowsStepsUpdateValue"])
                 </MudText>
                 @if (!string.IsNullOrEmpty(RequiresConnectorCode))
                 {
@@ -30,8 +33,8 @@
                         <MudItem sm="12" lg="6">
                             <MudSelect
                                 T="string"
-                                Label="Connector"
-                                HelperText="Select a connector to use for this step"
+                                Label="@StringLocalizer["WorkflowsStepsConnectorFieldHeader"]"
+                                HelperText="@StringLocalizer["WorkflowsStepsConnectorFieldHint"]"
                                 @bind-Value="@StepSpecifics.ConnectorId"
                                 Clearable="true"
                                 @bind-Value:after="InvokeConnectorIdChangedAsync"
@@ -59,7 +62,7 @@
                             Variant="Variant.Outlined"
                             Color="Color.Error"
                             OnClick="@(() => ConfirmDeleteAsync(StepSpecifics))">
-                            Delete
+                            @StringLocalizer["WorkflowStepsDeleteCaption"]
                         </MudButton>
                     </MudItem>
                     <MudItem>
@@ -71,7 +74,7 @@
                             Color="Color.Success"
                             Disabled="@(_isLoading)"
                             OnClick="@SubmitAsync">
-                            Submit
+                            @StringLocalizer["WorkflowStepsSubmitCaption"]
                         </MudButton>
                     </MudItem>
                 </MudGrid>
@@ -107,7 +110,7 @@
     public string RequiresConnectorCode { get; set; }
 
     [Parameter]
-    public RenderFragment<T> ChildContent { get; set; } // Changed to RenderFragment<T>
+    public RenderFragment<T> ChildContent { get; set; }
 
     [Parameter]
     public EventCallback<string> OnConnectorIdChanged { get; set; }
@@ -225,7 +228,7 @@
 
                 Snackbar
                     .Add(
-                        $"The step has been {(_isNew ? "added" : "updated")}.",
+                        StringLocalizer["WorkflowsStepsHasBeenUpdatedMessage"].Value,
                         Severity.Success
                     );
 
@@ -245,7 +248,9 @@
         }
     }
 
-    private async Task ConfirmDeleteAsync(WorkflowStepSummary workflowStep)
+    private async Task ConfirmDeleteAsync(
+        WorkflowStepSummary workflowStep
+    )
     {
         var dialog =
             await
@@ -286,7 +291,7 @@
 
                 Snackbar
                     .Add(
-                        "The step has been deleted.",
+                        StringLocalizer["WorkflowsStepsHasBeenDeletedMessage"].Value,
                         Severity.Success
                     );
 

@@ -1,7 +1,10 @@
 ﻿@page "/MyConnectors/Add"
+@using Microsoft.Extensions.Localization
 @using Rocket.Interfaces
+@using Rocket.Localization.Web
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 @inject IEnumerable<ISkuConnector> ConnectorSkus
+@inject IStringLocalizer<ConnectorsResource> StringLocalizer
 
 <MudPaper Class="p-4" elevation="2">
     <MudText
@@ -9,7 +12,7 @@
         Color="Color.Primary"
         GutterBottom
         Typo="Typo.h4">
-        Add New Connector
+        @StringLocalizer["ConnectorsAddTitle"]
     </MudText>
     <MudGrid Justify="Justify.FlexStart" Class="pa-4">
         @foreach (var connectorTemplate in ConnectorSkus ?? [])
@@ -32,7 +35,7 @@
                             Variant="Variant.Text"
                             Color="Color.Success"
                             OnClick="@(() => NavigateToAddAsync(connectorTemplate.Href))">
-                            + Add connector
+                            @StringLocalizer["ConnectorsAddConnectorsCaption"]
                         </MudButton>
                     </MudCardActions>
                 </MudCard>
