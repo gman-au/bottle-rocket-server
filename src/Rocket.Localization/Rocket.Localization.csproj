@@ -33,6 +33,10 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>WorkflowStepsResource.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="Web\ExecutionsResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ExecutionsResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
