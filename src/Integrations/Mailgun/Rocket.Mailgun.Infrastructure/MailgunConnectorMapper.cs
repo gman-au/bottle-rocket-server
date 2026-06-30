@@ -5,46 +5,46 @@ using Rocket.Domain.Exceptions;
 using Rocket.Infrastructure.Mapping;
 using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
-using Rocket.Postmark.Contracts;
-using Rocket.Postmark.Domain;
+using Rocket.Mailgun.Contracts;
+using Rocket.Mailgun.Domain;
 
-namespace Rocket.Postmark.Infrastructure
+namespace Rocket.Mailgun.Infrastructure
 {
-    public class PostmarkConnectorMapper(
+    public class MailgunConnectorMapper(
         IObfuscator obfuscator,
         IServiceProvider serviceProvider
     )
-        : ConnectorModelMapperBase<PostmarkConnector, PostmarkConnectorSpecifics>(serviceProvider)
+        : ConnectorModelMapperBase<MailgunConnector, MailgunConnectorSpecifics>(serviceProvider)
     {
-        public override PostmarkConnector For(PostmarkConnectorSpecifics value)
+        public override MailgunConnector For(MailgunConnectorSpecifics value)
         {
             var result =
                 base
                     .For(value);
 
-            result.ServerToken = value.ServerToken;
+            result.ApiKey = value.ApiKey;
             result.SenderAddress = value.SenderAddress;
 
             return result;
         }
 
-        public override PostmarkConnectorSpecifics From(PostmarkConnector value)
+        public override MailgunConnectorSpecifics From(MailgunConnector value)
         {
             var result =
                 base
                     .From(value);
 
-            result.ServerToken = obfuscator.Obfuscate(value.ServerToken);
+            result.ApiKey = obfuscator.Obfuscate(value.ApiKey);
             result.SenderAddress = value.SenderAddress;
 
             return result;
         }
 
-        public override async Task PreUpdateAsync(PostmarkConnectorSpecifics value)
+        public override async Task PreUpdateAsync(MailgunConnectorSpecifics value)
         {
-            if (string.IsNullOrEmpty(value.ServerToken))
+            if (string.IsNullOrEmpty(value.ApiKey))
                 throw new RocketException(
-                    "No server token was provided.",
+                    "No API key was provided.",
                     ApiStatusCodeEnum.ValidationError
                 );
             

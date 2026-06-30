@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Rocket.Infrastructure.Mapping\Rocket.Infrastructure.Mapping.csproj" />
+      <ProjectReference Include="..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
+      <ProjectReference Include="..\Rocket.Mailgun.Infrastructure\Rocket.Mailgun.Infrastructure.csproj" />
+      <ProjectReference Include="..\Rocket.Mailgun.Injection.Serialization\Rocket.Mailgun.Injection.Serialization.csproj" />
+    </ItemGroup>
+
+</Project>
