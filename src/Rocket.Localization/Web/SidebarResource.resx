@@ -20,58 +20,58 @@
     </resheader>
     <!-- TITLES -->
     <data name="SidebarHomeTitle" xml:space="preserve">
-        <value>#Home</value>
+        <value>Home</value>
     </data>
     <data name="SidebarCompleteSetupTitle" xml:space="preserve">
-        <value>#Complete setup</value>
+        <value>Complete setup</value>
     </data>
     <data name="SidebarUsersGroupTitle" xml:space="preserve">
-        <value>#Users</value>
+        <value>Users</value>
     </data>
     <data name="SidebarManageUsersTitle" xml:space="preserve">
-        <value>#Manage users</value>
+        <value>Manage users</value>
     </data>
     <data name="SidebarAddUsersTitle" xml:space="preserve">
-        <value>#Add user</value>
+        <value>Add user</value>
     </data>
     <data name="SidebarManageScansTitle" xml:space="preserve">
-        <value>#My scans</value>
+        <value>My scans</value>
     </data>
     <data name="SidebarConnectorsGroupTitle" xml:space="preserve">
-        <value>#My connectors</value>
+        <value>My connectors</value>
     </data>
     <data name="SidebarManageConnectorsTitle" xml:space="preserve">
-        <value>#Manage my connectors</value>
+        <value>Manage my connectors</value>
     </data>
     <data name="SidebarAddConnectorsTitle" xml:space="preserve">
-        <value>#Add connector</value>
+        <value>Add connector</value>
     </data>
     <data name="SidebarWorkflowsGroupTitle" xml:space="preserve">
-        <value>#My workflows</value>
+        <value>My workflows</value>
     </data>
     <data name="SidebarManageWorkflowsTitle" xml:space="preserve">
-        <value>#Manage my workflows</value>
+        <value>Manage my workflows</value>
     </data>
     <data name="SidebarAddWorkflowsTitle" xml:space="preserve">
-        <value>#Add workflow</value>
+        <value>Add workflow</value>
     </data>
     <data name="SidebarLogoutTitle" xml:space="preserve">
-        <value>#Logout</value>
+        <value>Logout</value>
     </data>
     <data name="SidebarSwitchDarkTitle" xml:space="preserve">
-        <value>#Switch to dark mode</value>
+        <value>Switch to dark mode</value>
     </data>
     <data name="SidebarSwitchLightTitle" xml:space="preserve">
-        <value>#Switch to light mode</value>
+        <value>Switch to light mode</value>
     </data>
     <data name="SidebarGlobalSettingsTitle" xml:space="preserve">
-        <value>#System settings</value>
+        <value>System settings</value>
     </data>
     <data name="SidebarLoginTitle" xml:space="preserve">
-        <value>#Login</value>
+        <value>Login</value>
     </data>
     <!-- VALUES -->
     <data name="SidebarUserValue" xml:space="preserve">
-        <value>#User</value>
+        <value>User</value>
     </data>
 </root>

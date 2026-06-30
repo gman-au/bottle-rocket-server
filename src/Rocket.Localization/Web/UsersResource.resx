@@ -20,62 +20,62 @@
     </resheader>
     <!-- TITLES -->
     <data name="UsersListTitle" xml:space="preserve">
-        <value>#Users</value>
+        <value>Users</value>
     </data>
     <data name="UsersAddTitle" xml:space="preserve">
-        <value>#Add User</value>
+        <value>Add User</value>
     </data>
     <data name="UsersDetailsTitle" xml:space="preserve">
-        <value>#User Details</value>
+        <value>User Details</value>
     </data>
     <!-- FIELDS & HINTS -->
     <data name="UsersUserNameFieldHeader" xml:space="preserve">
-        <value>#User Name</value>
+        <value>User Name</value>
     </data>
     <data name="UsersUserNameFieldHint" xml:space="preserve">
-        <value>#Enter a valid email address for this user</value>
+        <value>Enter a valid email address for this user</value>
     </data>
     <data name="UsersDateCreatedFieldHeader" xml:space="preserve">
-        <value>#Date Created</value>
+        <value>Date Created</value>
     </data>
     <data name="UsersLastLoginFieldHeader" xml:space="preserve">
-        <value>#Last Login</value>
+        <value>Last Login</value>
     </data>
     <data name="UsersPasswordFieldHeader" xml:space="preserve">
-        <value>#Password</value>
+        <value>Password</value>
     </data>
     <data name="UsersPasswordFieldHint" xml:space="preserve">
-        <value>#Choose a strong password</value>
+        <value>Choose a strong password</value>
     </data>
     <data name="UsersPasswordFieldRequiredError" xml:space="preserve">
-        <value>#Password is required</value>
+        <value>Password is required</value>
     </data>
     <data name="UsersRepeatPasswordFieldHeader" xml:space="preserve">
-        <value>#Password</value>
+        <value>Password</value>
     </data>
     <data name="UsersRepeatPasswordFieldHint" xml:space="preserve">
-        <value>#Repeat the password</value>
+        <value>Repeat the password</value>
     </data>
     <data name="UsersRepeatPasswordFieldMatchError" xml:space="preserve">
-        <value>#Passwords don't match</value>
+        <value>Passwords don't match</value>
     </data>    
     <data name="UsersActiveFieldHeader" xml:space="preserve">
-        <value>#This user is active</value>
+        <value>This user is active</value>
     </data> 
     <data name="UsersIsAdminFieldHeader" xml:space="preserve">
-        <value>#This user is the administrator</value>
+        <value>This user is the administrator</value>
     </data>
     <!-- CAPTIONS & MESSAGES -->
     <data name="UsersLoadMoreCaption" xml:space="preserve">
-        <value>#Load more</value>
+        <value>Load more</value>
     </data>
     <data name="UsersNoUsersMessage" xml:space="preserve">
-        <value>#No users found</value>
+        <value>No users found</value>
     </data>
     <data name="UsersHasBeenAddedMessage" xml:space="preserve">
-        <value>#The user has been created.</value>
+        <value>The user has been created.</value>
     </data>
     <data name="UsersSubmitCaption" xml:space="preserve">
-        <value>#Submit</value>
+        <value>Submit</value>
     </data>
 </root>

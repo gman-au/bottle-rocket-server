@@ -20,32 +20,32 @@
     </resheader>
     <!-- TITLES -->
     <data name="ConnectorsListTitle" xml:space="preserve">
-        <value>#My Connectors</value>
+        <value>My Connectors</value>
     </data>
     <data name="ConnectorsAddTitle" xml:space="preserve">
-        <value>#Add New Connector</value>
+        <value>Add New Connector</value>
     </data>
     <!-- FIELDS & HINTS -->
     <data name="ConnectorsNameFieldHeader" xml:space="preserve">
-        <value>#Connector</value>
+        <value>Connector</value>
     </data>
     <data name="ConnectorsTypeFieldHeader" xml:space="preserve">
-        <value>#Type</value>
+        <value>Type</value>
     </data>
     <data name="ConnectorsDateCreatedFieldHeader" xml:space="preserve">
-        <value>#Created</value>
+        <value>Created</value>
     </data>
     <data name="ConnectorsDateUpdatedFieldHeader" xml:space="preserve">
-        <value>#Last Updated</value>
+        <value>Last Updated</value>
     </data>
     <!-- CAPTIONS & MESSAGES -->
     <data name="ConnectorsLoadMoreCaption" xml:space="preserve">
-        <value>#Load more</value>
+        <value>Load more</value>
     </data>
     <data name="ConnectorsNoConnectorsMessage" xml:space="preserve">
-        <value>#No connectors found</value>
+        <value>No connectors found</value>
     </data>
     <data name="ConnectorsAddConnectorsCaption" xml:space="preserve">
-        <value>#Add connector</value>
+        <value>Add connector</value>
     </data>
 </root>

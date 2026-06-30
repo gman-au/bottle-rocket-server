@@ -20,45 +20,45 @@
     </resheader>
     <!-- TITLES -->
     <data name="WorkflowsStepsAddTitle" xml:space="preserve">
-        <value>#Add New Workflow Step</value>
+        <value>Add New Workflow Step</value>
     </data>
     <!-- FIELDS & HINTS -->
     <data name="WorkflowsStepsConnectorFieldHeader" xml:space="preserve">
-        <value>#Connector</value>
+        <value>Connector</value>
     </data>
     <data name="WorkflowsStepsConnectorFieldHint" xml:space="preserve">
-        <value>#Select a connector to use for this step</value>
+        <value>Select a connector to use for this step</value>
     </data>
     <!-- CAPTIONS & MESSAGES -->
     <data name="WorkflowStepsAddCaption" xml:space="preserve">
-        <value>#Add step</value>
+        <value>Add step</value>
     </data>
     <data name="WorkflowStepsDeleteCaption" xml:space="preserve">
-        <value>#Delete</value>
+        <value>Delete</value>
     </data>
     <data name="WorkflowStepsSubmitCaption" xml:space="preserve">
-        <value>#Submit</value>
+        <value>Submit</value>
     </data>
     <data name="WorkflowsStepsDataWillLeaveMessage" xml:space="preserve">
-        <value>#Data will leave your server</value>
+        <value>Data will leave your server</value>
     </data>
     <data name="WorkflowsStepsDataMightLeaveMessage" xml:space="preserve">
-        <value>#Data might leave your server</value>
+        <value>Data might leave your server</value>
     </data>
     <data name="WorkflowsStepsDataWontLeaveMessage" xml:space="preserve">
-        <value>#Data will not leave your server</value>
+        <value>Data will not leave your server</value>
     </data>
     <data name="WorkflowsStepsHasBeenUpdatedMessage" xml:space="preserve">
-        <value>#The step has been updated.</value>
+        <value>The step has been updated.</value>
     </data>
     <data name="WorkflowsStepsHasBeenDeletedMessage" xml:space="preserve">
-        <value>#The step has been deleted.</value>
+        <value>The step has been deleted.</value>
     </data>
     <!-- VALUES -->
     <data name="WorkflowsStepsNewValue" xml:space="preserve">
-        <value>#New</value>
+        <value>New</value>
     </data>
     <data name="WorkflowsStepsUpdateValue" xml:space="preserve">
-        <value>#Update</value>
+        <value>Update</value>
     </data>
 </root>

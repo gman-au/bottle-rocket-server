@@ -20,25 +20,25 @@
     </resheader>
     <!-- FIELDS & HINTS -->
     <data name="ErrorsStatusCodeFieldHeader" xml:space="preserve">
-        <value>#API Status code</value>
+        <value>API Status code</value>
     </data>
     <data name="ErrorsMessageFieldHeader" xml:space="preserve">
-        <value>#API Message</value>
+        <value>API Message</value>
     </data>
     <!-- CAPTIONS & MESSAGES -->
     <data name="ErrorsGoBackCaption" xml:space="preserve">
-        <value>#Go Back</value>
+        <value>Go Back</value>
     </data>
     <data name="ErrorsNotFoundMessage" xml:space="preserve">
-        <value>#Not found</value>
+        <value>Not found</value>
     </data>
     <data name="ErrorsErrorMessage" xml:space="preserve">
-        <value>#Error</value>
+        <value>Error</value>
     </data>
     <data name="ErrorsNoRecordFoundMessage" xml:space="preserve">
-        <value>#The page or record you are looking for can no longer be found, or you do not have access.</value>
+        <value>The page or record you are looking for can no longer be found, or you do not have access.</value>
     </data>
     <data name="ErrorsGeneralErrorMessage" xml:space="preserve">
-        <value>#An error has occurred. Please contact your administrator.</value>
+        <value>An error has occurred. Please contact your administrator.</value>
     </data>
 </root>

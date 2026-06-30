@@ -20,72 +20,72 @@
     </resheader>
     <!-- TITLES -->
     <data name="WorkflowsListTitle" xml:space="preserve">
-        <value>#My Workflows</value>
+        <value>My Workflows</value>
     </data>
     <data name="WorkflowsAddTitle" xml:space="preserve">
-        <value>#Add Workflow</value>
+        <value>Add Workflow</value>
     </data>
     <data name="WorkflowsDetailsTitle" xml:space="preserve">
-        <value>#Workflow Details</value>
+        <value>Workflow Details</value>
     </data>
     <data name="WorkflowsPreviousRunsTitle" xml:space="preserve">
-        <value>#Previous runs</value>
+        <value>Previous runs</value>
     </data>
     <!-- FIELDS & HINTS -->
     <data name="WorkflowsNameFieldHeader" xml:space="preserve">
-        <value>#Workflow Name</value>
+        <value>Workflow Name</value>
     </data>
     <data name="WorkflowsNameFieldHint" xml:space="preserve">
-        <value>#Please enter a name for this workflow</value>
+        <value>Please enter a name for this workflow</value>
     </data>
     <data name="WorkflowsNameFieldRequiredError" xml:space="preserve">
-        <value>#Please enter a valid workflow name</value>
+        <value>Please enter a valid workflow name</value>
     </data>
     <data name="WorkflowsMatchingSymbolFieldHeader" xml:space="preserve">
-        <value>#Matching Page Symbol</value>
+        <value>Matching Page Symbol</value>
     </data>
     <data name="WorkflowsMatchingSymbolFieldHint" xml:space="preserve">
-        <value>#Select a matching page symbol to associate with this workflow.</value>
+        <value>Select a matching page symbol to associate with this workflow.</value>
     </data>
     <data name="WorkflowsDateCreatedFieldHeader" xml:space="preserve">
-        <value>#Date Created</value>
+        <value>Date Created</value>
     </data>
     <!-- CAPTIONS & MESSAGES -->
     <data name="WorkflowsLoadMoreCaption" xml:space="preserve">
-        <value>#Load more</value>
+        <value>Load more</value>
     </data>
     <data name="WorkflowsNoWorkflowsMessage" xml:space="preserve">
-        <value>#No workflows found</value>
+        <value>No workflows found</value>
     </data>
     <data name="WorkflowsSubmitCaption" xml:space="preserve">
-        <value>#Submit</value>
+        <value>Submit</value>
     </data>
     <data name="WorkflowsHasBeenAddedMessage" xml:space="preserve">
-        <value>#The workflow has been created.</value>
+        <value>The workflow has been created.</value>
     </data>
     <data name="WorkflowsHasBeenUpdatedMessage" xml:space="preserve">
-        <value>#The workflow has been updated.</value>
+        <value>The workflow has been updated.</value>
     </data>
     <!-- VALUES -->
     <data name="WorkflowsRocketSymbolValue" xml:space="preserve">
-        <value>#Rocket</value>
+        <value>Rocket</value>
     </data>
     <data name="WorkflowsDiamondSymbolValue" xml:space="preserve">
-        <value>#Diamond</value>
+        <value>Diamond</value>
     </data>
     <data name="WorkflowsAppleSymbolValue" xml:space="preserve">
-        <value>#Apple</value>
+        <value>Apple</value>
     </data>
     <data name="WorkflowsBellSymbolValue" xml:space="preserve">
-        <value>#Bell</value>
+        <value>Bell</value>
     </data>
     <data name="WorkflowsCloverSymbolValue" xml:space="preserve">
-        <value>#Clover</value>
+        <value>Clover</value>
     </data>
     <data name="WorkflowsStarSymbolValue" xml:space="preserve">
-        <value>#Star</value>
+        <value>Star</value>
     </data>
     <data name="WorkflowsHorseshoeSymbolValue" xml:space="preserve">
-        <value>#Horseshoe</value>
+        <value>Horseshoe</value>
     </data>
 </root>

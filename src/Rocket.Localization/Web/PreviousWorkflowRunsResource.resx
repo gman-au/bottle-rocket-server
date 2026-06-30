@@ -20,16 +20,16 @@
     </resheader>
     <!-- FIELDS & HINTS -->
     <data name="PreviousWorkflowRunsWorkflowNameFieldHeader" xml:space="preserve">
-        <value>#Workflow</value>
+        <value>Workflow</value>
     </data>
     <data name="PreviousWorkflowRunsRunDateFieldHeader" xml:space="preserve">
-        <value>#Run Date</value>
+        <value>Run Date</value>
     </data>
     <data name="PreviousWorkflowRunsStatusFieldHeader" xml:space="preserve">
-        <value>#Status</value>
+        <value>Status</value>
     </data>
     <!-- CAPTIONS & MESSAGES -->
     <data name="PreviousWorkflowRunsNoPreviousWorkflowRunsMessage" xml:space="preserve">
-        <value>#No previous runs found</value>
+        <value>No previous runs found</value>
     </data>
 </root>

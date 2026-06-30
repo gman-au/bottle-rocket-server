@@ -20,6 +20,6 @@
     </resheader>
     <!-- CAPTIONS & MESSAGES -->
     <data name="LogoutLoggingOutMessage" xml:space="preserve">
-        <value>#Logging out...</value>
+        <value>Logging out...</value>
     </data>
 </root>

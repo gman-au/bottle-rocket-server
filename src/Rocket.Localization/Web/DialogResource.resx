@@ -20,163 +20,163 @@
     </resheader>
     <!-- CANCEL EXECUTION -->
     <data name="DialogCancelExecutionTitle" xml:space="preserve">
-        <value>#Cancel</value>
+        <value>Cancel</value>
     </data>
     <data name="DialogCancelExecutionBody" xml:space="preserve">
-        <value>#Cancel this execution?</value>
+        <value>Cancel this execution?</value>
     </data>
     <data name="DialogCancelExecutionCancelCaption" xml:space="preserve">
-        <value>#Go Back</value>
+        <value>Go Back</value>
     </data>
     <data name="DialogCancelExecutionSubmitCaption" xml:space="preserve">
-        <value>#Yes, cancel it</value>
+        <value>Yes, cancel it</value>
     </data>
     <!-- DELETE CONNECTOR -->
     <data name="DialogDeleteConnectorTitle" xml:space="preserve">
-        <value>#Delete connector</value>
+        <value>Delete connector</value>
     </data>
     <data name="DialogDeleteConnectorBody" xml:space="preserve">
-        <value>#Do you wish to delete this connector?</value>
+        <value>Do you wish to delete this connector?</value>
     </data>
     <data name="DialogDeleteConnectorWarning" xml:space="preserve">
-        <value>#Any existing workflows using this connector will no longer function correctly.</value>
+        <value>Any existing workflows using this connector will no longer function correctly.</value>
     </data>
     <data name="DialogDeleteConnectorCancelCaption" xml:space="preserve">
-        <value>#Cancel</value>
+        <value>Cancel</value>
     </data>
     <data name="DialogDeleteConnectorSubmitCaption" xml:space="preserve">
-        <value>#Delete</value>
+        <value>Delete</value>
     </data>
     <!-- DELETE EXECUTION -->
     <data name="DialogDeleteExecutionTitle" xml:space="preserve">
-        <value>#Delete workflow run</value>
+        <value>Delete workflow run</value>
     </data>
     <data name="DialogDeleteExecutionBody" xml:space="preserve">
-        <value>#Do you wish to delete this workflow run?</value>
+        <value>Do you wish to delete this workflow run?</value>
     </data>
     <data name="DialogDeleteExecutionWarning" xml:space="preserve">
-        <value>#You will not be able to recover this workflow run after deletion.</value>
+        <value>You will not be able to recover this workflow run after deletion.</value>
     </data>
     <data name="DialogDeleteExecutionCancelCaption" xml:space="preserve">
-        <value>#Cancel</value>
+        <value>Cancel</value>
     </data>
     <data name="DialogDeleteExecutionSubmitCaption" xml:space="preserve">
-        <value>#Delete</value>
+        <value>Delete</value>
     </data>
     <!-- DELETE SCAN -->
     <data name="DialogDeleteScanTitle" xml:space="preserve">
-        <value>#Delete scan</value>
+        <value>Delete scan</value>
     </data>
     <data name="DialogDeleteScanBody" xml:space="preserve">
-        <value>#Do you wish to delete this scan?</value>
+        <value>Do you wish to delete this scan?</value>
     </data>
     <data name="DialogDeleteScanWarning" xml:space="preserve">
-        <value>#This scanned image will be permanently deleted, as well as all workflow execution history.</value>
+        <value>This scanned image will be permanently deleted, as well as all workflow execution history.</value>
     </data>
     <data name="DialogDeleteScanCancelCaption" xml:space="preserve">
-        <value>#Cancel</value>
+        <value>Cancel</value>
     </data>
     <data name="DialogDeleteScanSubmitCaption" xml:space="preserve">
-        <value>#Delete</value>
+        <value>Delete</value>
     </data>
     <!-- DELETE WORKFLOW -->
     <data name="DialogDeleteWorkflowTitle" xml:space="preserve">
-        <value>#Delete workflow</value>
+        <value>Delete workflow</value>
     </data>
     <data name="DialogDeleteWorkflowBody" xml:space="preserve">
-        <value>#Do you wish to delete this workflow?</value>
+        <value>Do you wish to delete this workflow?</value>
     </data>
     <data name="DialogDeleteWorkflowWarning" xml:space="preserve">
-        <value>#You will not be able to recover this workflow after deletion.</value>
+        <value>You will not be able to recover this workflow after deletion.</value>
     </data>
     <data name="DialogDeleteWorkflowCancelCaption" xml:space="preserve">
-        <value>#Cancel</value>
+        <value>Cancel</value>
     </data>
     <data name="DialogDeleteWorkflowSubmitCaption" xml:space="preserve">
-        <value>#Delete</value>
+        <value>Delete</value>
     </data>
     <!-- DELETE WORKFLOW STEP -->
     <data name="DialogDeleteWorkflowStepTitle" xml:space="preserve">
-        <value>#Delete workflow step</value>
+        <value>Delete workflow step</value>
     </data>
     <data name="DialogDeleteWorkflowStepBody" xml:space="preserve">
-        <value>#Do you wish to delete the workflow step?</value>
+        <value>Do you wish to delete the workflow step?</value>
     </data>
     <data name="DialogDeleteWorkflowStepWarning" xml:space="preserve">
-        <value>#You will not be able to recover this workflow step after deletion. All of the child steps will also be deleted.</value>
+        <value>You will not be able to recover this workflow step after deletion. All of the child steps will also be deleted.</value>
     </data>
     <data name="DialogDeleteWorkflowStepCancelCaption" xml:space="preserve">
-        <value>#Cancel</value>
+        <value>Cancel</value>
     </data>
     <data name="DialogDeleteWorkflowStepSubmitCaption" xml:space="preserve">
-        <value>#Delete</value>
+        <value>Delete</value>
     </data>
     <!-- LOGOUT -->
     <data name="DialogLogoutTitle" xml:space="preserve">
-        <value>#Logout</value>
+        <value>Logout</value>
     </data>
     <data name="DialogLogoutBody" xml:space="preserve">
-        <value>#Do you wish to logout?</value>
+        <value>Do you wish to logout?</value>
     </data>
     <data name="DialogLogoutCancelCaption" xml:space="preserve">
-        <value>#Cancel</value>
+        <value>Cancel</value>
     </data>
     <data name="DialogLogoutSubmitCaption" xml:space="preserve">
-        <value>#Log out</value>
+        <value>Log out</value>
     </data>
     <!-- REVOKE ADMIN -->
     <data name="DialogRevokeAdminTitle" xml:space="preserve">
-        <value>#Assign a new administrator</value>
+        <value>Assign a new administrator</value>
     </data>
     <data name="DialogRevokeAdminBody" xml:space="preserve">
-        <value>#Do you wish to change the administrator?</value>
+        <value>Do you wish to change the administrator?</value>
     </data>
     <data name="DialogRevokeAdminWarning" xml:space="preserve">
-        <value>#If you proceed, this account will no longer have administrator access, and will be logged out immediately.</value>
+        <value>If you proceed, this account will no longer have administrator access, and will be logged out immediately.</value>
     </data>
     <data name="DialogRevokeAdminCancelCaption" xml:space="preserve">
-        <value>#Cancel</value>
+        <value>Cancel</value>
     </data>
     <data name="DialogRevokeAdminSubmitCaption" xml:space="preserve">
-        <value>#I understand, confirm</value>
+        <value>I understand, confirm</value>
     </data>
     <!-- TRIGGER WORKFLOW -->
     <data name="DialogTriggerWorkflowTitle" xml:space="preserve">
-        <value>#Manually run workflow</value>
+        <value>Manually run workflow</value>
     </data>
     <data name="DialogTriggerWorkflowBody" xml:space="preserve">
-        <value>#Do you wish to trigger the workflow against this scan capture?</value>
+        <value>Do you wish to trigger the workflow against this scan capture?</value>
     </data>
     <data name="DialogTriggerWorkflowCancelCaption" xml:space="preserve">
-        <value>#Cancel</value>
+        <value>Cancel</value>
     </data>
     <data name="DialogTriggerWorkflowSubmitCaption" xml:space="preserve">
-        <value>#Submit</value>
+        <value>Submit</value>
     </data>
     <!-- EXECUTION STEP MESSAGE -->
     <data name="DialogExecutionStepMessageTitle" xml:space="preserve">
-        <value>#Log Messages</value>
+        <value>Log Messages</value>
     </data>
     <data name="DialogExecutionStepMessageLogFieldHeader" xml:space="preserve">
-        <value>#Message</value>
+        <value>Message</value>
     </data>
     <data name="DialogExecutionStepMessageNoMessagesMessage" xml:space="preserve">
-        <value>#No log messages found</value>
+        <value>No log messages found</value>
     </data>
     <data name="DialogExecutionStepMessageCancelCaption" xml:space="preserve">
-        <value>#Close</value>
+        <value>Close</value>
     </data>
     <!-- USER QUICK AUTH -->
     <data name="DialogUserQuickAuthTitle" xml:space="preserve">
-        <value>#User Quick Authentication</value>
+        <value>User Quick Authentication</value>
     </data>
     <data name="DialogUserQuickAuthBodyP1" xml:space="preserve">
-        <value>#You can use the Bottle Rocket app to scan this QR code for easier user authentication.</value>
+        <value>You can use the Bottle Rocket app to scan this QR code for easier user authentication.</value>
     </data>
     <data name="DialogUserQuickAuthBodyP2" xml:space="preserve">
-        <value>#See here for instructions.</value>
+        <value>See here for instructions.</value>
     </data>
     <data name="DialogUserQuickAuthCancelCaption" xml:space="preserve">
-        <value>#OK</value>
+        <value>OK</value>
     </data>
 </root>

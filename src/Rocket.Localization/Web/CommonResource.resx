@@ -19,9 +19,9 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="AppTitle" xml:space="preserve">
-        <value>#Bottle Rocket</value>
+        <value>Bottle Rocket</value>
     </data>
     <data name="CommonGoBackCaption" xml:space="preserve">
-        <value>#Go Back</value>
+        <value>Go Back</value>
     </data>
 </root>

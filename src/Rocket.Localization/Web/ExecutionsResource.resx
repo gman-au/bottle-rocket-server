@@ -20,33 +20,33 @@
     </resheader>
     <!-- TITLES -->
     <data name="ExecutionsDetailsTitle" xml:space="preserve">
-        <value>#Workflow Run Details</value>
+        <value>Workflow Run Details</value>
     </data>
     <!-- FIELDS & HINTS -->
     <data name="ExecutionsNameFieldHeader" xml:space="preserve">
-        <value>#Workflow Name</value>
+        <value>Workflow Name</value>
     </data>
     <data name="ExecutionsStatusFieldHeader" xml:space="preserve">
-        <value>#Workflow Name</value>
+        <value>Workflow Name</value>
     </data>    
     <data name="ExecutionsRunDateFieldHeader" xml:space="preserve">
-        <value>#Run Date</value>
+        <value>Run Date</value>
     </data>      
     <data name="ExecutionsImageFieldHeader" xml:space="preserve">
-        <value>#Image</value>
+        <value>Image</value>
     </data>
     <!-- CAPTIONS & MESSAGES -->
     <data name="ExecutionsDeleteCaption" xml:space="preserve">
-        <value>#Delete</value>
+        <value>Delete</value>
     </data>
     <data name="ExecutionsCancelCaption" xml:space="preserve">
-        <value>#Cancel</value>
+        <value>Cancel</value>
     </data>
     <data name="ExecutionsHasBeenDeletedMessage" xml:space="preserve">
-        <value>#The workflow run has been deleted.</value>
+        <value>The workflow run has been deleted.</value>
     </data>
     <!-- VALUES -->
     <data name="ExecutionsStatusUnknownValue" xml:space="preserve">
-        <value>#Unknown</value>
+        <value>Unknown</value>
     </data>
 </root>

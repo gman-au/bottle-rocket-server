@@ -20,32 +20,32 @@
     </resheader>
     <!-- TITLES -->
     <data name="LoginTitle" xml:space="preserve">
-        <value>#Login</value>
+        <value>Login</value>
     </data>
     <!-- FIELDS & HINTS -->
     <data name="LoginUserNameFieldHeader" xml:space="preserve">
-        <value>#User Name</value>
+        <value>User Name</value>
     </data>
     <data name="LoginUserNameFieldHint" xml:space="preserve">
-        <value>#Please enter your user name</value>
+        <value>Please enter your user name</value>
     </data>
     <data name="LoginUserNameFieldRequiredError" xml:space="preserve">
-        <value>#User Name is required</value>
+        <value>User Name is required</value>
     </data>
     <data name="LoginPasswordFieldHeader" xml:space="preserve">
-        <value>#Password</value>
+        <value>Password</value>
     </data>
     <data name="LoginPasswordFieldHint" xml:space="preserve">
-        <value>#Please enter your password</value>
+        <value>Please enter your password</value>
     </data>
     <data name="LoginPasswordFieldRequiredError" xml:space="preserve">
-        <value>#Password is required</value>
+        <value>Password is required</value>
     </data>
     <!-- CAPTIONS & MESSAGES -->
     <data name="LoginSubmitCaption" xml:space="preserve">
-        <value>#Login</value>
+        <value>Login</value>
     </data>
     <data name="LoginInvalidCredentialsError" xml:space="preserve">
-        <value>#Invalid username or password</value>
+        <value>Invalid username or password</value>
     </data>
 </root>

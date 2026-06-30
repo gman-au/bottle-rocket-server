@@ -20,81 +20,81 @@
     </resheader>
     <!-- TITLES -->
     <data name="ScansListTitle" xml:space="preserve">
-        <value>#My Scans</value>
+        <value>My Scans</value>
     </data>
     <data name="ScansDetailsTitle" xml:space="preserve">
-        <value>#Scan Details</value>
+        <value>Scan Details</value>
     </data>
     <data name="ScansManuallyTriggerTitle" xml:space="preserve">
-        <value>#Manually trigger workflow</value>
+        <value>Manually trigger workflow</value>
     </data>
     <data name="ScansPreviousRunsTitle" xml:space="preserve">
-        <value>#Previous runs</value>
+        <value>Previous runs</value>
     </data>
     <!-- FIELDS & HINTS -->
     <data name="ScansCaptureDateFieldHeader" xml:space="preserve">
-        <value>#Capture Date</value>
+        <value>Capture Date</value>
     </data>
     <data name="ScansContentTypeFieldHeader" xml:space="preserve">
-        <value>#Content Type</value>
+        <value>Content Type</value>
     </data>
     <data name="ScansStatusFieldHeader" xml:space="preserve">
-        <value>#Status</value>
+        <value>Status</value>
     </data>
     <data name="ScansVendorFieldHeader" xml:space="preserve">
-        <value>#Vendor</value>
+        <value>Vendor</value>
     </data>
     <data name="ScansManuallyTriggerFieldHeader" xml:space="preserve">
-        <value>#Workflow</value>
+        <value>Workflow</value>
     </data>
     <data name="ScansManuallyTriggerFieldHint" xml:space="preserve">
-        <value>#Select a workflow to trigger against this scan.</value>
+        <value>Select a workflow to trigger against this scan.</value>
     </data>
     <!-- CAPTIONS & MESSAGES -->
     <data name="ScansLoadMoreCaption" xml:space="preserve">
-        <value>#Load more</value>
+        <value>Load more</value>
     </data>
     <data name="ScansDetailsCaption" xml:space="preserve">
-        <value>#Details</value>
+        <value>Details</value>
     </data>
     <data name="ScansDeleteCaption" xml:space="preserve">
-        <value>#Delete</value>
+        <value>Delete</value>
     </data>    
     <data name="ScansDownloadCaption" xml:space="preserve">
-        <value>#Download</value>
+        <value>Download</value>
     </data>    
     <data name="ScansRunWorkflowCaption" xml:space="preserve">
-        <value>#Run workflow</value>
+        <value>Run workflow</value>
     </data>    
     <data name="ScansNoScansMessage" xml:space="preserve">
-        <value>#No scans found</value>
+        <value>No scans found</value>
     </data>  
     <data name="ScansNewScanReceivedMessage" xml:space="preserve">
-        <value>#New scan received</value>
+        <value>New scan received</value>
     </data>
     <data name="ScansWasDeletedMessage" xml:space="preserve">
-        <value>#The scanned image was deleted successfully.</value>
+        <value>The scanned image was deleted successfully.</value>
     </data>
     <data name="ScansWorkflowWasTriggeredMessage" xml:space="preserve">
-        <value>#The workflow has been triggered.</value>
+        <value>The workflow has been triggered.</value>
     </data>
     <data name="ScansWasArchivedMessage" xml:space="preserve">
-        <value>#Scan has been archived</value>
+        <value>Scan has been archived</value>
     </data>
     <data name="ScansManuallyTriggerMessage" xml:space="preserve">
-        <value>#Select a workflow from the list and click the button to run the workflow against this scan.</value>
+        <value>Select a workflow from the list and click the button to run the workflow against this scan.</value>
     </data>
     <data name="ScansNoFileDataError" xml:space="preserve">
-        <value>#Password must contain at least one digit</value>
+        <value>Password must contain at least one digit</value>
     </data>
     <!-- VALUES -->
     <data name="ScansArchivedValue" xml:space="preserve">
-        <value>#Archived</value>
+        <value>Archived</value>
     </data>
     <data name="ScansActiveValue" xml:space="preserve">
-        <value>#Active</value>
+        <value>Active</value>
     </data>
     <data name="ScansUnknownValue" xml:space="preserve">
-        <value>#Unknown</value>
+        <value>Unknown</value>
     </data>
 </root>

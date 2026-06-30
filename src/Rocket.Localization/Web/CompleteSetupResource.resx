@@ -20,53 +20,53 @@
     </resheader>
     <!-- TITLES -->
     <data name="CompleteSetupTitle" xml:space="preserve">
-        <value>#Please complete your Bottle Rocket server setup</value>
+        <value>Please complete your Bottle Rocket server setup</value>
     </data>
     <data name="CompleteSetupBodyP1" xml:space="preserve">
-        <value>#You are currently logged in as the administrator account.</value>
+        <value>You are currently logged in as the administrator account.</value>
     </data>
     <data name="CompleteSetupBodyP2" xml:space="preserve">
-        <value>#Please create a new user account with administrator privileges.</value>
+        <value>Please create a new user account with administrator privileges.</value>
     </data>
     <data name="CompleteSetupBodyP3" xml:space="preserve">
-        <value>#Once this has been performed, the current administrator account will be deactivated and you will be prompted to login again.</value>
+        <value>Once this has been performed, the current administrator account will be deactivated and you will be prompted to login again.</value>
     </data>
     <!-- FIELDS & HINTS -->
     <data name="CompleteSetupUserNameFieldHeader" xml:space="preserve">
-        <value>#User Name</value>
+        <value>User Name</value>
     </data>
     <data name="CompleteSetupUserNameFieldHint" xml:space="preserve">
-        <value>#Enter a valid email address for this user</value>
+        <value>Enter a valid email address for this user</value>
     </data>
     <data name="CompleteSetupUserNameFieldRequiredError" xml:space="preserve">
-        <value>#User Name is required</value>
+        <value>User Name is required</value>
     </data>
     <data name="CompleteSetupPasswordFieldHeader" xml:space="preserve">
-        <value>#Password</value>
+        <value>Password</value>
     </data>
     <data name="CompleteSetupPasswordFieldHint" xml:space="preserve">
-        <value>#Choose a strong password</value>
+        <value>Choose a strong password</value>
     </data>
     <data name="CompleteSetupPasswordFieldRequiredError" xml:space="preserve">
-        <value>#Password is required</value>
+        <value>Password is required</value>
     </data>
     <data name="CompleteSetupRepeatPasswordFieldHeader" xml:space="preserve">
-        <value>#Password</value>
+        <value>Password</value>
     </data>
     <data name="CompleteSetupRepeatPasswordFieldHint" xml:space="preserve">
-        <value>#Repeat the password</value>
+        <value>Repeat the password</value>
     </data>
     <data name="CompleteSetupRepeatPasswordFieldMatchError" xml:space="preserve">
-        <value>#Passwords don't match</value>
+        <value>Passwords don't match</value>
     </data>
     <!-- CAPTIONS & MESSAGES -->
     <data name="CompleteSetupSubmitCaption" xml:space="preserve">
-        <value>#Submit</value>
+        <value>Submit</value>
     </data>
     <data name="CompleteSetupPageDisabledError" xml:space="preserve">
-        <value>#This page is disabled.</value>
+        <value>This page is disabled.</value>
     </data>
     <data name="CompleteSetupHasBeenAddedMessage" xml:space="preserve">
-        <value>#The user has been added.</value>
+        <value>The user has been added.</value>
     </data>
 </root>

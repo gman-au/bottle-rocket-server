@@ -20,11 +20,11 @@
     </resheader>
     <!-- TITLES -->
     <data name="GlobalSettingsTitle" xml:space="preserve">
-        <value>#System Settings</value>
+        <value>System Settings</value>
     </data>
     <!-- FIELDS & HINTS -->
     <data name="GlobalSettingsSweepFieldHeader" xml:space="preserve">
-        <value>#Automatic archival (sweeping)</value>
+        <value>Automatic archival (sweeping)</value>
     </data>
     <data name="GlobalSettingsSweepFieldHintP1" xml:space="preserve">
         <value>
@@ -42,13 +42,13 @@
         </value>
     </data>
     <data name="GlobalSettingsEnableSweepingFieldHeader" xml:space="preserve">
-        <value>#Enable sweeping</value>
+        <value>Enable sweeping</value>
     </data>
     <data name="GlobalSettingsSweepingDaysFieldHeader" xml:space="preserve">
-        <value>#Sweep scans after days</value>
+        <value>Sweep scans after days</value>
     </data>
     <data name="GlobalSettingsLlmTimeoutFieldHeader" xml:space="preserve">
-        <value>#LLM timeout</value>
+        <value>LLM timeout</value>
     </data>
     <data name="GlobalSettingsLlmTimeoutFieldHintP1" xml:space="preserve">
         <value>
@@ -61,25 +61,25 @@
         </value>
     </data>
     <data name="GlobalSettingsModelTimeoutFieldHeader" xml:space="preserve">
-        <value>#Model timeout (in minutes)</value>
+        <value>Model timeout (in minutes)</value>
     </data>
     <data name="GlobalSettingsDefaultLanguageFieldHeader" xml:space="preserve">
-        <value>#Default Language</value>
+        <value>Default Language</value>
     </data>
     <data name="GlobalSettingsDefaultLanguageFieldHintP1" xml:space="preserve">
-        <value>#Configure the default language for this server.</value>
+        <value>Configure the default language for this server.</value>
     </data>
     <data name="GlobalSettingsLanguageFieldHeader" xml:space="preserve">
-        <value>#Default Language</value>
+        <value>Default Language</value>
     </data>
     <data name="GlobalSettingsLanguageFieldHint" xml:space="preserve">
-        <value>#Select the default language for this server</value>
+        <value>Select the default language for this server</value>
     </data>
     <!-- CAPTIONS & MESSAGES -->
     <data name="GlobalSettingsSubmitCaption" xml:space="preserve">
-        <value>#Submit</value>
+        <value>Submit</value>
     </data>
     <data name="GlobalSettingsHasBeenUpdatedMessage" xml:space="preserve">
-        <value>#The system settings have been updated.</value>
+        <value>The system settings have been updated.</value>
     </data>
 </root>
