@@ -44,6 +44,9 @@
     <data name="ScansVendorFieldHeader" xml:space="preserve">
         <value>#Vendor</value>
     </data>
+    <data name="ScansManuallyTriggerFieldHeader" xml:space="preserve">
+        <value>#Workflow</value>
+    </data>
     <data name="ScansManuallyTriggerFieldHint" xml:space="preserve">
         <value>#Select a workflow to trigger against this scan.</value>
     </data>

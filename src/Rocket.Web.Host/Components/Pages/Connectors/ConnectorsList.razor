@@ -1,6 +1,8 @@
 ﻿@page "/MyConnectors"
+@using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts.Connectors
 @using Rocket.Domain.Enum
+@using Rocket.Localization.Web
 @using Rocket.Web.Client
 @using Rocket.Web.Host.Components.Dialog
 @using Rocket.Web.Host.Infrastructure
@@ -8,6 +10,7 @@
 @inject IApiRequestManager ApiRequestManager
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject IDialogService DialogService
+@inject IStringLocalizer<ConnectorsResource> StringLocalizer
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <MudText
@@ -15,7 +18,7 @@
     Typo="Typo.h4"
     Color="Color.Primary"
     Class="mb-4">
-    My Connectors
+    @StringLocalizer["ConnectorsListTitle"]
 </MudText>
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
@@ -25,10 +28,10 @@
             <thead>
             <tr>
                 <th></th>
-                <th>Connector</th>
-                <th>Type</th>
-                <th>Created</th>
-                <th>Last Updated</th>
+                <th>@StringLocalizer["ConnectorsNameFieldHeader"]</th>
+                <th>@StringLocalizer["ConnectorsTypeFieldHeader"]</th>
+                <th>@StringLocalizer["ConnectorsDateCreatedFieldHeader"]</th>
+                <th>@StringLocalizer["ConnectorsDateUpdatedFieldHeader"]</th>
                 <th/>
             </tr>
             </thead>
@@ -73,7 +76,7 @@
                                   _currentIndex,
                                   DefaultPageSize
                               ))">
-                    Load More
+                    @StringLocalizer["ConnectorsLoadMoreCaption"]
                 </MudButton>
             </MudItem>
         </MudGrid>
@@ -84,7 +87,7 @@
             Align="Align.Center"
             Typo="Typo.body2"
             Color="Color.Default">
-            No connectors found
+            @StringLocalizer["ConnectorsNoConnectorsMessage"]
         </MudText>
     }
 </BottleRocketLoadingOverlay>

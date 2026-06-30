@@ -1,8 +1,10 @@
 ﻿@page "/MyWorkflow/{id}"
+@using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts.Executions
 @using Rocket.Api.Contracts.Workflows
 @using Rocket.Domain.Enum
 @using Rocket.Interfaces
+@using Rocket.Localization.Web
 @using Rocket.Web.Client
 @using Rocket.Web.Host.Extensions
 @using Rocket.Web.Host.Infrastructure
@@ -11,6 +13,7 @@
 @inject IApiRequestManager ApiRequestManager
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject IWorkflowMermaidConverter WorkflowMermaidConverter
+@inject IStringLocalizer<WorkflowsResource> StringLocalizer
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
@@ -32,15 +35,16 @@
                                 Typo="Typo.h4"
                                 Color="Color.Primary"
                                 Class="mb-4">
-                                Workflow Details
+                                @StringLocalizer["WorkflowsDetailsTitle"]
                             </MudText>
                             <MudGrid>
                                 <MudItem sm="12">
                                     <MudTextField
                                         T="string"
-                                        Label="Workflow Name"
+                                        Label="@StringLocalizer["WorkflowsNameFieldHeader"]"
                                         Required="true"
-                                        RequiredError="Please enter a valid workflow name"
+                                        RequiredError="@StringLocalizer["WorkflowsNameFieldRequiredError"]"
+                                        HelperText="@StringLocalizer["WorkflowsNameFieldHint"]"
                                         Disabled="@(_isLoading)"
                                         @bind-Value="_newModel.Name"
                                         For="@(() => _newModel.Name)"
@@ -51,8 +55,8 @@
                                         <MudSelect
                                             T="int?"
                                             Clearable
-                                            Label="Matching Page Symbol"
-                                            HelperText="Select a matching page symbol to associate with this workflow."
+                                            Label="@StringLocalizer["WorkflowsMatchingSymbolFieldHeader"]"
+                                            HelperText="@StringLocalizer["WorkflowsMatchingSymbolFieldHint"]"
                                             Disabled="@(_isLoading)"
                                             @bind-Value="_newModel.MatchingPageSymbol"
                                             For="@(() => _newModel.MatchingPageSymbol)"
@@ -62,49 +66,49 @@
                                                      height="80"
                                                      class="mr-4 rocketbook-icon-round"
                                                 />
-                                                Rocket
+                                                @StringLocalizer["WorkflowsRocketSymbolValue"]
                                             </MudSelectItem>
                                             <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Diamond)">
                                                 <img src="@(((int?)PageSymbolEnum.Diamond).GetPageSymbolImagePath())"
                                                      height="80"
                                                      class="mr-4 rocketbook-icon-round"
                                                 />
-                                                Diamond
+                                                @StringLocalizer["WorkflowsDiamondSymbolValue"]
                                             </MudSelectItem>
                                             <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Apple)">
                                                 <img src="@(((int?)PageSymbolEnum.Apple).GetPageSymbolImagePath())"
                                                      height="80"
                                                      class="mr-4 rocketbook-icon-round"
                                                 />
-                                                Apple
+                                                @StringLocalizer["WorkflowsAppleSymbolValue"]
                                             </MudSelectItem>
                                             <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Bell)">
                                                 <img src="@(((int?)PageSymbolEnum.Bell).GetPageSymbolImagePath())"
                                                      height="80"
                                                      class="mr-4 rocketbook-icon-round"
                                                 />
-                                                Bell
+                                                @StringLocalizer["WorkflowsBellSymbolValue"]
                                             </MudSelectItem>
                                             <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Clover)">
                                                 <img src="@(((int?)PageSymbolEnum.Clover).GetPageSymbolImagePath())"
                                                      height="80"
                                                      class="mr-4 rocketbook-icon-round"
                                                 />
-                                                Clover
+                                                @StringLocalizer["WorkflowsCloverSymbolValue"]
                                             </MudSelectItem>
                                             <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Star)">
                                                 <img src="@(((int?)PageSymbolEnum.Star).GetPageSymbolImagePath())"
                                                      height="80"
                                                      class="mr-4 rocketbook-icon-round"
                                                 />
-                                                Star
+                                                @StringLocalizer["WorkflowsStarSymbolValue"]
                                             </MudSelectItem>
                                             <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Horseshoe)">
                                                 <img src="@(((int?)PageSymbolEnum.Horseshoe).GetPageSymbolImagePath())"
                                                      height="80"
                                                      class="mr-4 rocketbook-icon-round"
                                                 />
-                                                Horseshoe
+                                                @StringLocalizer["WorkflowsHorseshoeSymbolValue"]
                                             </MudSelectItem>
                                             <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Scribzee)">
                                                 <img src="@(((int?)PageSymbolEnum.Scribzee).GetPageSymbolImagePath())"
@@ -128,7 +132,7 @@
                                         Color="Color.Success"
                                         Disabled="@(_isLoading)"
                                         OnClick="@SubmitAsync">
-                                        Submit
+                                        @StringLocalizer["WorkflowsSubmitCaption"]
                                     </MudButton>
                                 </MudItem>
                             </MudGrid>
@@ -150,7 +154,7 @@
                             Typo="Typo.h5"
                             Color="Color.Primary"
                             Class="mb-4">
-                            Previous runs
+                            @StringLocalizer["WorkflowsPreviousRunsTitle"]
                         </MudText>
                     </MudItem>
                     <PreviousWorkflowRuns Executions="@_executions"/>
@@ -312,7 +316,7 @@
 
                 Snackbar
                     .Add(
-                        "The workflow has been updated.",
+                        StringLocalizer["WorkflowsHasBeenUpdatedMessage"].Value,
                         Severity.Success
                     );
             }

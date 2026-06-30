@@ -1,10 +1,13 @@
 ﻿@page "/MyWorkflows/Add"
+@using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts.Workflows
+@using Rocket.Localization.Web
 @using Rocket.Web.Client
 @using Rocket.Web.Host.Infrastructure
 @inject IApiRequestManager ApiRequestManager
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject ISnackbar Snackbar
+@inject IStringLocalizer<WorkflowsResource> StringLocalizer
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 @if (_newModel != null)
@@ -14,7 +17,7 @@
             Color="Color.Primary"
             GutterBottom
             Typo="Typo.h5">
-            Add Workflow
+            @StringLocalizer["WorkflowsAddTitle"]
         </MudText>
         <BottleRocketLoadingOverlay IsLoading="@_isLoading">
             <MudForm
@@ -24,10 +27,10 @@
                     <MudItem sm="12" lg="6">
                         <MudTextField
                             T="string"
-                            Label="Workflow Name"
-                            HelperText="Enter a name for the workflow"
+                            Label="@StringLocalizer["WorkflowsNameFieldHeader"]"
+                            HelperText="@StringLocalizer["WorkflowsNameFieldHint"]"
                             Required="true"
-                            RequiredError="Please enter a workflow name"
+                            RequiredError="@StringLocalizer["WorkflowsNameFieldRequiredError"]"
                             Disabled="@(_isLoading)"
                             @bind-Value="_newModel.Name"
                             For="@(() => _newModel.Name)"
@@ -44,7 +47,7 @@
                             Color="Color.Success"
                             Disabled="@(_isLoading)"
                             OnClick="@SubmitAsync">
-                            Submit
+                            @StringLocalizer["WorkflowsSubmitCaption"]
                         </MudButton>
                     </MudItem>
                 </MudGrid>
@@ -115,7 +118,7 @@
 
                 Snackbar
                     .Add(
-                        "The workflow has been created.",
+                        StringLocalizer["WorkflowsHasBeenAddedMessage"].Value,
                         Severity.Success
                     );
 
