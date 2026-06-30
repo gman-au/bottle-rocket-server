@@ -1,33 +1,40 @@
-﻿<MudDialog Class="p-2">
+﻿@using Microsoft.Extensions.Localization
+@using Rocket.Localization.Web
+@inject IStringLocalizer<DialogResource> StringLocalizer
+
+<MudDialog Class="p-2">
     <TitleContent>
         <MudText
             Color="Color.Warning"
             GutterBottom
             Typo="Typo.h5">
-            Assign a new administrator
+            @StringLocalizer["DialogRevokeAdminTitle"]
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudText Typo="Typo.body1">
-            <p>
-                Do you wish to change the administrator?
-            </p>
-            <p>
-                If you proceed, <u>this account will no longer have administrator access</u>, and will be logged out immediately.
-            </p>
+        <MudText
+            Typo="Typo.h6"
+            Color="Color.Default"
+        >
+            @StringLocalizer["DialogRevokeAdminBody"]
+        </MudText>
+        <MudText
+            Typo="Typo.body1"
+            Color="Color.Error">
+            @StringLocalizer["DialogRevokeAdminWarning"]
         </MudText>
     </DialogContent>
     <DialogActions>
         <MudButton
             Variant="Variant.Outlined"
             OnClick="Cancel">
-            Cancel
+            @StringLocalizer["DialogRevokeAdminCancelCaption"]
         </MudButton>
         <MudButton
             Variant="Variant.Outlined"
             Color="Color.Error"
             OnClick="Submit">
-            I understand, confirm
+            @StringLocalizer["DialogRevokeAdminSubmitCaption"]
         </MudButton>
     </DialogActions>
 </MudDialog>

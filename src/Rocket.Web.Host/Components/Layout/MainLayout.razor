@@ -1,8 +1,13 @@
-﻿@using Rocket.Web.Client
+﻿@using Microsoft.Extensions.Localization
+@using Rocket.Localization.Web
+@using Rocket.Web.Client
 @inherits LayoutComponentBase
 @inject IThemeService ThemeService
+@inject IStringLocalizer<CommonResource> StringLocalizer
 
-<PageTitle>Bottle Rocket</PageTitle>
+<PageTitle>
+    @StringLocalizer["AppTitle"]
+</PageTitle>
 
 <BottleRocketMudThemeProvider IsDarkMode="@ThemeService.IsDarkMode"/>
 <MudDialogProvider/>

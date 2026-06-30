@@ -11,7 +11,8 @@
 @inject IEmailAddressValidator EmailAddressValidator
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject ISnackbar Snackbar
-@inject IStringLocalizer<UsersResource> StringLocalizer
+@inject IStringLocalizer<CompleteSetupResource> StringLocalizer
+@inject IStringLocalizer<PasswordResource> PasswordStringLocalizer
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 @if (_newModel != null)
@@ -21,15 +22,22 @@
             Color="Color.Primary"
             GutterBottom
             Typo="Typo.h5">
-            Please complete your Bottle Rocket server setup
+            @StringLocalizer["CompleteSetupTitle"]
         </MudText>
         <MudText
             GutterBottom
             Typo="Typo.body1">
-            You are currently logged in as the administrator account.<br/>
-            Please create a new user account with administrator privileges.<br/>
-            Once this has been performed, the current administrator account
-            will be deactivated and you will be prompted to login again.
+            @StringLocalizer["CompleteSetupBodyP1"]
+        </MudText>
+        <MudText
+            GutterBottom
+            Typo="Typo.body1">
+            @StringLocalizer["CompleteSetupBodyP2"]
+        </MudText>
+        <MudText
+            GutterBottom
+            Typo="Typo.body1">
+            @StringLocalizer["CompleteSetupBodyP3"]
         </MudText>
         <BottleRocketLoadingOverlay IsLoading="@_isLoading">
             <MudForm
@@ -39,11 +47,11 @@
                     <MudItem sm="12" lg="6" xl="4">
                         <MudTextField
                             T="string"
-                            Label="Username"
-                            HelperText="Enter an email address"
+                            Label="@StringLocalizer["CompleteSetupUserNameFieldHeader"]"
+                            HelperText="@StringLocalizer["CompleteSetupUserNameFieldHint"]"
                             Required="true"
                             Validation="@(new Func<string, bool>(EmailAddressValidator.IsValid))"
-                            RequiredError="Please enter a valid email address"
+                            RequiredError="@StringLocalizer["CompleteSetupUserNameFieldRequiredError"]"
                             Disabled="@(_isLoading)"
                             @bind-Value="_newModel.Username"
                             For="@(() => _newModel.Username)"
@@ -52,20 +60,20 @@
                     <MudItem sm="12" lg="6" xl="4">
                         <MudTextField
                             T="string"
-                            Label="Password"
-                            HelperText="Choose a strong password"
+                            Label="@StringLocalizer["CompleteSetupPasswordFieldHeader"]"
+                            HelperText="@StringLocalizer["CompleteSetupPasswordFieldHint"]"
                             @ref="_pwField1"
                             InputType="InputType.Password"
                             @bind-Value="_newModel.NewPassword"
                             For="@(() => _newModel.NewPassword)"
-                            Validation="@(new Func<string, IEnumerable<string>>(o => PasswordValidation.PasswordStrength(o, StringLocalizer)))"
-                            RequiredError="Password is required!"/>
+                            Validation="@(new Func<string, IEnumerable<string>>(o => PasswordValidation.PasswordStrength(o, PasswordStringLocalizer)))"
+                            RequiredError="@StringLocalizer["CompleteSetupPasswordFieldRequiredError"]"/>
                     </MudItem>
                     <MudItem sm="12" lg="6" xl="4">
                         <MudTextField
                             T="string"
-                            Label="Password"
-                            HelperText="Repeat the password"
+                            Label="@StringLocalizer["CompleteSetupRepeatPasswordFieldHeader"]"
+                            HelperText="@StringLocalizer["CompleteSetupRepeatPasswordFieldHint"]"
                             InputType="InputType.Password"
                             Validation="@(new Func<string, string>(PasswordMatch))"/>
                     </MudItem>
@@ -77,7 +85,7 @@
                             Color="Color.Success"
                             Disabled="@(_isLoading)"
                             OnClick="@SubmitAsync">
-                            Submit
+                            @StringLocalizer["CompleteSetupSubmitCaption"]
                         </MudButton>
                     </MudItem>
                 </MudGrid>
@@ -112,7 +120,7 @@
 
             if (startup.Phase != (int)StartupPhaseEnum.AdminPendingDeactivation)
                 throw new RocketException(
-                    "This page is disabled.",
+                    StringLocalizer["CompleteSetupPageDisabledError"].Value,
                     ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                 );
 
@@ -160,7 +168,7 @@
 
                 Snackbar
                     .Add(
-                        "The user has been updated.",
+                        StringLocalizer["CompleteSetupHasBeenAddedMessage"].Value,
                         Severity.Success
                     );
 
@@ -187,7 +195,7 @@
     private string PasswordMatch(string arg)
     {
         if (_pwField1.Value != arg)
-            return "Passwords don't match";
+            return StringLocalizer["CompleteSetupRepeatPasswordFieldMatchError"].Value;
         return null;
     }
 

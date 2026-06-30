@@ -10,7 +10,7 @@ namespace Rocket.Localization
             new()
             {
                 { "English", "en-US" },
-                { "French", "fr-FR" }
+                //{ "French", "fr-FR" }
             };
     }
 }

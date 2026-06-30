@@ -1,28 +1,32 @@
-﻿<MudDialog Class="p-2">
+﻿@using Microsoft.Extensions.Localization
+@using Rocket.Localization.Web
+@inject IStringLocalizer<DialogResource> StringLocalizer
+
+<MudDialog Class="p-2">
     <TitleContent>
         <MudText
             Color="Color.Primary"
             GutterBottom
             Typo="Typo.h5">
-            Cancel
+            @StringLocalizer["DialogCancelExecutionTitle"]
         </MudText>
     </TitleContent>
     <DialogContent>
         <MudText Typo="Typo.body1">
-            Cancel this execution?
+            @StringLocalizer["DialogCancelExecutionBody"]
         </MudText>
     </DialogContent>
     <DialogActions>
         <MudButton
             Variant="Variant.Outlined"
             OnClick="Cancel">
-            Go back
+            @StringLocalizer["DialogCancelExecutionCancelCaption"]
         </MudButton>
         <MudButton
             Variant="Variant.Outlined"
             Color="Color.Warning"
             OnClick="Submit">
-            Yes, cancel it
+            @StringLocalizer["DialogCancelExecutionSubmitCaption"]
         </MudButton>
     </DialogActions>
 </MudDialog>

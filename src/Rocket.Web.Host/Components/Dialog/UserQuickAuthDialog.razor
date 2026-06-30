@@ -1,10 +1,14 @@
-﻿<MudDialog Class="p-2">
+﻿@using Microsoft.Extensions.Localization
+@using Rocket.Localization.Web
+@inject IStringLocalizer<DialogResource> StringLocalizer
+
+<MudDialog Class="p-2">
     <TitleContent>
         <MudText
             Color="Color.Primary"
             GutterBottom
             Typo="Typo.h5">
-            User Quick Authentication
+            @StringLocalizer["DialogUserQuickAuthTitle"]
         </MudText>
     </TitleContent>
     <DialogContent>
@@ -20,13 +24,13 @@
         <MudText
             Class="mt-4"
             Typo="Typo.body1">
-            You can use the Bottle Rocket app to scan this QR code for easier user authentication.
+            @StringLocalizer["DialogUserQuickAuthBodyP1"]
         </MudText>
         <MudText>
             <MudLink
                 Target="_blank"
                 Href="https://gman-au.github.io/bottle-rocket-documentation/docs/docs-general/installation-and-setup/server-installation/qr-code-authentication">
-                See here for instructions.
+                @StringLocalizer["DialogUserQuickAuthBodyP2"]
             </MudLink>
         </MudText>
     </DialogContent>
@@ -34,7 +38,7 @@
         <MudButton
             Variant="Variant.Outlined"
             OnClick="Cancel">
-            OK
+            @StringLocalizer["DialogUserQuickAuthCancelCaption"]
         </MudButton>
     </DialogActions>
 </MudDialog>

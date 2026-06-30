@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <!-- TITLES -->
+    <data name="LoginTitle" xml:space="preserve">
+        <value>#Login</value>
+    </data>
+    <!-- FIELDS & HINTS -->
+    <data name="LoginUserNameFieldHeader" xml:space="preserve">
+        <value>#User Name</value>
+    </data>
+    <data name="LoginUserNameFieldHint" xml:space="preserve">
+        <value>#Please enter your user name</value>
+    </data>
+    <data name="LoginUserNameFieldRequiredError" xml:space="preserve">
+        <value>#User Name is required</value>
+    </data>
+    <data name="LoginPasswordFieldHeader" xml:space="preserve">
+        <value>#Password</value>
+    </data>
+    <data name="LoginPasswordFieldHint" xml:space="preserve">
+        <value>#Please enter your password</value>
+    </data>
+    <data name="LoginPasswordFieldRequiredError" xml:space="preserve">
+        <value>#Password is required</value>
+    </data>
+    <!-- CAPTIONS & MESSAGES -->
+    <data name="LoginSubmitCaption" xml:space="preserve">
+        <value>#Login</value>
+    </data>
+    <data name="LoginInvalidCredentialsError" xml:space="preserve">
+        <value>#Invalid username or password</value>
+    </data>
+</root>

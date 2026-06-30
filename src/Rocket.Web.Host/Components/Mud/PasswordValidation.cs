@@ -9,7 +9,7 @@ namespace Rocket.Web.Host.Components.Mud
     {
         public static IEnumerable<string> PasswordStrength(
             string pw,
-            IStringLocalizer<UsersResource> stringLocalizer
+            IStringLocalizer<PasswordResource> stringLocalizer
         )
         {
             if (string.IsNullOrWhiteSpace(pw))

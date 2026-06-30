@@ -65,18 +65,6 @@
     <data name="UsersIsAdminFieldHeader" xml:space="preserve">
         <value>#This user is the administrator</value>
     </data>
-    <data name="UsersPasswordTooShortError" xml:space="preserve">
-        <value>#Password must be at least of length 8</value>
-    </data>
-    <data name="UsersPasswordNoCapitalsError" xml:space="preserve">
-        <value>#Password must contain at least one capital letter</value>
-    </data>
-    <data name="UsersPasswordNoLowersError" xml:space="preserve">
-        <value>#Password must contain at least one lowercase letter</value>
-    </data>
-    <data name="UsersPasswordNoDigitsError" xml:space="preserve">
-        <value>#Password must contain at least one digit</value>
-    </data>
     <!-- CAPTIONS & MESSAGES -->
     <data name="UsersLoadMoreCaption" xml:space="preserve">
         <value>#Load more</value>

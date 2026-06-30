@@ -1,11 +1,16 @@
 ﻿@page "/account/logout"
+@using Microsoft.Extensions.Localization
 @using Rocket.Interfaces
+@using Rocket.Localization.Web
 @inject IAuthenticationManager AuthenticationManager
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<LogoutResource> StringLocalizer
 
 <MudPaper Elevation="4" Class="pa-8" Style="text-align: center;">
     <BottleRocketLoadingOverlay IsLoading="true">
-        <MudText Typo="Typo.h4">Logging out...</MudText>
+        <MudText Typo="Typo.h4">
+            @StringLocalizer["LogoutLoggingOutMessage"]
+        </MudText>
     </BottleRocketLoadingOverlay>
 </MudPaper>
 

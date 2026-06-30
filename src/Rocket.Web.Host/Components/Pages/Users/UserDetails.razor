@@ -12,6 +12,7 @@
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject IStringLocalizer<UsersResource> StringLocalizer
+@inject IStringLocalizer<PasswordResource> PasswordStringLocalizer
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
@@ -71,7 +72,7 @@
                             InputType="InputType.Password"
                             @bind-Value="_newModel.NewPassword"
                             For="@(() => _newModel.NewPassword)"
-                            Validation="@(new Func<string, IEnumerable<string>>(o => PasswordValidation.PasswordStrength(o, StringLocalizer)))"
+                            Validation="@(new Func<string, IEnumerable<string>>(o => PasswordValidation.PasswordStrength(o, PasswordStringLocalizer)))"
                             RequiredError="@StringLocalizer["UsersPasswordFieldRequiredError"]"/>
                     </MudItem>
                     <MudItem sm="12" lg="6" xl="4">

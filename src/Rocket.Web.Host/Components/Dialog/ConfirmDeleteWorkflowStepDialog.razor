@@ -1,38 +1,46 @@
-﻿@using Rocket.Api.Contracts.Workflows
+﻿@using Microsoft.Extensions.Localization
+@using Rocket.Api.Contracts.Workflows
+@using Rocket.Localization.Web
+@inject IStringLocalizer<DialogResource> StringLocalizer
+
 <MudDialog Class="p-2">
     <TitleContent>
         <MudText
             Color="Color.Primary"
             GutterBottom
             Typo="Typo.h5">
-            Delete workflow
+            @StringLocalizer["DialogDeleteWorkflowStepTitle"]
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudText 
+        <MudText
+            Typo="Typo.body1"
+            Color="Color.Default">
+            @StringLocalizer["DialogDeleteWorkflowStepBody"]
+        </MudText>
+        <MudText
+            Class="mt-2 mb-2"
             Typo="Typo.h6"
-            Color="Color.Default"
-        >
-            Do you wish to delete the workflow step <b>"@WorkflowStep?.StepName"</b>?
+            Color="Color.Info">
+            @WorkflowStep?.StepName
         </MudText>
         <MudText
             Typo="Typo.body1"
-            Color="Color.Error"
-        >
-            You will not be able to recover this workflow step after deletion. All of the child steps will also be deleted.
+            Color="Color.Error">
+            @StringLocalizer["DialogDeleteWorkflowStepWarning"]
         </MudText>
     </DialogContent>
     <DialogActions>
         <MudButton
             Variant="Variant.Outlined"
             OnClick="Cancel">
-            Cancel
+            @StringLocalizer["DialogDeleteWorkflowStepCancelCaption"]
         </MudButton>
         <MudButton
             Variant="Variant.Outlined"
             Color="Color.Error"
             OnClick="Submit">
-            Delete
+            @StringLocalizer["DialogDeleteWorkflowStepSubmitCaption"]
         </MudButton>
     </DialogActions>
 </MudDialog>

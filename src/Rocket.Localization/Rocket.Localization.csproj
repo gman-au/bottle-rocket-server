@@ -53,6 +53,26 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>PreviousWorkflowRunsResource.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="Web\DialogResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>DialogResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\LoginResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>LoginResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\LogoutResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>LogoutResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\CompleteSetupResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>CompleteSetupResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\PasswordResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>PasswordResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
