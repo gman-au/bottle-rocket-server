@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Rocket.Infrastructure.Mapping\Rocket.Infrastructure.Mapping.csproj"/>
+        <ProjectReference Include="..\..\Common\Rocket.Integrations.Common\Rocket.Integrations.Common.csproj"/>
+        <ProjectReference Include="..\Rocket.Mailgun.Contracts\Rocket.Mailgun.Contracts.csproj"/>
+        <ProjectReference Include="..\Rocket.Mailgun.Domain\Rocket.Mailgun.Domain.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FluentEmail.Mailgun" Version="3.0.2"/>
+    </ItemGroup>
+
+</Project>

@@ -1,5 +1,6 @@
-﻿@page "/MyConnector/Postmark/Add"
+﻿@page "/MyConnector/Mailgun/Add"
 @using Rocket.Api.Contracts.Connectors
+@using Rocket.Mailgun.Contracts
 @using Rocket.Postmark.Contracts
 @using Rocket.Web.Client
 @using Rocket.Web.Host.Infrastructure
@@ -20,7 +21,7 @@
                     Typo="Typo.h4"
                     Color="Color.Primary"
                     Class="mb-4">
-                    Add a Postmark connector
+                    Add a Mailgun connector
                 </MudText>
 
                 <MudGrid>
@@ -29,13 +30,13 @@
                             Color="Color.Secondary"
                             Typo="Typo.h5"
                         >
-                            Step 1: Set up the Postmark integration
+                            Step 1: Set up the Mailgun integration
                         </MudText>
                         <MudText>
                             <MudLink
                                 Target="_blank"
-                                Href="https://gman-au.github.io/bottle-rocket-documentation/docs/docs-general/workflow-integrations/postmark#create-and-configure-the-mail-server">
-                                Follow the instructions to set up a Postmark integration.
+                                Href="https://gman-au.github.io/bottle-rocket-documentation/docs/docs-general/workflow-integrations/mailgun#create-and-configure-the-mail-server">
+                                Follow the instructions to set up a Mailgun integration.
                             </MudLink>
                         </MudText>
                     </MudItem>
@@ -43,27 +44,47 @@
                         <MudText
                             Color="Color.Secondary"
                             Typo="Typo.h5">
-                            Step 2: Enter the Postmark server token
+                            Step 2: Enter the Mailgun API key
                         </MudText>
                         <MudText>
-                            Enter the server token from the Postmark integration below.
+                            Enter the API key from the Mailgun integration below.
                         </MudText>
                     </MudItem>
                     <MudItem sm="12" lg="6">
                         <MudTextField
                             T="string"
                             Required
-                            Label="Server token"
-                            HelperText="Enter the server token here"
-                            @bind-Value="_connector.ServerToken"
-                            For="@(() => _connector.ServerToken)"
-                            RequiredError="Server token is required."/>
+                            Label="API key"
+                            HelperText="Enter the API key here"
+                            @bind-Value="_connector.ApiKey"
+                            For="@(() => _connector.ApiKey)"
+                            RequiredError="API key is required."/>
                     </MudItem>
                     <MudItem xs="12">
                         <MudText
                             Color="Color.Secondary"
                             Typo="Typo.h5">
-                            Step 3: Validate a sender address
+                            Step 3: Enter the sender domain
+                        </MudText>
+                        <MudText>
+                            Enter the sender domain below.
+                        </MudText>
+                    </MudItem>
+                    <MudItem sm="12" lg="6">
+                        <MudTextField
+                            T="string"
+                            Required
+                            Label="Sender domain"
+                            HelperText="Enter the sender domain here"
+                            @bind-Value="_connector.SenderDomain"
+                            For="@(() => _connector.SenderDomain)"
+                            RequiredError="Sender domain is required."/>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5">
+                            Step 4: Validate a sender address
                         </MudText>
                         <MudText>
                             Enter a (validated) sender address below.
@@ -104,7 +125,7 @@
     MudForm _form;
 
     private bool _isLoading;
-    private PostmarkConnectorSpecifics _connector = new();
+    private MailgunConnectorSpecifics _connector = new();
 
     [Parameter]
     public string Id { get; set; }
@@ -149,7 +170,7 @@
                     await
                         ApiRequestManager
                             .CreateConnectorAsync(
-                                new CreateConnectorRequest<PostmarkConnectorSpecifics>
+                                new CreateConnectorRequest<MailgunConnectorSpecifics>
                                 {
                                     Connector = _connector
                                 },

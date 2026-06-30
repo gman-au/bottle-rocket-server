@@ -7,7 +7,7 @@ using Postmark.Exceptions;
 using PostmarkDotNet;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
-using Rocket.Postmark.Infrastructure.Extensions;
+using Rocket.Integrations.Common.Extensions;
 
 namespace Rocket.Postmark.Infrastructure
 {

@@ -1,8 +1,8 @@
 ﻿using System.Net.Mail;
 
-namespace Rocket.Postmark.Infrastructure.Extensions
+namespace Rocket.Integrations.Common.Extensions
 {
-    internal static class StringEx
+    public static class StringEx
     {
         public static bool IsValidEmail(this string value)
         {

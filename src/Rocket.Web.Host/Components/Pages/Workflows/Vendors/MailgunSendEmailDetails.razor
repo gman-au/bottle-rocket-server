@@ -1,0 +1,39 @@
+﻿@page "/MyWorkflow/Mailgun/{workflowId}/AddStep"
+@page "/MyWorkflow/Mailgun/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/Mailgun/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.Mailgun.Contracts
+@using Rocket.Mailgun.Domain
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<UpdateWorkflowStepWrapper
+    T="MailgunSendEmailWorkflowStepSpecifics"
+    WorkflowStepName="Send email via Mailgun API"
+    WorkflowId="@WorkflowId"
+    ParentStepId="@ParentStepId"
+    StepId="@StepId"
+    RequiresConnectorCode="@MailgunDomainConstants.ConnectorCode"
+    Context="stepSpecifics">
+    <MudGrid>
+        <MudItem sm="12" lg="6">
+            <MudTextField
+                T="string"
+                Label="Recipient address"
+                HelperText="Enter the recipient email address"
+                @bind-Value="stepSpecifics.RecipientAddress"
+                For="@(() => stepSpecifics.RecipientAddress)"/>
+        </MudItem>
+    </MudGrid>
+</UpdateWorkflowStepWrapper>
+
+@code {
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+}
