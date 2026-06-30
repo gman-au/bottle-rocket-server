@@ -40,23 +40,23 @@ namespace Rocket.Mailgun.Infrastructure
             var fileName = $"{Artifact.FileName}{Artifact.FileExtension}";
             var subjectName = $"Bottle Rocket attached note - {Artifact.FileName}";
 
-            var sendResult =
-                await
-                    emailSender
-                        .SendEmailAsync(
-                            Connector.ApiKey,
-                            Artifact.Artifact,
-                            fileName,
-                            ExecutionStep.RecipientAddress,
-                            Connector.SenderAddress,
-                            subjectName,
-                            cancellationToken
-                        );
+            await
+                emailSender
+                    .SendEmailAsync(
+                        Connector.SenderDomain,
+                        Connector.ApiKey,
+                        Artifact.Artifact,
+                        fileName,
+                        ExecutionStep.RecipientAddress,
+                        Connector.SenderAddress,
+                        subjectName,
+                        cancellationToken
+                    );
 
             await
                 appendLogMessageCallback(
                     step.Id,
-                    sendResult
+                    "Email sent from Mailgun"
                 );
 
             return

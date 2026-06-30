@@ -23,6 +23,7 @@ namespace Rocket.Mailgun.Infrastructure
                     .For(value);
 
             result.ApiKey = value.ApiKey;
+            result.SenderDomain = value.SenderDomain;
             result.SenderAddress = value.SenderAddress;
 
             return result;
@@ -35,6 +36,7 @@ namespace Rocket.Mailgun.Infrastructure
                     .From(value);
 
             result.ApiKey = obfuscator.Obfuscate(value.ApiKey);
+            result.SenderDomain = value.SenderDomain;
             result.SenderAddress = value.SenderAddress;
 
             return result;
@@ -45,6 +47,12 @@ namespace Rocket.Mailgun.Infrastructure
             if (string.IsNullOrEmpty(value.ApiKey))
                 throw new RocketException(
                     "No API key was provided.",
+                    ApiStatusCodeEnum.ValidationError
+                );
+            
+            if (string.IsNullOrEmpty(value.SenderDomain))
+                throw new RocketException(
+                    "No sender domain was provided.",
                     ApiStatusCodeEnum.ValidationError
                 );
             

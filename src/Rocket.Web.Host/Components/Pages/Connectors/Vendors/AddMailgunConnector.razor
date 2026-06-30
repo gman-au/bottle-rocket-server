@@ -64,7 +64,27 @@
                         <MudText
                             Color="Color.Secondary"
                             Typo="Typo.h5">
-                            Step 3: Validate a sender address
+                            Step 3: Enter the sender domain
+                        </MudText>
+                        <MudText>
+                            Enter the sender domain below.
+                        </MudText>
+                    </MudItem>
+                    <MudItem sm="12" lg="6">
+                        <MudTextField
+                            T="string"
+                            Required
+                            Label="Sender domain"
+                            HelperText="Enter the sender domain here"
+                            @bind-Value="_connector.SenderDomain"
+                            For="@(() => _connector.SenderDomain)"
+                            RequiredError="Sender domain is required."/>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5">
+                            Step 4: Validate a sender address
                         </MudText>
                         <MudText>
                             Enter a (validated) sender address below.

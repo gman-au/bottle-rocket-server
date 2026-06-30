@@ -13,11 +13,13 @@ namespace Rocket.Mailgun.Domain
 
         public string ApiKey { get; set; }
         
+        public string SenderDomain { get; set; }
+        
         public string SenderAddress { get; set; }
 
         public override ConnectorStatusEnum DetermineStatus()
         {
-            return !string.IsNullOrEmpty(ApiKey) && !string.IsNullOrEmpty(SenderAddress)
+            return !string.IsNullOrEmpty(ApiKey) && !string.IsNullOrEmpty(SenderAddress) && !string.IsNullOrEmpty(SenderDomain)
                 ? ConnectorStatusEnum.Active
                 : ConnectorStatusEnum.Pending;
         }

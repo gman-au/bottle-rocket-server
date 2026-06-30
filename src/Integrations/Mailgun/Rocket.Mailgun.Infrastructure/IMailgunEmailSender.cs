@@ -5,8 +5,9 @@ namespace Rocket.Mailgun.Infrastructure
 {
     public interface IMailgunEmailSender
     {
-        Task<string> SendEmailAsync(
-            string serverToken,
+        Task SendEmailAsync(
+            string senderDomain,
+            string apiKey,
             byte[] attachmentData,
             string attachmentName,
             string recipientAddress,
