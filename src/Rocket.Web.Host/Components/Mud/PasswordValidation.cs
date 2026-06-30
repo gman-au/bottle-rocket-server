@@ -19,25 +19,25 @@ namespace Rocket.Web.Host.Components.Mud
             }
 
             if (pw.Length < 8)
-                yield return stringLocalizer["UsersPasswordTooShortError"].Value;
+                yield return stringLocalizer["PasswordTooShortError"].Value;
 
             if (!Regex.IsMatch(
                     pw,
                     @"[A-Z]"
                 ))
-                yield return stringLocalizer["UsersPasswordNoCapitalsError"].Value;
+                yield return stringLocalizer["PasswordNoCapitalsError"].Value;
             
             if (!Regex.IsMatch(
                     pw,
                     @"[a-z]"
                 ))
-                yield return stringLocalizer["UsersPasswordNoLowersError"].Value;
+                yield return stringLocalizer["PasswordNoLowersError"].Value;
             
             if (!Regex.IsMatch(
                     pw,
                     @"[0-9]"
                 ))
-                yield return stringLocalizer["UsersPasswordNoDigitsError"].Value;
+                yield return stringLocalizer["PasswordNoDigitsError"].Value;
         }
     }
 }

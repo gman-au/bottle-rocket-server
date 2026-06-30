@@ -6,11 +6,13 @@
 @using Rocket.Interfaces
 @using Rocket.Localization.Web
 @using Rocket.Web.Client
+@using Rocket.Web.Host.Components.Dialog
 @using Rocket.Web.Host.Infrastructure
 @inject IApiRequestManager ApiRequestManager
 @inject IEmailAddressValidator EmailAddressValidator
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 @inject IStringLocalizer<CompleteSetupResource> StringLocalizer
 @inject IStringLocalizer<PasswordResource> PasswordStringLocalizer
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
@@ -66,7 +68,12 @@
                             InputType="InputType.Password"
                             @bind-Value="_newModel.NewPassword"
                             For="@(() => _newModel.NewPassword)"
-                            Validation="@(new Func<string, IEnumerable<string>>(o => PasswordValidation.PasswordStrength(o, PasswordStringLocalizer)))"
+                            Validation="@(new Func<string, IEnumerable<string>>(
+                                            o => PasswordValidation.PasswordStrength(
+                                                o,
+                                                PasswordStringLocalizer
+                                            )
+                                        ))"
                             RequiredError="@StringLocalizer["CompleteSetupPasswordFieldRequiredError"]"/>
                     </MudItem>
                     <MudItem sm="12" lg="6" xl="4">
@@ -154,23 +161,42 @@
 
             try
             {
-                await
-                    ApiRequestManager
-                        .CreateUserAsync(
-                            new CreateUserRequest
-                            {
-                                Username = _newModel.Username,
-                                Password = _newModel.NewPassword,
-                                IsTheNewAdmin = true
-                            },
-                            BaseCancellationToken
-                        );
+                var createUserResponse =
+                    await
+                        ApiRequestManager
+                            .CreateUserAsync(
+                                new CreateUserRequest
+                                {
+                                    Username = _newModel.Username,
+                                    Password = _newModel.NewPassword,
+                                    IsTheNewAdmin = true
+                                },
+                                BaseCancellationToken
+                            );
 
                 Snackbar
                     .Add(
                         StringLocalizer["CompleteSetupHasBeenAddedMessage"].Value,
                         Severity.Success
                     );
+
+                if (!string.IsNullOrEmpty(createUserResponse?.QrCodeBase64))
+                {
+                    var dialog =
+                        await
+                            DialogService
+                                .ShowAsync<UserQuickAuthDialog>(
+                                    null,
+                                    new DialogParameters
+                                    {
+                                        { "UserQuickAuthBase64", createUserResponse.QrCodeBase64 }
+                                    }
+                                );
+
+                    await
+                        dialog
+                            .Result;
+                }
 
                 NavigationManager
                     .NavigateTo(
@@ -192,7 +218,9 @@
         }
     }
 
-    private string PasswordMatch(string arg)
+    private string PasswordMatch(
+        string arg
+    )
     {
         if (_pwField1.Value != arg)
             return StringLocalizer["CompleteSetupRepeatPasswordFieldMatchError"].Value;
