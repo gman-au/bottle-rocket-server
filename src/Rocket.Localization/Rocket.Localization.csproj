@@ -37,6 +37,22 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>ExecutionsResource.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="Web\GlobalSettingsResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>GlobalSettingsResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\SidebarResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>SidebarResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\ErrorsResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ErrorResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Web\PreviousWorkflowRunsResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>PreviousWorkflowRunsResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>

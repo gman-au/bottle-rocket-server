@@ -1,10 +1,12 @@
 ﻿@using System.Security.Claims
 @using System.Threading
+@using Microsoft.Extensions.Localization
 @using Microsoft.Extensions.Options
 @using Rocket.Api.Contracts.Users
 @using Rocket.Domain.Enum
 @using Rocket.Domain.Utils
 @using Rocket.Interfaces
+@using Rocket.Localization.Web
 @using Rocket.Web.Client
 @using Rocket.Web.Client.Options
 @using Rocket.Web.Host.Components.Dialog
@@ -13,6 +15,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IApiRequestManager ApiRequestManager
 @inject IDialogService DialogService
+@inject IStringLocalizer<SidebarResource> StringLocalizer
 @inject IOptions<SiteConfigurationOptions> SiteConfigurationOptions
 
 <MudAppBar Elevation="1">
@@ -60,7 +63,7 @@
                         Href="/"
                         Icon="@StandardIcons.DashboardIcon"
                     >
-                        Home
+                        @StringLocalizer["SidebarHomeTitle"]
                     </MudNavLink>
                     @if (_isRootAdmin && _isSetupPending)
                     {
@@ -69,7 +72,7 @@
                             Href="/CompleteSetup"
                             Icon="@StandardIcons.CompleteSetupIcon"
                         >
-                            Complete setup
+                            @StringLocalizer["SidebarCompleteSetupTitle"]
                         </MudNavLink>
                     }
                     else
@@ -77,7 +80,7 @@
                         if (_isAdmin)
                         {
                             <MudNavGroup
-                                Title="Users"
+                                Title="@StringLocalizer["SidebarUsersGroupTitle"]"
                                 Icon="@StandardIcons.UsersIcon"
                                 Expanded="true"
                             >
@@ -86,14 +89,14 @@
                                     Href="/Users"
                                     Icon="@StandardIcons.SearchUserIcon"
                                 >
-                                    Manage users
+                                    @StringLocalizer["SidebarManageUsersTitle"]
                                 </MudNavLink>
                                 <MudNavLink
                                     Match="NavLinkMatch.All"
                                     Href="/Users/Add"
                                     Icon="@StandardIcons.AddUserIcon"
                                 >
-                                    Add user
+                                    @StringLocalizer["SidebarAddUsersTitle"]
                                 </MudNavLink>
                             </MudNavGroup>
                         }
@@ -101,12 +104,11 @@
                         <MudNavLink
                             Match="NavLinkMatch.Prefix"
                             Href="/MyScans"
-                            Icon="@StandardIcons.ScansIcon"
-                        >
-                            My scans
+                            Icon="@StandardIcons.ScansIcon">
+                            @StringLocalizer["SidebarManageScansTitle"]
                         </MudNavLink>
                         <MudNavGroup
-                            Title="My connectors"
+                            Title="@StringLocalizer["SidebarConnectorsGroupTitle"]"
                             Icon="@StandardIcons.ConnectorsIcon"
                             Expanded="true"
                         >
@@ -115,18 +117,18 @@
                                 Href="/MyConnectors"
                                 Icon="@StandardIcons.SearchConnectorIcon"
                             >
-                                Manage my connectors
+                                @StringLocalizer["SidebarManageConnectorsTitle"]
                             </MudNavLink>
                             <MudNavLink
                                 Match="NavLinkMatch.Prefix"
                                 Href="/MyConnectors/Add"
                                 Icon="@StandardIcons.AddConnectorIcon"
                             >
-                                Add connector
+                                @StringLocalizer["SidebarAddConnectorsTitle"]
                             </MudNavLink>
                         </MudNavGroup>
                         <MudNavGroup
-                            Title="My workflows"
+                            Title="@StringLocalizer["SidebarWorkflowsGroupTitle"]"
                             Icon="@StandardIcons.WorkflowsIcon"
                             Expanded="true"
                         >
@@ -135,28 +137,27 @@
                                 Href="/MyWorkflows"
                                 Icon="@StandardIcons.SearchWorkflowIcon"
                             >
-                                Manage my workflows
+                                @StringLocalizer["SidebarManageWorkflowsTitle"]
                             </MudNavLink>
                             <MudNavLink
                                 Match="NavLinkMatch.Prefix"
                                 Href="/MyWorkflows/Add"
                                 Icon="@StandardIcons.AddWorkflowIcon"
                             >
-                                Add workflow
+                                @StringLocalizer["SidebarAddWorkflowsTitle"]
                             </MudNavLink>
                         </MudNavGroup>
                         <MudNavLink
                             Match="NavLinkMatch.All"
                             OnClick="ConfirmLogoutAsync"
-                            Icon="@StandardIcons.LogoutIcon"
-                        >
-                            Logout
+                            Icon="@StandardIcons.LogoutIcon">
+                            @StringLocalizer["SidebarLogoutTitle"]
                         </MudNavLink>
                         <MudNavLink
                             Icon="@(DarkMode ? Icons.Material.Filled.WbSunny : Icons.Material.Filled.ModeNight)"
                             OnClick="@InvokeDarkModeToggleAsync"
                         >
-                            @(DarkMode ? "Switch to light mode" : "Switch to dark mode")
+                            @(DarkMode ? StringLocalizer["SidebarSwitchLightTitle"] : StringLocalizer["SidebarSwitchDarkTitle"])
                         </MudNavLink>
                         if (_isAdmin)
                         {
@@ -164,7 +165,7 @@
                                 Match="NavLinkMatch.Prefix"
                                 Href="/GlobalSettings"
                                 Icon="@StandardIcons.SettingsIcon">
-                                System settings
+                                @StringLocalizer["SidebarGlobalSettingsTitle"]
                             </MudNavLink>
                         }
                     }
@@ -175,7 +176,7 @@
                         Href="/Account/Login"
                         Icon="@StandardIcons.LoginIcon"
                     >
-                        Login
+                        @StringLocalizer["SidebarLoginTitle"]
                     </MudNavLink>
                 </NotAuthorized>
             </AuthorizeView>
@@ -275,7 +276,7 @@
             _userName =
                 user
                     .FindFirst(ClaimTypes.Name)
-                    ?.Value ?? "User";
+                    ?.Value ?? StringLocalizer["SidebarUserValue"].Value;
 
             _userRole =
                 user

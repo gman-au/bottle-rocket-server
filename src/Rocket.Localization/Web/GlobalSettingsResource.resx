@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <!-- TITLES -->
+    <data name="GlobalSettingsTitle" xml:space="preserve">
+        <value>#System Settings</value>
+    </data>
+    <!-- FIELDS & HINTS -->
+    <data name="GlobalSettingsSweepFieldHeader" xml:space="preserve">
+        <value>#Automatic archival (sweeping)</value>
+    </data>
+    <data name="GlobalSettingsSweepFieldHintP1" xml:space="preserve">
+        <value>
+            #Configure the system to "sweep" successfully processed scans after a specified amount of days.
+        </value>
+    </data>    
+    <data name="GlobalSettingsSweepFieldHintP2" xml:space="preserve">
+        <value>
+            #When a workflow has been successfully run for a given scan, that scan will be archived after the amount of days configured below.
+        </value>
+    </data>  
+    <data name="GlobalSettingsSweepFieldHintP3" xml:space="preserve">
+        <value>
+            #You can enable or disable sweeping entirely using the checkbox.
+        </value>
+    </data>
+    <data name="GlobalSettingsEnableSweepingFieldHeader" xml:space="preserve">
+        <value>#Enable sweeping</value>
+    </data>
+    <data name="GlobalSettingsSweepingDaysFieldHeader" xml:space="preserve">
+        <value>#Sweep scans after days</value>
+    </data>
+    <data name="GlobalSettingsLlmTimeoutFieldHeader" xml:space="preserve">
+        <value>#LLM timeout</value>
+    </data>
+    <data name="GlobalSettingsLlmTimeoutFieldHintP1" xml:space="preserve">
+        <value>
+            #Configure the timeout (in minutes) for LLM operations (i.e. OCR extraction from models).
+        </value>
+    </data>
+    <data name="GlobalSettingsLlmTimeoutFieldHintP2" xml:space="preserve">
+        <value>
+            #If left empty, the default timeout is 10 minutes.
+        </value>
+    </data>
+    <data name="GlobalSettingsModelTimeoutFieldHeader" xml:space="preserve">
+        <value>#Model timeout (in minutes)</value>
+    </data>
+    <data name="GlobalSettingsDefaultLanguageFieldHeader" xml:space="preserve">
+        <value>#Default Language</value>
+    </data>
+    <data name="GlobalSettingsDefaultLanguageFieldHintP1" xml:space="preserve">
+        <value>#Configure the default language for this server.</value>
+    </data>
+    <data name="GlobalSettingsLanguageFieldHeader" xml:space="preserve">
+        <value>#Default Language</value>
+    </data>
+    <data name="GlobalSettingsLanguageFieldHint" xml:space="preserve">
+        <value>#Select the default language for this server</value>
+    </data>
+    <!-- CAPTIONS & MESSAGES -->
+    <data name="GlobalSettingsSubmitCaption" xml:space="preserve">
+        <value>#Submit</value>
+    </data>
+    <data name="GlobalSettingsHasBeenUpdatedMessage" xml:space="preserve">
+        <value>#The system settings have been updated.</value>
+    </data>
+</root>
