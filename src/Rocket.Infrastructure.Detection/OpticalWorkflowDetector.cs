@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -7,8 +8,9 @@ using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Detection
 {
-    public class WorkflowDetector(
-        ILogger<WorkflowDetector> logger,
+    [Obsolete("This detector is deprecated and will be removed in a future release.")]
+    public class OpticalWorkflowDetector(
+        ILogger<OpticalWorkflowDetector> logger,
         ISymbolDetector symbolDetector,
         IExecutionScheduler executionScheduler,
         IWorkflowRepository workflowRepository
@@ -21,6 +23,7 @@ namespace Rocket.Infrastructure.Detection
             string modelQrCode,
             string modelQrBoundingBox,
             byte[] imageBytes,
+            IEnumerable<string> workflowIds,
             CancellationToken cancellationToken
         )
         {
@@ -50,13 +53,16 @@ namespace Rocket.Infrastructure.Detection
                                 );
 
                     if (matchedWorkflow == null) continue;
-                    
+
                     logger
                         .LogInformation(
                             "Workflow matched for scan ID {scanId}, user {userId}, symbol {symbol}; creating and running execution",
                             scanId,
                             userId,
-                            Enum.GetName(typeof(PageSymbolEnum), detectedSymbol)
+                            Enum.GetName(
+                                typeof(PageSymbolEnum),
+                                detectedSymbol
+                            )
                         );
 
                     await
@@ -65,7 +71,8 @@ namespace Rocket.Infrastructure.Detection
                                 matchedWorkflow.Id,
                                 scanId,
                                 userId,
-                                true,
+                                runImmediately: true,
+                                throwOnFailure: false,
                                 cancellationToken
                             );
                 }

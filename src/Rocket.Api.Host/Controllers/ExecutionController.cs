@@ -217,6 +217,7 @@ namespace Rocket.Api.Host.Controllers
                             request.ScanId,
                             userId,
                             request.RunImmediately ?? false,
+                            throwOnFailure: true,
                             cancellationToken
                         );
 

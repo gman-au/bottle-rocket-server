@@ -10,6 +10,7 @@ namespace Rocket.Interfaces
             string scanId,
             string userId,
             bool runImmediately,
+            bool throwOnFailure,
             CancellationToken cancellationToken
         );
     }

@@ -136,7 +136,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IPasswordHasher, PasswordHasher>()
                 .AddTransient<IExecutionScheduler, ExecutionScheduler>()
                 .AddTransient<ISymbolDetector, SymbolDetector>()
-                .AddTransient<IWorkflowDetector, WorkflowDetector>()
+                .AddTransient<IWorkflowDetector, ParameterizedWorkflowDetector>()
                 .AddTransient<IQrCodeGenerator, QrCodeGenerator>()
                 .AddTransient<IHostResolver, HostResolver>()
                 .AddTransient<IActiveAdminChecker, ActiveAdminChecker>()

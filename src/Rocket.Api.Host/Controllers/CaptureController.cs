@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -121,6 +122,8 @@ namespace Rocket.Api.Host.Controllers
 
                 scanId = result.Id;
 
+                var workflowIds = model.Workflows ?? [];
+
                 await
                     workflowDetector
                         .DetectAndScheduleWorkflowAsync(
@@ -130,6 +133,7 @@ namespace Rocket.Api.Host.Controllers
                             model.QrCode,
                             model.QrBoundingBox,
                             ms.ToArray(),
+                            workflowIds,
                             cancellationToken
                         );
 
@@ -167,6 +171,9 @@ namespace Rocket.Api.Host.Controllers
 
             [FromForm(Name = "vendor")]
             public string Vendor { get; set; }
+
+            [FromForm(Name = "workflows")]
+            public IEnumerable<string> Workflows { get; set; }
         }
     }
 }
