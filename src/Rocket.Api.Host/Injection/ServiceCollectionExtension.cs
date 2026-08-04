@@ -23,7 +23,6 @@ using Rocket.Infrastructure.QrCode;
 using Rocket.Infrastructure.Thumbnails;
 using Rocket.Interfaces;
 using Rocket.Jobs.Service;
-using Rocket.Localization;
 
 namespace Rocket.Api.Host.Injection
 {
@@ -136,7 +135,6 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IEmailAddressValidator, EmailAddressValidator>()
                 .AddTransient<IPasswordHasher, PasswordHasher>()
                 .AddTransient<IExecutionScheduler, ExecutionScheduler>()
-                .AddTransient<ISymbolDetector, SymbolDetector>()
                 .AddTransient<IWorkflowDetector, ParameterizedWorkflowDetector>()
                 .AddTransient<IQrCodeGenerator, QrCodeGenerator>()
                 .AddTransient<IHostResolver, HostResolver>()
@@ -211,7 +209,6 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IWorkflowRepository, MongoDbWorkflowRepository>()
                 .AddTransient<IWorkflowStepRepository, MongoDbWorkflowStepRepository>()
                 .AddTransient<IExecutionRepository, MongoDbExecutionRepository>()
-                .AddTransient<IRocketbookPageTemplateRepository, MongoDbRocketbookPageTemplateRepository>()
                 .AddTransient<IGlobalSettingsRepository, MongoDbGlobalSettingsRepository>()
                 .AddTransient<IUserRepository, MongoDbUserRepository>();
 

@@ -22,10 +22,6 @@ namespace Rocket.Infrastructure
         {
             await
                 databasePrepopulator
-                    .PopulatePageTemplatesAsync(cancellationToken);
-
-            await
-                databasePrepopulator
                     .PopulateGlobalSettingsAsync(cancellationToken);
             
             await 
