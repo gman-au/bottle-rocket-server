@@ -41,5 +41,8 @@ namespace Rocket.Api.Contracts.Executions
         
         [JsonPropertyName("steps")]
         public IEnumerable<ExecutionStepSummary> Steps { get; set; }
+        
+        [JsonPropertyName("vendor")]
+        public string Vendor { get; set; }
     }
 }

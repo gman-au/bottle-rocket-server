@@ -113,6 +113,7 @@ namespace Rocket.Api.Host.Controllers
                                 .Select(
                                     o => new LifecycleTotalSpecifics
                                     {
+                                        Vendor = o.Vendor,
                                         Workflow = o.Workflow,
                                         Status = stringLocalizer[$"ExecutionStatus{Enum.GetName(typeof(ExecutionStatusEnum), o.Status)}Label"],
                                         Count = o.Count

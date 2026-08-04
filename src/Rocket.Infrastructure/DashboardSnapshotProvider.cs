@@ -87,6 +87,7 @@ namespace Rocket.Infrastructure
                         executionLifecycleTotals
                             .Select(o => new LifecycleTotal
                                 {
+                                    Vendor = o.Vendor,
                                     Workflow = o.Workflow,
                                     Status = o.Status,
                                     Count = o.Count

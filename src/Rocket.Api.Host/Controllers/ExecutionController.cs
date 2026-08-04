@@ -92,7 +92,8 @@ namespace Rocket.Api.Host.Controllers
                                     ExecutionStatus = o.ExecutionStatus,
                                     ThumbnailBase64 = o.ThumbnailBase64,
                                     ContentType = o.ContentType,
-                                    Archived = o.Archived
+                                    Archived = o.Archived,
+                                    Vendor = o.Vendor
                                 }
                             ),
                     TotalRecords = (int)totalRecordCount
@@ -448,6 +449,7 @@ namespace Rocket.Api.Host.Controllers
                     ExecutionStatus = execution.ExecutionStatus,
                     ThumbnailBase64 = execution.ThumbnailBase64,
                     ContentType = execution.ContentType,
+                    Vendor = execution.Vendor,
                     Archived = execution.Archived,
                     Steps =
                         (execution.Steps ?? [])

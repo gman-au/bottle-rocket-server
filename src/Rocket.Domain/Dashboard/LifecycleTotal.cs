@@ -2,6 +2,8 @@
 {
     public class LifecycleTotal
     {
+        public string Vendor { get; set; }
+        
         public string Workflow { get; set; }
         
         public int Status { get; set; }

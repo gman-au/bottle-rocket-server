@@ -95,7 +95,8 @@ namespace Rocket.Infrastructure
                             workflow,
                             scan.Id,
                             scan.ThumbnailBase64,
-                            scan.ContentType
+                            scan.ContentType,
+                            scan.Vendor
                         );
 
                 var result =

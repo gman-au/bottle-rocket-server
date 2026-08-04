@@ -440,12 +440,13 @@ namespace Rocket.Infrastructure.Db.Mongo
                     collection
                         .AsQueryable()
                         .Where(o => o.UserId == userId)
-                        .GroupBy(e => new { e.ExecutionStatus, e.Name })
+                        .GroupBy(e => new { e.ExecutionStatus, e.Name, e.Vendor })
                         .Select(
                             g => new LifecycleTotal
                             {
                                 Status = g.Key.ExecutionStatus,
                                 Workflow = g.Key.Name,
+                                Vendor = g.Key.Vendor,
                                 Count = g.Count()
                             }
                         )
