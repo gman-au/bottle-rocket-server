@@ -208,6 +208,7 @@ namespace Rocket.Tests.Unit
                             _fileExtension,
                             _userId,
                             _vendor,
+                            "Test",
                             CancellationToken.None
                         );
             }

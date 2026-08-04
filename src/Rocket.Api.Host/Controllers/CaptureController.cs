@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Captures;
@@ -13,6 +14,7 @@ using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Interfaces;
+using Rocket.Localization.Api;
 
 namespace Rocket.Api.Host.Controllers
 {
@@ -23,7 +25,8 @@ namespace Rocket.Api.Host.Controllers
         ICaptureNotifier captureNotifier,
         IWorkflowDetector workflowDetector,
         IDashboardSnapshotProvider dashboardSnapshotProvider,
-        ILogger<CaptureController> logger
+        ILogger<CaptureController> logger,
+        IStringLocalizer<ScannedImageResource> localizer
     ) : ControllerBase
     {
         [HttpPost("process")]
@@ -54,6 +57,8 @@ namespace Rocket.Api.Host.Controllers
             logger
                 .LogInformation("Received capture");
 
+            var noteDescription = localizer["ScanUntitledNoteDescription"]?.Value;
+            
             var userId =
                 User
                     .FindFirst(ClaimTypes.NameIdentifier)?
@@ -115,6 +120,7 @@ namespace Rocket.Api.Host.Controllers
                                 fileExtension,
                                 userId,
                                 model.Vendor,
+                                noteDescription,
                                 cancellationToken
                             );
 

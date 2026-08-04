@@ -27,5 +27,7 @@ namespace Rocket.Domain
         public bool Archived { get; set; }
         
         public string Vendor { get; set; }
+        
+        public string Description { get; set; }
     }
 }

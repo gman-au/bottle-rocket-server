@@ -49,7 +49,9 @@ namespace Rocket.Jobs.Service
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.ImageData,
                     Artifact = imageData,
                     FileExtension = record.FileExtension,
-                    FileName = _currentArtifact?.FileName
+                    FileName = _currentArtifact?.FileName,
+                    ScanId = scanId,
+                    UserId = userId
                 }
             );
         }

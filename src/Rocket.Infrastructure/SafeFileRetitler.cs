@@ -2,18 +2,27 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure
 {
-    public class SafeFileRetitler : IFileRetitler
+    public class SafeFileRetitler(
+        IScannedImageRepository scannedImageRepository
+    ) : IFileRetitler
     {
         private const int MaxFileNameLength = 150;
         private static readonly char[] InvalidChars = Path.GetInvalidFileNameChars();
 
         private static readonly char[] AdditionalBannedChars = ['#', '%', '&', '{', '}', '~', '`'];
 
-        public string Retitle(string rawTextData)
+        public async Task<string> RetitleAsync(
+            string rawTextData,
+            string scanId,
+            string userId,
+            CancellationToken cancellationToken
+        )
         {
             if (string.IsNullOrWhiteSpace(rawTextData))
                 return null;
@@ -75,6 +84,17 @@ namespace Rocket.Infrastructure
                     sanitised[..MaxFileNameLength]
                         .TrimEnd();
 
+            // Update the description of the scan
+            await
+                scannedImageRepository
+                    .UpdateScannedImageFieldAsync(
+                        userId,
+                        scanId,
+                        o => o.Description,
+                        sanitised,
+                        cancellationToken
+                    );
+                
             return sanitised;
         }
     }

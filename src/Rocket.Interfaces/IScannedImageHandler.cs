@@ -12,6 +12,7 @@ namespace Rocket.Interfaces
             string fileExtension,
             string userId,
             string vendor,
+            string description,
             CancellationToken cancellationToken
         );
 

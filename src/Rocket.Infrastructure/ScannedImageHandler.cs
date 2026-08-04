@@ -24,12 +24,13 @@ namespace Rocket.Infrastructure
             string fileExtension,
             string userId,
             string vendor,
+            string description,
             CancellationToken cancellationToken
         )
         {
             logger
                 .LogInformation("Writing image data to store and repository");
-
+            
             try
             {
                 if ((imageData ?? []).Length == 0)
@@ -70,6 +71,7 @@ namespace Rocket.Infrastructure
                 scannedImage.ThumbnailBase64 = thumbnail;
                 scannedImage.Archived = false;
                 scannedImage.Vendor = vendor;
+                scannedImage.Description = description;
 
                 var result =
                     await

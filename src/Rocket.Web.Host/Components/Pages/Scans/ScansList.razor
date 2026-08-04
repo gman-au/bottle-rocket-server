@@ -28,14 +28,15 @@
         <MudGrid Justify="Justify.FlexStart" Class="pa-4">
             @foreach (var scan in _scans)
             {
-                <MudItem xs="12" sm="6" md="4" lg="3" xl="2">
+                <MudItem xs="12" sm="6" md="4" lg="3">
                     <MudCard Style="height:100%;" Outlined>
                         <MudCardMedia
                             Style="cursor:pointer;"
                             @onclick="@(() => NavigationManager.NavigateTo($"/MyScans/{scan.Id}"))"
                             Image=@($"data:{scan.ContentType};base64,{scan.ThumbnailBase64}") Width="200" Height="200"/>
                         <MudCardContent>
-                            <MudText Typo="Typo.subtitle2">@(scan.DateScanned.ToString("g"))</MudText>
+                            <MudText Typo="Typo.subtitle1">@(scan.Description)</MudText>
+                            <MudText Typo="Typo.caption">@(scan.DateScanned.ToString("g"))</MudText>
                         </MudCardContent>
                         <MudCardActions Class="justify-end">
                             <MudMenu Dense Icon="@StandardIcons.SubMenuIcon">

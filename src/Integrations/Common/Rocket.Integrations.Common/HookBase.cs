@@ -1,5 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
@@ -29,9 +31,13 @@ namespace Rocket.Integrations.Common
             Logger = logger;
         }
 
-        public virtual bool IsApplicable(BaseExecutionStep step) => step is TExecutionStep;
+        public virtual bool IsApplicable(
+            BaseExecutionStep step
+        ) => step is TExecutionStep;
 
-        public void SetExecutionStep(BaseExecutionStep step)
+        public void SetExecutionStep(
+            BaseExecutionStep step
+        )
         {
             if (step is not TExecutionStep typedStep)
                 throw new RocketException(
@@ -42,7 +48,9 @@ namespace Rocket.Integrations.Common
             ExecutionStep = typedStep;
         }
 
-        public void SetArtifact(ExecutionStepArtifact artifact)
+        public void SetArtifact(
+            ExecutionStepArtifact artifact
+        )
         {
             Artifact =
                 artifact;
@@ -55,11 +63,28 @@ namespace Rocket.Integrations.Common
                 );
         }
 
-        protected void RetitleFileIfApplicable(string fileText)
+        protected async Task RetitleFileIfApplicableAsync(
+            string fileText,
+            CancellationToken cancellationToken
+        )
         {
-            var newFileName = 
-                _fileRetitler?
-                    .Retitle(fileText);
+            var scanId =
+                Artifact
+                    .ScanId;            
+            
+            var userId =
+                Artifact
+                    .UserId;
+
+            var newFileName =
+                await
+                    _fileRetitler
+                        .RetitleAsync(
+                            fileText,
+                            scanId,
+                            userId,
+                            cancellationToken
+                        );
 
             if (!string.IsNullOrEmpty(newFileName))
             {

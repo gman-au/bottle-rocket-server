@@ -1,7 +1,15 @@
-﻿namespace Rocket.Interfaces
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace Rocket.Interfaces
 {
     public interface IFileRetitler
     {
-        string Retitle(string rawTextData);
+        Task<string> RetitleAsync(
+            string rawTextData,
+            string scanId,
+            string userId,
+            CancellationToken cancellationToken
+        );
     }
 }

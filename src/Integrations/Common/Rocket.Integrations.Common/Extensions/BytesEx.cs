@@ -21,7 +21,9 @@ namespace Rocket.Integrations.Common.Extensions
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
                     Artifact = Encoding.Default.GetBytes(value),
                     FileExtension = TextFileExtension,
-                    FileName = artifact?.FileName
+                    FileName = artifact?.FileName,
+                    ScanId = artifact?.ScanId,
+                    UserId = artifact?.UserId
                 };
         }
 
@@ -34,7 +36,9 @@ namespace Rocket.Integrations.Common.Extensions
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.File,
                     Artifact = value,
                     FileExtension = PdfFileExtension,
-                    FileName = artifact?.FileName
+                    FileName = artifact?.FileName,
+                    ScanId = artifact?.ScanId,
+                    UserId = artifact?.UserId
                 };
         }
 
@@ -51,7 +55,9 @@ namespace Rocket.Integrations.Common.Extensions
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData,
                     Artifact = Encoding.Default.GetBytes(json),
                     FileExtension = JsonFileExtension,
-                    FileName = artifact?.FileName
+                    FileName = artifact?.FileName,
+                    ScanId = artifact?.ScanId,
+                    UserId = artifact?.UserId
                 };
         }
     }

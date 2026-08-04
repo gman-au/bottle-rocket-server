@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -78,6 +80,32 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 );
         }
+
+        public async Task UpdateScannedImageFieldAsync<TField>(
+            string userId,
+            string id,
+            Expression<Func<ScannedImage, TField>> setter,
+            TField value,
+            CancellationToken cancellationToken
+        ) =>
+            await
+                ApplyUpdateToFilteredRecordFieldAsync(
+                    setter,
+                    value,
+                    Builders<ScannedImage>
+                        .Filter
+                        .Eq(
+                            u => u.UserId,
+                            userId
+                        ) &
+                    Builders<ScannedImage>
+                        .Filter
+                        .Eq(
+                            o => o.Id,
+                            id
+                        ),
+                    cancellationToken
+                );
 
         public async Task<(IEnumerable<ScannedImage> records, long totalRecordCount)> FetchScansAsync(
             string userId,

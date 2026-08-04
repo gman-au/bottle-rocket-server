@@ -8,6 +8,9 @@ namespace Rocket.Api.Contracts.Scans
         [JsonPropertyName("id")]
         public string Id { get; set; }
         
+        [JsonPropertyName("description")]
+        public string Description { get; set; }
+        
         [JsonPropertyName("date_scanned")]
         public DateTime DateScanned { get; set; }
         

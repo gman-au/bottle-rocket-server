@@ -106,7 +106,9 @@ namespace Rocket.Ollama.Infrastructure.Text
                             .GetBytes(
                                 response
                             ),
-                    FileExtension = ".txt"
+                    FileExtension = ".txt",
+                    ScanId = Artifact.ScanId,
+                    UserId = Artifact.UserId
                 };
 
             return resultArtifact;
