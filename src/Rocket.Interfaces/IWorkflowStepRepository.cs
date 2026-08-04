@@ -4,7 +4,7 @@ using Rocket.Domain.Workflows;
 
 namespace Rocket.Interfaces
 {
-    public interface IWorkflowStepRepository
+    public interface IWorkflowStepRepository : IMigratableRepository
     {
         Task<Workflow> GetWorkflowByIdAsync(
             string workflowId,

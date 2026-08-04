@@ -131,6 +131,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<ISha256Calculator, Sha256Calculator>()
                 .AddTransient<IStartupInitialization, StartupInitialization>()
                 .AddTransient<IDatabasePrepopulator, DatabasePrepopulator>()
+                .AddTransient<IDatabaseMigrator, DatabaseMigrator>()
                 .AddTransient<IWorkflowStepValidator, WorkflowStepValidator>()
                 .AddTransient<IEmailAddressValidator, EmailAddressValidator>()
                 .AddTransient<IPasswordHasher, PasswordHasher>()

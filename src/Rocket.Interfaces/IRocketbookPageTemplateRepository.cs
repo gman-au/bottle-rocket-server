@@ -5,7 +5,7 @@ using Rocket.Domain.PageTemplates;
 
 namespace Rocket.Interfaces
 {
-    public interface IRocketbookPageTemplateRepository
+    public interface IRocketbookPageTemplateRepository : IMigratableRepository
     {
         Task<long> UpsertPageTemplateAsync(
             RocketbookPageTemplate rocketbookPageTemplate,

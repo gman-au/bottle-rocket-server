@@ -4,7 +4,7 @@ using Rocket.Domain;
 
 namespace Rocket.Interfaces
 {
-    public interface IGlobalSettingsRepository
+    public interface IGlobalSettingsRepository : IMigratableRepository
     {
         Task UpdateGlobalSettingsAsync(CancellationToken cancellationToken);
 

@@ -28,7 +28,6 @@
             <thead>
             <tr>
                 <th class="general-centered">@StringLocalizer["WorkflowsNameFieldHeader"]</th>
-                <th class="general-centered">@StringLocalizer["WorkflowsMatchingSymbolFieldHeader"]</th>
                 <th class="general-centered">@StringLocalizer["WorkflowsDateCreatedFieldHeader"]</th>
                 <th/>
             </tr>
@@ -43,9 +42,6 @@
                                 @workflow.Name
                             </MudText>
                         </MudNavLink>
-                    </td>
-                    <td class="general-centered">
-                        <img height="40px" class="rocketbook-icon-round" src="@(workflow.MatchingPageSymbol.GetPageSymbolImagePath())"/>
                     </td>
                     <td class="general-centered">
                         @workflow.CreatedAt?.ToString("g")

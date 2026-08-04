@@ -23,7 +23,6 @@ namespace Rocket.Infrastructure.Mapping
                 ThumbnailBase64 = scanThumbnailBase64,
                 ContentType = scanContentType,
                 WorkflowId = workflow.Id,
-                MatchingPageSymbol = workflow.MatchingPageSymbol,
                 CreatedAt = DateTime.UtcNow,
                 RunDate = null,
                 Archived = false,

@@ -8,7 +8,7 @@ using Rocket.Domain.Executions;
 
 namespace Rocket.Interfaces
 {
-    public interface IExecutionRepository
+    public interface IExecutionRepository : IMigratableRepository
     {
         Task<(IEnumerable<Execution> records, long totalRecordCount)> FetchExecutionsAsync(
             string userId,

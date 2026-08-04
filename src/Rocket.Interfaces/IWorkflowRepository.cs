@@ -7,26 +7,12 @@ using Rocket.Domain.Workflows;
 
 namespace Rocket.Interfaces
 {
-    public interface IWorkflowRepository
+    public interface IWorkflowRepository : IMigratableRepository
     {
         Task<bool> WorkflowExistsForNameAsync(
             string userId,
             string workflowId,
             string workflowName,
-            CancellationToken cancellationToken
-        );
-
-        Task<bool> WorkflowExistsForMatchingSymbolAsync(
-            string userId,
-            string workflowId,
-            int matchingPageSymbol,
-            CancellationToken cancellationToken
-        );
-
-        Task<Workflow> GetWorkflowByMatchingPageSymbolAsync(
-            string userId,
-            string workflowIdToExclude,
-            int matchingPageSymbol,
             CancellationToken cancellationToken
         );
 

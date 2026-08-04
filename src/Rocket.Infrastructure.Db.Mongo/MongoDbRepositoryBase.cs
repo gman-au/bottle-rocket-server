@@ -208,7 +208,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                 record
                     .DeletedCount > 0;
         }
-        
+
         protected async Task<long> DeleteAllFilteredRecordsAsync(
             FilterDefinition<T> filter,
             CancellationToken cancellationToken
@@ -250,6 +250,43 @@ namespace Rocket.Infrastructure.Db.Mongo
             return
                 mongoDatabase
                     .GetCollection<T>(CollectionName);
+        }
+
+        public async Task SafelyDropColumnAsync(
+            string columnName,
+            CancellationToken cancellationToken
+        )
+        {
+            var collection =
+                GetMongoCollection();
+
+            var update =
+                Builders<T>
+                    .Update
+                    .Unset(columnName);
+
+            var filter =
+                Builders<T>
+                    .Filter
+                    .Empty;
+
+            var result =
+                await
+                    collection
+                        .UpdateManyAsync(
+                            filter,
+                            update,
+                            new UpdateOptions(),
+                            cancellationToken
+                        );
+
+            logger
+                .LogInformation(
+                    "Dropped column {columnName} from repository {type}, {rowsAffected} rows affected",
+                    columnName,
+                    typeof(T).Name,
+                    result.ModifiedCount
+                );
         }
     }
 }

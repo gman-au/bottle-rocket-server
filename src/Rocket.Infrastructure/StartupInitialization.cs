@@ -13,6 +13,7 @@ namespace Rocket.Infrastructure
         ILogger<StartupInitialization> logger,
         IUserRepository userRepository,
         IDatabasePrepopulator databasePrepopulator,
+        IDatabaseMigrator databaseMigrator,
         IPasswordGenerator passwordGenerator,
         IPasswordHasher passwordHasher
     ) : IStartupInitialization
@@ -26,6 +27,10 @@ namespace Rocket.Infrastructure
             await
                 databasePrepopulator
                     .PopulateGlobalSettingsAsync(cancellationToken);
+            
+            await 
+                databaseMigrator
+                    .ApplyMigrationsAsync(cancellationToken);
 
             logger
                 .LogInformation("Checking first-start initialization...");

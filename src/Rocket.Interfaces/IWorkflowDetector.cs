@@ -10,9 +10,6 @@ namespace Rocket.Interfaces
             string scanId, 
             string userId,
             string vendor,
-            string modelQrCode,
-            string modelQrBoundingBox,
-            byte[] imageBytes,
             IEnumerable<string> workflowIds,
             CancellationToken cancellationToken
         );

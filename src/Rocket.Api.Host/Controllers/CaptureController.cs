@@ -32,8 +32,8 @@ namespace Rocket.Api.Host.Controllers
         [EndpointDescription(
             """
             Process uploaded images via this endpoint. Use the url-encoded multipart form schema to POST the image data.\n
-            The app will automatically provide matched template information as part of automated workflow triggering, but
-            if you wish to simply upload a captured image to the system and trigger a manual workflow, the qr_code and qr_bounding_box
+            You can bind this scanned image to one or more workflows using the workflows parameter.\n
+            If you wish to simply upload a captured image to the system and trigger a manual workflow, the qr_code and qr_bounding_box
             parameters can be omitted.
             """
         )]
@@ -114,8 +114,6 @@ namespace Rocket.Api.Host.Controllers
                                 contentType,
                                 fileExtension,
                                 userId,
-                                model.QrCode,
-                                model.QrBoundingBox,
                                 model.Vendor,
                                 cancellationToken
                             );
@@ -130,9 +128,6 @@ namespace Rocket.Api.Host.Controllers
                             scanId,
                             userId,
                             model.Vendor,
-                            model.QrCode,
-                            model.QrBoundingBox,
-                            ms.ToArray(),
                             workflowIds,
                             cancellationToken
                         );
@@ -162,12 +157,6 @@ namespace Rocket.Api.Host.Controllers
         public class ImageUploadModel
         {
             public IFormCollection Form { get; set; }
-
-            [FromForm(Name = "qr_code")]
-            public string QrCode { get; set; }
-
-            [FromForm(Name = "qr_bounding_box")]
-            public string QrBoundingBox { get; set; }
 
             [FromForm(Name = "vendor")]
             public string Vendor { get; set; }

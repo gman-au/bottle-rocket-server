@@ -6,7 +6,7 @@ using Rocket.Domain.Dashboard;
 
 namespace Rocket.Interfaces
 {
-    public interface IScannedImageRepository
+    public interface IScannedImageRepository : IMigratableRepository
     {
         Task<ScannedImage> GetScanByIdAsync(
             string userId,

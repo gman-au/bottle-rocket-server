@@ -11,8 +11,6 @@ namespace Rocket.Interfaces
             string contentType,
             string fileExtension,
             string userId,
-            string qrCode,
-            string qrBoundingBox,
             string vendor,
             CancellationToken cancellationToken
         );

@@ -81,7 +81,6 @@ namespace Rocket.Api.Host.Controllers
                                     {
                                         Id = o.Id,
                                         UserId = o.UserId,
-                                        MatchingPageSymbol = o.MatchingPageSymbol,
                                         Name = o.Name,
                                         IsActive = o.IsActive,
                                         CreatedAt = o.CreatedAt.ToLocalTime(),
@@ -213,28 +212,10 @@ namespace Rocket.Api.Host.Controllers
                     ApiStatusCodeEnum.RecordAlreadyExists
                 );
 
-            if (request.MatchingPageSymbol.HasValue)
-            {
-                if (await
-                    workflowRepository
-                        .WorkflowExistsForMatchingSymbolAsync(
-                            userId,
-                            null,
-                            request.MatchingPageSymbol.Value,
-                            cancellationToken
-                        )
-                   )
-                    throw new RocketException(
-                        "Workflow already exists with this matching page symbol.",
-                        ApiStatusCodeEnum.RecordAlreadyExists
-                    );
-            }
-
             var newWorkflow =
                 new Workflow
                 {
                     UserId = userId,
-                    MatchingPageSymbol = request.MatchingPageSymbol,
                     CreatedAt = DateTime.UtcNow,
                     LastUpdatedAt = DateTime.UtcNow,
                     Name = request.Name,
@@ -340,34 +321,6 @@ namespace Rocket.Api.Host.Controllers
                         );
             }
 
-            if (request.MatchingPageSymbol.HasValue)
-            {
-                if (await
-                    workflowRepository
-                        .WorkflowExistsForMatchingSymbolAsync(
-                            userId,
-                            request.Id,
-                            request.MatchingPageSymbol.Value,
-                            cancellationToken
-                        )
-                   )
-                    throw new RocketException(
-                        "Workflow already exists with this matching page symbol.",
-                        ApiStatusCodeEnum.RecordAlreadyExists
-                    );
-
-                await
-                    workflowRepository
-                        .UpdateWorkflowFieldAsync(
-                            request.Id,
-                            userId,
-                            o =>
-                                o.MatchingPageSymbol,
-                            request.MatchingPageSymbol.Value,
-                            cancellationToken
-                        );
-            }
-
             if (request.IsActive.HasValue)
             {
                 await
@@ -381,18 +334,6 @@ namespace Rocket.Api.Host.Controllers
                             cancellationToken
                         );
             }
-
-            // page symbol is nullable / clearable
-            await
-                workflowRepository
-                    .UpdateWorkflowFieldAsync(
-                        request.Id,
-                        userId,
-                        o =>
-                            o.MatchingPageSymbol,
-                        request.MatchingPageSymbol,
-                        cancellationToken
-                    );
 
             var response =
                 new UpdateWorkflowResponse();
@@ -459,7 +400,6 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Id = workflow.Id,
                     UserId = workflow.UserId,
-                    MatchingPageSymbol = workflow.MatchingPageSymbol,
                     CreatedAt = workflow.CreatedAt.ToLocalTime(),
                     LastUpdatedAt = workflow.LastUpdatedAt?.ToLocalTime(),
                     Name = workflow.Name,

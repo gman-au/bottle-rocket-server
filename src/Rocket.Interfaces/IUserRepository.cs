@@ -7,7 +7,7 @@ using Rocket.Domain;
 
 namespace Rocket.Interfaces
 {
-    public interface IUserRepository
+    public interface IUserRepository : IMigratableRepository
     {
         Task<User> GetUserByNameAsync(string username, CancellationToken cancellationToken);
 

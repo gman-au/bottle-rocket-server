@@ -132,18 +132,6 @@ h1:focus {
     border-radius: 50%;
 }
 
-.rocketbook-icon-dropdown {
-    .mud-input-control-input-container {
-        .mud-input {
-            height: 100px;
-
-            .mud-input-slot {
-                height: 80px;
-            }
-        }
-    }
-}
-
 .general-centered {
     text-align: center !important;
 }
