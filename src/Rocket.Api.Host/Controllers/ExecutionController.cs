@@ -86,14 +86,14 @@ namespace Rocket.Api.Host.Controllers
                                     UserId = o.UserId,
                                     ScanId = o.ScanId,
                                     WorkflowId = o.WorkflowId,
-                                    MatchingPageSymbol = o.MatchingPageSymbol,
                                     CreatedAt = o.CreatedAt.ToLocalTime(),
                                     RunDate = o.RunDate?.ToLocalTime(),
                                     Name = o.Name,
                                     ExecutionStatus = o.ExecutionStatus,
                                     ThumbnailBase64 = o.ThumbnailBase64,
                                     ContentType = o.ContentType,
-                                    Archived = o.Archived
+                                    Archived = o.Archived,
+                                    Vendor = o.Vendor
                                 }
                             ),
                     TotalRecords = (int)totalRecordCount
@@ -217,6 +217,7 @@ namespace Rocket.Api.Host.Controllers
                             request.ScanId,
                             userId,
                             request.RunImmediately ?? false,
+                            throwOnFailure: true,
                             cancellationToken
                         );
 
@@ -442,13 +443,13 @@ namespace Rocket.Api.Host.Controllers
                     UserId = execution.UserId,
                     ScanId = execution.ScanId,
                     WorkflowId = execution.WorkflowId,
-                    MatchingPageSymbol = execution.MatchingPageSymbol,
                     RunDate = execution.RunDate?.ToLocalTime(),
                     CreatedAt = execution.CreatedAt.ToLocalTime(),
                     Name = execution.Name,
                     ExecutionStatus = execution.ExecutionStatus,
                     ThumbnailBase64 = execution.ThumbnailBase64,
                     ContentType = execution.ContentType,
+                    Vendor = execution.Vendor,
                     Archived = execution.Archived,
                     Steps =
                         (execution.Steps ?? [])

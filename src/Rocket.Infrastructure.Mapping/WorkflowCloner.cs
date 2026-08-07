@@ -13,7 +13,8 @@ namespace Rocket.Infrastructure.Mapping
             Workflow workflow,
             string scanId, 
             string scanThumbnailBase64,
-            string scanContentType
+            string scanContentType,
+            string scanVendor
         )
         {
             return new Execution
@@ -23,11 +24,11 @@ namespace Rocket.Infrastructure.Mapping
                 ThumbnailBase64 = scanThumbnailBase64,
                 ContentType = scanContentType,
                 WorkflowId = workflow.Id,
-                MatchingPageSymbol = workflow.MatchingPageSymbol,
                 CreatedAt = DateTime.UtcNow,
                 RunDate = null,
                 Archived = false,
                 Name = workflow.Name,
+                Vendor = scanVendor,
                 ExecutionStatus = (int)ExecutionStatusEnum.NotRun,
                 Steps =
                     (workflow.Steps ?? [])

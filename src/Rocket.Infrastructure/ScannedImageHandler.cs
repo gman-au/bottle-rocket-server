@@ -23,15 +23,14 @@ namespace Rocket.Infrastructure
             string contentType,
             string fileExtension,
             string userId,
-            string qrCode,
-            string qrBoundingBox,
             string vendor,
+            string description,
             CancellationToken cancellationToken
         )
         {
             logger
                 .LogInformation("Writing image data to store and repository");
-
+            
             try
             {
                 if ((imageData ?? []).Length == 0)
@@ -70,10 +69,9 @@ namespace Rocket.Infrastructure
                 scannedImage.FileExtension = fileExtension;
                 scannedImage.Sha256 = hashString;
                 scannedImage.ThumbnailBase64 = thumbnail;
-                scannedImage.QrCode = qrCode;
-                scannedImage.QrBoundingBox = qrBoundingBox;
                 scannedImage.Archived = false;
                 scannedImage.Vendor = vendor;
+                scannedImage.Description = description;
 
                 var result =
                     await

@@ -17,8 +17,6 @@ namespace Rocket.Domain.Executions
         
         public string WorkflowId { get; set; }
         
-        public int? MatchingPageSymbol { get; set; }
-        
         public DateTime CreatedAt { get; set; }
         
         public DateTime? RunDate { get; set; }
@@ -34,5 +32,7 @@ namespace Rocket.Domain.Executions
         public bool Archived { get; set; }
         
         public IEnumerable<BaseExecutionStep> Steps { get; set; }
+        
+        public string Vendor { get; set; }
     }
 }

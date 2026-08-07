@@ -9,7 +9,8 @@ namespace Rocket.Interfaces
             Workflow workflow,
             string scanId,
             string scanThumbnailBase64,
-            string scanContentType
+            string scanContentType,
+            string scanVendor
         );
     }
 }

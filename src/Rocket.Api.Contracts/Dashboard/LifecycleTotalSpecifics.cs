@@ -3,7 +3,10 @@
 namespace Rocket.Api.Contracts.Dashboard
 {
     public class LifecycleTotalSpecifics
-    {
+    {        
+        [JsonPropertyName("vendor")]
+        public string Vendor { get; set; }
+        
         [JsonPropertyName("workflow")]
         public string Workflow { get; set; }
         

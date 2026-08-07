@@ -32,6 +32,9 @@
         <value>Previous runs</value>
     </data>
     <!-- FIELDS & HINTS -->
+    <data name="ScansDescriptionFieldHeader" xml:space="preserve">
+        <value>Description</value>
+    </data>    
     <data name="ScansCaptureDateFieldHeader" xml:space="preserve">
         <value>Capture Date</value>
     </data>

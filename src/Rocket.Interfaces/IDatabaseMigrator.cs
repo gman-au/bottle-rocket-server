@@ -3,12 +3,9 @@ using System.Threading.Tasks;
 
 namespace Rocket.Interfaces
 {
-    public interface IFileRetitler
+    public interface IDatabaseMigrator
     {
-        Task<string> RetitleAsync(
-            string rawTextData,
-            string scanId,
-            string userId,
+        Task ApplyMigrationsAsync(
             CancellationToken cancellationToken
         );
     }

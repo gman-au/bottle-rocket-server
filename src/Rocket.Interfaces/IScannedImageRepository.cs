@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain;
@@ -6,7 +8,7 @@ using Rocket.Domain.Dashboard;
 
 namespace Rocket.Interfaces
 {
-    public interface IScannedImageRepository
+    public interface IScannedImageRepository : IMigratableRepository
     {
         Task<ScannedImage> GetScanByIdAsync(
             string userId,
@@ -35,6 +37,14 @@ namespace Rocket.Interfaces
         Task DeleteScanAsync(
             string userId,
             string id,
+            CancellationToken cancellationToken
+        );
+
+        Task UpdateScannedImageFieldAsync<TField>(
+            string userId,
+            string id,
+            Expression<Func<ScannedImage, TField>> setter,
+            TField value,
             CancellationToken cancellationToken
         );
 

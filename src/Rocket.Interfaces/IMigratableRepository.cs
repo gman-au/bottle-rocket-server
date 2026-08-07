@@ -3,12 +3,10 @@ using System.Threading.Tasks;
 
 namespace Rocket.Interfaces
 {
-    public interface IFileRetitler
+    public interface IMigratableRepository
     {
-        Task<string> RetitleAsync(
-            string rawTextData,
-            string scanId,
-            string userId,
+        Task SafelyDropColumnAsync(
+            string columnName,
             CancellationToken cancellationToken
         );
     }

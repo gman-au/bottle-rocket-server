@@ -37,4 +37,7 @@
     <data name="ExecutionStatusCancelledLabel" xml:space="preserve">
         <value>Cancelled</value>
     </data>
+    <data name="UnknownVendorLabel" xml:space="preserve">
+        <value>Unknown</value>
+    </data>
 </root>

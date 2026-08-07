@@ -92,6 +92,7 @@ namespace Rocket.Api.Host.Controllers
                                     new ScanSummary
                                     {
                                         Id = o.Id,
+                                        Description = o.Description,
                                         DateScanned = o.CaptureDate.ToLocalTime(),
                                         ThumbnailBase64 = o.ThumbnailBase64,
                                         ContentType = o.ContentType
@@ -160,6 +161,7 @@ namespace Rocket.Api.Host.Controllers
                 new ScanSpecifics
                 {
                     Id = record.Id,
+                    Description = record.Description,
                     UserId = record.UserId,
                     CaptureDate = record.CaptureDate.ToLocalTime(),
                     BlobId = record.BlobId,

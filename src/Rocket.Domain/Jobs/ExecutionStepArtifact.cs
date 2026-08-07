@@ -12,7 +12,9 @@ namespace Rocket.Domain.Jobs
             Result = (int)ExecutionStatusEnum.Completed,
             ArtifactDataFormat = (int)WorkflowFormatTypeEnum.Void,
             Artifact = [],
-            FileExtension = null
+            FileExtension = null,
+            ScanId = null,
+            UserId = null
         };
 
         public int Result { get; set; }
@@ -22,6 +24,10 @@ namespace Rocket.Domain.Jobs
         public byte[] Artifact { get; set; }
 
         public string FileExtension { get; set; }
+
+        public string ScanId { get; set; }
+
+        public string UserId { get; set; }
 
         public string FileName
         {

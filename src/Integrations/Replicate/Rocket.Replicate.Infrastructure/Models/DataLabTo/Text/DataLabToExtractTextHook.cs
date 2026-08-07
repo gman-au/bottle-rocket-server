@@ -22,7 +22,10 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
         IGlobalSettingsRepository globalSettingsRepository,
         IFileRetitler fileRetitler,
         ILogger<DataLabToExtractTextHook> logger
-    ) : HookWithConnectorBase<DataLabToExtractTextExecutionStep, ReplicateConnector>(logger, fileRetitler), IIntegrationHook
+    ) : HookWithConnectorBase<DataLabToExtractTextExecutionStep, ReplicateConnector>(
+        logger,
+        fileRetitler
+    ), IIntegrationHook
     {
         private const string DataLabToCustomEndpoint = "v1/models/datalab-to/marker/predictions";
 
@@ -38,7 +41,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
               "required": ["main_page"]
             }
             """;
-        
+
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
@@ -129,7 +132,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
                 var timeoutInMinutes =
                     globalSettings?.DefaultModelTimeoutInMinutes ??
                     DomainConstants.GlobalDefaultModelTimeoutInMinutes;
-                
+
                 var result =
                     await
                         replicateClient
@@ -141,28 +144,32 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
                             );
 
                 var extractedJson = result?.ExtractionSchemaJson;
-                
+
                 if (string.IsNullOrEmpty(extractedJson))
                     throw new RocketException(
                         "The extracted text was empty. Please try again.",
                         ApiStatusCodeEnum.ThirdPartyServiceError
                     );
-                
+
                 var fallbackTextSchema =
                     JsonSerializer
                         .Deserialize<FallbackTextSchema>(extractedJson);
-                
+
                 var extractedMarkdown =
                     fallbackTextSchema?.MainPage ?? string.Empty;
-                
-                RetitleFileIfApplicable(extractedMarkdown);
+
+                await
+                    RetitleFileIfApplicableAsync(
+                        extractedMarkdown,
+                        cancellationToken
+                    );
 
                 logger
                     .LogDebug(
                         "Extracted markdown: {extractedMarkdown}",
                         extractedMarkdown
                     );
-                
+
                 await
                     appendLogMessageCallback(
                         step.Id,

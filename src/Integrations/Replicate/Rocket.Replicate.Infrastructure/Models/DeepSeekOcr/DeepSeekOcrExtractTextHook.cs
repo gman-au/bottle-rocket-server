@@ -22,8 +22,10 @@ namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
     ) : IIntegrationHook
     {
         private const string DeepSeekModelVersion = "a524caeaa23495bc9edc805ab08ab5fe943afd3febed884a4f3747aa32e9cd61";
-        
-        public bool IsApplicable(BaseExecutionStep step) => step is DeepSeekOcrExtractTextExecutionStep;
+
+        public bool IsApplicable(
+            BaseExecutionStep step
+        ) => step is DeepSeekOcrExtractTextExecutionStep;
 
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
@@ -77,9 +79,12 @@ namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
                             );
 
                 imageIdToDelete = imageId;
-                
+
                 logger
-                    .LogInformation("Uploaded image to Replicate: {imageUrl}", imageUrl);
+                    .LogInformation(
+                        "Uploaded image to Replicate: {imageUrl}",
+                        imageUrl
+                    );
 
                 // create the prediction
                 var predictionId =
@@ -94,9 +99,12 @@ namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
                                 },
                                 cancellationToken
                             );
-                
+
                 logger
-                    .LogInformation("Created prediction in Replicate: {predictionId}", predictionId);
+                    .LogInformation(
+                        "Created prediction in Replicate: {predictionId}",
+                        predictionId
+                    );
 
                 var globalSettings =
                     await
@@ -106,7 +114,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
                 var timeoutInMinutes =
                     globalSettings?.DefaultModelTimeoutInMinutes ??
                     DomainConstants.GlobalDefaultModelTimeoutInMinutes;
-                
+
                 var result =
                     await
                         replicateClient
@@ -124,7 +132,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
                         step.Id,
                         extractedText
                     );
-                
+
                 var resultArtifact =
                     new ExecutionStepArtifact
                     {
@@ -137,7 +145,17 @@ namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
                                     extractedText
                                 ),
                         FileExtension = ".txt",
-                        FileName = fileRetitler.Retitle(extractedText) ?? artifact.FileName
+                        FileName =
+                            await
+                                fileRetitler
+                                    .RetitleAsync(
+                                        extractedText,
+                                        artifact.ScanId,
+                                        artifact.UserId,
+                                        cancellationToken
+                                    ) ?? artifact.FileName,
+                        ScanId = artifact.ScanId,
+                        UserId = artifact.UserId
                     };
 
                 return resultArtifact;
@@ -152,9 +170,12 @@ namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
                                 apiToken,
                                 imageIdToDelete
                             );
-                
+
                 logger
-                    .LogInformation("Deleted image in Replicate: {imageIdToDelete}", imageIdToDelete);
+                    .LogInformation(
+                        "Deleted image in Replicate: {imageIdToDelete}",
+                        imageIdToDelete
+                    );
             }
         }
     }

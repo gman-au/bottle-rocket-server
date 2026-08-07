@@ -130,24 +130,6 @@ namespace Rocket.Infrastructure.Db.Mongo
             return result;
         }
 
-        public async Task<bool> WorkflowExistsForMatchingSymbolAsync(
-            string userId,
-            string workflowId,
-            int matchingPageSymbol,
-            CancellationToken cancellationToken)
-        {
-            var result =
-                await
-                    GetWorkflowByMatchingPageSymbolAsync(
-                        userId,
-                        workflowId,
-                        matchingPageSymbol,
-                        cancellationToken
-                    ) != null;
-
-            return result;
-        }
-
         private async Task<Workflow> GetWorkflowByNameAsync(
             string userId,
             string workflowIdToExclude,
@@ -167,46 +149,6 @@ namespace Rocket.Infrastructure.Db.Mongo
                     .Eq(
                         o => o.Name,
                         name
-                    );
-
-            if (!string.IsNullOrEmpty(workflowIdToExclude))
-            {
-                filter &=
-                    Builders<Workflow>
-                        .Filter
-                        .Ne(
-                            o => o.Id,
-                            workflowIdToExclude
-                        );
-            }
-
-            return
-                await
-                    FetchFirstFilteredRecordAsync(
-                        filter,
-                        cancellationToken
-                    );
-        }
-
-        public async Task<Workflow> GetWorkflowByMatchingPageSymbolAsync(
-            string userId,
-            string workflowIdToExclude,
-            int matchingPageSymbol,
-            CancellationToken cancellationToken
-        )
-        {
-            var filter =
-                Builders<Workflow>
-                    .Filter
-                    .Eq(
-                        o => o.UserId,
-                        userId
-                    ) &
-                Builders<Workflow>
-                    .Filter
-                    .Eq(
-                        o => o.MatchingPageSymbol,
-                        matchingPageSymbol
                     );
 
             if (!string.IsNullOrEmpty(workflowIdToExclude))

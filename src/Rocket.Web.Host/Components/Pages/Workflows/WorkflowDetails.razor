@@ -50,77 +50,6 @@
                                         For="@(() => _newModel.Name)"
                                         OnlyValidateIfDirty/>
                                 </MudItem>
-                                <MudItem sm="12">
-                                    <div class="rocketbook-icon-dropdown">
-                                        <MudSelect
-                                            T="int?"
-                                            Clearable
-                                            Label="@StringLocalizer["WorkflowsMatchingSymbolFieldHeader"]"
-                                            HelperText="@StringLocalizer["WorkflowsMatchingSymbolFieldHint"]"
-                                            Disabled="@(_isLoading)"
-                                            @bind-Value="_newModel.MatchingPageSymbol"
-                                            For="@(() => _newModel.MatchingPageSymbol)"
-                                            OnlyValidateIfDirty>
-                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Rocket)">
-                                                <img src="@(((int?)PageSymbolEnum.Rocket).GetPageSymbolImagePath())"
-                                                     height="80"
-                                                     class="mr-4 rocketbook-icon-round"
-                                                />
-                                                @StringLocalizer["WorkflowsRocketSymbolValue"]
-                                            </MudSelectItem>
-                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Diamond)">
-                                                <img src="@(((int?)PageSymbolEnum.Diamond).GetPageSymbolImagePath())"
-                                                     height="80"
-                                                     class="mr-4 rocketbook-icon-round"
-                                                />
-                                                @StringLocalizer["WorkflowsDiamondSymbolValue"]
-                                            </MudSelectItem>
-                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Apple)">
-                                                <img src="@(((int?)PageSymbolEnum.Apple).GetPageSymbolImagePath())"
-                                                     height="80"
-                                                     class="mr-4 rocketbook-icon-round"
-                                                />
-                                                @StringLocalizer["WorkflowsAppleSymbolValue"]
-                                            </MudSelectItem>
-                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Bell)">
-                                                <img src="@(((int?)PageSymbolEnum.Bell).GetPageSymbolImagePath())"
-                                                     height="80"
-                                                     class="mr-4 rocketbook-icon-round"
-                                                />
-                                                @StringLocalizer["WorkflowsBellSymbolValue"]
-                                            </MudSelectItem>
-                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Clover)">
-                                                <img src="@(((int?)PageSymbolEnum.Clover).GetPageSymbolImagePath())"
-                                                     height="80"
-                                                     class="mr-4 rocketbook-icon-round"
-                                                />
-                                                @StringLocalizer["WorkflowsCloverSymbolValue"]
-                                            </MudSelectItem>
-                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Star)">
-                                                <img src="@(((int?)PageSymbolEnum.Star).GetPageSymbolImagePath())"
-                                                     height="80"
-                                                     class="mr-4 rocketbook-icon-round"
-                                                />
-                                                @StringLocalizer["WorkflowsStarSymbolValue"]
-                                            </MudSelectItem>
-                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Horseshoe)">
-                                                <img src="@(((int?)PageSymbolEnum.Horseshoe).GetPageSymbolImagePath())"
-                                                     height="80"
-                                                     class="mr-4 rocketbook-icon-round"
-                                                />
-                                                @StringLocalizer["WorkflowsHorseshoeSymbolValue"]
-                                            </MudSelectItem>
-                                            <MudSelectItem T="int?" Value="@((int)PageSymbolEnum.Scribzee)">
-                                                <img src="@(((int?)PageSymbolEnum.Scribzee).GetPageSymbolImagePath())"
-                                                     height="80"
-                                                     class="mr-4 rocketbook-icon-round"
-                                                />
-                                                Scribzee
-                                            </MudSelectItem>
-
-                                        </MudSelect>
-                                    </div>
-                                </MudItem>
                             </MudGrid>
                             <MudGrid Class="align-start" Justify="Justify.FlexEnd">
                                 <MudItem>
@@ -254,7 +183,6 @@
                 {
                     Id = _currentModel.Id,
                     UserId = _currentModel.UserId,
-                    MatchingPageSymbol = _currentModel.MatchingPageSymbol,
                     CreatedAt = _currentModel.CreatedAt,
                     LastUpdatedAt = _currentModel.LastUpdatedAt,
                     Name = _currentModel.Name,
@@ -308,8 +236,7 @@
                             {
                                 Id = _newModel.Id,
                                 Name = _currentModel.Name != _newModel.Name ? _newModel.Name : null,
-                                IsActive = _currentModel.IsActive != _newModel.IsActive ? _newModel.IsActive : null,
-                                MatchingPageSymbol = _newModel.MatchingPageSymbol
+                                IsActive = _currentModel.IsActive != _newModel.IsActive ? _newModel.IsActive : null
                             },
                             BaseCancellationToken
                         );

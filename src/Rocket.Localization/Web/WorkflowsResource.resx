@@ -41,12 +41,6 @@
     <data name="WorkflowsNameFieldRequiredError" xml:space="preserve">
         <value>Please enter a valid workflow name</value>
     </data>
-    <data name="WorkflowsMatchingSymbolFieldHeader" xml:space="preserve">
-        <value>Matching Page Symbol</value>
-    </data>
-    <data name="WorkflowsMatchingSymbolFieldHint" xml:space="preserve">
-        <value>Select a matching page symbol to associate with this workflow.</value>
-    </data>
     <data name="WorkflowsDateCreatedFieldHeader" xml:space="preserve">
         <value>Date Created</value>
     </data>
@@ -65,27 +59,5 @@
     </data>
     <data name="WorkflowsHasBeenUpdatedMessage" xml:space="preserve">
         <value>The workflow has been updated.</value>
-    </data>
-    <!-- VALUES -->
-    <data name="WorkflowsRocketSymbolValue" xml:space="preserve">
-        <value>Rocket</value>
-    </data>
-    <data name="WorkflowsDiamondSymbolValue" xml:space="preserve">
-        <value>Diamond</value>
-    </data>
-    <data name="WorkflowsAppleSymbolValue" xml:space="preserve">
-        <value>Apple</value>
-    </data>
-    <data name="WorkflowsBellSymbolValue" xml:space="preserve">
-        <value>Bell</value>
-    </data>
-    <data name="WorkflowsCloverSymbolValue" xml:space="preserve">
-        <value>Clover</value>
-    </data>
-    <data name="WorkflowsStarSymbolValue" xml:space="preserve">
-        <value>Star</value>
-    </data>
-    <data name="WorkflowsHorseshoeSymbolValue" xml:space="preserve">
-        <value>Horseshoe</value>
     </data>
 </root>

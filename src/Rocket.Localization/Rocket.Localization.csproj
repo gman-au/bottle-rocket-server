@@ -73,6 +73,10 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>PasswordResource.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="Api\ScannedImageResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ScanResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>

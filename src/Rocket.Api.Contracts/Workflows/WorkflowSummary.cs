@@ -12,9 +12,6 @@ namespace Rocket.Api.Contracts.Workflows
         [JsonPropertyName("user_id")]
         public string UserId { get; set; }
         
-        [JsonPropertyName("matching_page_symbol")]
-        public int? MatchingPageSymbol { get; set; }
-        
         [JsonPropertyName("created_at")]
         public DateTime? CreatedAt { get; set; }
         

@@ -208,11 +208,41 @@
         FetchDashboardResponse snapshot
     )
     {
+        var resourceManager =
+            new ResourceManager(
+                "Rocket.Localization.Global.WorkflowResource",
+                typeof(WorkflowResource).Assembly
+            );
+
+        var translations = new Dictionary<string, string>();
+
+        var unknownVendorValue =
+            resourceManager
+                .GetString(
+                    $"UnknownVendorLabel",
+                    CultureInfo.GetCultureInfo(CultureInfo.CurrentUICulture.Name)
+                );
+        
         var lifecyclesByGroup =
             (snapshot?
                 .Lifecycle?
                 .LifecyclesByGroup ?? [])
             .ToList();
+
+        var allVendorNodes =
+            lifecyclesByGroup
+                .Select(o => o.Vendor)
+                .Distinct()
+                .Select(
+                    o =>
+                        new SankeyChartNode
+                        {
+                            Name = string.IsNullOrEmpty(o) ? unknownVendorValue : o,
+                            Column = 0,
+                            Color = MapVendorToColor(o)  
+                        }
+                )
+                .ToList();
 
         var allWorkflowNodes =
             lifecyclesByGroup
@@ -223,7 +253,7 @@
                         new SankeyChartNode
                         {
                             Name = o,
-                            Column = 0
+                            Column = 1
                         }
                 )
                 .ToList();
@@ -237,14 +267,6 @@
                     .Values
                     .ElementAt(i % BottleRocketChartPalette.Values.Count());
         }
-
-        var resourceManager =
-            new ResourceManager(
-                "Rocket.Localization.Global.WorkflowResource",
-                typeof(WorkflowResource).Assembly
-            );
-
-        var translations = new Dictionary<string, string>();
 
         foreach (var status in Enum.GetValues<ExecutionStatusEnum>()
                      .Select(
@@ -293,14 +315,15 @@
                         new SankeyChartNode
                         {
                             Name = o,
-                            Column = 1,
+                            Column = 2,
                             Color = MapStatusToColor(o, translations)
                         }
                 );
 
         _overviewNodes =
             allStatusNodes
-                .Concat(allWorkflowNodes);
+                .Concat(allWorkflowNodes)
+                .Concat(allVendorNodes);
 
         _overviewEdges =
             lifecyclesByGroup
@@ -312,6 +335,18 @@
                             Target = o.Status,
                             Value = o.Count
                         }
+                )
+                .Concat(
+                    lifecyclesByGroup
+                        .Select(
+                            o =>
+                                new SankeyChartEdge
+                                {
+                                    Source = string.IsNullOrEmpty(o.Vendor) ? unknownVendorValue : o.Vendor,
+                                    Target = o.Workflow,
+                                    Value = o.Count
+                                }
+                        )
                 );
     }
 
@@ -319,11 +354,6 @@
         FetchDashboardResponse snapshot
     )
     {
-        const string vendorRocketbookName = "ROCKETBOOK";
-        const string vendorRocketbookColor = "#A3CD39";
-        const string vendorScribzeeName = "SCRIBZEE";
-        const string vendorScribzeeColor = "#2F0890";
-
         _vendorData =
             (_dashboardSnapshot?.Scans?.ScansReceivedByVendor ?? [])
             .Select(o => (double)o.Scans);
@@ -336,21 +366,7 @@
         for (var i = 0; i < _vendorLabels.Count() && i < 20; i++)
         {
             _vendorChartOptions
-                .ChartPalette[i] = Color.Surface.ToString();
-
-            if (_vendorLabels.ElementAt(i)
-                    ?.ToUpper() == vendorRocketbookName)
-            {
-                _vendorChartOptions
-                    .ChartPalette[i] = vendorRocketbookColor;
-            }
-
-            if (_vendorLabels.ElementAt(i)
-                    ?.ToUpper() == vendorScribzeeName)
-            {
-                _vendorChartOptions
-                    .ChartPalette[i] = vendorScribzeeColor;
-            }
+                .ChartPalette[i] = MapVendorToColor(_vendorLabels.ElementAt(i));
         }
     }
 
@@ -448,6 +464,23 @@
         }
 
         return StatusNotRunColor;
+    }
+
+    private static string MapVendorToColor(
+        string vendor
+    )
+    {
+        const string vendorRocketbookName = "ROCKETBOOK";
+        const string vendorRocketbookColor = "#A3CD39";
+        const string vendorScribzeeName = "SCRIBZEE";
+        const string vendorScribzeeColor = "#2F0890";
+        
+        return vendor?.ToUpper() switch
+        {
+            vendorRocketbookName => vendorRocketbookColor,
+            vendorScribzeeName => vendorScribzeeColor,
+            _ => "#000000"
+        };
     }
 
 }

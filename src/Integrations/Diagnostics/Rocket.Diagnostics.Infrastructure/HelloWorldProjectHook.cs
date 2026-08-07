@@ -9,6 +9,7 @@ using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Integrations.Common;
+using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 using Rocket.Page.Schemas.ProjectTaskTracker;
 
@@ -24,6 +25,13 @@ namespace Rocket.Diagnostics.Infrastructure
             CancellationToken cancellationToken
         )
         {
+            context
+                .InitializeStep(
+                    this,
+                    step
+                )
+                .InitializeArtifact(this);
+            
             var projectTaskData =
                 new ProjectTaskTrackerSchema
                 {
@@ -73,7 +81,9 @@ namespace Rocket.Diagnostics.Infrastructure
                     Result = (int)ExecutionStatusEnum.Completed,
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData,
                     Artifact = Encoding.Default.GetBytes(responseJson),
-                    FileExtension = ".json"
+                    FileExtension = ".json",
+                    ScanId = Artifact.ScanId,
+                    UserId = Artifact.UserId
                 };
         }
     }

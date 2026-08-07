@@ -7,7 +7,7 @@ using Rocket.Domain.Connectors;
 
 namespace Rocket.Interfaces
 {
-    public interface IConnectorRepository
+    public interface IConnectorRepository : IMigratableRepository
     {
         Task<bool> ConnectorExistsForUserAsync(
             string userId,

@@ -23,110 +23,133 @@ namespace Rocket.Infrastructure
             string scanId,
             string userId,
             bool runImmediately,
+            bool throwOnFailure,
             CancellationToken cancellationToken
         )
         {
-            if (string.IsNullOrEmpty(scanId))
-                throw new RocketException(
-                    "No scan ID was provided.",
-                    ApiStatusCodeEnum.ValidationError
-                );
-
-            var workflow =
-                await
-                    workflowRepository
-                        .GetWorkflowByIdAsync(
-                            userId,
-                            workflowId,
-                            cancellationToken
-                        );
-
-            if (workflow == null)
-                throw new RocketException(
-                    "Workflow does not exist for this user.",
-                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
-                );
-
-            if (!(workflow.Steps ?? []).Any())
-                throw new RocketException(
-                    "This workflow has no steps defined. Please check the workflow configuration.",
-                    ApiStatusCodeEnum.ValidationError
-                );
-
-            var missingConnectors =
-                executionWorkflowValidator
-                    .GetMissingConnectors(workflow)
-                    .ToList();
-
-            if (missingConnectors.Count != 0)
-                throw new RocketException(
-                    "This workflow contains one or more steps with missing connectors: " +
-                    $"{string.Join(", ", missingConnectors.Select(o => $"'{o}'"))}.",
-                    ApiStatusCodeEnum.ValidationError
-                );
-
-            var scan =
-                await
-                    scannedImageRepository
-                        .GetScanByIdAsync(
-                            userId,
-                            scanId,
-                            cancellationToken
-                        );
-
-            if (scan == null)
-                throw new RocketException(
-                    "Scan does not exist for this user.",
-                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
-                );
-
-            if (scan.Archived)
-                throw new RocketException(
-                    "Scan is archived and cannot be processed.",
-                    ApiStatusCodeEnum.RecordIsArchived
-                );
-
-            var newExecution =
-                workflowCloner
-                    .Clone(
-                        workflow,
-                        scan.Id,
-                        scan.ThumbnailBase64,
-                        scan.ContentType
+            try
+            {
+                if (string.IsNullOrEmpty(scanId))
+                    throw new RocketException(
+                        "No scan ID was provided.",
+                        ApiStatusCodeEnum.ValidationError
                     );
 
-            var result =
+                var workflow =
+                    await
+                        workflowRepository
+                            .GetWorkflowByIdAsync(
+                                userId,
+                                workflowId,
+                                cancellationToken
+                            );
+
+                if (workflow == null)
+                    throw new RocketException(
+                        "Workflow does not exist for this user.",
+                        ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                    );
+
+                if (!(workflow.Steps ?? []).Any())
+                    throw new RocketException(
+                        "This workflow has no steps defined. Please check the workflow configuration.",
+                        ApiStatusCodeEnum.ValidationError
+                    );
+
+                var missingConnectors =
+                    executionWorkflowValidator
+                        .GetMissingConnectors(workflow)
+                        .ToList();
+
+                if (missingConnectors.Count != 0)
+                    throw new RocketException(
+                        "This workflow contains one or more steps with missing connectors: " +
+                        $"{string.Join(", ", missingConnectors.Select(o => $"'{o}'"))}.",
+                        ApiStatusCodeEnum.ValidationError
+                    );
+
+                var scan =
+                    await
+                        scannedImageRepository
+                            .GetScanByIdAsync(
+                                userId,
+                                scanId,
+                                cancellationToken
+                            );
+
+                if (scan == null)
+                    throw new RocketException(
+                        "Scan does not exist for this user.",
+                        ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                    );
+
+                if (scan.Archived)
+                    throw new RocketException(
+                        "Scan is archived and cannot be processed.",
+                        ApiStatusCodeEnum.RecordIsArchived
+                    );
+
+                var newExecution =
+                    workflowCloner
+                        .Clone(
+                            workflow,
+                            scan.Id,
+                            scan.ThumbnailBase64,
+                            scan.ContentType,
+                            scan.Vendor
+                        );
+
+                var result =
+                    await
+                        executionRepository
+                            .InsertExecutionAsync(
+                                newExecution,
+                                cancellationToken
+                            );
+
+                if (result == null)
+                    throw new RocketException(
+                        "Failed to create execution",
+                        ApiStatusCodeEnum.ServerError
+                    );
+
+                var executionId =
+                    result
+                        .Id;
+
+                if (!runImmediately) return executionId;
+
+                logger
+                    .LogInformation(
+                        "Scheduling and running execution with ID: {executionId}",
+                        executionId
+                    );
+
                 await
-                    executionRepository
-                        .InsertExecutionAsync(
-                            newExecution,
+                    workflowExecutionManager
+                        .StartExecutionAsync(
+                            executionId,
+                            userId,
                             cancellationToken
                         );
 
-            if (result == null)
-                throw new RocketException(
-                    "Failed to create execution",
-                    ApiStatusCodeEnum.ServerError
-                );
+                return executionId;
+            }
+            catch (RocketException ex)
+            {
+                if (throwOnFailure) throw;
 
-            var executionId = 
-                result
-                    .Id;
-
-            if (!runImmediately) return executionId;
-            
-            logger
-                .LogInformation("Scheduling and running execution with ID: {executionId}", executionId);
-                
-            await
-                workflowExecutionManager
-                    .StartExecutionAsync(
-                        executionId,
+                logger
+                    .LogWarning(
+                        "Could not schedule workflow ID {workflowId} for scan ID {scanId} for user ID {userId} - {error}",
+                        workflowId,
+                        scanId,
                         userId,
-                        cancellationToken
+                        ex.Message
                     );
 
-            return executionId;
+                return null;
+            }
         }
     }
 }
