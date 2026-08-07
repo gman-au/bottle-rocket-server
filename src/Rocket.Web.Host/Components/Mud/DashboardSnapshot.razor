@@ -130,6 +130,10 @@
     private bool _isConnected;
     private FetchDashboardResponse _dashboardSnapshot = null;
 
+    private string _unknownVendorValue = null;
+    private ResourceManager _resourceManager;
+    private Dictionary<string, string> _translations = new();
+
     protected override async Task OnAfterRenderAsync(
         bool firstRender
     )
@@ -173,6 +177,21 @@
             _isLoading = true;
             StateHasChanged();
 
+            _resourceManager =
+                new ResourceManager(
+                    "Rocket.Localization.Global.WorkflowResource",
+                    typeof(WorkflowResource).Assembly
+                );
+
+            _translations = new Dictionary<string, string>();
+
+            _unknownVendorValue =
+                _resourceManager
+                    .GetString(
+                        $"UnknownVendorLabel",
+                        CultureInfo.GetCultureInfo(CultureInfo.CurrentUICulture.Name)
+                    );
+            
             await
                 LoadDashboardAsync();
         }
@@ -208,21 +227,6 @@
         FetchDashboardResponse snapshot
     )
     {
-        var resourceManager =
-            new ResourceManager(
-                "Rocket.Localization.Global.WorkflowResource",
-                typeof(WorkflowResource).Assembly
-            );
-
-        var translations = new Dictionary<string, string>();
-
-        var unknownVendorValue =
-            resourceManager
-                .GetString(
-                    $"UnknownVendorLabel",
-                    CultureInfo.GetCultureInfo(CultureInfo.CurrentUICulture.Name)
-                );
-        
         var lifecyclesByGroup =
             (snapshot?
                 .Lifecycle?
@@ -234,12 +238,18 @@
                 .Select(o => o.Vendor)
                 .Distinct()
                 .Select(
-                    o =>
+                    (
+                            o,
+                            i
+                        ) =>
                         new SankeyChartNode
                         {
-                            Name = string.IsNullOrEmpty(o) ? unknownVendorValue : o,
+                            Name = string.IsNullOrEmpty(o) ? _unknownVendorValue : o,
                             Column = 0,
-                            Color = MapVendorToColor(o)  
+                            Color = MapVendorToColor(
+                                string.IsNullOrEmpty(o) ? _unknownVendorValue : o,
+                                i
+                            )
                         }
                 )
                 .ToList();
@@ -279,14 +289,14 @@
             try
             {
                 var defaultStatusValue =
-                    resourceManager
+                    _resourceManager
                         .GetString(
                             $"ExecutionStatus{status}Label",
                             CultureInfo.GetCultureInfo(Languages.DefaultLanguage)
                         );
 
                 var translatedStatusValue =
-                    resourceManager
+                    _resourceManager
                         .GetString(
                             $"ExecutionStatus{status}Label",
                             CultureInfo.GetCultureInfo(CultureInfo.CurrentUICulture.Name)
@@ -294,7 +304,7 @@
 
                 if (!string.IsNullOrEmpty(translatedStatusValue))
                 {
-                    translations
+                    _translations?
                         .Add(
                             translatedStatusValue,
                             defaultStatusValue
@@ -316,7 +326,10 @@
                         {
                             Name = o,
                             Column = 2,
-                            Color = MapStatusToColor(o, translations)
+                            Color = MapStatusToColor(
+                                o,
+                                _translations
+                            )
                         }
                 );
 
@@ -342,7 +355,7 @@
                             o =>
                                 new SankeyChartEdge
                                 {
-                                    Source = string.IsNullOrEmpty(o.Vendor) ? unknownVendorValue : o.Vendor,
+                                    Source = string.IsNullOrEmpty(o.Vendor) ? _unknownVendorValue : o.Vendor,
                                     Target = o.Workflow,
                                     Value = o.Count
                                 }
@@ -360,13 +373,16 @@
 
         _vendorLabels =
             (_dashboardSnapshot?.Scans?.ScansReceivedByVendor ?? [])
-            .Select(o => o.Vendor ?? string.Empty)
+            .Select(o => string.IsNullOrEmpty(o.Vendor) ? _unknownVendorValue : o.Vendor)
             .ToList();
 
         for (var i = 0; i < _vendorLabels.Count() && i < 20; i++)
         {
             _vendorChartOptions
-                .ChartPalette[i] = MapVendorToColor(_vendorLabels.ElementAt(i));
+                .ChartPalette[i] = MapVendorToColor(
+                _vendorLabels.ElementAt(i),
+                i
+            );
         }
     }
 
@@ -451,7 +467,10 @@
         IDictionary<string, string> translations
     )
     {
-        if (translations.TryGetValue(status, out var defaultStatus))
+        if (translations.TryGetValue(
+                status,
+                out var defaultStatus
+            ))
         {
             return defaultStatus?.ToUpper() switch
             {
@@ -467,19 +486,28 @@
     }
 
     private static string MapVendorToColor(
-        string vendor
+        string vendor,
+        int i
     )
     {
         const string vendorRocketbookName = "ROCKETBOOK";
         const string vendorRocketbookColor = "#A3CD39";
         const string vendorScribzeeName = "SCRIBZEE";
         const string vendorScribzeeColor = "#2F0890";
-        
+        const string vendorUnknownName = "UNKNOWN";
+        const string vendorUnknownColor = "#888888";
+
+        var fallbackColor =
+            BottleRocketChartPalette
+                .Values
+                .ElementAt(i % BottleRocketChartPalette.Values.Count());
+
         return vendor?.ToUpper() switch
         {
             vendorRocketbookName => vendorRocketbookColor,
             vendorScribzeeName => vendorScribzeeColor,
-            _ => "#000000"
+            vendorUnknownName => vendorUnknownColor,
+            _ => fallbackColor
         };
     }
 
