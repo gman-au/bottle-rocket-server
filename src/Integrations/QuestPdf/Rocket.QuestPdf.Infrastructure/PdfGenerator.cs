@@ -65,13 +65,14 @@ namespace Rocket.QuestPdf.Infrastructure
                                             .Size(PageSizes.A4);
 
                                         page
-                                            .Margin(20);
+                                            .Margin(0);
 
                                         page
                                             .Content()
                                             .Image(
                                                 image
-                                            );
+                                            )
+                                            .FitArea();
                                     }
                                 );
                         }
