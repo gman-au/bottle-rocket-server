@@ -86,6 +86,11 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         );
 
+        Task<CloneWorkflowResponse> CloneWorkflowAsync(
+            CloneWorkflowRequest workflow,
+            CancellationToken cancellationToken
+        );
+
         Task<FetchConnectorsResponse> GetMyConnectorsAsync(
             FetchConnectorsRequest request,
             CancellationToken baseCancellationToken

@@ -25,6 +25,9 @@
     <data name="WorkflowsAddTitle" xml:space="preserve">
         <value>Add Workflow</value>
     </data>
+    <data name="WorkflowsCloneTitle" xml:space="preserve">
+        <value>Clone Workflow</value>
+    </data>
     <data name="WorkflowsDetailsTitle" xml:space="preserve">
         <value>Workflow Details</value>
     </data>
@@ -54,10 +57,22 @@
     <data name="WorkflowsSubmitCaption" xml:space="preserve">
         <value>Submit</value>
     </data>
+    <data name="WorkflowsCloneCaption" xml:space="preserve">
+        <value>Clone</value>
+    </data>
+    <data name="WorkflowsDeleteCaption" xml:space="preserve">
+        <value>Delete</value>
+    </data>
     <data name="WorkflowsHasBeenAddedMessage" xml:space="preserve">
         <value>The workflow has been created.</value>
     </data>
+    <data name="WorkflowsHasBeenClonedMessage" xml:space="preserve">
+        <value>The workflow has cloned created.</value>
+    </data>
     <data name="WorkflowsHasBeenUpdatedMessage" xml:space="preserve">
         <value>The workflow has been updated.</value>
+    </data>
+    <data name="WorkflowsWasDeletedMessage" xml:space="preserve">
+        <value>The workflow was deleted successfully.</value>
     </data>
 </root>
