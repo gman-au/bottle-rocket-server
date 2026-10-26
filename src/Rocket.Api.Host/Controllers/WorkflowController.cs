@@ -75,17 +75,16 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Workflows =
                         records
-                            .Select(
-                                o =>
-                                    new MyWorkflowSummary
-                                    {
-                                        Id = o.Id,
-                                        UserId = o.UserId,
-                                        Name = o.Name,
-                                        IsActive = o.IsActive,
-                                        CreatedAt = o.CreatedAt.ToLocalTime(),
-                                        LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
-                                    }
+                            .Select(o =>
+                                new MyWorkflowSummary
+                                {
+                                    Id = o.Id,
+                                    UserId = o.UserId,
+                                    Name = o.Name,
+                                    IsActive = o.IsActive,
+                                    CreatedAt = o.CreatedAt.ToLocalTime(),
+                                    LastUpdatedAt = o.LastUpdatedAt?.ToLocalTime(),
+                                }
                             ),
                     TotalRecords = (int)totalRecordCount
                 };
@@ -337,7 +336,7 @@ namespace Rocket.Api.Host.Controllers
 
             var response =
                 new UpdateWorkflowResponse();
-            
+
             dashboardSnapshotProvider
                 .MarkAsDirty(userId);
 
@@ -406,8 +405,7 @@ namespace Rocket.Api.Host.Controllers
                     IsActive = workflow.IsActive,
                     Steps =
                         (workflow.Steps ?? [])
-                        .Select(
-                            o =>
+                        .Select(o =>
                             {
                                 var mapper =
                                     workflowStepModelMapperRegistry
@@ -419,6 +417,134 @@ namespace Rocket.Api.Host.Controllers
                             }
                         )
                 };
+
+            return
+                response
+                    .AsApiSuccess();
+        }
+
+        [HttpPost("clone")]
+        [EndpointSummary("Clone an existing workflow")]
+        [EndpointGroupName("Manage workflows")]
+        [EndpointDescription(
+            """
+            Clones an existing workflow for the given user. Will return an error if the same named
+            workflow already exists for the given user.
+            """
+        )]
+        [ProducesResponseType(
+            typeof(CloneWorkflowResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CloneWorkflowAsync(
+            [FromBody] CloneWorkflowRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
+
+            logger
+                .LogInformation(
+                    "Received workflow clone request for username: {username}, id: {id}",
+                    user.Username,
+                    request.Id
+                );
+
+            var userId =
+                user
+                    .Id;
+
+            var sourceId =
+                request
+                    .Id;
+
+            var workflowName =
+                request
+                    .Name;
+
+            if (string.IsNullOrEmpty(sourceId))
+                throw new RocketException(
+                    "No ID was provided.",
+                    ApiStatusCodeEnum.ValidationError
+                );
+
+            if (string.IsNullOrEmpty(workflowName))
+                throw new RocketException(
+                    "No name was provided.",
+                    ApiStatusCodeEnum.ValidationError
+                );
+
+            if (await
+                workflowRepository
+                    .WorkflowExistsForNameAsync(
+                        userId,
+                        null,
+                        workflowName,
+                        cancellationToken
+                    )
+               )
+                throw new RocketException(
+                    "Workflow already exists with this name.",
+                    ApiStatusCodeEnum.RecordAlreadyExists
+                );
+
+            var sourceWorkflow =
+                await
+                    workflowRepository
+                        .GetWorkflowByIdAsync(
+                            userId,
+                            sourceId,
+                            cancellationToken
+                        );
+
+            if (sourceWorkflow == null)
+            {
+                throw new RocketException(
+                    $"Workflow id: {sourceId} not found",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+            }
+
+            var newWorkflow =
+                new Workflow
+                {
+                    UserId = userId,
+                    CreatedAt = DateTime.UtcNow,
+                    LastUpdatedAt = DateTime.UtcNow,
+                    Name = workflowName,
+                    IsActive = true,
+                    Steps = sourceWorkflow.Steps
+                };
+
+            var result =
+                await
+                    workflowRepository
+                        .InsertWorkflowAsync(
+                            newWorkflow,
+                            cancellationToken
+                        );
+
+            if (result == null)
+                throw new RocketException(
+                    "Failed to create workflow",
+                    ApiStatusCodeEnum.ServerError
+                );
+
+            var response =
+                new CloneWorkflowResponse
+                {
+                    Id = result.Id
+                };
+
+            dashboardSnapshotProvider
+                .MarkAsDirty(userId);
 
             return
                 response
