@@ -138,6 +138,7 @@
         var response =
             await
                 ApiRequestManager
+                    .Connectors
                     .GetMyConnectorsAsync(
                         request,
                         BaseCancellationToken
@@ -188,6 +189,7 @@
 
                 await
                     ApiRequestManager
+                        .Connectors
                         .DeleteConnectorByIdAsync(
                             connector.Id,
                             BaseCancellationToken

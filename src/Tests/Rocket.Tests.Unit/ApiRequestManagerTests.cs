@@ -65,9 +65,9 @@ namespace Rocket.Tests.Unit
         private class TestContext
         {
             private readonly IAuthenticatedApiClient _authenticatedApiClient;
-            private readonly ILogger<ApiRequestManager> _logger;
+            private readonly ILogger<ApiRequestScans> _logger;
             private readonly IFixture _fixture;
-            private readonly ApiRequestManager _sut;
+            private readonly IApiRequestScans _sut;
             private string _mockHttpResponseMessageContent;
             private ApiResponse _result;
             private RocketException _exception;
@@ -79,10 +79,10 @@ namespace Rocket.Tests.Unit
                         .CreateNSubstituteFixture();
 
                 _authenticatedApiClient = _fixture.Freeze<IAuthenticatedApiClient>();
-                _logger = _fixture.Freeze<ILogger<ApiRequestManager>>();
+                _logger = _fixture.Freeze<ILogger<ApiRequestScans>>();
 
                 _sut =
-                    new ApiRequestManager(
+                    new ApiRequestScans(
                         _logger,
                         _fixture.Freeze<IJsonResolverInstanceProvider>(),
                         _authenticatedApiClient

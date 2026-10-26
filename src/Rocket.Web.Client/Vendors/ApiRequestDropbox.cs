@@ -3,23 +3,32 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Dropbox.Contracts;
+using Rocket.Interfaces;
 using Rocket.Web.Client.Extensions;
 
-namespace Rocket.Web.Client
+namespace Rocket.Web.Client.Vendors
 {
-    public partial class ApiRequestManager
+    internal class ApiRequestDropbox(
+        ILogger<ApiRequestDropbox> logger,
+        IJsonResolverInstanceProvider jsonResolverInstanceProvider,
+        IAuthenticatedApiClient authenticatedApiClient
+    ) : ApiRequestBase(
+        logger,
+        jsonResolverInstanceProvider,
+        authenticatedApiClient
+    ), IApiRequestDropbox
     {
         public async Task<ApiResponse> FinalizeDropboxConnectorAsync(
             FinalizeDropboxConnectorRequest request,
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Patch (Dropbox) Connector request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PatchAsJsonAsync(
                             "/api/dropbox/connectors/finalize",
                             request,
@@ -30,8 +39,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<ApiResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 

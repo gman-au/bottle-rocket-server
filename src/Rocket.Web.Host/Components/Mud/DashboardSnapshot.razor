@@ -212,6 +212,7 @@
         _dashboardSnapshot =
             await
                 ApiRequestManager
+                    .Dashboard
                     .GetDashboardSnapshotAsync(
                         BaseCancellationToken
                     );

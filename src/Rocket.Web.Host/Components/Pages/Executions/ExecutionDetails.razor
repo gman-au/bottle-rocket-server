@@ -232,6 +232,7 @@
         _currentModel =
             await
                 ApiRequestManager
+                    .Executions
                     .GetExecutionByIdAsync(
                         Id,
                         BaseCancellationToken
@@ -361,6 +362,7 @@
 
                 await
                     ApiRequestManager
+                        .Executions
                         .CancelExecutionAsync(
                             _currentModel.Id,
                             BaseCancellationToken
@@ -404,6 +406,7 @@
 
                 await
                     ApiRequestManager
+                        .Executions
                         .DeleteExecutionByIdAsync(
                             _currentModel.Id,
                             BaseCancellationToken

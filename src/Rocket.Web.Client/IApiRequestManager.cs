@@ -1,217 +1,25 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Rocket.Api.Contracts;
-using Rocket.Api.Contracts.Connectors;
-using Rocket.Api.Contracts.Dashboard;
-using Rocket.Api.Contracts.Executions;
-using Rocket.Api.Contracts.GlobalSettings;
-using Rocket.Api.Contracts.Scans;
-using Rocket.Api.Contracts.Users;
-using Rocket.Api.Contracts.Workflows;
-using Rocket.Dropbox.Contracts;
-using Rocket.Google.Contracts;
-using Rocket.Microsofts.Contracts;
-using Rocket.Notion.Contracts;
-
-namespace Rocket.Web.Client
+﻿namespace Rocket.Web.Client
 {
     public interface IApiRequestManager
     {
-        Task<MyScansResponse> GetMyScansAsync(
-            MyScansRequest request,
-            CancellationToken cancellationToken
-        );
+        IApiRequestConnectors Connectors { get; }
 
-        Task<ScanSpecifics> GetMyScanAsync(
-            string id,
-            CancellationToken cancellationToken
-        );
+        IApiRequestDashboard Dashboard { get; }
 
-        Task<UserSpecifics> GetUserByIdAsync(
-            string id,
-            CancellationToken cancellationToken
-        );
-
-        Task<UpdateUserResponse> UpdateUserAsync(
-            UserSpecifics user,
-            CancellationToken cancellationToken
-        );
-
-        Task<UpdateUserResponse> UpdateDarkModeAsync(
-            SetUserDarkModeRequest request,
-            CancellationToken cancellationToken
-        );
-
-        Task<CreateUserResponse> CreateUserAsync(
-            CreateUserRequest user,
-            CancellationToken cancellationToken
-        );
-
-        Task<StartupPhaseResponse> GetStartupPhaseAsync(
-            CancellationToken cancellationToken
-        );
-
-        Task<FetchUsersResponse> GetUsersAsync(
-            FetchUsersRequest request,
-            CancellationToken cancellationToken
-        );
-
-        Task<FetchWorkflowsResponse> GetWorkflowsAsync(
-            FetchWorkflowsRequest request,
-            CancellationToken cancellationToken
-        );
-
-        Task<WorkflowSummary> GetWorkflowByIdAsync(
-            string id,
-            CancellationToken cancellationToken
-        );
-
-        Task<UpdateWorkflowResponse> UpdateWorkflowAsync(
-            MyWorkflowSummary workflow,
-            CancellationToken cancellationToken
-        );
-
-        Task<ApiResponse> DeleteWorkflowByIdAsync(
-            string id,
-            CancellationToken cancellationToken
-        );
-
-        Task<ApiResponse> DeleteScanByIdAsync(
-            string id,
-            CancellationToken cancellationToken
-        );
-
-        Task<CreateWorkflowResponse> CreateWorkflowAsync(
-            CreateWorkflowRequest workflow,
-            CancellationToken cancellationToken
-        );
-
-        Task<CloneWorkflowResponse> CloneWorkflowAsync(
-            CloneWorkflowRequest workflow,
-            CancellationToken cancellationToken
-        );
-
-        Task<FetchConnectorsResponse> GetMyConnectorsAsync(
-            FetchConnectorsRequest request,
-            CancellationToken baseCancellationToken
-        );
-
-        Task<ApiResponse> DeleteConnectorByIdAsync(
-            string id,
-            CancellationToken cancellationToken
-        );
-
-        Task<CreateConnectorResponse<T>> CreateConnectorAsync<T>(
-            CreateConnectorRequest<T> request,
-            CancellationToken cancellationToken
-        ) where T : ConnectorSummary;
-
-        Task<T> GetWorkflowStepAsync<T>(
-            string workflowId,
-            string stepId,
-            CancellationToken cancellationToken
-        ) where T : WorkflowStepSummary;
-
-        Task<CreateWorkflowStepResponse> CreateWorkflowStepAsync<T>(
-            CreateWorkflowStepRequest<T> request,
-            CancellationToken cancellationToken
-        ) where T : WorkflowStepSummary;
-
-        Task<UpdateWorkflowStepResponse> UpdateWorkflowStepAsync<T>(
-            UpdateWorkflowStepRequest<T> request,
-            CancellationToken cancellationToken
-        ) where T : WorkflowStepSummary;
-
-        Task<ApiResponse> DeleteWorkflowStepByIdAsync(
-            DeleteWorkflowStepRequest request,
-            CancellationToken cancellationToken
-        );
-
-        Task<FetchExecutionsResponse> GetExecutionsAsync(
-            FetchExecutionsRequest request,
-            CancellationToken cancellationToken
-        );
-
-        Task<ExecutionSummary> GetExecutionByIdAsync(
-            string id,
-            CancellationToken cancellationToken
-        );
-
-        Task<CreateExecutionResponse> CreateExecutionAsync(
-            CreateExecutionRequest request,
-            CancellationToken cancellationToken
-        );
-
-        Task<StartExecutionResponse> StartExecutionAsync(
-            string executionId,
-            CancellationToken cancellationToken
-        );
-
-        Task<CancelExecutionResponse> CancelExecutionAsync(
-            string executionId,
-            CancellationToken cancellationToken
-        );
-
-        Task<DeleteExecutionResponse> DeleteExecutionByIdAsync(
-            string executionId,
-            CancellationToken cancellationToken
-        );
+        IApiRequestExecutions Executions { get; }
         
-        Task<ApiResponse> FinalizeDropboxConnectorAsync(
-            FinalizeDropboxConnectorRequest request,
-            CancellationToken cancellationToken
-        );
+        IApiRequestGlobalSettings GlobalSettings { get; }
+        
+        IApiRequestScans Scans { get; }
 
-        Task<GetAllNotionParentNotesResponse> GetNotionParentNotesAsync(
-            GetAllNotionParentNotesRequest request,
-            CancellationToken cancellationToken
-        );
-
-        Task<GetAllNotionDataSourcesResponse> GetNotionDataSourcesAsync(
-            GetAllNotionDataSourcesRequest request,
-            CancellationToken cancellationToken
-        );
-
-        Task<MicrosoftAuthInitiateResponse> InitiateMicrosoftConnectorAuthAsync(
-            MicrosoftAuthInitiateRequest request,
-            CancellationToken cancellationToken
-        );
-
-        Task<GetOneNoteSectionsResponse> GetOneNoteSectionsAsync(
-            GetOneNoteSectionsRequest request,
-            CancellationToken cancellationToken
-        );
-
-        Task<GoogleAuthInitiateResponse> InitiateGoogleConnectorAuthAsync(
-            GoogleAuthInitiateRequest request,
-            CancellationToken cancellationToken
-        );
-
-        Task<ApiResponse> FinalizeGoogleConnectorAsync(
-            GoogleAuthFinalizeRequest request,
-            CancellationToken cancellationToken
-        );
-
-        Task<GetGoogleDriveFoldersResponse> GetGoogleFoldersAsync(
-            GetGoogleDriveFoldersRequest request,
-            CancellationToken cancellationToken
-        );
-
-        Task<FetchDashboardResponse> GetDashboardSnapshotAsync(
-            CancellationToken cancellationToken
-        );
-
-        Task<VersionResponse> GetSystemVersionsAsync(
-            CancellationToken cancellationToken
-        );
-
-        Task<GlobalSettingsSpecifics> GetGlobalSettingsAsync(
-            CancellationToken cancellationToken
-        );
-
-        Task<ApiResponse> UpdateGlobalSettingsAsync(
-            GlobalSettingsSpecifics globalSettings,
-            CancellationToken cancellationToken
-        );
+        IApiRequestSystem System { get; }
+        
+        IApiRequestUsers Users { get; }
+        
+        IApiRequestVendors Vendors { get; }
+        
+        IApiRequestWorkflows Workflows { get; }
+        
+        IApiRequestWorkflowSteps WorkflowSteps { get; }
     }
 }

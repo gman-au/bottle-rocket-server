@@ -3,23 +3,32 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Google.Contracts;
+using Rocket.Interfaces;
 using Rocket.Web.Client.Extensions;
 
-namespace Rocket.Web.Client
+namespace Rocket.Web.Client.Vendors
 {
-    public partial class ApiRequestManager
+    internal class ApiRequestGoogle(
+        ILogger<ApiRequestGoogle> logger,
+        IJsonResolverInstanceProvider jsonResolverInstanceProvider,
+        IAuthenticatedApiClient authenticatedApiClient
+    ) : ApiRequestBase(
+        logger,
+        jsonResolverInstanceProvider,
+        authenticatedApiClient
+    ), IApiRequestGoogle
     {
         public async Task<GoogleAuthInitiateResponse> InitiateGoogleConnectorAuthAsync(
             GoogleAuthInitiateRequest request,
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Initiate (Google) Connector request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/google/connectors/initiate",
                             request,
@@ -30,8 +39,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<GoogleAuthInitiateResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -46,12 +55,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Initiate (Google) Connector request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PatchAsJsonAsync(
                             "/api/google/connectors/finalize",
                             request,
@@ -62,8 +71,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<ApiResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -78,12 +87,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Get (Google Drive) folders request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/google/workflows/getFolders",
                             request,
@@ -94,8 +103,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<GetGoogleDriveFoldersResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 

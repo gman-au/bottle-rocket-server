@@ -1,24 +1,33 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Rocket.Interfaces;
 using Rocket.Microsofts.Contracts;
 using Rocket.Web.Client.Extensions;
 
-namespace Rocket.Web.Client
+namespace Rocket.Web.Client.Vendors
 {
-    public partial class ApiRequestManager
+    internal class ApiRequestMicrosoft(
+        ILogger<ApiRequestMicrosoft> logger,
+        IJsonResolverInstanceProvider jsonResolverInstanceProvider,
+        IAuthenticatedApiClient authenticatedApiClient
+    ) : ApiRequestBase(
+        logger,
+        jsonResolverInstanceProvider,
+        authenticatedApiClient
+    ), IApiRequestMicrosoft
     {
         public async Task<MicrosoftAuthInitiateResponse> InitiateMicrosoftConnectorAuthAsync(
             MicrosoftAuthInitiateRequest request,
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Initiate (Microsoft) Connector request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/microsoft/connectors/initiate",
                             request,
@@ -29,8 +38,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<MicrosoftAuthInitiateResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -45,12 +54,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Get (OneNote) sections request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/microsoft/workflows/getOneNoteSections",
                             request,
@@ -61,8 +70,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<GetOneNoteSectionsResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 

@@ -138,6 +138,7 @@
         var response =
             await
                 ApiRequestManager
+                    .Workflows
                     .GetWorkflowsAsync(
                         request,
                         BaseCancellationToken
@@ -188,6 +189,7 @@
 
                 await
                     ApiRequestManager
+                        .Workflows
                         .DeleteWorkflowByIdAsync(
                             workflow.Id,
                             BaseCancellationToken

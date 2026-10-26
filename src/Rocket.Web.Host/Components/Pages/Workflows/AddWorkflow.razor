@@ -107,6 +107,7 @@
                 var result =
                     await
                         ApiRequestManager
+                            .Workflows
                             .CreateWorkflowAsync(
                                 new CreateWorkflowRequest
                                 {

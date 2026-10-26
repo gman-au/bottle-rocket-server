@@ -1,24 +1,33 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Rocket.Interfaces;
 using Rocket.Notion.Contracts;
 using Rocket.Web.Client.Extensions;
 
-namespace Rocket.Web.Client
+namespace Rocket.Web.Client.Vendors
 {
-    public partial class ApiRequestManager
+    internal class ApiRequestNotion(
+        ILogger<ApiRequestNotion> logger,
+        IJsonResolverInstanceProvider jsonResolverInstanceProvider,
+        IAuthenticatedApiClient authenticatedApiClient
+    ) : ApiRequestBase(
+        logger,
+        jsonResolverInstanceProvider,
+        authenticatedApiClient
+    ), IApiRequestNotion
     {
         public async Task<GetAllNotionParentNotesResponse> GetNotionParentNotesAsync(
             GetAllNotionParentNotesRequest request,
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Get (Notion) parent notes request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/notion/workflows/getParentNotes",
                             request,
@@ -29,8 +38,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<GetAllNotionParentNotesResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -39,18 +48,18 @@ namespace Rocket.Web.Client
 
             return result;
         }
-        
+
         public async Task<GetAllNotionDataSourcesResponse> GetNotionDataSourcesAsync(
             GetAllNotionDataSourcesRequest request,
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Get (Notion) data sources request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/notion/workflows/getDataSources",
                             request,
@@ -61,8 +70,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<GetAllNotionDataSourcesResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 

@@ -11,6 +11,7 @@ using Rocket.Interfaces;
 using Rocket.Localization;
 using Rocket.Web.Client;
 using Rocket.Web.Client.Authentication;
+using Rocket.Web.Client.Injection;
 using Rocket.Web.Client.Options;
 using Rocket.Web.Host.HubClients;
 using Rocket.Web.Host.Infrastructure;
@@ -19,11 +20,13 @@ namespace Rocket.Web.Host.Injection
 {
     public static class ServiceCollectionExtension
     {
-        public static IServiceCollection AddSignalRClientServices(this IServiceCollection services)
+        public static IServiceCollection AddSignalRClientServices(
+            this IServiceCollection services
+        )
         {
             services
                 .AddScoped<ICaptureHubClient, CaptureHubClient>();
-            
+
             return services;
         }
 
@@ -38,7 +41,7 @@ namespace Rocket.Web.Host.Injection
                     configuration
                         .GetSection(nameof(ApiConfigurationOptions))
                 );
-            
+
             services
                 .Configure<SiteConfigurationOptions>(
                     configuration
@@ -46,7 +49,9 @@ namespace Rocket.Web.Host.Injection
                 );
 
             services
-                .AddTransient<IApiRequestManager, ApiRequestManager>()
+                .AddBottleRocketWebApiClient();
+
+            services
                 .AddTransient<IEmailAddressValidator, EmailAddressValidator>()
                 .AddTransient<IWorkflowMermaidConverter, WorkflowMermaidConverter>()
                 .AddTransient<IExecutionMermaidConverter, ExecutionMermaidConverter>()
@@ -65,8 +70,7 @@ namespace Rocket.Web.Host.Injection
         )
         {
             services
-                .AddMudServices(
-                    config =>
+                .AddMudServices(config =>
                     {
                         config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
                         config.SnackbarConfiguration.SnackbarVariant = Variant.Outlined;
@@ -82,7 +86,9 @@ namespace Rocket.Web.Host.Injection
             return services;
         }
 
-        public static IServiceCollection AddAuthenticationServices(this IServiceCollection services)
+        public static IServiceCollection AddAuthenticationServices(
+            this IServiceCollection services
+        )
         {
             services
                 .AddScoped<IAuthenticationManager, BasicAuthenticationManager>()
@@ -92,15 +98,16 @@ namespace Rocket.Web.Host.Injection
                 .AddScoped<ApiAuthenticationStateProvider>();
 
             services
-                .AddScoped<AuthenticationStateProvider>(
-                    sp =>
-                        sp.GetRequiredService<ApiAuthenticationStateProvider>()
+                .AddScoped<AuthenticationStateProvider>(sp =>
+                    sp.GetRequiredService<ApiAuthenticationStateProvider>()
                 );
 
             return services;
         }
 
-        public static IServiceCollection AddJsonSupport(this IServiceCollection services)
+        public static IServiceCollection AddJsonSupport(
+            this IServiceCollection services
+        )
         {
             services
                 .AddSingleton<CreateWorkflowStepRequestConverter, CreateWorkflowStepRequestConverter>()
@@ -115,11 +122,7 @@ namespace Rocket.Web.Host.Injection
         )
         {
             services
-                .AddLocalization(
-                    options =>
-                    {
-                        options.ResourcesPath = "";
-                    }
+                .AddLocalization(options => { options.ResourcesPath = ""; }
                 );
 
             services

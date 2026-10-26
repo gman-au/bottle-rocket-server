@@ -126,6 +126,7 @@
         var response =
             await
                 ApiRequestManager
+                    .Users
                     .GetUsersAsync(
                         request,
                         BaseCancellationToken

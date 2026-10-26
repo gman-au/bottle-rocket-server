@@ -1,4 +1,4 @@
-﻿@page "/MyWorkflows/Clone/{workflowId}"
+﻿@page "/MyWorkflows/Clone/{id}"
 @using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts.Workflows
 @using Rocket.Localization.Web
@@ -107,6 +107,7 @@
                 var result =
                     await
                         ApiRequestManager
+                            .Workflows
                             .CloneWorkflowAsync(
                                 new CloneWorkflowRequest
                                 {

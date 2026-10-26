@@ -178,6 +178,7 @@
             _currentModel =
                 await
                     ApiRequestManager
+                        .GlobalSettings
                         .GetGlobalSettingsAsync(
                             BaseCancellationToken
                         );
@@ -225,6 +226,7 @@
 
                 await
                     ApiRequestManager
+                        .GlobalSettings
                         .UpdateGlobalSettingsAsync(
                             new GlobalSettingsSpecifics
                             {

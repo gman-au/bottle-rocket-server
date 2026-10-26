@@ -201,6 +201,7 @@
         var response =
             await
                 ApiRequestManager
+                    .Scans
                     .GetMyScansAsync(
                         request,
                         BaseCancellationToken
@@ -249,6 +250,7 @@
 
                 await
                     ApiRequestManager
+                        .Scans
                         .DeleteScanByIdAsync(
                             id,
                             BaseCancellationToken

@@ -3,11 +3,20 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Workflows;
+using Rocket.Interfaces;
 using Rocket.Web.Client.Extensions;
 
 namespace Rocket.Web.Client
 {
-    public partial class ApiRequestManager
+    internal class ApiRequestWorkflowSteps(
+        ILogger<ApiRequestWorkflowSteps> logger,
+        IJsonResolverInstanceProvider jsonResolverInstanceProvider,
+        IAuthenticatedApiClient authenticatedApiClient
+    ) : ApiRequestBase(
+        logger,
+        jsonResolverInstanceProvider,
+        authenticatedApiClient
+    ), IApiRequestWorkflowSteps
     {
         public async Task<T> GetWorkflowStepAsync<T>(
             string workflowId,
@@ -15,12 +24,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         ) where T : WorkflowStepSummary
         {
-            logger
+            Logger
                 .LogInformation("Received Get Workflow Step request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .GetAsync(
                             $"/api/workflowSteps/{workflowId}/get/{stepId}",
                             cancellationToken
@@ -30,8 +39,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<T>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -46,12 +55,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         ) where T : WorkflowStepSummary
         {
-            logger
+            Logger
                 .LogInformation("Received Create Workflow Step request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/workflowSteps/create",
                             request,
@@ -62,8 +71,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<CreateWorkflowStepResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -78,12 +87,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         ) where T : WorkflowStepSummary
         {
-            logger
+            Logger
                 .LogInformation("Received Update Workflow request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PatchAsJsonAsync(
                             "/api/workflowSteps/update",
                             request,
@@ -94,8 +103,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<UpdateWorkflowStepResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -110,12 +119,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Delete Workflow Step request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/workflowSteps/delete",
                             request,
@@ -126,8 +135,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<ApiResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 

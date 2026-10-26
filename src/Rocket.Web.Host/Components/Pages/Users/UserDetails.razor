@@ -146,6 +146,7 @@
             _currentModel =
                 await
                     ApiRequestManager
+                        .Users
                         .GetUserByIdAsync(
                             Id,
                             BaseCancellationToken
@@ -213,6 +214,7 @@
                 var updateUserResponse =
                     await
                         ApiRequestManager
+                            .Users
                             .UpdateUserAsync(
                                 new UserSpecifics
                                 {

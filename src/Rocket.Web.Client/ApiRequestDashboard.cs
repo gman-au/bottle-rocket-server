@@ -2,22 +2,31 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts.Dashboard;
+using Rocket.Interfaces;
 using Rocket.Web.Client.Extensions;
 
 namespace Rocket.Web.Client
 {
-    public partial class ApiRequestManager
+    internal class ApiRequestDashboard(
+        ILogger<ApiRequestDashboard> logger,
+        IJsonResolverInstanceProvider jsonResolverInstanceProvider,
+        IAuthenticatedApiClient authenticatedApiClient
+    ) : ApiRequestBase(
+        logger,
+        jsonResolverInstanceProvider,
+        authenticatedApiClient
+    ), IApiRequestDashboard
     {
         public async Task<FetchDashboardResponse> GetDashboardSnapshotAsync(
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Dashboard request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .GetAsync(
                             $"/api/dashboard",
                             cancellationToken
@@ -27,8 +36,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<FetchDashboardResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
