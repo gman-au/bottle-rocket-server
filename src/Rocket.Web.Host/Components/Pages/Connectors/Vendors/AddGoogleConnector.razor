@@ -196,6 +196,8 @@
                 var response =
                     await
                         ApiRequestManager
+                            .Vendors
+                            .Google
                             .InitiateGoogleConnectorAuthAsync(
                                 new GoogleAuthInitiateRequest
                                 {
@@ -270,6 +272,8 @@
 
                 await
                     ApiRequestManager
+                        .Vendors
+                        .Google
                         .FinalizeGoogleConnectorAsync(
                             new GoogleAuthFinalizeRequest
                             {

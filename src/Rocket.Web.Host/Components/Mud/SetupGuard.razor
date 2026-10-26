@@ -88,6 +88,7 @@ else
                 var phaseResponse =
                     await
                         ApiRequestManager
+                            .System
                             .GetStartupPhaseAsync(CancellationToken.None);
 
                 if (phaseResponse.Phase == (int)StartupPhaseEnum.AdminPendingDeactivation)

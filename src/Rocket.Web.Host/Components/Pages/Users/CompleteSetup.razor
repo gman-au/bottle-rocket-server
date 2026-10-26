@@ -123,6 +123,7 @@
             var startup =
                 await
                     ApiRequestManager
+                        .System
                         .GetStartupPhaseAsync(BaseCancellationToken);
 
             if (startup.Phase != (int)StartupPhaseEnum.AdminPendingDeactivation)
@@ -164,6 +165,7 @@
                 var createUserResponse =
                     await
                         ApiRequestManager
+                            .Users
                             .CreateUserAsync(
                                 new CreateUserRequest
                                 {

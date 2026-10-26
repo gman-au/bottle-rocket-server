@@ -3,22 +3,32 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Connectors;
+using Rocket.Interfaces;
 using Rocket.Web.Client.Extensions;
 
 namespace Rocket.Web.Client
 {
-    public partial class ApiRequestManager
+    internal class ApiRequestConnectors(
+        ILogger<ApiRequestConnectors> logger,
+        IJsonResolverInstanceProvider jsonResolverInstanceProvider,
+        IAuthenticatedApiClient authenticatedApiClient
+    ) : ApiRequestBase(
+        logger,
+        jsonResolverInstanceProvider,
+        authenticatedApiClient
+    ), IApiRequestConnectors
     {
         public async Task<CreateConnectorResponse<T>> CreateConnectorAsync<T>(
             CreateConnectorRequest<T> request,
             CancellationToken cancellationToken
         ) where T : ConnectorSummary
         {
-            logger.LogInformation("Received Create Connector request");
+            Logger
+                .LogInformation("Received Create Connector request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/connectors/create",
                             request,
@@ -29,8 +39,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<CreateConnectorResponse<T>>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -45,12 +55,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received get connectors request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/connectors/fetch",
                             request,
@@ -61,8 +71,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<FetchConnectorsResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -77,12 +87,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Delete Connector request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .DeleteAsync(
                             $"/api/connectors/{id}",
                             cancellationToken
@@ -92,8 +102,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<ApiResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 

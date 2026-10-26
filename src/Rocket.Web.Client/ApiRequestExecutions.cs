@@ -2,23 +2,32 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts.Executions;
+using Rocket.Interfaces;
 using Rocket.Web.Client.Extensions;
 
 namespace Rocket.Web.Client
 {
-    public partial class ApiRequestManager
+    internal class ApiRequestExecutions(
+        ILogger<ApiRequestExecutions> logger,
+        IJsonResolverInstanceProvider jsonResolverInstanceProvider,
+        IAuthenticatedApiClient authenticatedApiClient
+    ) : ApiRequestBase(
+        logger,
+        jsonResolverInstanceProvider,
+        authenticatedApiClient
+    ), IApiRequestExecutions
     {
         public async Task<FetchExecutionsResponse> GetExecutionsAsync(
             FetchExecutionsRequest request,
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received get executions request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/executions/fetch",
                             request,
@@ -29,8 +38,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<FetchExecutionsResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -45,12 +54,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Get Execution request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .GetAsync(
                             $"/api/executions/get/{id}",
                             cancellationToken
@@ -60,8 +69,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<ExecutionSummary>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -76,12 +85,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Create Execution request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/executions/create",
                             workflow,
@@ -92,8 +101,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<CreateExecutionResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -108,12 +117,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Start Execution request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PutAsync(
                             $"/api/executions/start/{executionId}",
                             null,
@@ -124,8 +133,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<StartExecutionResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -140,12 +149,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Cancel Execution request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PutAsync(
                             $"/api/executions/cancel/{executionId}",
                             null,
@@ -156,8 +165,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<CancelExecutionResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -172,12 +181,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Delete Execution request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .DeleteAsync(
                             $"/api/executions/{executionId}",
                             cancellationToken
@@ -187,8 +196,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<DeleteExecutionResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 

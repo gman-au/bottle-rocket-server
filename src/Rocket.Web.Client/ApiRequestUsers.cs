@@ -2,23 +2,32 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts.Users;
+using Rocket.Interfaces;
 using Rocket.Web.Client.Extensions;
 
 namespace Rocket.Web.Client
 {
-    public partial class ApiRequestManager
+    internal class ApiRequestUsers(
+        ILogger<ApiRequestUsers> logger,
+        IJsonResolverInstanceProvider jsonResolverInstanceProvider,
+        IAuthenticatedApiClient authenticatedApiClient
+    ) : ApiRequestBase(
+        logger,
+        jsonResolverInstanceProvider,
+        authenticatedApiClient
+    ), IApiRequestUsers
     {
         public async Task<FetchUsersResponse> GetUsersAsync(
             FetchUsersRequest request,
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received get users request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/users/fetch",
                             request,
@@ -29,8 +38,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<FetchUsersResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -45,12 +54,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Get User request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .GetAsync(
                             $"/api/users/get/{id}",
                             cancellationToken
@@ -60,8 +69,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<UserSpecifics>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -76,12 +85,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Update User request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/users/update",
                             user,
@@ -92,8 +101,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<UpdateUserResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -108,12 +117,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Create User request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/users/create",
                             user,
@@ -124,8 +133,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<CreateUserResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -134,18 +143,18 @@ namespace Rocket.Web.Client
 
             return result;
         }
-        
+
         public async Task<UpdateUserResponse> UpdateDarkModeAsync(
             SetUserDarkModeRequest request,
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Update Dark Mode request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/users/darkMode",
                             request,
@@ -156,8 +165,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<UpdateUserResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 

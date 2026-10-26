@@ -107,6 +107,8 @@
                 var response =
                     await
                         ApiRequestManager
+                            .Vendors
+                            .Notion
                             .GetNotionParentNotesAsync(
                                 new GetAllNotionParentNotesRequest
                                 {

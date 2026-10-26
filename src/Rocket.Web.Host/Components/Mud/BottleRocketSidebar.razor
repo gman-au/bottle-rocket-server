@@ -250,6 +250,7 @@
             var phaseResponse =
                 await
                     ApiRequestManager
+                        .System
                         .GetStartupPhaseAsync(CancellationToken.None);
 
             _isSetupPending = phaseResponse.Phase == (int)StartupPhaseEnum.AdminPendingDeactivation;
@@ -316,6 +317,7 @@
 
         await
             ApiRequestManager
+                .Users
                 .UpdateDarkModeAsync(
                     new SetUserDarkModeRequest
                     {

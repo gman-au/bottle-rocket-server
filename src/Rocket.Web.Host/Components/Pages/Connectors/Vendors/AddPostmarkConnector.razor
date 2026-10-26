@@ -148,6 +148,7 @@
                 var response =
                     await
                         ApiRequestManager
+                            .Connectors
                             .CreateConnectorAsync(
                                 new CreateConnectorRequest<PostmarkConnectorSpecifics>
                                 {

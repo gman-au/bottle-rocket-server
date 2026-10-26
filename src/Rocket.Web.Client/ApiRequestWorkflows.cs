@@ -3,23 +3,32 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Workflows;
+using Rocket.Interfaces;
 using Rocket.Web.Client.Extensions;
 
 namespace Rocket.Web.Client
 {
-    public partial class ApiRequestManager
+    internal class ApiRequestWorkflows(
+        ILogger<ApiRequestWorkflows> logger,
+        IJsonResolverInstanceProvider jsonResolverInstanceProvider,
+        IAuthenticatedApiClient authenticatedApiClient
+    ) : ApiRequestBase(
+        logger,
+        jsonResolverInstanceProvider,
+        authenticatedApiClient
+    ), IApiRequestWorkflows
     {
         public async Task<FetchWorkflowsResponse> GetWorkflowsAsync(
             FetchWorkflowsRequest request,
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received get workflows request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/workflows/fetch",
                             request,
@@ -30,8 +39,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<FetchWorkflowsResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -46,12 +55,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Get Workflow request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .GetAsync(
                             $"/api/workflows/get/{id}",
                             cancellationToken
@@ -61,8 +70,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<WorkflowSummary>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -77,12 +86,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Update Workflow request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PatchAsJsonAsync(
                             "/api/workflows/update",
                             workflow,
@@ -93,8 +102,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<UpdateWorkflowResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -109,12 +118,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Create Workflow request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .PostAsJsonAsync(
                             "/api/workflows/create",
                             workflow,
@@ -125,8 +134,40 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<CreateWorkflowResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
+
+        public async Task<CloneWorkflowResponse> CloneWorkflowAsync(
+            CloneWorkflowRequest workflow,
+            CancellationToken cancellationToken
+        )
+        {
+            Logger
+                .LogInformation("Received Clone Workflow request");
+
+            var response =
+                await
+                    AuthenticatedApiClient
+                        .PostAsJsonAsync(
+                            "/api/workflows/clone",
+                            workflow,
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<CloneWorkflowResponse>(
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 
@@ -141,12 +182,12 @@ namespace Rocket.Web.Client
             CancellationToken cancellationToken
         )
         {
-            logger
+            Logger
                 .LogInformation("Received Delete Workflow request");
 
             var response =
                 await
-                    authenticatedApiClient
+                    AuthenticatedApiClient
                         .DeleteAsync(
                             $"/api/workflows/{id}",
                             cancellationToken
@@ -156,39 +197,8 @@ namespace Rocket.Web.Client
                 await
                     response
                         .TryParseResponse<ApiResponse>(
-                            _jsonSerializerOptions,
-                            logger,
-                            cancellationToken
-                        );
-
-            EnsureApiSuccessStatusCode(result);
-            EnsureHttpSuccessStatusCode(response);
-
-            return result;
-        }
-
-        public async Task<ApiResponse> DeleteScanByIdAsync(
-            string id,
-            CancellationToken cancellationToken
-        )
-        {
-            logger
-                .LogInformation("Received Delete Scan request");
-
-            var response =
-                await
-                    authenticatedApiClient
-                        .DeleteAsync(
-                            $"/api/scans/delete/{id}",
-                            cancellationToken
-                        );
-
-            var result =
-                await
-                    response
-                        .TryParseResponse<ApiResponse>(
-                            _jsonSerializerOptions,
-                            logger,
+                            JsonSerializerOptions,
+                            Logger,
                             cancellationToken
                         );
 

@@ -131,6 +131,7 @@
                 var createUserResponse =
                     await
                         ApiRequestManager
+                            .Users
                             .CreateUserAsync(
                                 new CreateUserRequest
                                 {

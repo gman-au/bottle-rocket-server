@@ -38,6 +38,7 @@
         var versionResponse =
             await
                 ApiRequestManager
+                    .System
                     .GetSystemVersionsAsync(CancellationToken.None);
 
         if (versionResponse != null)

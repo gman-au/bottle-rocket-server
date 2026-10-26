@@ -231,6 +231,8 @@
                 var response =
                     await
                         ApiRequestManager
+                            .Vendors
+                            .Microsofts
                             .InitiateMicrosoftConnectorAuthAsync(
                                 new MicrosoftAuthInitiateRequest
                                 {

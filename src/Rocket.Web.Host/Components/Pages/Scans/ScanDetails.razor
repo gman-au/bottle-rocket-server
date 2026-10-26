@@ -188,6 +188,7 @@
             _scanSpecifics =
                 await
                     ApiRequestManager
+                        .Scans
                         .GetMyScanAsync(
                             Id,
                             BaseCancellationToken
@@ -196,6 +197,7 @@
             _availableWorkflows =
                 (await
                     ApiRequestManager
+                        .Workflows
                         .GetWorkflowsAsync(
                             new FetchWorkflowsRequest
                             {
@@ -209,6 +211,7 @@
             _executions =
                 (await
                     ApiRequestManager
+                        .Executions
                         .GetExecutionsAsync(
                             new FetchExecutionsRequest
                             {
@@ -251,6 +254,7 @@
                 var execution =
                     await
                         ApiRequestManager
+                            .Executions
                             .CreateExecutionAsync(
                                 new CreateExecutionRequest
                                 {
@@ -268,6 +272,7 @@
                         var response =
                             await
                                 ApiRequestManager
+                                    .Executions
                                     .StartExecutionAsync(
                                         execution.Id,
                                         BaseCancellationToken

@@ -10,6 +10,7 @@
 @inject IApiRequestManager ApiRequestManager
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
 @inject IStringLocalizer<WorkflowsResource> StringLocalizer
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
@@ -47,9 +48,18 @@
                         @workflow.CreatedAt?.ToString("g")
                     </td>
                     <td class="general-centered">
-                        <MudIconButton
-                            OnClick="@(() => ConfirmDeleteAsync(workflow))"
-                            Icon="@StandardIcons.DeleteIcon"/>
+                        <MudMenu Dense Icon="@StandardIcons.SubMenuIcon">
+                            <MudMenuItem
+                                Icon="@StandardIcons.CloneIcon"
+                                Label="@StringLocalizer["WorkflowsCloneCaption"]"
+                                @onclick="@(() => NavigationManager.NavigateTo($"/MyWorkflows/Clone/{workflow.Id}"))"
+                            />
+                            <MudMenuItem
+                                Icon="@StandardIcons.DeleteIcon"
+                                Label="@StringLocalizer["WorkflowsDeleteCaption"]"
+                                OnClick="@(() => ConfirmDeleteAsync(workflow))"
+                            />
+                        </MudMenu>
                     </td>
                 </tr>
             }
@@ -128,6 +138,7 @@
         var response =
             await
                 ApiRequestManager
+                    .Workflows
                     .GetWorkflowsAsync(
                         request,
                         BaseCancellationToken
@@ -178,6 +189,7 @@
 
                 await
                     ApiRequestManager
+                        .Workflows
                         .DeleteWorkflowByIdAsync(
                             workflow.Id,
                             BaseCancellationToken
@@ -186,6 +198,12 @@
                 _workflows =
                     _workflows
                         .Where(o => o.Id != workflow.Id);
+                
+                Snackbar
+                    .Add(
+                        StringLocalizer["WorkflowsWasDeletedMessage"].Value,
+                        Severity.Success
+                    );
             }
             catch (Exception ex)
             {

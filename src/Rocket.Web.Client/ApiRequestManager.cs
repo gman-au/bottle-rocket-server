@@ -1,115 +1,27 @@
-﻿using System;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Rocket.Api.Contracts;
-using Rocket.Domain.Enum;
-using Rocket.Domain.Exceptions;
-using Rocket.Interfaces;
-using Rocket.Web.Client.Extensions;
-
-namespace Rocket.Web.Client
+﻿namespace Rocket.Web.Client
 {
-    public partial class ApiRequestManager(
-        ILogger<ApiRequestManager> logger,
-        IJsonResolverInstanceProvider jsonResolverInstanceProvider,
-        IAuthenticatedApiClient authenticatedApiClient
+    public class ApiRequestManager(
+        IApiRequestConnectors connectors,
+        IApiRequestDashboard dashboard,
+        IApiRequestExecutions executions,
+        IApiRequestGlobalSettings globalSettings,
+        IApiRequestScans scans,
+        IApiRequestSystem system,
+        IApiRequestUsers users,
+        IApiRequestVendors vendors,
+        IApiRequestWorkflows workflows,
+        IApiRequestWorkflowSteps workflowSteps
     ) : IApiRequestManager
     {
-        private readonly JsonSerializerOptions _jsonSerializerOptions =
-            jsonResolverInstanceProvider
-                .GetSerializationOptions();
-
-        public async Task<StartupPhaseResponse> GetStartupPhaseAsync(CancellationToken cancellationToken)
-        {
-            logger
-                .LogInformation("Checking startup phase");
-
-            var response =
-                await
-                    authenticatedApiClient
-                        .GetAsync(
-                            "/api/startup/phase",
-                            cancellationToken
-                        );
-
-            response
-                .EnsureSuccessStatusCode();
-
-            var result =
-                await
-                    response
-                        .TryParseResponse<StartupPhaseResponse>(
-                            _jsonSerializerOptions,
-                            logger,
-                            cancellationToken
-                        );
-
-            return result;
-        }
-
-        public async Task<VersionResponse> GetSystemVersionsAsync(CancellationToken cancellationToken)
-        {
-            logger
-                .LogInformation("Checking system versions");
-
-            var webVersion =
-                Environment.GetEnvironmentVariable("APP_VERSION")
-                ?? "unknown";
-
-            var response =
-                await
-                    authenticatedApiClient
-                        .GetAsync(
-                            "/api/version",
-                            cancellationToken
-                        );
-
-            var result =
-                await
-                    response
-                        .TryParseResponse<VersionResponse>(
-                            _jsonSerializerOptions,
-                            logger,
-                            cancellationToken
-                        );
-
-            result.WebVersion = webVersion;
-
-            return result;
-        }
-
-        private static void EnsureApiSuccessStatusCode(ApiResponse response)
-        {
-            if (response == null) return;
-
-            if (response.ErrorCode != (int)ApiStatusCodeEnum.Ok)
-                throw new RocketException(
-                    response.ErrorMessage,
-                    response.ErrorCode
-                );
-        }
-
-        private static void EnsureHttpSuccessStatusCode(HttpResponseMessage response)
-        {
-            try
-            {
-                response
-                    .EnsureSuccessStatusCode();
-            }
-            catch (HttpRequestException ex)
-            {
-                var statusCode = (int)response.StatusCode;
-
-                if (ex.StatusCode != null)
-                    throw new RocketException(
-                        "The server returned a bad response",
-                        ApiStatusCodeEnum.ServerError,
-                        statusCode
-                    );
-            }
-        }
+        public IApiRequestConnectors Connectors => connectors;
+        public IApiRequestDashboard Dashboard => dashboard;
+        public IApiRequestExecutions Executions => executions;
+        public IApiRequestGlobalSettings GlobalSettings => globalSettings;
+        public IApiRequestScans Scans => scans;
+        public IApiRequestSystem System => system;
+        public IApiRequestUsers Users => users;
+        public IApiRequestVendors Vendors => vendors;
+        public IApiRequestWorkflows Workflows => workflows;
+        public IApiRequestWorkflowSteps WorkflowSteps => workflowSteps;
     }
 }

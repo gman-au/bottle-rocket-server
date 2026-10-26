@@ -28,5 +28,6 @@ namespace Rocket.Web.Host
         public const string NoImageIcon = Icons.Material.Filled.BrokenImage;
         public const string InspectIcon = Icons.Material.Filled.Search;
         public const string SubMenuIcon = Icons.Material.Filled.MoreVert;
+        public const string CloneIcon = Icons.Material.Filled.CopyAll;
     }
 }

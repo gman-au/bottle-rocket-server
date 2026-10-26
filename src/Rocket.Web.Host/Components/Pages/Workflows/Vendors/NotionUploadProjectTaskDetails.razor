@@ -194,6 +194,8 @@
                 var response =
                     await
                         ApiRequestManager
+                            .Vendors
+                            .Notion
                             .GetNotionDataSourcesAsync(
                                 new GetAllNotionDataSourcesRequest
                                 {

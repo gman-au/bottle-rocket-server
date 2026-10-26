@@ -160,6 +160,7 @@
             {
                 await
                     ApiRequestManager
+                        .Connectors
                         .CreateConnectorAsync(
                             new CreateConnectorRequest<GcpConnectorSpecifics>
                             {

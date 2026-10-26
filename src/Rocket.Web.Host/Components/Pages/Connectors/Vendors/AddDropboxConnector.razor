@@ -193,6 +193,7 @@
                 var response =
                     await
                         ApiRequestManager
+                            .Connectors
                             .CreateConnectorAsync(
                                 new CreateConnectorRequest<DropboxConnectorSpecifics>
                                 {
@@ -251,6 +252,8 @@
 
                 await
                     ApiRequestManager
+                        .Vendors
+                        .Dropbox
                         .FinalizeDropboxConnectorAsync(
                             new FinalizeDropboxConnectorRequest
                             {

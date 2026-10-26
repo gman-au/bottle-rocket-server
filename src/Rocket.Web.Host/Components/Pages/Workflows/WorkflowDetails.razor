@@ -173,6 +173,7 @@
             _currentModel =
                 await
                     ApiRequestManager
+                        .Workflows
                         .GetWorkflowByIdAsync(
                             Id,
                             BaseCancellationToken
@@ -196,6 +197,7 @@
             _executions =
                 (await
                     ApiRequestManager
+                        .Executions
                         .GetExecutionsAsync(
                             new FetchExecutionsRequest
                             {
@@ -231,6 +233,7 @@
             {
                 await
                     ApiRequestManager
+                        .Workflows
                         .UpdateWorkflowAsync(
                             new MyWorkflowSummary
                             {
