@@ -7,7 +7,7 @@
         public const string ConnectorsCollection = "Connectors";
         public const string WorkflowsCollection = "Workflows";
         public const string ExecutionsCollection = "Executions";
-        public const string RocketbookPageTemplateCollection = "RocketbookPageTemplates";
         public const string GlobalSettingsCollection = "GlobalSettings";
+        public const string TokensCollection = "Tokens";
     }
 }
