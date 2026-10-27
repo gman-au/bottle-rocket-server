@@ -4,33 +4,23 @@ using Testcontainers.MongoDb;
 
 namespace Rocket.Tests.Infrastructure.Contexts
 {
-    public class TestContainerServiceContext(IContainerOrchestrator orchestrator) : IServiceContext
+    public class TestContainerServiceContext(
+        IContainerOrchestrator orchestrator
+    ) : IServiceContext
     {
-        private Uri _apiUri;
-        private MongoDbContainer _mongoDbContainer;
-
         public async Task SetupEnvironmentContextAsync()
         {
             await
                 orchestrator
                     .ArrangeDockerNetwork();
 
-            _mongoDbContainer =
-                await
-                    orchestrator
-                        .ArrangeDatabaseContainerAsync();
+            await
+                orchestrator
+                    .ArrangeDatabaseContainerAsync();
 
-            var apiContainer =
-                await
-                    orchestrator
-                        .ArrangeApiContainerAsync();
-
-            _apiUri =
-                new UriBuilder(
-                    "http",
-                    apiContainer.Hostname,
-                    apiContainer.GetMappedPublicPort(8080)
-                ).Uri;
+            await
+                orchestrator
+                    .ArrangeApiContainerAsync();
         }
 
         public async Task TeardownEnvironmentContextAsync()
@@ -56,9 +46,10 @@ namespace Rocket.Tests.Infrastructure.Contexts
                     .ArrangeDatabaseResetAsync();
         }
 
-        public async Task RunSqlCommandsAsync(params string[] sqlCommands)
+        public async Task RunSqlCommandsAsync(
+            params string[] sqlCommands
+        )
         {
-
             /*var connection = new SqlConnection(_mongoDbContainer.GetConnectionString());
 
             await

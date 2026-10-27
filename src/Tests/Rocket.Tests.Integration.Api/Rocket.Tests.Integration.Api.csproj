@@ -33,4 +33,10 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Features\Workflows.feature.cs">
+        <DependentUpon>Workflows.feature</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>
