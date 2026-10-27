@@ -9,14 +9,17 @@ using Achar.Domain.Testing.Exception;
 using Achar.Infrastructure.Api.HttpClient;
 using Achar.Infrastructure.Api.HttpClient.Options;
 using Achar.Infrastructure.Testing.Extensions;
+using Achar.Interfaces.Testing;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Rocket.Tests.Integration.Api.Engine
 {
-    public class ApiExtendedHttpClientInteractionEngine(IOptions<ApiConfigurationOptions> apiConfigurationOptionsAccessor)
-        : ApiHttpClientInteractionEngine(apiConfigurationOptionsAccessor), IApiExtendedInteractionEngine
+    public class ApiExtendedHttpClientInteractionEngine(
+        IOptions<ApiConfigurationOptions> apiConfigurationOptionsAccessor,
+        IValueStore valueStore)
+        : ApiHttpClientInteractionEngine(apiConfigurationOptionsAccessor, valueStore), IApiExtendedInteractionEngine
     {
         private readonly ApiConfigurationOptions _apiConfigurationOptions = apiConfigurationOptionsAccessor.Value;
         private readonly IList<Tuple<string, string>> _requestHeaders = new List<Tuple<string, string>>();
