@@ -42,7 +42,7 @@ namespace Rocket.Web.Client.Authentication
                             new Claim(ClaimTypes.Role, role ?? "") 
                         ],
                         DomainConstants
-                            .BasicAuthentication
+                            .JwtAuthentication
                     )
                     : new ClaimsIdentity();
 

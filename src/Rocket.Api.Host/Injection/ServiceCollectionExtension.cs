@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson.Serialization;
 using Rocket.Api.Host.Exceptions;
 using Rocket.Api.Host.Notifiers;
@@ -34,8 +37,7 @@ namespace Rocket.Api.Host.Injection
         {
             if (!BsonClassMap.IsClassMapRegistered(typeof(BaseConnector)))
             {
-                BsonClassMap.RegisterClassMap<BaseConnector>(
-                    cm =>
+                BsonClassMap.RegisterClassMap<BaseConnector>(cm =>
                     {
                         cm.AutoMap();
                         cm.SetIsRootClass(true);
@@ -45,8 +47,7 @@ namespace Rocket.Api.Host.Injection
 
             if (!BsonClassMap.IsClassMapRegistered(typeof(BaseWorkflowStep)))
             {
-                BsonClassMap.RegisterClassMap<BaseWorkflowStep>(
-                    cm =>
+                BsonClassMap.RegisterClassMap<BaseWorkflowStep>(cm =>
                     {
                         cm.AutoMap();
                         cm.SetIsRootClass(true);
@@ -56,8 +57,7 @@ namespace Rocket.Api.Host.Injection
 
             if (!BsonClassMap.IsClassMapRegistered(typeof(BaseExecutionStep)))
             {
-                BsonClassMap.RegisterClassMap<BaseExecutionStep>(
-                    cm =>
+                BsonClassMap.RegisterClassMap<BaseExecutionStep>(cm =>
                     {
                         cm.AutoMap();
                         cm.SetIsRootClass(true);
@@ -94,8 +94,7 @@ namespace Rocket.Api.Host.Injection
                     .Get<string[]>() ?? [];
 
             services
-                .AddCors(
-                    options =>
+                .AddCors(options =>
                     {
                         options
                             .AddPolicy(
@@ -154,6 +153,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IObfuscator, Obfuscator>()
                 .AddTransient<IFileRetitler, SafeFileRetitler>()
                 .AddTransient<IWorkflowCloner, WorkflowCloner>()
+                .AddSingleton<IAuthSecretProvider, AuthSecretProvider>()
                 .AddSingleton<IDashboardSnapshotProvider, DashboardSnapshotProvider>();
 
             if (environment.IsDevelopment())
@@ -248,10 +248,52 @@ namespace Rocket.Api.Host.Injection
         )
         {
             services
-                .AddLocalization(
-                    options =>
+                .AddLocalization(options => { options.ResourcesPath = ""; }
+                );
+
+            return services;
+        }
+
+        public static IServiceCollection AddJwtAuthenticationServices(
+            this IServiceCollection services,
+            IWebHostEnvironment environment
+        )
+        {
+            var provider =
+                services
+                    .BuildServiceProvider();
+
+            var authSecretProvider =
+                provider
+                    .GetRequiredService<IAuthSecretProvider>();
+
+            var jwtSecret = 
+                authSecretProvider
+                    .Get();
+            
+            var key =
+                Encoding
+                    .ASCII
+                    .GetBytes(jwtSecret);
+
+            services
+                .AddAuthentication(options =>
                     {
-                        options.ResourcesPath = "";
+                        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    }
+                )
+                .AddJwtBearer(options =>
+                    {
+                        options.RequireHttpsMetadata = !environment.IsDevelopment();
+                        options.SaveToken = true;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(key),
+                            ValidateIssuer = false,
+                            ValidateAudience = false
+                        };
                     }
                 );
 

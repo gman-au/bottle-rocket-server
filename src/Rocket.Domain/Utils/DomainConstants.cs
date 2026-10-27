@@ -7,7 +7,9 @@ namespace Rocket.Domain.Utils
     {
         public const string RootAdminUserName = "admin";
         public const string Basic = "Basic";
+        public const string Bearer = "Bearer";
         public const string BasicAuthentication = "BasicAuthentication";
+        public const string JwtAuthentication = "Bearer";
         public const string BlazorAppCorsPolicy = "BlazorApp";
 
         public const string AdminRole = "Administrator";

@@ -91,7 +91,7 @@ namespace Rocket.Web.Host.Injection
         )
         {
             services
-                .AddScoped<IAuthenticationManager, BasicAuthenticationManager>()
+                .AddScoped<IAuthenticationManager, JwtAuthenticationManager>()
                 .AddScoped<IAuthenticatedApiClient, AuthenticatedApiClient>();
 
             services

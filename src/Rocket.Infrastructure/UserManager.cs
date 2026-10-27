@@ -74,7 +74,9 @@ namespace Rocket.Infrastructure
             }
         }
 
-        public async Task DeactivateAdminAccountAsync(CancellationToken cancellationToken) =>
+        public async Task DeactivateAdminAccountAsync(
+            CancellationToken cancellationToken
+        ) =>
             await
                 userRepository
                     .DeactivateAdminUserAsync(cancellationToken);
@@ -188,7 +190,7 @@ namespace Rocket.Infrastructure
                             userId,
                             cancellationToken
                         );
-            
+
             if (user == null)
             {
                 throw new RocketException(
@@ -196,7 +198,7 @@ namespace Rocket.Infrastructure
                     ApiStatusCodeEnum.UnknownUser
                 );
             }
-            
+
             await
                 userRepository
                     .UpdateUserFieldAsync(
@@ -246,7 +248,9 @@ namespace Rocket.Infrastructure
             }
         }
 
-        private void ThrowIfPasswordInvalid(string password)
+        private void ThrowIfPasswordInvalid(
+            string password
+        )
         {
             // Validate password
             if (string.IsNullOrWhiteSpace(password) || password.Length < 8)

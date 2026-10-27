@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,10 +16,10 @@ using Rocket.Web.Client.Options;
 
 namespace Rocket.Web.Client.Authentication
 {
-    public class BasicAuthenticationManager : IAuthenticationManager
+    public class JwtAuthenticationManager : IAuthenticationManager
     {
         private readonly HttpClient _httpClient;
-        private readonly ILogger<BasicAuthenticationManager> _logger;
+        private readonly ILogger<JwtAuthenticationManager> _logger;
         private readonly ProtectedSessionStorage _sessionStorage;
         private readonly IThemeService _themeService;
         private string _cachedAuthHeader;
@@ -31,9 +30,9 @@ namespace Rocket.Web.Client.Authentication
         private bool _initialized;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public BasicAuthenticationManager(
+        public JwtAuthenticationManager(
             IOptions<ApiConfigurationOptions> apiConfigurationOptionsAccessor,
-            ILogger<BasicAuthenticationManager> logger,
+            ILogger<JwtAuthenticationManager> logger,
             ProtectedSessionStorage sessionStorage,
             IJsonResolverInstanceProvider jsonResolverInstanceProvider,
             IThemeService themeService
@@ -72,26 +71,21 @@ namespace Rocket.Web.Client.Authentication
         {
             try
             {
-                // Create Basic Auth header
-                var credentials =
-                    Convert
-                        .ToBase64String(
-                            Encoding
-                                .UTF8
-                                .GetBytes($"{username}:{password}")
-                        );
-
-                var authHeader = $"{DomainConstants.Basic} {credentials}";
-
                 var request =
                     new HttpRequestMessage(
                         HttpMethod.Post,
-                        "/api/connection"
+                        "/api/auth/login"
                     );
 
-                request.Headers.Authorization =
-                    AuthenticationHeaderValue
-                        .Parse(authHeader);
+                request.Content =
+                    JsonContent
+                        .Create(
+                            new AccountLoginRequest
+                            {
+                                Username = username,
+                                Password = password
+                            }
+                        );
 
                 var response =
                     await
@@ -103,22 +97,24 @@ namespace Rocket.Web.Client.Authentication
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var connectionTestResponse =
+                    var authResponse =
                         await
                             response
-                                .TryParseResponse<ConnectionTestResponse>(
+                                .TryParseResponse<AccountLoginResponse>(
                                     _jsonSerializerOptions,
                                     _logger,
                                     cancellationToken
                                 );
 
+                    var authHeader = $"{DomainConstants.Bearer} {authResponse.Token}";
+
                     _cachedAuthHeader = authHeader;
-                    _cachedUsername = connectionTestResponse.UserName;
-                    _cachedRole = connectionTestResponse.Role;
-                    _cachedCurrentLanguage = connectionTestResponse.CurrentLanguage;
+                    _cachedUsername = authResponse.UserName;
+                    _cachedRole = authResponse.Role;
+                    _cachedCurrentLanguage = authResponse.CurrentLanguage;
 
                     _themeService
-                        .SetDarkMode(connectionTestResponse.DarkMode);
+                        .SetDarkMode(authResponse.DarkMode);
 
                     try
                     {
@@ -129,17 +125,17 @@ namespace Rocket.Web.Client.Authentication
                         
                         await _sessionStorage.SetAsync(
                             DomainConstants.UsernameKey,
-                            connectionTestResponse.UserName
+                            authResponse.UserName
                         );
                         
                         await _sessionStorage.SetAsync(
                             DomainConstants.RoleKey,
-                            connectionTestResponse.Role
+                            authResponse.Role
                         );
                         
                         await _sessionStorage.SetAsync(
                             DomainConstants.CurrentLanguageKey,
-                            connectionTestResponse.CurrentLanguage
+                            authResponse.CurrentLanguage
                         );
                     }
                     catch (InvalidOperationException ex) when (ex.Message.Contains("prerendering"))
@@ -151,8 +147,8 @@ namespace Rocket.Web.Client.Authentication
                     _logger
                         .LogInformation(
                             "User {username} logged in successfully with role {role}",
-                            connectionTestResponse.UserName,
-                            connectionTestResponse.Role
+                            authResponse.UserName,
+                            authResponse.Role
                         );
 
                     OnAuthenticationStateChanged?

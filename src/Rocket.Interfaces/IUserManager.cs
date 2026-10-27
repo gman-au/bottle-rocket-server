@@ -29,7 +29,6 @@ namespace Rocket.Interfaces
         Task UpdateAccountAsync(
             string userId,
             string userName,
-            
             bool? isActive,
             bool? isAdmin,
             string newPassword,
