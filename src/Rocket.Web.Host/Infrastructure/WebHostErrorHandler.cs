@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Interfaces;
 using Rocket.Web.Host.Components.Dialog;
 
 namespace Rocket.Web.Host.Infrastructure
@@ -12,7 +13,8 @@ namespace Rocket.Web.Host.Infrastructure
     public class WebHostErrorHandler(
         ISnackbar snackbar,
         IDialogService dialogService,
-        NavigationManager navigationManager
+        NavigationManager navigationManager,
+        IAuthenticationManager authenticationManager
     ) : IWebHostErrorHandler
     {
         public async Task HandleExceptionAsync(
@@ -43,7 +45,10 @@ namespace Rocket.Web.Host.Infrastructure
 
                             if (!(result?.Canceled ?? true))
                             {
-                                
+                                await
+                                    authenticationManager
+                                        .LogoutAsync();
+
                                 navigationManager
                                     .NavigateTo(
                                         "/Account/Login",
