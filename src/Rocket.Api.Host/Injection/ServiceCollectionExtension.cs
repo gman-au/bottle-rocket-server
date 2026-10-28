@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -267,10 +268,10 @@ namespace Rocket.Api.Host.Injection
                 provider
                     .GetRequiredService<IAuthSecretProvider>();
 
-            var jwtSecret = 
+            var jwtSecret =
                 authSecretProvider
                     .Get();
-            
+
             var key =
                 Encoding
                     .ASCII
@@ -287,13 +288,16 @@ namespace Rocket.Api.Host.Injection
                     {
                         options.RequireHttpsMetadata = !environment.IsDevelopment();
                         options.SaveToken = true;
-                        options.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateIssuerSigningKey = true,
-                            IssuerSigningKey = new SymmetricSecurityKey(key),
-                            ValidateIssuer = false,
-                            ValidateAudience = false
-                        };
+                        options.TokenValidationParameters =
+                            new TokenValidationParameters
+                            {
+                                ValidateIssuerSigningKey = true,
+                                IssuerSigningKey = new SymmetricSecurityKey(key),
+                                ValidateIssuer = false,
+                                ValidateAudience = false,
+                                ValidateLifetime = true,
+                                ClockSkew = TimeSpan.Zero
+                            };
                     }
                 );
 

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
+using Rocket.Tests.Infrastructure.Definition;
 using Testcontainers.MongoDb;
 
 namespace Rocket.Tests.Infrastructure
@@ -92,7 +93,9 @@ namespace Rocket.Tests.Infrastructure
                         .DisposeAsync();
         }
 
-        public async Task<IContainer> ArrangeApiContainerAsync(string databaseName)
+        public async Task<IContainer> ArrangeApiContainerAsync(
+            OrchestrationParameters orchestrationParameters
+        )
         {
             _apiContainer =
                 new ContainerBuilder(ApiImageTag)
@@ -113,7 +116,11 @@ namespace Rocket.Tests.Infrastructure
                     )
                     .WithEnvironment(
                         "MongoDbConfigurationOptions__DatabaseName",
-                        databaseName
+                        orchestrationParameters?.DatabaseName ?? "BottleRocket"
+                    )
+                    .WithEnvironment(
+                        "JWT_EXPIRY_SECONDS",
+                        (orchestrationParameters?.JwtExpirySeconds ?? 60 * 24 * 7).ToString()
                     )
                     .WithEnvironment(
                         "LocalBlobConfigurationOptions__LocalBasePath",
@@ -127,7 +134,10 @@ namespace Rocket.Tests.Infrastructure
                         3001,
                         8080
                     )
-                    .WithVolumeMount("api-scans", "/bottle-rocket/scans")
+                    .WithVolumeMount(
+                        "api-scans",
+                        "/bottle-rocket/scans"
+                    )
                     .WithNetwork(_network)
                     .WithWaitStrategy(
                         Wait

@@ -13,18 +13,20 @@ Background:
 Scenario: Fetch workflows (unauthorized)
     Given an API request is created against endpoint "/api/workflows/fetch"
     When the request is sent via "POST"
-    Then the request should have failed with status code 401    
-    
-@CREATE-RECORD @INVALID
+    Then the request should have failed with status code 401
+
+@CREATE-RECORD
+@INVALID
 Scenario: Create new workflow (no required details)
     Given an API request is created against endpoint "/api/workflows/create"
     And the request authorization is set to the user John
     And the request body element "other" has value "nothing"
     When the request is sent via "POST"
     Then the request should have failed with status code 500
-    And the response with path "error_code" should have a value of "1002"    
-    
-@CREATE-RECORD @CLONE
+    And the response with path "error_code" should have a value of "1002"
+
+@CREATE-RECORD
+@CLONE
 Scenario: Create a workflow and clone it
     Given an API request is created against endpoint "/api/workflows/create"
     And the request authorization is set to the user John

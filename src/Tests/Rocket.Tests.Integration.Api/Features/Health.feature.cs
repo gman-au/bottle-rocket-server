@@ -123,7 +123,7 @@ namespace Rocket.Tests.Integration.Api.Features
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
 #line 6
-    this.ScenarioInitialize(scenarioInfo, ruleInfo);
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
             {
@@ -133,13 +133,13 @@ namespace Rocket.Tests.Integration.Api.Features
             {
                 await this.ScenarioStartAsync();
 #line 7
-        await testRunner.GivenAsync("an API request is created against endpoint \"/api/health\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+    await testRunner.GivenAsync("an API request is created against endpoint \"/api/health\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 8
-        await testRunner.WhenAsync("the request is sent via \"GET\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("the request is sent via \"GET\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 9
-        await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+    await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -159,8 +159,8 @@ namespace Rocket.Tests.Integration.Api.Features
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Health check endpoint (post)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 12
-    this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line 13
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
             {
@@ -169,14 +169,14 @@ namespace Rocket.Tests.Integration.Api.Features
             else
             {
                 await this.ScenarioStartAsync();
-#line 13
-        await testRunner.GivenAsync("an API request is created against endpoint \"/api/health\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
-#line hidden
 #line 14
-        await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.GivenAsync("an API request is created against endpoint \"/api/health\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 15
-        await testRunner.ThenAsync("the request should have failed with status code 405", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+    await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 16
+    await testRunner.ThenAsync("the request should have failed with status code 405", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -194,8 +194,8 @@ namespace Rocket.Tests.Integration.Api.Features
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Startup phase (get) before admin creation", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 18
-    this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line 19
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
             {
@@ -204,17 +204,17 @@ namespace Rocket.Tests.Integration.Api.Features
             else
             {
                 await this.ScenarioStartAsync();
-#line 19
-        await testRunner.GivenAsync("an API request is created against endpoint \"/api/startup/phase\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
-#line hidden
 #line 20
-        await testRunner.WhenAsync("the request is sent via \"GET\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.GivenAsync("an API request is created against endpoint \"/api/startup/phase\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 21
-        await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+    await testRunner.WhenAsync("the request is sent via \"GET\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 22
-        await testRunner.AndAsync("the response with path \"phase\" should have a value of \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 23
+    await testRunner.AndAsync("the response with path \"phase\" should have a value of \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -232,8 +232,8 @@ namespace Rocket.Tests.Integration.Api.Features
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Startup phase (get) after admin creation", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 25
-    this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line 26
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
             {
@@ -242,23 +242,23 @@ namespace Rocket.Tests.Integration.Api.Features
             else
             {
                 await this.ScenarioStartAsync();
-#line 26
-        await testRunner.GivenAsync("the user Admin has a current login session", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
-#line hidden
 #line 27
-        await testRunner.AndAsync("the user John has been added as an admin", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.GivenAsync("the user Admin has a current login session", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 28
-        await testRunner.AndAsync("an API request is created against endpoint \"/api/startup/phase\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("the user John has been added as an admin", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 29
-        await testRunner.WhenAsync("the request is sent via \"GET\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.AndAsync("an API request is created against endpoint \"/api/startup/phase\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 30
-        await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+    await testRunner.WhenAsync("the request is sent via \"GET\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 31
-        await testRunner.AndAsync("the response with path \"phase\" should have a value of \"2\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 32
+    await testRunner.AndAsync("the response with path \"phase\" should have a value of \"2\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();

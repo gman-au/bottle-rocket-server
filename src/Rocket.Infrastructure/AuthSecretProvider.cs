@@ -15,7 +15,7 @@ namespace Rocket.Infrastructure
         )
         {
             _authSecret =
-                configuration["AUTH_SECRET"];
+                configuration["JWT_AUTH_SECRET"];
 
             if (!string.IsNullOrEmpty(_authSecret)) return;
             

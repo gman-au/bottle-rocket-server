@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using MongoDB.Driver;
+using Rocket.Tests.Infrastructure.Definition;
 using Testcontainers.MongoDb;
 
 namespace Rocket.Tests.Infrastructure.Contexts
@@ -8,12 +9,13 @@ namespace Rocket.Tests.Infrastructure.Contexts
         IContainerOrchestrator orchestrator
     ) : IServiceContext
     {
-        private const string DatabaseName = "BottleRocket";
-
         private MongoDbContainer _mongoDbContainer;
+        private OrchestrationParameters _orchestrationParameters;
 
-        public async Task SetupEnvironmentContextAsync()
+        public async Task SetupEnvironmentContextAsync(OrchestrationParameters parameters = null)
         {
+            _orchestrationParameters = parameters;
+            
             await
                 orchestrator
                     .ArrangeDockerNetwork();
@@ -25,7 +27,7 @@ namespace Rocket.Tests.Infrastructure.Contexts
 
             await
                 orchestrator
-                    .ArrangeApiContainerAsync(DatabaseName);
+                    .ArrangeApiContainerAsync(_orchestrationParameters);
         }
 
         public async Task TeardownEnvironmentContextAsync()
@@ -64,7 +66,7 @@ namespace Rocket.Tests.Infrastructure.Contexts
 
             var mongoDatabase =
                 mongoClient
-                    .GetDatabase(DatabaseName);
+                    .GetDatabase(_orchestrationParameters?.DatabaseName ?? "BottleRocket");
 
             return
                 await

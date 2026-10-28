@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
+using Rocket.Tests.Infrastructure.Definition;
 using Testcontainers.MongoDb;
 
 namespace Rocket.Tests.Infrastructure
@@ -17,7 +18,9 @@ namespace Rocket.Tests.Infrastructure
 
         Task TeardownDatabaseContainerAsync();
 
-        Task<IContainer> ArrangeApiContainerAsync(string databaseName);
+        Task<IContainer> ArrangeApiContainerAsync(
+            OrchestrationParameters orchestrationParameters
+        );
 
         Task TeardownAppContainersAsync();
     }

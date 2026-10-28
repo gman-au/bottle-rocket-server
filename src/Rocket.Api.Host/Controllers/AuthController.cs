@@ -6,8 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Captures;
@@ -22,7 +24,8 @@ namespace Rocket.Api.Host.Controllers
     public class AuthController(
         IAuthenticator authenticator,
         IAuthSecretProvider authSecretProvider,
-        IGlobalSettingsRepository globalSettingsRepository
+        IGlobalSettingsRepository globalSettingsRepository,
+        IConfiguration configuration
     ) : ControllerBase
     {
         [AllowAnonymous]
@@ -48,6 +51,17 @@ namespace Rocket.Api.Host.Controllers
             CancellationToken cancellationToken
         )
         {
+            var jwtExpirySeconds = 60 * 24 * 7;
+
+            try
+            {
+                var jwtExpiry = configuration["JWT_EXPIRY_SECONDS"];
+                jwtExpirySeconds = Convert.ToInt32(jwtExpiry);
+            }
+            catch (FormatException)
+            {
+            }
+
             var user =
                 await
                     authenticator
@@ -99,7 +113,7 @@ namespace Rocket.Api.Host.Controllers
                     Expires =
                         DateTime
                             .UtcNow
-                            .AddDays(7),
+                            .AddSeconds(jwtExpirySeconds),
                     SigningCredentials =
                         new SigningCredentials(
                             new SymmetricSecurityKey(key),

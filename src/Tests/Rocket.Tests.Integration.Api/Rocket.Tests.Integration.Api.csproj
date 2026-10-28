@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Achar" Version="0.0.7" />
+        <PackageReference Include="Achar" Version="0.0.8" />
         <PackageReference Include="coverlet.collector" Version="6.0.2"/>
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.11" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.11" />
@@ -41,6 +41,10 @@
       <Compile Update="Features\Authentication.feature.cs">
         <DependentUpon>Authentication.feature</DependentUpon>
       </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Definition\" />
     </ItemGroup>
 
 </Project>

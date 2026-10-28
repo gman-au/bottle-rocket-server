@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Achar.Infrastructure.Api.Extensions;
 using Achar.Infrastructure.Testing.Extensions;
 using Achar.Interfaces.Testing;
 using Reqnroll;
@@ -86,6 +88,33 @@ namespace Rocket.Tests.Integration.Api.Steps
                         activeTokenSession,
                         userIdentifier
                     );
+
+        [Given(@"a prefix ""(.*)"" is added to the value stored in ""(.*)"" and stored under ""(.*)""")]
+        [When(@"a prefix ""(.*)"" is added to the value stored in ""(.*)"" and stored under ""(.*)""")]
+        public async Task GivenAPrefixIsAddedToTheValueStoredInAndStoredUnder(
+            string prependValue,
+            string storeKey,
+            string newValueStoreKey
+        )
+        {
+            var currentValue =
+                await
+                    engine
+                        .ActGetContext()
+                        .ActGetValueStoreValueAsync(
+                            storeKey
+                        );
+
+            currentValue = prependValue + currentValue;
+
+            await
+                engine
+                    .ActGetContext()
+                    .ActSetValueStoreValueAsync(
+                        newValueStoreKey,
+                        currentValue
+                    );
+        }
 
         private async Task AddUserAsync(
             string userIdentifier,
