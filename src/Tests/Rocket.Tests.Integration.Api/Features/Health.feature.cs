@@ -243,18 +243,21 @@ namespace Rocket.Tests.Integration.Api.Features
             {
                 await this.ScenarioStartAsync();
 #line 26
-        await testRunner.GivenAsync("the user John has been added as an admin", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+        await testRunner.GivenAsync("the user Admin has a current login session", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 27
-        await testRunner.AndAsync("an API request is created against endpoint \"/api/startup/phase\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+        await testRunner.AndAsync("the user John has been added as an admin", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 28
-        await testRunner.WhenAsync("the request is sent via \"GET\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+        await testRunner.AndAsync("an API request is created against endpoint \"/api/startup/phase\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 29
-        await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+        await testRunner.WhenAsync("the request is sent via \"GET\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 30
+        await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 31
         await testRunner.AndAsync("the response with path \"phase\" should have a value of \"2\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }

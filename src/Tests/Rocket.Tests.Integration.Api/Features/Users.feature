@@ -3,7 +3,9 @@ Feature: Users
 Description: Testing the Users API endpoint and associated functionality.
 
     Background:
-        Given the user John has been added as an admin
+        Given the user Admin has a current login session
+        And the user John has been added as an admin
+        And the user John has a current login session
 
     @UNAUTHORIZED
     Scenario: Fetch users (unauthorized)

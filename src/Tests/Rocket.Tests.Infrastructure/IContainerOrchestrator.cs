@@ -17,7 +17,7 @@ namespace Rocket.Tests.Infrastructure
 
         Task TeardownDatabaseContainerAsync();
 
-        Task<IContainer> ArrangeApiContainerAsync();
+        Task<IContainer> ArrangeApiContainerAsync(string databaseName);
 
         Task TeardownAppContainersAsync();
     }

@@ -169,27 +169,30 @@ namespace Rocket.Tests.Integration.Api.Features
             {
                 await this.ScenarioStartAsync();
 #line 13
-        await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+        await testRunner.GivenAsync("the user Admin has a current login session", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 14
-        await testRunner.AndAsync("the request authorization is set to the admin user", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+        await testRunner.AndAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 15
-        await testRunner.AndAsync("the request body element \"start_index\" has value \"0\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+        await testRunner.AndAsync("the request authorization is set to the admin user", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 16
-        await testRunner.AndAsync("the request body element \"record_count\" has value \"10\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+        await testRunner.AndAsync("the request body element \"start_index\" has value \"0\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 17
-        await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+        await testRunner.AndAsync("the request body element \"record_count\" has value \"10\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 18
-        await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+        await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 19
-        await testRunner.AndAsync("the response with path \"users.[0].user_name\" should have a value of \"admin\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+        await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 20
+        await testRunner.AndAsync("the response with path \"users.[0].user_name\" should have a value of \"admin\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 21
         await testRunner.AndAsync("the response with path \"total_records\" should have a value of \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
@@ -208,7 +211,7 @@ namespace Rocket.Tests.Integration.Api.Features
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Fetch users (as admin), first 0 records", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 23
+#line 24
     this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -218,25 +221,28 @@ namespace Rocket.Tests.Integration.Api.Features
             else
             {
                 await this.ScenarioStartAsync();
-#line 24
-        await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
-#line hidden
 #line 25
-        await testRunner.AndAsync("the request authorization is set to the admin user", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+        await testRunner.GivenAsync("the user Admin has a current login session", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 26
-        await testRunner.AndAsync("the request body element \"start_index\" has value \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+        await testRunner.AndAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 27
-        await testRunner.AndAsync("the request body element \"record_count\" has value \"0\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+        await testRunner.AndAsync("the request authorization is set to the admin user", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 28
-        await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+        await testRunner.AndAsync("the request body element \"start_index\" has value \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 29
-        await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+        await testRunner.AndAsync("the request body element \"record_count\" has value \"0\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 30
+        await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 31
+        await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 32
         await testRunner.AndAsync("the response with path \"total_records\" should have a value of \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
@@ -257,7 +263,7 @@ namespace Rocket.Tests.Integration.Api.Features
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Add a new (administrator) user during system startup, then try to fetch users", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 33
+#line 35
     this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -267,43 +273,46 @@ namespace Rocket.Tests.Integration.Api.Features
             else
             {
                 await this.ScenarioStartAsync();
-#line 34
-        await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/create\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
-#line hidden
-#line 35
-        await testRunner.AndAsync("the request authorization is set to the admin user", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
 #line 36
-        await testRunner.AndAsync("the request body element \"user_name\" has value \"user@test.com\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+        await testRunner.GivenAsync("the user Admin has a current login session", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 37
-        await testRunner.AndAsync("the request body element \"password\" has value \"password123\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+        await testRunner.AndAsync("an API request is created against endpoint \"/api/users/create\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 38
-        await testRunner.AndAsync("the request body element \"is_the_new_admin\" has a boolean value of true", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 39
-        await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
-#line hidden
-#line 40
-        await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
-#line hidden
-#line 41
-        await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
-#line hidden
-#line 42
         await testRunner.AndAsync("the request authorization is set to the admin user", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 43
-        await testRunner.AndAsync("the request body element \"start_index\" has value \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line 39
+        await testRunner.AndAsync("the request body element \"user_name\" has value \"user@test.com\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 44
-        await testRunner.AndAsync("the request body element \"record_count\" has value \"0\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line 40
+        await testRunner.AndAsync("the request body element \"password\" has value \"password123\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 45
+#line 41
+        await testRunner.AndAsync("the request body element \"is_the_new_admin\" has a boolean value of true", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 42
         await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
+#line 43
+        await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 44
+        await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 45
+        await testRunner.AndAsync("the request authorization is set to the admin user", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
 #line 46
+        await testRunner.AndAsync("the request body element \"start_index\" has value \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 47
+        await testRunner.AndAsync("the request body element \"record_count\" has value \"0\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 48
+        await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 49
         await testRunner.ThenAsync("the request should have failed with status code 401", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -322,7 +331,7 @@ namespace Rocket.Tests.Integration.Api.Features
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Add a new (non-administrator) user during system startup", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 49
+#line 52
     this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -332,28 +341,31 @@ namespace Rocket.Tests.Integration.Api.Features
             else
             {
                 await this.ScenarioStartAsync();
-#line 50
-        await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/create\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
-#line hidden
-#line 51
-        await testRunner.AndAsync("the request authorization is set to the admin user", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 52
-        await testRunner.AndAsync("the request body element \"user_name\" has value \"user@test.com\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
 #line 53
-        await testRunner.AndAsync("the request body element \"password\" has value \"password123\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+        await testRunner.GivenAsync("the user Admin has a current login session", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 54
-        await testRunner.AndAsync("the request body element \"is_the_new_admin\" has a boolean value of false", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+        await testRunner.AndAsync("an API request is created against endpoint \"/api/users/create\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 55
-        await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+        await testRunner.AndAsync("the request authorization is set to the admin user", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 56
-        await testRunner.ThenAsync("the request should have failed with status code 500", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+        await testRunner.AndAsync("the request body element \"user_name\" has value \"user@test.com\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 57
+        await testRunner.AndAsync("the request body element \"password\" has value \"password123\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 58
+        await testRunner.AndAsync("the request body element \"is_the_new_admin\" has a boolean value of false", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 59
+        await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 60
+        await testRunner.ThenAsync("the request should have failed with status code 500", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 61
         await testRunner.AndAsync("the response with path \"error_code\" should have a value of \"2008\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }

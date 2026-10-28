@@ -1,110 +1,54 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using Achar.Infrastructure.Api.Extensions;
 using Achar.Infrastructure.Testing.Extensions;
 using Achar.Interfaces.Testing;
 using Reqnroll;
 using Rocket.Tests.Integration.Api.Engine;
+using Rocket.Tests.Integration.Api.Extensions;
 
 namespace Rocket.Tests.Integration.Api.Steps
 {
     [Binding]
     public class AuthSteps(
         IApiInteractionEngine engine,
-        IApiExtendedInteractionEngine extendedEngine
+        IActiveTokenSession activeTokenSession
     )
     {
-        private const string AdminUserName = "admin";
-        private const string AdminPassword = "password123";
-
-        private readonly Dictionary<string, Tuple<string, string>> _testUsers = new()
-        {
-            {
-                "Admin", new Tuple<string, string>(
-                    AdminUserName,
-                    AdminPassword
-                )
-            },
-            {
-                "John", new Tuple<string, string>(
-                    "john@test.com",
-                    "P@ssword!23"
-                )
-            },
-            {
-                "Paula", new Tuple<string, string>(
-                    "paula@test.com",
-                    "P@ssword4%6"
-                )
-            }
-        };
-
         [Given("the request authorization is set to the admin user")]
         public async Task GivenTheRequestAuthorizationIsSetToTheAdminUser()
         {
-            var context =
-                await
-                    engine
-                        .ActGetContext();
-
             await
-                SetRequestAuthorizationToAdminUserAsync(context);
+                engine
+                    .SetRequestAuthorizationToUserAsync(activeTokenSession);
         }
 
         [Given("the request authorization is set to the user (.*)")]
-        public async Task GivenTheRequestAuthorizationIsSetToTheUser(string userIdentifier)
-        {
-            var context =
-                await
-                    engine
-                        .ActGetContext();
-            
-            await 
-                SetRequestAuthorizationHeadersAsync(userIdentifier, context);
-        }
-
-        [Given("the multipart request authorization is set to the user (.*)")]
-        public async Task GivenTheMultipartRequestAuthorizationIsSetToTheUser(string userIdentifier)
-        {
-            var context =
-                await
-                    extendedEngine
-                        .ActGetContext();
-            
-            await 
-                SetRequestAuthorizationHeadersAsync(userIdentifier, context);
-        }
-
-        private async Task SetRequestAuthorizationHeadersAsync(
-            string userIdentifier,
-            IApiInteractionEngine context
+        public async Task GivenTheRequestAuthorizationIsSetToTheUser(
+            string userIdentifier
         )
         {
-            if (!_testUsers.TryGetValue(
-                    userIdentifier,
-                    out var user
-                ))
-                throw new Exception($"User {userIdentifier} not found in test case dictionary");
-
             await
-                SetRequestAuthorizationToAdminUserAsync(
-                    context,
-                    user.Item1,
-                    user.Item2
-                );
+                engine
+                    .SetRequestAuthorizationHeadersAsync(
+                        activeTokenSession,
+                        userIdentifier
+                    );
         }
 
         [Given("the user (.*) has been added as an admin")]
-        public async Task GivenTheUserHasBeenAddedAsAnAdmin(string userIdentifier) =>
+        public async Task GivenTheUserHasBeenAddedAsAnAdmin(
+            string userIdentifier
+        ) =>
             await AddUserAsync(
                 userIdentifier,
                 true
             );
 
         [Given("the user (.*) has been added as an admin via user (.*)")]
-        public async Task GivenTheUserHasBeenAddedAsAnAdminViaUser(string userIdentifier, string adminIdentifier) =>
+        public async Task GivenTheUserHasBeenAddedAsAnAdminViaUser(
+            string userIdentifier,
+            string adminIdentifier
+        ) =>
             await AddUserAsync(
                 userIdentifier,
                 true,
@@ -112,19 +56,36 @@ namespace Rocket.Tests.Integration.Api.Steps
             );
 
         [Given("the user (.*) has been added as a non-admin")]
-        public async Task GivenTheUserHasBeenAddedAsANonAdmin(string userIdentifier) =>
+        public async Task GivenTheUserHasBeenAddedAsANonAdmin(
+            string userIdentifier
+        ) =>
             await AddUserAsync(
                 userIdentifier,
                 false
             );
 
         [Given("the user (.*) has been added as a non-admin via user (.*)")]
-        public async Task GivenTheUserHasBeenAddedAsANonAdminViaUser(string userIdentifier, string adminIdentifier) =>
+        public async Task GivenTheUserHasBeenAddedAsANonAdminViaUser(
+            string userIdentifier,
+            string adminIdentifier
+        ) =>
             await AddUserAsync(
                 userIdentifier,
                 false,
                 adminIdentifier
             );
+
+        [Given("the user (.*) has a current login session")]
+        [When("the user (.*) has a current login session")]
+        public async Task GivenTheUserHasACurrentLoginSession(
+            string userIdentifier
+        ) =>
+            await
+                engine
+                    .GetBearerTokenForUserAsync(
+                        activeTokenSession,
+                        userIdentifier
+                    );
 
         private async Task AddUserAsync(
             string userIdentifier,
@@ -139,7 +100,7 @@ namespace Rocket.Tests.Integration.Api.Steps
 
             adminIdentifier = adminIdentifier ?? "Admin";
 
-            if (!_testUsers.TryGetValue(
+            if (!ApiInteractionEngineEx.TestUsers.TryGetValue(
                     adminIdentifier,
                     out var adminUser
                 ))
@@ -150,13 +111,13 @@ namespace Rocket.Tests.Integration.Api.Steps
                     .CreateRequestAsync("/api/users/create");
 
             await
-                SetRequestAuthorizationToAdminUserAsync(
-                    context,
-                    adminUser.Item1,
-                    adminUser.Item2
-                );
+                engine
+                    .SetRequestAuthorizationToUserAsync(
+                        activeTokenSession,
+                        adminIdentifier
+                    );
 
-            if (!_testUsers.TryGetValue(
+            if (!ApiInteractionEngineEx.TestUsers.TryGetValue(
                     userIdentifier,
                     out var user
                 ))
@@ -190,33 +151,6 @@ namespace Rocket.Tests.Integration.Api.Steps
             await
                 context
                     .AssertResponseSucceededAsync();
-        }
-
-        private static async Task SetRequestAuthorizationToAdminUserAsync(
-            IApiInteractionEngine engine,
-            string userName = null,
-            string password = null
-        )
-        {
-            userName ??= AdminUserName;
-            password ??= AdminPassword;
-
-            var bytes =
-                Encoding
-                    .Default
-                    .GetBytes(userName + ":" + password);
-
-            var basicAuth =
-                Convert
-                    .ToBase64String(bytes);
-
-            await
-                engine
-                    .ActGetContext()
-                    .ActSetRequestHeaderValueAsync(
-                        "Authorization",
-                        $"Basic {basicAuth}"
-                    );
         }
     }
 }

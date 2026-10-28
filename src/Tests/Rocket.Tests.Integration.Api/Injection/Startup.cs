@@ -26,7 +26,8 @@ namespace Rocket.Tests.Integration.Api.Injection
                 .AddSingleton<IServiceContext, TestContainerServiceContext>();
 
             services
-                .AddSingleton<IApiExtendedInteractionEngine, ApiExtendedHttpClientInteractionEngine>();
+                .AddSingleton<IApiExtendedInteractionEngine, ApiExtendedHttpClientInteractionEngine>()
+                .AddScoped<IActiveTokenSession, ActiveTokenSession>();
 
             return services;
         }

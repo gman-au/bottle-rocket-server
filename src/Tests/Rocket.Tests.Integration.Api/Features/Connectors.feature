@@ -3,8 +3,11 @@ Feature: Connectors
 Description: Testing the Connectors API endpoint and associated functionality.
 
     Background:
-        Given the user John has been added as an admin
-        Given the user Paula has been added as a non-admin via user John
+        Given the user Admin has a current login session
+        And the user John has been added as an admin
+        And the user John has a current login session
+        And the user Paula has been added as a non-admin via user John
+        And the user Paula has a current login session
 
     @UNAUTHORIZED
     Scenario: Fetch connectors (unauthorized)

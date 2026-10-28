@@ -24,6 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Rocket.Domain\Rocket.Domain.csproj" />
       <ProjectReference Include="..\Rocket.Tests.Infrastructure\Rocket.Tests.Infrastructure.csproj" />
     </ItemGroup>
 
@@ -36,6 +37,9 @@
     <ItemGroup>
       <Compile Update="Features\Workflows.feature.cs">
         <DependentUpon>Workflows.feature</DependentUpon>
+      </Compile>
+      <Compile Update="Features\Authentication.feature.cs">
+        <DependentUpon>Authentication.feature</DependentUpon>
       </Compile>
     </ItemGroup>
 

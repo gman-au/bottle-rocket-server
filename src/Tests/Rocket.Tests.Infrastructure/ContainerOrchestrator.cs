@@ -92,7 +92,7 @@ namespace Rocket.Tests.Infrastructure
                         .DisposeAsync();
         }
 
-        public async Task<IContainer> ArrangeApiContainerAsync()
+        public async Task<IContainer> ArrangeApiContainerAsync(string databaseName)
         {
             _apiContainer =
                 new ContainerBuilder(ApiImageTag)
@@ -113,7 +113,7 @@ namespace Rocket.Tests.Infrastructure
                     )
                     .WithEnvironment(
                         "MongoDbConfigurationOptions__DatabaseName",
-                        $"BottleRocket"
+                        databaseName
                     )
                     .WithEnvironment(
                         "LocalBlobConfigurationOptions__LocalBasePath",

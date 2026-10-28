@@ -1,5 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using MongoDB.Driver;
 using Testcontainers.MongoDb;
 
 namespace Rocket.Tests.Infrastructure.Contexts
@@ -8,19 +8,24 @@ namespace Rocket.Tests.Infrastructure.Contexts
         IContainerOrchestrator orchestrator
     ) : IServiceContext
     {
+        private const string DatabaseName = "BottleRocket";
+
+        private MongoDbContainer _mongoDbContainer;
+
         public async Task SetupEnvironmentContextAsync()
         {
             await
                 orchestrator
                     .ArrangeDockerNetwork();
 
-            await
-                orchestrator
-                    .ArrangeDatabaseContainerAsync();
+            _mongoDbContainer =
+                await
+                    orchestrator
+                        .ArrangeDatabaseContainerAsync();
 
             await
                 orchestrator
-                    .ArrangeApiContainerAsync();
+                    .ArrangeApiContainerAsync(DatabaseName);
         }
 
         public async Task TeardownEnvironmentContextAsync()
@@ -46,29 +51,25 @@ namespace Rocket.Tests.Infrastructure.Contexts
                     .ArrangeDatabaseResetAsync();
         }
 
-        public async Task RunSqlCommandsAsync(
-            params string[] sqlCommands
+        public async Task<T> RunMongoCommandAsync<T>(
+            Command<T> command
         )
         {
-            /*var connection = new SqlConnection(_mongoDbContainer.GetConnectionString());
+            var connectionString =
+                _mongoDbContainer
+                    .GetConnectionString();
 
-            await
-                connection
-                    .OpenAsync();
+            var mongoClient =
+                new MongoClient(connectionString);
 
-            foreach (var sqlCommand in sqlCommands)
-            {
+            var mongoDatabase =
+                mongoClient
+                    .GetDatabase(DatabaseName);
+
+            return
                 await
-                    using var command =
-                        connection
-                            .CreateCommand();
-
-                command.CommandText = sqlCommand;
-
-                await
-                    command
-                        .ExecuteNonQueryAsync();
-            }*/
+                    mongoDatabase
+                        .RunCommandAsync(command);
         }
     }
 }

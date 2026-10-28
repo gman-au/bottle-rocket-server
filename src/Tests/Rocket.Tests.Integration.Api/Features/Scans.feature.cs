@@ -111,10 +111,19 @@ namespace Rocket.Tests.Integration.Api.Features
 #line 5
     #line hidden
 #line 6
-        await testRunner.GivenAsync("the user John has been added as an admin", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+        await testRunner.GivenAsync("the user Admin has a current login session", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 7
-        await testRunner.GivenAsync("the user Paula has been added as a non-admin via user John", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+        await testRunner.AndAsync("the user John has been added as an admin", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 8
+        await testRunner.AndAsync("the user John has a current login session", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 9
+        await testRunner.AndAsync("the user Paula has been added as a non-admin via user John", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 10
+        await testRunner.AndAsync("the user Paula has a current login session", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
         }
         
@@ -135,7 +144,7 @@ namespace Rocket.Tests.Integration.Api.Features
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Fetch scans (unauthorized)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 10
+#line 13
     this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -148,13 +157,13 @@ namespace Rocket.Tests.Integration.Api.Features
 #line 5
     await this.FeatureBackgroundAsync();
 #line hidden
-#line 11
+#line 14
         await testRunner.GivenAsync("an API request is created against endpoint \"/api/scans/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 12
+#line 15
         await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 13
+#line 16
         await testRunner.ThenAsync("the request should have failed with status code 401", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -173,7 +182,7 @@ namespace Rocket.Tests.Integration.Api.Features
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Send new capture (no attachment data)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 16
+#line 19
     this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -186,22 +195,22 @@ namespace Rocket.Tests.Integration.Api.Features
 #line 5
     await this.FeatureBackgroundAsync();
 #line hidden
-#line 17
+#line 20
         await testRunner.GivenAsync("an API multipart request is created against endpoint \"/api/capture/process\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 18
+#line 21
         await testRunner.AndAsync("the multipart file data is set to base64 string \"\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 19
+#line 22
         await testRunner.AndAsync("the multipart request authorization is set to the user John", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 20
+#line 23
         await testRunner.WhenAsync("the multipart request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 21
+#line 24
         await testRunner.ThenAsync("the multipart request should have failed with status code 500", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 22
+#line 25
         await testRunner.AndAsync("the multipart response with path \"error_code\" should have a value of \"1001\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
@@ -220,7 +229,7 @@ namespace Rocket.Tests.Integration.Api.Features
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Send new capture (include attachment data)", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 25
+#line 28
     this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -233,20 +242,20 @@ namespace Rocket.Tests.Integration.Api.Features
 #line 5
     await this.FeatureBackgroundAsync();
 #line hidden
-#line 26
+#line 29
         await testRunner.GivenAsync("an API multipart request is created against endpoint \"/api/capture/process\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 27
+#line 30
         await testRunner.AndAsync("the multipart file data is set to base64 string \"iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB" +
                         "CAYAAAAfFcSJAAAACklEQVR42mMAAQAABQABoIJXOQAAAABJRU5ErkJggg==\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 28
+#line 31
         await testRunner.AndAsync("the multipart request authorization is set to the user John", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 29
+#line 32
         await testRunner.WhenAsync("the multipart request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 30
+#line 33
         await testRunner.ThenAsync("the multipart request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -267,7 +276,7 @@ namespace Rocket.Tests.Integration.Api.Features
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Ensure captures are segregated", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 33
+#line 36
     this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -280,62 +289,62 @@ namespace Rocket.Tests.Integration.Api.Features
 #line 5
     await this.FeatureBackgroundAsync();
 #line hidden
-#line 34
+#line 37
         await testRunner.GivenAsync("an API multipart request is created against endpoint \"/api/capture/process\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 35
+#line 38
         await testRunner.AndAsync("the multipart file data is set to base64 string \"iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB" +
                         "CAYAAAAfFcSJAAAACklEQVR42mMAAQAABQABoIJXOQAAAABJRU5ErkJggg==\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 36
+#line 39
         await testRunner.AndAsync("the multipart request authorization is set to the user John", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 37
+#line 40
         await testRunner.WhenAsync("the multipart request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 38
+#line 41
         await testRunner.ThenAsync("the multipart request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 40
-        await testRunner.GivenAsync("an API request is created against endpoint \"/api/scans/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
-#line hidden
-#line 41
-        await testRunner.AndAsync("the request authorization is set to the user John", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 42
-        await testRunner.AndAsync("the request body element \"start_index\" has value \"0\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
 #line 43
-        await testRunner.AndAsync("the request body element \"record_count\" has value \"10\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+        await testRunner.GivenAsync("an API request is created against endpoint \"/api/scans/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 44
-        await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+        await testRunner.AndAsync("the request authorization is set to the user John", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 45
-        await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
-#line hidden
-#line 46
-        await testRunner.AndAsync("the response with path \"total_records\" should have a value of \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 48
-        await testRunner.GivenAsync("an API request is created against endpoint \"/api/scans/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
-#line hidden
-#line 49
-        await testRunner.AndAsync("the request authorization is set to the user Paula", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 50
         await testRunner.AndAsync("the request body element \"start_index\" has value \"0\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 51
+#line 46
         await testRunner.AndAsync("the request body element \"record_count\" has value \"10\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 52
+#line 47
         await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 53
+#line 48
         await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
+#line 49
+        await testRunner.AndAsync("the response with path \"total_records\" should have a value of \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 51
+        await testRunner.GivenAsync("an API request is created against endpoint \"/api/scans/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 52
+        await testRunner.AndAsync("the request authorization is set to the user Paula", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 53
+        await testRunner.AndAsync("the request body element \"start_index\" has value \"0\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
 #line 54
+        await testRunner.AndAsync("the request body element \"record_count\" has value \"10\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 55
+        await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 56
+        await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 57
         await testRunner.AndAsync("the response with path \"total_records\" should have a value of \"0\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }

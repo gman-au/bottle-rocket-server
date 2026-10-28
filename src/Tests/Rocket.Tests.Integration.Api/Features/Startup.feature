@@ -10,7 +10,8 @@ Description: Testing the API endpoints during system startup and associated func
 
     @FETCH-RECORDS
     Scenario: Fetch users (as admin), first 10 records
-        Given an API request is created against endpoint "/api/users/fetch"
+        Given the user Admin has a current login session
+        And an API request is created against endpoint "/api/users/fetch"
         And the request authorization is set to the admin user
         And the request body element "start_index" has value "0"
         And the request body element "record_count" has value "10"
@@ -21,7 +22,8 @@ Description: Testing the API endpoints during system startup and associated func
 
     @FETCH-RECORDS
     Scenario: Fetch users (as admin), first 0 records
-        Given an API request is created against endpoint "/api/users/fetch"
+        Given the user Admin has a current login session
+        And an API request is created against endpoint "/api/users/fetch"
         And the request authorization is set to the admin user
         And the request body element "start_index" has value "1"
         And the request body element "record_count" has value "0"
@@ -31,7 +33,8 @@ Description: Testing the API endpoints during system startup and associated func
 
     @CREATE-RECORD @UNAUTHORIZED
     Scenario: Add a new (administrator) user during system startup, then try to fetch users
-        Given an API request is created against endpoint "/api/users/create"
+        Given the user Admin has a current login session
+        And an API request is created against endpoint "/api/users/create"
         And the request authorization is set to the admin user
         And the request body element "user_name" has value "user@test.com"
         And the request body element "password" has value "password123"
@@ -47,7 +50,8 @@ Description: Testing the API endpoints during system startup and associated func
 
     @CREATE-RECORD
     Scenario: Add a new (non-administrator) user during system startup
-        Given an API request is created against endpoint "/api/users/create"
+        Given the user Admin has a current login session
+        And an API request is created against endpoint "/api/users/create"
         And the request authorization is set to the admin user
         And the request body element "user_name" has value "user@test.com"
         And the request body element "password" has value "password123"

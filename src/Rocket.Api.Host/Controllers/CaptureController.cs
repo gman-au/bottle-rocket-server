@@ -3,6 +3,7 @@ using System.IO;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -19,6 +20,7 @@ using Rocket.Localization.Api;
 namespace Rocket.Api.Host.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("/api/capture")]
     public class CaptureController(
         IScannedImageHandler scannedImageHandler,

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using MongoDB.Driver;
 
 namespace Rocket.Tests.Infrastructure.Contexts
 {
@@ -10,6 +11,8 @@ namespace Rocket.Tests.Infrastructure.Contexts
 
         Task ResetDatabaseAsync();
 
-        Task RunSqlCommandsAsync(params string[] sqlCommands);
+        Task<T> RunMongoCommandAsync<T>(
+            Command<T> command
+        );
     }
 }

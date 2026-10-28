@@ -23,7 +23,8 @@ Description: Testing basic API connectivity endpoints.
 
     @HEALTH-CHECK
     Scenario: Startup phase (get) after admin creation
-        Given the user John has been added as an admin
+        Given the user Admin has a current login session
+        And the user John has been added as an admin
         And an API request is created against endpoint "/api/startup/phase"
         When the request is sent via "GET"
         Then the request should have succeeded
