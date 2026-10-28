@@ -30,6 +30,11 @@ namespace Rocket.Web.Host.Infrastructure
                     {
                         case (int)ApiStatusCodeEnum.WorkflowExecutionAlreadyRunning:
                             return;
+                        case (int)ApiStatusCodeEnum.UnknownUser:
+                            await
+                                authenticationManager
+                                    .LogoutAsync();
+                            throw rex;
                         case (int)ApiStatusCodeEnum.TokenHasExpired:
                             var dialog =
                                 await
@@ -55,7 +60,6 @@ namespace Rocket.Web.Host.Infrastructure
                                         replace: true
                                     );
                             }
-
                             return;
                         default:
                             throw rex;
