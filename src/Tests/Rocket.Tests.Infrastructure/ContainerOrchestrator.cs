@@ -10,17 +10,17 @@ namespace Rocket.Tests.Infrastructure
 {
     public class ContainerOrchestrator : IContainerOrchestrator
     {
-        private INetwork _network;
-        private IContainer _apiContainer;
-        private MongoDbContainer _dbContainer;
-
         private const string DbUserName = "mongouser";
         private const string DbPassword = "secretpassword";
 
-        private static readonly string NetworkName = $"integration-network-{Guid.NewGuid()}";
-
         private const string MongoImageTag = "mongo:latest";
-        private const string ApiImageTag = "ghcr.io/gman-au/bottle-rocket-server/bottle-rocket-server-api:smoke";
+
+        private const string ApiImageTag = "ghcr.io/gman-au/bottle-rocket-server/bottle-rocket-server-api:latest";
+
+        private static readonly string NetworkName = $"integration-network-{Guid.NewGuid()}";
+        private IContainer _apiContainer;
+        private MongoDbContainer _dbContainer;
+        private INetwork _network;
 
         public async Task<INetwork> ArrangeDockerNetwork()
         {
