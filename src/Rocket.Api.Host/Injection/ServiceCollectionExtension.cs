@@ -2,6 +2,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,6 +12,8 @@ using Rocket.Api.Host.Exceptions;
 using Rocket.Api.Host.Notifiers;
 using Rocket.Api.Host.Prepopulation;
 using Rocket.Domain.Connectors;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Utils;
 using Rocket.Domain.Workflows;
@@ -297,6 +300,47 @@ namespace Rocket.Api.Host.Injection
                                 ValidateAudience = false,
                                 ValidateLifetime = true,
                                 ClockSkew = TimeSpan.Zero
+                            };
+
+                        options.Events =
+                            new JwtBearerEvents
+                            {
+                                OnAuthenticationFailed = async context =>
+                                {
+                                    if (context.Exception is SecurityTokenExpiredException)
+                                    {
+                                        var exceptionWrapper =
+                                            context
+                                                .HttpContext
+                                                .RequestServices
+                                                .GetRequiredService<IRocketExceptionWrapper>();
+
+                                        context.Response.StatusCode = 
+                                            StatusCodes
+                                                .Status500InternalServerError;
+                                        
+                                        await
+                                            context
+                                                .Response
+                                                .WriteAsJsonAsync(
+                                                    exceptionWrapper
+                                                        .For(
+                                                            new RocketException(
+                                                                "API token has expired - please login again",
+                                                                ApiStatusCodeEnum.TokenHasExpired
+                                                            )
+                                                        )
+                                                        .Value
+                                                );
+                                        
+                                        context.Exception = null; 
+                                        
+                                        await 
+                                            context
+                                                .Response
+                                                .CompleteAsync(); 
+                                    }
+                                }
                             };
                     }
                 );
