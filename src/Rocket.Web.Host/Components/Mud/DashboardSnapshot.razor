@@ -157,8 +157,9 @@
         }
         catch (Exception ex)
         {
-            WebHostErrorHandler
-                .HandleException(ex);
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
         }
         finally
         {
@@ -191,14 +192,15 @@
                         $"UnknownVendorLabel",
                         CultureInfo.GetCultureInfo(CultureInfo.CurrentUICulture.Name)
                     );
-            
+
             await
                 LoadDashboardAsync();
         }
         catch (Exception ex)
         {
-            WebHostErrorHandler
-                .HandleException(ex);
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
         }
         finally
         {
@@ -238,20 +240,19 @@
             lifecyclesByGroup
                 .Select(o => o.Vendor)
                 .Distinct()
-                .Select(
-                    (
-                            o,
+                .Select((
+                        o,
+                        i
+                    ) =>
+                    new SankeyChartNode
+                    {
+                        Name = string.IsNullOrEmpty(o) ? _unknownVendorValue : o,
+                        Column = 0,
+                        Color = MapVendorToColor(
+                            string.IsNullOrEmpty(o) ? _unknownVendorValue : o,
                             i
-                        ) =>
-                        new SankeyChartNode
-                        {
-                            Name = string.IsNullOrEmpty(o) ? _unknownVendorValue : o,
-                            Column = 0,
-                            Color = MapVendorToColor(
-                                string.IsNullOrEmpty(o) ? _unknownVendorValue : o,
-                                i
-                            )
-                        }
+                        )
+                    }
                 )
                 .ToList();
 
@@ -259,13 +260,12 @@
             lifecyclesByGroup
                 .Select(o => o.Workflow)
                 .Distinct()
-                .Select(
-                    o =>
-                        new SankeyChartNode
-                        {
-                            Name = o,
-                            Column = 1
-                        }
+                .Select(o =>
+                    new SankeyChartNode
+                    {
+                        Name = o,
+                        Column = 1
+                    }
                 )
                 .ToList();
 
@@ -280,8 +280,7 @@
         }
 
         foreach (var status in Enum.GetValues<ExecutionStatusEnum>()
-                     .Select(
-                         o => Enum.GetName(
+                     .Select(o => Enum.GetName(
                              typeof(ExecutionStatusEnum),
                              o
                          )
@@ -321,17 +320,16 @@
             lifecyclesByGroup
                 .Select(o => o.Status)
                 .Distinct()
-                .Select(
-                    o =>
-                        new SankeyChartNode
-                        {
-                            Name = o,
-                            Column = 2,
-                            Color = MapStatusToColor(
-                                o,
-                                _translations
-                            )
-                        }
+                .Select(o =>
+                    new SankeyChartNode
+                    {
+                        Name = o,
+                        Column = 2,
+                        Color = MapStatusToColor(
+                            o,
+                            _translations
+                        )
+                    }
                 );
 
         _overviewNodes =
@@ -341,25 +339,23 @@
 
         _overviewEdges =
             lifecyclesByGroup
-                .Select(
-                    o =>
-                        new SankeyChartEdge
-                        {
-                            Source = o.Workflow,
-                            Target = o.Status,
-                            Value = o.Count
-                        }
+                .Select(o =>
+                    new SankeyChartEdge
+                    {
+                        Source = o.Workflow,
+                        Target = o.Status,
+                        Value = o.Count
+                    }
                 )
                 .Concat(
                     lifecyclesByGroup
-                        .Select(
-                            o =>
-                                new SankeyChartEdge
-                                {
-                                    Source = string.IsNullOrEmpty(o.Vendor) ? _unknownVendorValue : o.Vendor,
-                                    Target = o.Workflow,
-                                    Value = o.Count
-                                }
+                        .Select(o =>
+                            new SankeyChartEdge
+                            {
+                                Source = string.IsNullOrEmpty(o.Vendor) ? _unknownVendorValue : o.Vendor,
+                                Target = o.Workflow,
+                                Value = o.Count
+                            }
                         )
                 );
     }
@@ -427,8 +423,7 @@
     private async Task HandleDashboardUpdate()
     {
         await
-            InvokeAsync(
-                async () =>
+            InvokeAsync(async () =>
                 {
                     try
                     {
@@ -440,8 +435,9 @@
                     }
                     catch (Exception ex)
                     {
-                        WebHostErrorHandler
-                            .HandleException(ex);
+                        await
+                            WebHostErrorHandler
+                                .HandleExceptionAsync(ex);
                     }
                     finally
                     {

@@ -123,8 +123,9 @@
         }
         catch (Exception ex)
         {
-            WebHostErrorHandler
-                .HandleException(ex);
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
         }
         finally
         {
@@ -133,7 +134,9 @@
         }
     }
 
-    private async Task UploadFilesAsync(IBrowserFile file)
+    private async Task UploadFilesAsync(
+        IBrowserFile file
+    )
     {
         var base64 =
             await
@@ -180,8 +183,9 @@
             }
             catch (Exception ex)
             {
-                WebHostErrorHandler
-                    .HandleException(ex);
+                await
+                    WebHostErrorHandler
+                        .HandleExceptionAsync(ex);
             }
             finally
             {

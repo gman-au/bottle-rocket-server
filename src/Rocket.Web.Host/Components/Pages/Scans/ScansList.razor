@@ -112,8 +112,9 @@
         }
         catch (Exception ex)
         {
-            WebHostErrorHandler
-                .HandleException(ex);
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
         }
         finally
         {
@@ -139,8 +140,9 @@
         }
         catch (Exception ex)
         {
-            WebHostErrorHandler
-                .HandleException(ex);
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
         }
         finally
         {
@@ -151,8 +153,7 @@
     private async Task HandleNewCapture()
     {
         await
-            InvokeAsync(
-                async () =>
+            InvokeAsync(async () =>
                 {
                     try
                     {
@@ -174,8 +175,9 @@
                     }
                     catch (Exception ex)
                     {
-                        WebHostErrorHandler
-                            .HandleException(ex);
+                        await
+                            WebHostErrorHandler
+                                .HandleExceptionAsync(ex);
                     }
                     finally
                     {
@@ -268,8 +270,9 @@
             }
             catch (Exception ex)
             {
-                WebHostErrorHandler
-                    .HandleException(ex);
+                await
+                    WebHostErrorHandler
+                        .HandleExceptionAsync(ex);
             }
             finally
             {

@@ -68,8 +68,7 @@
                             InputType="InputType.Password"
                             @bind-Value="_newModel.NewPassword"
                             For="@(() => _newModel.NewPassword)"
-                            Validation="@(new Func<string, IEnumerable<string>>(
-                                            o => PasswordValidation.PasswordStrength(
+                            Validation="@(new Func<string, IEnumerable<string>>(o => PasswordValidation.PasswordStrength(
                                                 o,
                                                 PasswordStringLocalizer
                                             )
@@ -139,8 +138,9 @@
         }
         catch (Exception ex)
         {
-            WebHostErrorHandler
-                .HandleException(ex);
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
         }
         finally
         {
@@ -209,8 +209,9 @@
             }
             catch (Exception ex)
             {
-                WebHostErrorHandler
-                    .HandleException(ex);
+                await
+                    WebHostErrorHandler
+                        .HandleExceptionAsync(ex);
             }
             finally
             {

@@ -14,6 +14,8 @@ using Microsoft.IdentityModel.Tokens;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Captures;
 using Rocket.Api.Host.Extensions;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 
@@ -29,7 +31,7 @@ namespace Rocket.Api.Host.Controllers
     ) : ControllerBase
     {
         private const int DefaultJwtExpirySeconds = 60 * 24 * 7;
-        
+
         [AllowAnonymous]
         [HttpPost("login")]
         [EndpointSummary("Login")]
@@ -77,7 +79,10 @@ namespace Rocket.Api.Host.Controllers
                         );
 
             if (user == null)
-                return Unauthorized(new { message = "Invalid username or password" });
+                throw new RocketException(
+                    "Invalid username or password",
+                    ApiStatusCodeEnum.InvalidCredentials
+                );
 
             var tokenHandler =
                 new JwtSecurityTokenHandler();

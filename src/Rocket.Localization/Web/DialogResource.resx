@@ -179,4 +179,14 @@
     <data name="DialogUserQuickAuthCancelCaption" xml:space="preserve">
         <value>OK</value>
     </data>
+    <!-- EXPIRED SESSION -->
+    <data name="ExpiredSessionTitle" xml:space="preserve">
+        <value>Session Expired</value>
+    </data>
+    <data name="ExpiredSessionMessage" xml:space="preserve">
+        <value>Your session has expired. Please login again.</value>
+    </data>
+    <data name="ExpiredSessionLoginCaption" xml:space="preserve">
+        <value>Login</value>
+    </data>
 </root>

@@ -142,7 +142,9 @@
 
     private DotNetObjectReference<ExecutionDetails> _dotNetRef;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnAfterRenderAsync(
+        bool firstRender
+    )
     {
         if (firstRender)
         {
@@ -164,7 +166,7 @@
             await
                 JsRuntime
                     .InvokeVoidAsync("mermaid.run");
-            
+
             // Set up SignalR listener
             CaptureHubClient.OnNewExecutionUpdateReceived += HandleExecutionUpdate;
 
@@ -180,7 +182,9 @@
     }
 
     [JSInvokable]
-    public void NavigateToRoute(string route)
+    public void NavigateToRoute(
+        string route
+    )
     {
         if (_disposed)
             return;
@@ -212,14 +216,15 @@
                     .OnInitializedAsync();
 
             _isLoading = true;
-            
+
             await
                 ReloadExecutionDetailsAsync();
         }
         catch (Exception ex)
         {
-            WebHostErrorHandler
-                .HandleException(ex);
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
         }
         finally
         {
@@ -246,8 +251,7 @@
     private async Task HandleExecutionUpdate()
     {
         await
-            InvokeAsync(
-                async () =>
+            InvokeAsync(async () =>
                 {
                     try
                     {
@@ -267,8 +271,9 @@
                     }
                     catch (Exception ex)
                     {
-                        WebHostErrorHandler
-                            .HandleException(ex);
+                        await
+                            WebHostErrorHandler
+                                .HandleExceptionAsync(ex);
                     }
                     finally
                     {
@@ -308,7 +313,9 @@
     }
 
     [JSInvokable]
-    public async Task DisplayLogMessages(string executionStepId)
+    public async Task DisplayLogMessages(
+        string executionStepId
+    )
     {
         var step =
             Flatten(_currentModel.Steps)
@@ -329,7 +336,9 @@
                 );
     }
 
-    private static IEnumerable<ExecutionStepSummary> Flatten(IEnumerable<ExecutionStepSummary> source)
+    private static IEnumerable<ExecutionStepSummary> Flatten(
+        IEnumerable<ExecutionStepSummary> source
+    )
     {
         foreach (var item in source)
         {
@@ -370,8 +379,9 @@
             }
             catch (Exception ex)
             {
-                WebHostErrorHandler
-                    .HandleException(ex);
+                await
+                    WebHostErrorHandler
+                        .HandleExceptionAsync(ex);
             }
             finally
             {
@@ -380,11 +390,11 @@
             }
         }
     }
-    
+
     private async Task ConfirmDeleteAsync()
     {
         var scanId = _currentModel.ScanId;
-        
+
         var dialog =
             await
                 DialogService
@@ -423,8 +433,9 @@
             }
             catch (Exception ex)
             {
-                WebHostErrorHandler
-                    .HandleException(ex);
+                await
+                    WebHostErrorHandler
+                        .HandleExceptionAsync(ex);
             }
             finally
             {

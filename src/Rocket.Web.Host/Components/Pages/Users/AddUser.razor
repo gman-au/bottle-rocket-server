@@ -51,7 +51,11 @@
                             InputType="InputType.Password"
                             @bind-Value="_newModel.NewPassword"
                             For="@(() => _newModel.NewPassword)"
-                            Validation="@(new Func<string, IEnumerable<string>>(o => PasswordValidation.PasswordStrength(o, PasswordStringLocalizer)))"
+                            Validation="@(new Func<string, IEnumerable<string>>(o => PasswordValidation.PasswordStrength(
+                                                o,
+                                                PasswordStringLocalizer
+                                            )
+                                        ))"
                             RequiredError="@StringLocalizer["UsersPasswordFieldRequiredError"]"/>
                     </MudItem>
                     <MudItem sm="12" lg="6" xl="4">
@@ -105,8 +109,9 @@
         }
         catch (Exception ex)
         {
-            WebHostErrorHandler
-                .HandleException(ex);
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
         }
         finally
         {
@@ -147,7 +152,7 @@
                         StringLocalizer["UsersHasBeenAddedMessage"].Value,
                         Severity.Success
                     );
-                
+
                 if (!string.IsNullOrEmpty(createUserResponse?.QrCodeBase64))
                 {
                     var dialog =
@@ -174,8 +179,9 @@
             }
             catch (Exception ex)
             {
-                WebHostErrorHandler
-                    .HandleException(ex);
+                await
+                    WebHostErrorHandler
+                        .HandleExceptionAsync(ex);
             }
             finally
             {
@@ -185,7 +191,9 @@
         }
     }
 
-    private string PasswordMatch(string arg)
+    private string PasswordMatch(
+        string arg
+    )
     {
         if (_pwField1.Value != arg)
             return StringLocalizer["UsersRepeatPasswordFieldMatchError"];

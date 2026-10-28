@@ -24,7 +24,7 @@
                     Typo="Typo.h4"
                     Color="Color.Primary"
                     Class="mb-4">
-                    Add a @(_isCustomConnector ? "Custom" : "Bottle-Rocket" ) Microsoft connector
+                    Add a @(_isCustomConnector ? "Custom" : "Bottle-Rocket") Microsoft connector
                 </MudText>
                 <MudGrid>
                     @if (_isCustomConnector)
@@ -45,7 +45,8 @@
                                         </MudLink>
                                     </li>
                                     <li>Ensure that the correct permissions / scopes are set.</li>
-                                    <li>When completed, you should receive an <b>Client ID</b> and <b>Tenant ID</b>, which needs to be entered
+                                    <li>When completed, you should receive an <b>Client ID</b> and <b>Tenant ID</b>, which needs to be
+                                        entered
                                         below.
                                     </li>
                                 </ul>
@@ -164,10 +165,10 @@
 
     [Parameter]
     public string Id { get; set; }
-    
+
     [Parameter]
     public string ClientId { get; set; }
-    
+
     [Parameter]
     public string TenantId { get; set; }
 
@@ -181,7 +182,7 @@
 
             _isLoading = true;
             StateHasChanged();
-            
+
             _isCustomConnector = string.IsNullOrEmpty(ClientId) || string.IsNullOrEmpty(TenantId);
 
             _initiateRequest = new MicrosoftAuthInitiateRequest();
@@ -191,10 +192,10 @@
                 _initiateRequest.ClientId = ClientId;
                 _initiateRequest.TenantId = TenantId;
             }
-            
+
             // Set up SignalR listener
             CaptureHubClient.OnNewConnectorUpdateReceived += HandleNewConnectorUpdateAsync;
-            
+
             // Connect to hub
             await
                 CaptureHubClient
@@ -202,8 +203,9 @@
         }
         catch (Exception ex)
         {
-            WebHostErrorHandler
-                .HandleException(ex);
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
         }
         finally
         {
@@ -253,8 +255,9 @@
             }
             catch (Exception ex)
             {
-                WebHostErrorHandler
-                    .HandleException(ex);
+                await
+                    WebHostErrorHandler
+                        .HandleExceptionAsync(ex);
             }
             finally
             {
@@ -276,8 +279,10 @@
                     $"window.open('{_verificationUrl}', '_blank')"
                 );
     }
-    
-    private async Task HandleNewConnectorUpdateAsync(bool success)
+
+    private async Task HandleNewConnectorUpdateAsync(
+        bool success
+    )
     {
         if (success)
         {
@@ -297,7 +302,7 @@
                     "There was an error adding the connection.",
                     Severity.Error
                 );
-            
+
             _isLoading = false;
             StateHasChanged();
         }
@@ -312,5 +317,5 @@
             CaptureHubClient
                 .DisposeAsync();
     }
-    
+
 }

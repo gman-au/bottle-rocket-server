@@ -170,8 +170,9 @@
         }
         catch (Exception ex)
         {
-            WebHostErrorHandler
-                .HandleException(ex);
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
         }
         finally
         {
@@ -224,8 +225,9 @@
             }
             catch (Exception ex)
             {
-                WebHostErrorHandler
-                    .HandleException(ex);
+                await
+                    WebHostErrorHandler
+                        .HandleExceptionAsync(ex);
             }
             finally
             {
@@ -235,7 +237,9 @@
         }
     }
 
-    private async Task UploadFilesAsync(IBrowserFile file)
+    private async Task UploadFilesAsync(
+        IBrowserFile file
+    )
     {
         try
         {
@@ -250,8 +254,9 @@
         }
         catch (IOException ex)
         {
-            WebHostErrorHandler
-                .HandleException(ex);
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
         }
     }
 
@@ -294,8 +299,9 @@
             }
             catch (Exception ex)
             {
-                WebHostErrorHandler
-                    .HandleException(ex);
+                await
+                    WebHostErrorHandler
+                        .HandleExceptionAsync(ex);
             }
             finally
             {
@@ -304,4 +310,6 @@
             }
         }
     }
+
+
 }

@@ -117,8 +117,9 @@
         }
         catch (Exception ex)
         {
-            WebHostErrorHandler
-                .HandleException(ex);
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
         }
         finally
         {
@@ -126,7 +127,10 @@
         }
     }
 
-    private async Task LoadMyConnectors(int index, int count)
+    private async Task LoadMyConnectors(
+        int index,
+        int count
+    )
     {
         var request =
             new FetchConnectorsRequest
@@ -162,7 +166,9 @@
                 .OrderByDescending(o => o.LastUpdatedAt);
     }
 
-    private async Task ConfirmDeleteAsync(ConnectorSummary connector)
+    private async Task ConfirmDeleteAsync(
+        ConnectorSummary connector
+    )
     {
         var dialog =
             await
@@ -201,8 +207,9 @@
             }
             catch (Exception ex)
             {
-                WebHostErrorHandler
-                    .HandleException(ex);
+                await
+                    WebHostErrorHandler
+                        .HandleExceptionAsync(ex);
             }
             finally
             {
@@ -216,7 +223,9 @@
     {
     }
 
-    private static string MapStatusToIcon(int connectorStatus)
+    private static string MapStatusToIcon(
+        int connectorStatus
+    )
     {
         return connectorStatus switch
         {
@@ -225,7 +234,9 @@
         };
     }
 
-    private static Color MapStatusToColor(int connectorStatus)
+    private static Color MapStatusToColor(
+        int connectorStatus
+    )
     {
         return connectorStatus switch
         {

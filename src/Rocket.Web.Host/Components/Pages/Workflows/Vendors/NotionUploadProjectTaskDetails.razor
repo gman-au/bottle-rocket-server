@@ -171,10 +171,10 @@
         }
         catch (Exception ex)
         {
-            WebHostErrorHandler
-                .HandleException(ex);
+            await 
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
         }
-
         finally
         {
             _isLoading = false;
@@ -245,8 +245,9 @@
         }
         catch (Exception ex)
         {
-            WebHostErrorHandler
-                .HandleException(ex);
+            await 
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
         }
         finally
         {

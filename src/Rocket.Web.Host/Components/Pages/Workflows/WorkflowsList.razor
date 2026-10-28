@@ -117,8 +117,9 @@
         }
         catch (Exception ex)
         {
-            WebHostErrorHandler
-                .HandleException(ex);
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
         }
         finally
         {
@@ -126,7 +127,10 @@
         }
     }
 
-    private async Task LoadWorkflows(int index, int count)
+    private async Task LoadWorkflows(
+        int index,
+        int count
+    )
     {
         var request =
             new FetchWorkflowsRequest
@@ -162,7 +166,9 @@
                 .OrderByDescending(o => o.CreatedAt);
     }
 
-    private async Task ConfirmDeleteAsync(MyWorkflowSummary workflow)
+    private async Task ConfirmDeleteAsync(
+        MyWorkflowSummary workflow
+    )
     {
         var dialog =
             await
@@ -198,7 +204,7 @@
                 _workflows =
                     _workflows
                         .Where(o => o.Id != workflow.Id);
-                
+
                 Snackbar
                     .Add(
                         StringLocalizer["WorkflowsWasDeletedMessage"].Value,
@@ -207,8 +213,9 @@
             }
             catch (Exception ex)
             {
-                WebHostErrorHandler
-                    .HandleException(ex);
+                await
+                    WebHostErrorHandler
+                        .HandleExceptionAsync(ex);
             }
             finally
             {
