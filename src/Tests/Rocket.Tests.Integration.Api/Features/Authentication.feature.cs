@@ -165,18 +165,18 @@ await this.FeatureBackgroundAsync();
     await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 18
-    await testRunner.WhenAsync("the response with path \"token\" is stored with key \"bearer-token\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("the response with path \"token\" is stored with key \"bearer-token-1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 19
-    await testRunner.AndAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token\" and stored unde" +
-                        "r \"full-api-token\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-1\" and stored un" +
+                        "der \"full-api-token-1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 20
     await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 21
     await testRunner.AndAsync("the request header element \"Authorization\" has value stored under \"full-api-token" +
-                        "\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+                        "-1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 22
     await testRunner.AndAsync("the request body element \"start_index\" has value \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
@@ -237,18 +237,18 @@ await this.FeatureBackgroundAsync();
     await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 36
-    await testRunner.WhenAsync("the response with path \"token\" is stored with key \"bearer-token\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("the response with path \"token\" is stored with key \"bearer-token-2\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 37
-    await testRunner.AndAsync("a prefix \"Basic \" is added to the value stored in \"bearer-token\" and stored under" +
-                        " \"full-api-token\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("a prefix \"Basic \" is added to the value stored in \"bearer-token-2\" and stored und" +
+                        "er \"full-api-token-2\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 38
     await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 39
     await testRunner.AndAsync("the request header element \"Authorization\" has value stored under \"full-api-token" +
-                        "\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+                        "-2\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 40
     await testRunner.AndAsync("the request body element \"start_index\" has value \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
@@ -312,18 +312,18 @@ await this.FeatureBackgroundAsync();
     await testRunner.WhenAsync("30 seconds have passed", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 56
-    await testRunner.WhenAsync("the response with path \"token\" is stored with key \"bearer-token\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("the response with path \"token\" is stored with key \"bearer-token-3\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 57
-    await testRunner.AndAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token\" and stored unde" +
-                        "r \"full-api-token\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-3\" and stored un" +
+                        "der \"full-api-token-3\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 58
     await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 59
     await testRunner.AndAsync("the request header element \"Authorization\" has value stored under \"full-api-token" +
-                        "\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+                        "-3\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 60
     await testRunner.AndAsync("the request body element \"start_index\" has value \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");

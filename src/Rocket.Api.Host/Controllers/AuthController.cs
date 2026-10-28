@@ -28,6 +28,8 @@ namespace Rocket.Api.Host.Controllers
         IConfiguration configuration
     ) : ControllerBase
     {
+        private const int DefaultJwtExpirySeconds = 60 * 24 * 7;
+        
         [AllowAnonymous]
         [HttpPost("login")]
         [EndpointSummary("Login")]
@@ -51,12 +53,15 @@ namespace Rocket.Api.Host.Controllers
             CancellationToken cancellationToken
         )
         {
-            var jwtExpirySeconds = 60 * 24 * 7;
+            var jwtExpirySeconds = DefaultJwtExpirySeconds;
 
             try
             {
                 var jwtExpiry = configuration["JWT_EXPIRY_SECONDS"];
                 jwtExpirySeconds = Convert.ToInt32(jwtExpiry);
+
+                if (jwtExpirySeconds <= 0)
+                    jwtExpirySeconds = DefaultJwtExpirySeconds;
             }
             catch (FormatException)
             {
