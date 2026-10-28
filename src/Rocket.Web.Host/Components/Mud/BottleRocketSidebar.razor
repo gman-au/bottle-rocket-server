@@ -341,6 +341,10 @@
 
         if (!(result?.Canceled ?? true))
         {
+            await
+                AuthenticationManager
+                    .LogoutAsync();
+            
             NavigationManager
                 .NavigateTo(
                     "/Account/Logout",
