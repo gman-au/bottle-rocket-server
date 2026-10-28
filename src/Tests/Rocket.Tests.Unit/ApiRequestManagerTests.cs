@@ -111,7 +111,7 @@ namespace Rocket.Tests.Unit
             {
                 _mockHttpResponseMessageContent = """
                                                   { 
-                                                  "error_code": 2005, 
+                                                  "error_code": 3000, 
                                                   "error_message": "file data corrupted"
                                                   }
                                                   """;
