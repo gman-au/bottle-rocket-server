@@ -152,7 +152,10 @@ namespace Rocket.Api.Host.Controllers
         [EndpointDescription(
             "Logout / revoke the current session. If LogoutAll is set to 'true', it will revoke the sessions for all users."
         )]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(
+            typeof(AccountLogoutResponse),
+            StatusCodes.Status200OK
+        )]
         public async Task<IActionResult> Logout(
             [FromBody] AccountLogoutRequest request,
             CancellationToken cancellationToken
@@ -188,7 +191,12 @@ namespace Rocket.Api.Host.Controllers
                     CookieOptionsFor(null)
                 );
 
-            return NoContent();
+            return
+                new AccountLogoutResponse
+                    {
+                        IsLoggedOut = true
+                    }
+                    .AsApiSuccess();
         }
 
         [Authorize]
