@@ -23,7 +23,7 @@ Scenario: Login and use the token (correctly) in a request
     And the request body element "record_count" has value "0"
     When the request is sent via "POST"
     Then the request should have succeeded
-    
+
 @LOGIN
 @INVALID
 Scenario: Login and use the token (with wrong auth header name) in a request
@@ -42,7 +42,7 @@ Scenario: Login and use the token (with wrong auth header name) in a request
     When the request is sent via "POST"
     Then the request should have failed with status code 401
 
-@LOGIN    
+@LOGIN
 @SHORT-JWT-EXPIRY
 Scenario: Login and use an expired token in a request
     Given an API request is created against endpoint "/api/auth/login"
@@ -62,8 +62,9 @@ Scenario: Login and use an expired token in a request
     When the request is sent via "POST"
     Then the request should have failed with status code 401
     And the response with path "error_code" should have a value of "2006"
-    
+
 @LOGIN
+@LOGOUT
 Scenario: Login, logout, and attempt to reuse the revoked token in a request
     Given an API request is created against endpoint "/api/auth/login"
     And the request body element "user_name" has value "john@test.com"
@@ -79,6 +80,66 @@ Scenario: Login, logout, and attempt to reuse the revoked token in a request
     And the response with path "is_logged_out" should have a value of "true"
     Given an API request is created against endpoint "/api/users/fetch"
     And the request header element "Authorization" has value stored under "full-api-token-4"
+    And the request body element "start_index" has value "1"
+    And the request body element "record_count" has value "0"
+    When the request is sent via "POST"
+    Then the request should have failed with status code 401
+    And the response with path "error_code" should have a value of "2006"
+
+@LOGIN
+@LOGOUT
+Scenario: Login with two tokens, revoke the second, and attempt to reuse the first revoked token in a request
+    Given an API request is created against endpoint "/api/auth/login"
+    And the request body element "user_name" has value "john@test.com"
+    And the request body element "password" has value "P@ssword!23"
+    When the request is sent via "POST"
+    Then the request should have succeeded
+    When the response with path "access_token" is stored with key "bearer-token-5"
+    And a prefix "Bearer " is added to the value stored in "bearer-token-5" and stored under "full-api-token-5"
+    Given an API request is created against endpoint "/api/auth/login"
+    And the request body element "user_name" has value "john@test.com"
+    And the request body element "password" has value "P@ssword!23"
+    When the request is sent via "POST"
+    Then the request should have succeeded
+    When the response with path "access_token" is stored with key "bearer-token-6"
+    When a prefix "Bearer " is added to the value stored in "bearer-token-6" and stored under "full-api-token-6"
+    Given an API request is created against endpoint "/api/auth/logout"
+    #And the request body element "logout_all" has a Boolean value of False
+    And the request header element "Authorization" has value stored under "full-api-token-6"
+    When the request is sent via "POST"
+    Then the request should have succeeded
+    And the response with path "is_logged_out" should have a value of "true"
+    Given an API request is created against endpoint "/api/users/fetch"
+    And the request header element "Authorization" has value stored under "full-api-token-5"
+    And the request body element "start_index" has value "1"
+    And the request body element "record_count" has value "0"
+    When the request is sent via "POST"
+    Then the request should have succeeded
+    
+@LOGIN
+@LOGOUT
+Scenario: Login with two tokens, revoke all, and attempt to reuse the first revoked token in a request
+    Given an API request is created against endpoint "/api/auth/login"
+    And the request body element "user_name" has value "john@test.com"
+    And the request body element "password" has value "P@ssword!23"
+    When the request is sent via "POST"
+    Then the request should have succeeded
+    When the response with path "access_token" is stored with key "bearer-token-7"
+    And a prefix "Bearer " is added to the value stored in "bearer-token-7" and stored under "full-api-token-7"
+    Given an API request is created against endpoint "/api/auth/login"
+    And the request body element "user_name" has value "john@test.com"
+    And the request body element "password" has value "P@ssword!23"
+    Then the request should have succeeded
+    When the response with path "access_token" is stored with key "bearer-token-8"
+    When a prefix "Bearer " is added to the value stored in "bearer-token-8" and stored under "full-api-token-8"
+    Given an API request is created against endpoint "/api/auth/logout"
+    And the request body element "logout_all" has a Boolean value of True
+    And the request header element "Authorization" has value stored under "full-api-token-8"
+    When the request is sent via "POST"
+    Then the request should have succeeded
+    And the response with path "is_logged_out" should have a value of "true"
+    Given an API request is created against endpoint "/api/users/fetch"
+    And the request header element "Authorization" has value stored under "full-api-token-7"
     And the request body element "start_index" has value "1"
     And the request body element "record_count" has value "0"
     When the request is sent via "POST"
