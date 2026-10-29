@@ -366,7 +366,7 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
     await testRunner.ThenAsync("the request should have failed with status code 500", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 62
-    await testRunner.AndAsync("the response with path \"error_code\" should have a value of \"2008\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("the response with path \"error_code\" should have a value of \"3003\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();

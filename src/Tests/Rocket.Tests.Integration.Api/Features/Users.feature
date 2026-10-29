@@ -61,5 +61,5 @@ Scenario: Add a replacement admin
     And the request body element "start_index" has value "1"
     And the request body element "record_count" has value "0"
     When the request is sent via "POST"
-    Then the request should have failed with status code 500
-    And the response with path "error_code" should have a value of "2007"
+    Then the request should have failed with status code 401
+    And the response with path "error_code" should have a value of "3002"

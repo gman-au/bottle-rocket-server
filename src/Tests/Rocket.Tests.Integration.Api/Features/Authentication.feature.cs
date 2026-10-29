@@ -165,7 +165,7 @@ await this.FeatureBackgroundAsync();
     await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 18
-    await testRunner.WhenAsync("the response with path \"token\" is stored with key \"bearer-token-1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 19
     await testRunner.AndAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-1\" and stored un" +
@@ -237,7 +237,7 @@ await this.FeatureBackgroundAsync();
     await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 36
-    await testRunner.WhenAsync("the response with path \"token\" is stored with key \"bearer-token-2\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-2\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 37
     await testRunner.AndAsync("a prefix \"Basic \" is added to the value stored in \"bearer-token-2\" and stored und" +
@@ -312,7 +312,7 @@ await this.FeatureBackgroundAsync();
     await testRunner.WhenAsync("30 seconds have passed", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 56
-    await testRunner.WhenAsync("the response with path \"token\" is stored with key \"bearer-token-3\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-3\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 57
     await testRunner.AndAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-3\" and stored un" +
@@ -336,6 +336,9 @@ await this.FeatureBackgroundAsync();
 #line hidden
 #line 63
     await testRunner.ThenAsync("the request should have failed with status code 401", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 64
+    await testRunner.AndAsync("the response with path \"error_code\" should have a value of \"2006\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();

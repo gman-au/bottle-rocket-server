@@ -2,7 +2,7 @@
 {
     public class OrchestrationParameters
     {
-        public int JwtExpirySeconds { get; set; }
+        public int JwtAccessExpirySeconds { get; set; }
         
         public string DatabaseName { get; set; }
     }

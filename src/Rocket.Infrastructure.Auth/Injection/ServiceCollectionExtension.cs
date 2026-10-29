@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,12 +27,13 @@ namespace Rocket.Infrastructure.Auth.Injection
             services
                 .AddTransient<IRocketExceptionWrapper, RocketExceptionWrapper>()
                 .AddTransient<IAuthenticator, ClientAuthenticator>();
-                
+
             services
                 .AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>()
                 .AddSingleton<ISessionManager, SessionManager>()
-                .AddSingleton<IAuthSecretProvider, AuthSecretProvider>();
-                
+                .AddSingleton<IAuthSecretProvider, AuthSecretProvider>()
+                .AddSingleton<ITokenExpiryProvider, TokenExpiryProvider>();
+
             var provider =
                 services
                     .BuildServiceProvider();
@@ -80,26 +82,39 @@ namespace Rocket.Infrastructure.Auth.Injection
                                         context
                                             .HttpContext
                                             .RequestAborted;
-                                    
-                                    var sessionId = 
+
+                                    var sessionId =
                                         context
                                             .Principal?
                                             .FindFirstValue(AuthConstants.SessionId);
-                                    
-                                    var sessions = 
+
+                                    var sessions =
                                         context
                                             .HttpContext
                                             .RequestServices
                                             .GetRequiredService<ISessionManager>();
-                                    
+
                                     var logger = context.HttpContext.RequestServices
                                         .GetRequiredService<ILogger<JwtBearerEvents>>();
 
-                                    logger.LogWarning("Claims: {claims}",
-                                        string.Join(", ", context.Principal!.Claims.Select(c => $"{c.Type}={c.Value}")));
+                                    logger
+                                        .LogDebug(
+                                            "Claims: {claims}",
+                                            string
+                                                .Join(
+                                                    ", ",
+                                                    context
+                                                        .Principal!
+                                                        .Claims
+                                                        .Select(c => $"{c.Type}={c.Value}")
+                                                )
+                                        );
 
                                     // TODO: repeat as below but make rocket exception
-                                    if (sessionId is null || !await sessions.IsActiveAsync(sessionId, cancellationToken))
+                                    if (sessionId is null || !await sessions.IsActiveAsync(
+                                            sessionId,
+                                            cancellationToken
+                                        ))
                                         context.Fail("Session revoked or expired");
                                 },
                                 OnAuthenticationFailed = async context =>
@@ -112,10 +127,10 @@ namespace Rocket.Infrastructure.Auth.Injection
                                                 .RequestServices
                                                 .GetRequiredService<IRocketExceptionWrapper>();
 
-                                        context.Response.StatusCode = 
+                                        context.Response.StatusCode =
                                             StatusCodes
-                                                .Status500InternalServerError;
-                                        
+                                                .Status401Unauthorized;
+
                                         await
                                             context
                                                 .Response
@@ -124,18 +139,19 @@ namespace Rocket.Infrastructure.Auth.Injection
                                                         .For(
                                                             new RocketException(
                                                                 "API token has expired - please login again",
-                                                                ApiStatusCodeEnum.TokenHasExpired
+                                                                ApiStatusCodeEnum.TokenHasExpired,
+                                                                (int)HttpStatusCode.Unauthorized
                                                             )
                                                         )
                                                         .Value
                                                 );
-                                        
-                                        context.Exception = null; 
-                                        
-                                        await 
+
+                                        context.Exception = null;
+
+                                        await
                                             context
                                                 .Response
-                                                .CompleteAsync(); 
+                                                .CompleteAsync();
                                     }
                                 }
                             };

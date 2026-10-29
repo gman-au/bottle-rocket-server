@@ -38,7 +38,7 @@ namespace Rocket.Tests.Integration.Api.Hooks
                 };
 
             if (tags.Contains(ShortJwtExpiryTag))
-                orchestrationParameters.JwtExpirySeconds = 20;
+                orchestrationParameters.JwtAccessExpirySeconds = 20;
 
             await
                 context

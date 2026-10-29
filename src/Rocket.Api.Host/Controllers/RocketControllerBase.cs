@@ -23,7 +23,8 @@ namespace Rocket.Api.Host.Controllers
             {
                 throw new RocketException(
                     "This operation requires the logged in user to be an administrator.",
-                    ApiStatusCodeEnum.RequiresAdministratorAccess
+                    ApiStatusCodeEnum.RequiresAdministratorAccess,
+                    (int)HttpStatusCode.Unauthorized
                 );
             }
 
@@ -49,7 +50,8 @@ namespace Rocket.Api.Host.Controllers
             {
                 throw new RocketException(
                     "User account is inactive. Please contact your administrator.",
-                    ApiStatusCodeEnum.InactiveUser
+                    ApiStatusCodeEnum.InactiveUser,
+                    (int)HttpStatusCode.Unauthorized
                 );
             }
 

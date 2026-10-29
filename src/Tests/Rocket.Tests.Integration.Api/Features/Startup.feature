@@ -59,4 +59,4 @@ Scenario: Add a new (non-administrator) user during system startup
     And the request body element "is_the_new_admin" has a boolean value of false
     When the request is sent via "POST"
     Then the request should have failed with status code 500
-    And the response with path "error_code" should have a value of "2008"
+    And the response with path "error_code" should have a value of "3003"

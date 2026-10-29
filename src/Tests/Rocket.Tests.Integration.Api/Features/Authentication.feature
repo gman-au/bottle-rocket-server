@@ -15,7 +15,7 @@ Scenario: Login and use the token (correctly) in a request
     When the request is sent via "POST"
     Then the request should have succeeded
     # Access as the user that created the scan
-    When the response with path "token" is stored with key "bearer-token-1"
+    When the response with path "access_token" is stored with key "bearer-token-1"
     And a prefix "Bearer " is added to the value stored in "bearer-token-1" and stored under "full-api-token-1"
     Given an API request is created against endpoint "/api/users/fetch"
     And the request header element "Authorization" has value stored under "full-api-token-1"
@@ -33,7 +33,7 @@ Scenario: Login and use the token (with wrong auth header name) in a request
     When the request is sent via "POST"
     Then the request should have succeeded
     # Access as the user that created the scan
-    When the response with path "token" is stored with key "bearer-token-2"
+    When the response with path "access_token" is stored with key "bearer-token-2"
     And a prefix "Basic " is added to the value stored in "bearer-token-2" and stored under "full-api-token-2"
     Given an API request is created against endpoint "/api/users/fetch"
     And the request header element "Authorization" has value stored under "full-api-token-2"
@@ -53,7 +53,7 @@ Scenario: Login and use an expired token in a request
     # Wait for the token to expire (should be 20 seconds)
     When 30 seconds have passed
     # Access as the user that created the scan
-    When the response with path "token" is stored with key "bearer-token-3"
+    When the response with path "access_token" is stored with key "bearer-token-3"
     And a prefix "Bearer " is added to the value stored in "bearer-token-3" and stored under "full-api-token-3"
     Given an API request is created against endpoint "/api/users/fetch"
     And the request header element "Authorization" has value stored under "full-api-token-3"
@@ -61,3 +61,4 @@ Scenario: Login and use an expired token in a request
     And the request body element "record_count" has value "0"
     When the request is sent via "POST"
     Then the request should have failed with status code 401
+    And the response with path "error_code" should have a value of "2006"

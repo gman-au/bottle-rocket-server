@@ -106,7 +106,7 @@ namespace Rocket.Tests.Integration.Api.Extensions
             var token =
                 await
                     context
-                        .GetJsonTokenPathValueAsync("token");
+                        .GetJsonTokenPathValueAsync("access_token");
 
             activeTokenSession
                 .Store(

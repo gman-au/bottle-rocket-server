@@ -14,11 +14,10 @@ namespace Rocket.Infrastructure.Auth
 {
     public class SessionManager(
         IJwtTokenGenerator jwtTokenGenerator,
+        ITokenExpiryProvider tokenExpiryProvider,
         ITokenSessionRepository tokenSessionRepository
     ) : ISessionManager
     {
-        private static readonly TimeSpan AccessLifetime = TimeSpan.FromMinutes(10);
-        private static readonly TimeSpan RefreshLifetime = TimeSpan.FromDays(30);
         private static readonly TimeSpan ReuseGracePeriod = TimeSpan.FromSeconds(30);
 
         public async Task<AccountLoginResponse> CreateSessionAsync(
@@ -42,10 +41,11 @@ namespace Rocket.Infrastructure.Auth
                     UserAgent = userAgent,
                     IpAddress = ip,
                     Hash = hash,
+                    DeviceName = deviceName,
                     TokenPrefix = raw[..8],
                     CreatedAt = now,
                     LastLoginAt = now,
-                    ExpiresAt = now + RefreshLifetime,
+                    ExpiresAt = now + tokenExpiryProvider.GetRefreshExpiryLifetime(),
                     IsActive = true,
                 };
 
@@ -117,7 +117,7 @@ namespace Rocket.Infrastructure.Auth
                             newHash,
                             newRaw[..8],
                             now,
-                            now + RefreshLifetime,
+                            now + tokenExpiryProvider.GetRefreshExpiryLifetime(),
                             cancellationToken
                         );
 
@@ -165,7 +165,7 @@ namespace Rocket.Infrastructure.Auth
             string rawRefresh
         )
         {
-            var expiresAt = DateTime.UtcNow + AccessLifetime;
+            var expiresAt = DateTime.UtcNow + tokenExpiryProvider.GetAccessExpiryLifetime();
 
             var access =
                 jwtTokenGenerator

@@ -119,8 +119,8 @@ namespace Rocket.Tests.Infrastructure
                         orchestrationParameters?.DatabaseName ?? "BottleRocket"
                     )
                     .WithEnvironment(
-                        "JWT_EXPIRY_SECONDS",
-                        (orchestrationParameters?.JwtExpirySeconds ?? 60 * 24 * 7).ToString()
+                        "JWT_ACCESS_EXPIRY_SECONDS",
+                        (orchestrationParameters?.JwtAccessExpirySeconds ?? 60 * 24 * 7).ToString()
                     )
                     .WithEnvironment(
                         "LocalBlobConfigurationOptions__LocalBasePath",

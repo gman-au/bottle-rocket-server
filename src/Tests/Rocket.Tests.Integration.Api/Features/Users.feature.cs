@@ -387,10 +387,10 @@ await this.FeatureBackgroundAsync();
     await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 64
-    await testRunner.ThenAsync("the request should have failed with status code 500", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+    await testRunner.ThenAsync("the request should have failed with status code 401", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 65
-    await testRunner.AndAsync("the response with path \"error_code\" should have a value of \"2007\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("the response with path \"error_code\" should have a value of \"3002\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
