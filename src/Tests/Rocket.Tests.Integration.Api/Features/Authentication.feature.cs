@@ -119,21 +119,21 @@ namespace Rocket.Tests.Integration.Api.Features
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/Authentication.feature.ndjson", 8);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/Authentication.feature.ndjson", 10);
         }
         
         [global::NUnit.Framework.TestAttribute()]
-        [global::NUnit.Framework.DescriptionAttribute("Login and use the token (correctly) in a request")]
+        [global::NUnit.Framework.DescriptionAttribute("Login and use the access token (correctly) in a request")]
         [global::NUnit.Framework.CategoryAttribute("LOGIN")]
         [global::NUnit.Framework.CategoryAttribute("VALID")]
-        public async global::System.Threading.Tasks.Task LoginAndUseTheTokenCorrectlyInARequest()
+        public async global::System.Threading.Tasks.Task LoginAndUseTheAccessTokenCorrectlyInARequest()
         {
             string[] tagsOfScenario = new string[] {
                     "LOGIN",
                     "VALID"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "0";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Login and use the token (correctly) in a request", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Login and use the access token (correctly) in a request", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
 #line 11
@@ -165,18 +165,18 @@ await this.FeatureBackgroundAsync();
     await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 18
-    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-01\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 19
-    await testRunner.AndAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-1\" and stored un" +
-                        "der \"full-api-token-1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-01\" and stored u" +
+                        "nder \"full-api-token-01\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 20
     await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 21
     await testRunner.AndAsync("the request header element \"Authorization\" has value stored under \"full-api-token" +
-                        "-1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+                        "-01\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 22
     await testRunner.AndAsync("the request body element \"start_index\" has value \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
@@ -195,17 +195,17 @@ await this.FeatureBackgroundAsync();
         }
         
         [global::NUnit.Framework.TestAttribute()]
-        [global::NUnit.Framework.DescriptionAttribute("Login and use the token (with wrong auth header name) in a request")]
+        [global::NUnit.Framework.DescriptionAttribute("Login and use the access token (with wrong auth header name) in a request")]
         [global::NUnit.Framework.CategoryAttribute("LOGIN")]
         [global::NUnit.Framework.CategoryAttribute("INVALID")]
-        public async global::System.Threading.Tasks.Task LoginAndUseTheTokenWithWrongAuthHeaderNameInARequest()
+        public async global::System.Threading.Tasks.Task LoginAndUseTheAccessTokenWithWrongAuthHeaderNameInARequest()
         {
             string[] tagsOfScenario = new string[] {
                     "LOGIN",
                     "INVALID"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "1";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Login and use the token (with wrong auth header name) in a request", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Login and use the access token (with wrong auth header name) in a request", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
 #line 29
@@ -237,18 +237,18 @@ await this.FeatureBackgroundAsync();
     await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 36
-    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-2\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-02\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 37
-    await testRunner.AndAsync("a prefix \"Basic \" is added to the value stored in \"bearer-token-2\" and stored und" +
-                        "er \"full-api-token-2\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("a prefix \"Basic \" is added to the value stored in \"bearer-token-02\" and stored un" +
+                        "der \"full-api-token-02\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 38
     await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 39
     await testRunner.AndAsync("the request header element \"Authorization\" has value stored under \"full-api-token" +
-                        "-2\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+                        "-02\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 40
     await testRunner.AndAsync("the request body element \"start_index\" has value \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
@@ -267,17 +267,17 @@ await this.FeatureBackgroundAsync();
         }
         
         [global::NUnit.Framework.TestAttribute()]
-        [global::NUnit.Framework.DescriptionAttribute("Login and use an expired token in a request")]
+        [global::NUnit.Framework.DescriptionAttribute("Login and use an expired access token in a request")]
         [global::NUnit.Framework.CategoryAttribute("LOGIN")]
         [global::NUnit.Framework.CategoryAttribute("SHORT-JWT-EXPIRY")]
-        public async global::System.Threading.Tasks.Task LoginAndUseAnExpiredTokenInARequest()
+        public async global::System.Threading.Tasks.Task LoginAndUseAnExpiredAccessTokenInARequest()
         {
             string[] tagsOfScenario = new string[] {
                     "LOGIN",
                     "SHORT-JWT-EXPIRY"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "2";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Login and use an expired token in a request", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Login and use an expired access token in a request", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
 #line 47
@@ -312,18 +312,18 @@ await this.FeatureBackgroundAsync();
     await testRunner.WhenAsync("30 seconds have passed", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 56
-    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-3\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-03\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 57
-    await testRunner.AndAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-3\" and stored un" +
-                        "der \"full-api-token-3\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-03\" and stored u" +
+                        "nder \"full-api-token-03\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 58
     await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 59
     await testRunner.AndAsync("the request header element \"Authorization\" has value stored under \"full-api-token" +
-                        "-3\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+                        "-03\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 60
     await testRunner.AndAsync("the request body element \"start_index\" has value \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
@@ -345,17 +345,17 @@ await this.FeatureBackgroundAsync();
         }
         
         [global::NUnit.Framework.TestAttribute()]
-        [global::NUnit.Framework.DescriptionAttribute("Login, logout, and attempt to reuse the revoked token in a request")]
+        [global::NUnit.Framework.DescriptionAttribute("Login, logout, and attempt to reuse the revoked access token in a request")]
         [global::NUnit.Framework.CategoryAttribute("LOGIN")]
         [global::NUnit.Framework.CategoryAttribute("LOGOUT")]
-        public async global::System.Threading.Tasks.Task LoginLogoutAndAttemptToReuseTheRevokedTokenInARequest()
+        public async global::System.Threading.Tasks.Task LoginLogoutAndAttemptToReuseTheRevokedAccessTokenInARequest()
         {
             string[] tagsOfScenario = new string[] {
                     "LOGIN",
                     "LOGOUT"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "3";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Login, logout, and attempt to reuse the revoked token in a request", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Login, logout, and attempt to reuse the revoked access token in a request", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
 #line 68
@@ -387,18 +387,18 @@ await this.FeatureBackgroundAsync();
     await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 74
-    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-4\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-04\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 75
-    await testRunner.AndAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-4\" and stored un" +
-                        "der \"full-api-token-4\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-04\" and stored u" +
+                        "nder \"full-api-token-04\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 76
     await testRunner.GivenAsync("an API request is created against endpoint \"/api/auth/logout\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 77
     await testRunner.AndAsync("the request header element \"Authorization\" has value stored under \"full-api-token" +
-                        "-4\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+                        "-04\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 78
     await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
@@ -414,7 +414,7 @@ await this.FeatureBackgroundAsync();
 #line hidden
 #line 82
     await testRunner.AndAsync("the request header element \"Authorization\" has value stored under \"full-api-token" +
-                        "-4\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+                        "-04\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 83
     await testRunner.AndAsync("the request body element \"start_index\" has value \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
@@ -480,11 +480,11 @@ await this.FeatureBackgroundAsync();
     await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 97
-    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-5\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-05\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 98
-    await testRunner.AndAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-5\" and stored un" +
-                        "der \"full-api-token-5\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-05\" and stored u" +
+                        "nder \"full-api-token-05\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 99
     await testRunner.GivenAsync("an API request is created against endpoint \"/api/auth/login\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
@@ -502,45 +502,45 @@ await this.FeatureBackgroundAsync();
     await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 104
-    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-6\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-06\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 105
-    await testRunner.WhenAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-6\" and stored un" +
-                        "der \"full-api-token-6\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-06\" and stored u" +
+                        "nder \"full-api-token-06\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 106
     await testRunner.GivenAsync("an API request is created against endpoint \"/api/auth/logout\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 108
+#line 107
     await testRunner.AndAsync("the request header element \"Authorization\" has value stored under \"full-api-token" +
-                        "-6\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+                        "-06\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 108
+    await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 109
-    await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
-#line hidden
-#line 110
     await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 111
+#line 110
     await testRunner.AndAsync("the response with path \"is_logged_out\" should have a value of \"true\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 112
+#line 111
     await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 113
+#line 112
     await testRunner.AndAsync("the request header element \"Authorization\" has value stored under \"full-api-token" +
-                        "-5\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+                        "-05\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 114
+#line 113
     await testRunner.AndAsync("the request body element \"start_index\" has value \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 115
+#line 114
     await testRunner.AndAsync("the request body element \"record_count\" has value \"0\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 116
+#line 115
     await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 117
+#line 116
     await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
@@ -563,7 +563,7 @@ await this.FeatureBackgroundAsync();
                     "n a request", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 121
+#line 120
 this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -576,87 +576,254 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line 5
 await this.FeatureBackgroundAsync();
 #line hidden
-#line 122
+#line 121
     await testRunner.GivenAsync("an API request is created against endpoint \"/api/auth/login\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 122
+    await testRunner.AndAsync("the request body element \"user_name\" has value \"john@test.com\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 123
-    await testRunner.AndAsync("the request body element \"user_name\" has value \"john@test.com\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("the request body element \"password\" has value \"P@ssword!23\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 124
-    await testRunner.AndAsync("the request body element \"password\" has value \"P@ssword!23\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 125
-    await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 126
-    await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-07\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 127
-    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-7\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.AndAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-07\" and stored u" +
+                        "nder \"full-api-token-07\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
 #line 128
-    await testRunner.AndAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-7\" and stored un" +
-                        "der \"full-api-token-7\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
-#line hidden
-#line 129
     await testRunner.GivenAsync("an API request is created against endpoint \"/api/auth/login\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 130
+#line 129
     await testRunner.AndAsync("the request body element \"user_name\" has value \"john@test.com\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 131
+#line 130
     await testRunner.AndAsync("the request body element \"password\" has value \"P@ssword!23\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 132
+#line 131
     await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 132
+    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-08\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 133
-    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-8\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-08\" and stored u" +
+                        "nder \"full-api-token-08\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 134
-    await testRunner.WhenAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-8\" and stored un" +
-                        "der \"full-api-token-8\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
-#line hidden
-#line 135
     await testRunner.GivenAsync("an API request is created against endpoint \"/api/auth/logout\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 136
+#line 135
     await testRunner.AndAsync("the request body element \"logout_all\" has a Boolean value of True", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 137
+#line 136
     await testRunner.AndAsync("the request header element \"Authorization\" has value stored under \"full-api-token" +
-                        "-8\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+                        "-08\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 137
+    await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 138
-    await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
-#line hidden
-#line 139
     await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 140
+#line 139
     await testRunner.AndAsync("the response with path \"is_logged_out\" should have a value of \"true\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 141
+#line 140
     await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 142
+#line 141
     await testRunner.AndAsync("the request header element \"Authorization\" has value stored under \"full-api-token" +
-                        "-7\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+                        "-07\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 143
+#line 142
     await testRunner.AndAsync("the request body element \"start_index\" has value \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 144
+#line 143
     await testRunner.AndAsync("the request body element \"record_count\" has value \"0\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 145
+#line 144
     await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 146
+#line 145
     await testRunner.ThenAsync("the request should have failed with status code 401", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 147
+#line 146
     await testRunner.AndAsync("the response with path \"error_code\" should have a value of \"2006\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::NUnit.Framework.TestAttribute()]
+        [global::NUnit.Framework.DescriptionAttribute("Login and use the refresh token to retrieve a new access token, then use that in " +
+            "a request")]
+        [global::NUnit.Framework.CategoryAttribute("REFRESH")]
+        [global::NUnit.Framework.CategoryAttribute("VALID")]
+        public async global::System.Threading.Tasks.Task LoginAndUseTheRefreshTokenToRetrieveANewAccessTokenThenUseThatInARequest()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "REFRESH",
+                    "VALID"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "6";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Login and use the refresh token to retrieve a new access token, then use that in " +
+                    "a request", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 150
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 5
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 151
+    await testRunner.GivenAsync("an API request is created against endpoint \"/api/auth/login\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 152
+    await testRunner.AndAsync("the request body element \"user_name\" has value \"john@test.com\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 153
+    await testRunner.AndAsync("the request body element \"password\" has value \"P@ssword!23\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 154
+    await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 155
+    await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 156
+    await testRunner.WhenAsync("the response with path \"refresh_token\" is stored with key \"refresh-token-09\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 158
+    await testRunner.GivenAsync("an API request is created against endpoint \"/api/auth/refresh\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 159
+    await testRunner.AndAsync("the request body element \"refresh_token\" has value stored under \"refresh-token-09" +
+                        "\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 160
+    await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 161
+    await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 162
+    await testRunner.WhenAsync("the response with path \"access_token\" is stored with key \"bearer-token-10\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 164
+    await testRunner.AndAsync("a prefix \"Bearer \" is added to the value stored in \"bearer-token-10\" and stored u" +
+                        "nder \"full-api-token-10\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 165
+    await testRunner.GivenAsync("an API request is created against endpoint \"/api/users/fetch\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 166
+    await testRunner.AndAsync("the request header element \"Authorization\" has value stored under \"full-api-token" +
+                        "-10\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 167
+    await testRunner.AndAsync("the request body element \"start_index\" has value \"1\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 168
+    await testRunner.AndAsync("the request body element \"record_count\" has value \"0\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 169
+    await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 170
+    await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::NUnit.Framework.TestAttribute()]
+        [global::NUnit.Framework.DescriptionAttribute("Login and use the refresh token to retrieve a new access token, then try to reuse" +
+            " the old refresh token")]
+        [global::NUnit.Framework.CategoryAttribute("REFRESH")]
+        [global::NUnit.Framework.CategoryAttribute("INVALID")]
+        public async global::System.Threading.Tasks.Task LoginAndUseTheRefreshTokenToRetrieveANewAccessTokenThenTryToReuseTheOldRefreshToken()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "REFRESH",
+                    "INVALID"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "7";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Login and use the refresh token to retrieve a new access token, then try to reuse" +
+                    " the old refresh token", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 174
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 5
+await this.FeatureBackgroundAsync();
+#line hidden
+#line 175
+    await testRunner.GivenAsync("an API request is created against endpoint \"/api/auth/login\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 176
+    await testRunner.AndAsync("the request body element \"user_name\" has value \"john@test.com\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 177
+    await testRunner.AndAsync("the request body element \"password\" has value \"P@ssword!23\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 178
+    await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 179
+    await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 180
+    await testRunner.WhenAsync("the response with path \"refresh_token\" is stored with key \"refresh-token-11\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 182
+    await testRunner.GivenAsync("an API request is created against endpoint \"/api/auth/refresh\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 183
+    await testRunner.AndAsync("the request body element \"refresh_token\" has value stored under \"refresh-token-11" +
+                        "\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 184
+    await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 185
+    await testRunner.ThenAsync("the request should have succeeded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 187
+    await testRunner.GivenAsync("an API request is created against endpoint \"/api/auth/refresh\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
+#line hidden
+#line 188
+    await testRunner.AndAsync("the request body element \"refresh_token\" has value stored under \"refresh-token-11" +
+                        "\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 189
+    await testRunner.WhenAsync("the request is sent via \"POST\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 190
+    await testRunner.ThenAsync("the request should have failed with status code 401", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();

@@ -8,6 +8,7 @@ namespace Rocket.Infrastructure.Auth
     {
         private static readonly TimeSpan DefaultAccessLifetime = TimeSpan.FromMinutes(10);
         private static readonly TimeSpan DefaultRefreshLifetime = TimeSpan.FromDays(30);
+
         private readonly TimeSpan _accessTokenExpirySeconds;
         private readonly TimeSpan _refreshTokenExpirySeconds;
 
@@ -19,7 +20,7 @@ namespace Rocket.Infrastructure.Auth
                 configuration["JWT_ACCESS_EXPIRY_SECONDS"];
 
             _accessTokenExpirySeconds = DefaultAccessLifetime;
-            
+
             if (!string.IsNullOrEmpty(accessExpiryString))
             {
                 if (int.TryParse(
@@ -35,12 +36,12 @@ namespace Rocket.Infrastructure.Auth
                     }
                 }
             }
-            
+
             var refreshExpiryString =
                 configuration["JWT_REFRESH_EXPIRY_SECONDS"];
 
             _refreshTokenExpirySeconds = DefaultRefreshLifetime;
-            
+
             if (!string.IsNullOrEmpty(refreshExpiryString))
             {
                 if (int.TryParse(

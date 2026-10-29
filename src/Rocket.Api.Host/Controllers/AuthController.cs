@@ -23,13 +23,14 @@ namespace Rocket.Api.Host.Controllers
     public class AuthController(
         IAuthenticator authenticator,
         IGlobalSettingsRepository globalSettingsRepository,
-        ISessionManager sessionManager
+        ISessionManager sessionManager,
+        ITokenExpiryProvider tokenExpiryProvider
     ) : ControllerBase
     {
         private const string RefreshCookie = "refresh_token";
-        private static readonly TimeSpan RefreshCookieLifetime = TimeSpan.FromDays(30);
 
         private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        
         private string CurrentSessionId => User.FindFirstValue(AuthConstants.SessionId)!;
 
         [AllowAnonymous]
@@ -270,15 +271,19 @@ namespace Rocket.Api.Host.Controllers
         {
             if (useCookie)
             {
+                var refreshCookieLifetime = 
+                    tokenExpiryProvider
+                        .GetRefreshExpiryLifetime();
+                
                 Response
                     .Cookies
                     .Append(
                         RefreshCookie,
                         response.RefreshToken,
-                        CookieOptionsFor(DateTimeOffset.UtcNow + RefreshCookieLifetime)
+                        CookieOptionsFor(DateTimeOffset.UtcNow + refreshCookieLifetime)
                     );
 
-                response.RefreshToken = null; // JavaScript never sees it
+                response.RefreshToken = null;
             }
 
             return
