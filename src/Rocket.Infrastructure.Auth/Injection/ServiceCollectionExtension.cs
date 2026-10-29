@@ -110,12 +110,42 @@ namespace Rocket.Infrastructure.Auth.Injection
                                                 )
                                         );
 
-                                    // TODO: repeat as below but make rocket exception
                                     if (sessionId is null || !await sessions.IsActiveAsync(
                                             sessionId,
                                             cancellationToken
                                         ))
-                                        context.Fail("Session revoked or expired");
+                                    {
+                                        var exceptionWrapper =
+                                            context
+                                                .HttpContext
+                                                .RequestServices
+                                                .GetRequiredService<IRocketExceptionWrapper>();
+
+                                        context.Response.StatusCode =
+                                            StatusCodes
+                                                .Status401Unauthorized;
+
+                                        await
+                                            context
+                                                .Response
+                                                .WriteAsJsonAsync(
+                                                    exceptionWrapper
+                                                        .For(
+                                                            new RocketException(
+                                                                "Session revoked or expired",
+                                                                ApiStatusCodeEnum.TokenHasExpired,
+                                                                (int)HttpStatusCode.Unauthorized
+                                                            )
+                                                        )
+                                                        .Value,
+                                                    cancellationToken: cancellationToken
+                                                );
+
+                                        await
+                                            context
+                                                .Response
+                                                .CompleteAsync();
+                                    }
                                 },
                                 OnAuthenticationFailed = async context =>
                                 {
@@ -138,7 +168,7 @@ namespace Rocket.Infrastructure.Auth.Injection
                                                     exceptionWrapper
                                                         .For(
                                                             new RocketException(
-                                                                "API token has expired - please login again",
+                                                                "Session has expired - please login again",
                                                                 ApiStatusCodeEnum.TokenHasExpired,
                                                                 (int)HttpStatusCode.Unauthorized
                                                             )
