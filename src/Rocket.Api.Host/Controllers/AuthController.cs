@@ -157,11 +157,11 @@ namespace Rocket.Api.Host.Controllers
             StatusCodes.Status200OK
         )]
         public async Task<IActionResult> Logout(
-            [FromBody] AccountLogoutRequest request,
-            CancellationToken cancellationToken
+            [FromBody] AccountLogoutRequest request = null,
+            CancellationToken cancellationToken = default
         )
         {
-            var revokeAll = request.LogoutAll ?? false;
+            var revokeAll = request?.LogoutAll ?? false;
 
             if (revokeAll)
             {
