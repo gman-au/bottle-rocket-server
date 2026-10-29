@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Domain.Exceptions;
 
-namespace Rocket.Api.Host.Exceptions
+namespace Rocket.Infrastructure.Auth.Exceptions
 {
     public class RocketExceptionWrapper(ILoggerFactory loggerFactory) : IRocketExceptionWrapper
     {

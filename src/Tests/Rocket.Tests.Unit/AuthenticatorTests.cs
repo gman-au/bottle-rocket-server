@@ -5,7 +5,7 @@ using AutoFixture;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Rocket.Domain;
-using Rocket.Infrastructure;
+using Rocket.Infrastructure.Auth;
 using Rocket.Interfaces;
 using Rocket.Tests.Unit.Extensions;
 using Xunit;
@@ -62,7 +62,7 @@ namespace Rocket.Tests.Unit
 
         private class TestContext
         {
-            private readonly Authenticator _sut;
+            private readonly ClientAuthenticator _sut;
             private readonly IUserRepository _userRepository;
             private readonly IPasswordHasher _passwordHasher;
             private readonly IFixture _fixture;
@@ -83,8 +83,8 @@ namespace Rocket.Tests.Unit
                         .Create<IPasswordHasher>();
 
                 _sut =
-                    new Authenticator(
-                        _fixture.Freeze<ILogger<Authenticator>>(),
+                    new ClientAuthenticator(
+                        _fixture.Freeze<ILogger<ClientAuthenticator>>(),
                         _passwordHasher,
                         _userRepository
                     );

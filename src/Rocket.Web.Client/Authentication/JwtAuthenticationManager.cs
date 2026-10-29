@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rocket.Api.Contracts;
+using Rocket.Api.Contracts.Auth;
 using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 using Rocket.Web.Client.Extensions;
@@ -106,7 +107,7 @@ namespace Rocket.Web.Client.Authentication
                                     cancellationToken
                                 );
 
-                    var authHeader = $"{DomainConstants.Bearer} {authResponse.Token}";
+                    var authHeader = $"{DomainConstants.Bearer} {authResponse.AccessToken}";
 
                     _cachedAuthHeader = authHeader;
                     _cachedUsername = authResponse.UserName;

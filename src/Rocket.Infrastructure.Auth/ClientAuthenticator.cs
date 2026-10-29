@@ -5,10 +5,10 @@ using Microsoft.Extensions.Logging;
 using Rocket.Domain;
 using Rocket.Interfaces;
 
-namespace Rocket.Infrastructure
+namespace Rocket.Infrastructure.Auth
 {
-    public class Authenticator(
-        ILogger<Authenticator> logger,
+    public class ClientAuthenticator(
+        ILogger<ClientAuthenticator> logger,
         IPasswordHasher passwordHasher,
         IUserRepository userRepository
     ) : IAuthenticator
@@ -77,6 +77,7 @@ namespace Rocket.Infrastructure
                         "User {username} authenticated successfully",
                         username
                     );
+                
                 return user;
             }
             catch (Exception ex)

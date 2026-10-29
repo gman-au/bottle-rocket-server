@@ -11,6 +11,7 @@ using Rocket.Domain.Utils;
 using Rocket.Dropbox.Injection.Api;
 using Rocket.Gcp.Injection.Api;
 using Rocket.Google.Injection.Api;
+using Rocket.Infrastructure.Auth.Injection;
 using Rocket.Interfaces;
 using Rocket.Local.Injection.Api;
 using Rocket.Localization;

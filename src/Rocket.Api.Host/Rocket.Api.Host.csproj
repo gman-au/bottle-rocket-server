@@ -26,6 +26,7 @@
         <ProjectReference Include="..\Integrations\Replicate\Rocket.Replicate.Injection.Api\Rocket.Replicate.Injection.Api.csproj" />
         <ProjectReference Include="..\Rocket.Api.Contracts\Rocket.Api.Contracts.csproj" />
         <ProjectReference Include="..\Rocket.Domain\Rocket.Domain.csproj" />
+        <ProjectReference Include="..\Rocket.Infrastructure.Auth\Rocket.Infrastructure.Auth.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Blob.Local\Rocket.Infrastructure.Blob.Local.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Db.Mongo\Rocket.Infrastructure.Db.Mongo.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Detection\Rocket.Infrastructure.Detection.csproj" />

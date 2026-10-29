@@ -1,22 +1,19 @@
 ﻿using System;
-using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Rocket.Api.Contracts;
-using Rocket.Api.Contracts.Captures;
+using Rocket.Api.Contracts.Auth;
+using Rocket.Api.Contracts.TokenSessions;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
-using Rocket.Domain.Utils;
+using Rocket.Infrastructure.Auth;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers
@@ -25,24 +22,23 @@ namespace Rocket.Api.Host.Controllers
     [Route("api/[controller]")]
     public class AuthController(
         IAuthenticator authenticator,
-        IAuthSecretProvider authSecretProvider,
         IGlobalSettingsRepository globalSettingsRepository,
-        IConfiguration configuration
+        ISessionManager sessionManager
     ) : ControllerBase
     {
-        private const int DefaultJwtExpirySeconds = 60 * 24 * 7;
+        private const string RefreshCookie = "refresh_token";
+        private static readonly TimeSpan RefreshCookieLifetime = TimeSpan.FromDays(30);
+
+        private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        private string CurrentSessionId => User.FindFirstValue(AuthConstants.SessionId)!;
 
         [AllowAnonymous]
         [HttpPost("login")]
         [EndpointSummary("Login")]
         [EndpointGroupName("Authentication")]
-        [EndpointDescription(
-            """
-            Login to the server. Send the user name / password to retrieve a bearer token for subsequent API calls.
-            """
-        )]
+        [EndpointDescription("Send the user name / password to retrieve an access token and refresh token.")]
         [ProducesResponseType(
-            typeof(ProcessCaptureResponse),
+            typeof(AccountLoginResponse),
             StatusCodes.Status200OK
         )]
         [ProducesResponseType(
@@ -51,30 +47,16 @@ namespace Rocket.Api.Host.Controllers
         )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Login(
-            [FromBody] AccountLoginRequest model,
+            [FromBody] AccountLoginRequest request,
             CancellationToken cancellationToken
         )
         {
-            var jwtExpirySeconds = DefaultJwtExpirySeconds;
-
-            try
-            {
-                var jwtExpiry = configuration["JWT_EXPIRY_SECONDS"];
-                jwtExpirySeconds = Convert.ToInt32(jwtExpiry);
-
-                if (jwtExpirySeconds <= 0)
-                    jwtExpirySeconds = DefaultJwtExpirySeconds;
-            }
-            catch (FormatException)
-            {
-            }
-
             var user =
                 await
                     authenticator
                         .AuthenticateAsync(
-                            model.Username,
-                            model.Password,
+                            request.Username,
+                            request.Password,
                             cancellationToken
                         );
 
@@ -84,71 +66,227 @@ namespace Rocket.Api.Host.Controllers
                     ApiStatusCodeEnum.InvalidCredentials
                 );
 
-            var tokenHandler =
-                new JwtSecurityTokenHandler();
-
-            var key =
-                Encoding
-                    .ASCII
-                    .GetBytes(
-                        authSecretProvider
-                            .Get()
-                    );
-
             var globalSettings =
                 await
                     globalSettingsRepository
                         .GetGlobalSettingsAsync(cancellationToken);
 
-            var tokenDescriptor =
-                new SecurityTokenDescriptor
-                {
-                    Subject =
-                        new ClaimsIdentity(
-                            [
-                                new Claim(
-                                    ClaimTypes.NameIdentifier,
-                                    user.Id
-                                ),
-                                new Claim(
-                                    ClaimTypes.Name,
-                                    user.Username
-                                ),
-                                new Claim(
-                                    ClaimTypes.Role,
-                                    user.IsAdmin ? DomainConstants.AdminRole : DomainConstants.UserRole
-                                )
-                            ]
-                        ),
-                    Expires =
-                        DateTime
-                            .UtcNow
-                            .AddSeconds(jwtExpirySeconds),
-                    SigningCredentials =
-                        new SigningCredentials(
-                            new SymmetricSecurityKey(key),
-                            SecurityAlgorithms.HmacSha256Signature
-                        )
-                };
+            var response = await sessionManager.CreateSessionAsync(
+                user.Id,
+                user.IsAdmin,
+                string.IsNullOrWhiteSpace(request.DeviceName) ? "Unknown device" : request.DeviceName,
+                Request.Headers.UserAgent.ToString(),
+                HttpContext.Connection.RemoteIpAddress?.ToString(),
+                cancellationToken
+            );
 
-            var token =
-                tokenHandler
-                    .CreateToken(tokenDescriptor);
+            // I haven't seen User / GlobalSettings, so these are guesses. Fix the names to match.
+            response.UserName = user.Username;
+            response.Role = user.IsAdmin ? "Admin" : "User";
+            response.DarkMode = user.DarkMode;
+            response.CurrentLanguage = globalSettings.DefaultLanguage;
 
-            var tokenString =
-                tokenHandler
-                    .WriteToken(token);
+            return Respond(
+                response,
+                request.UseCookie
+            );
+        }
+
+        [AllowAnonymous]
+        [HttpPost("refresh")]
+        [EndpointSummary("Refresh")]
+        [EndpointGroupName("Authentication")]
+        [EndpointDescription(
+            "Exchange a refresh token for a new access token. The refresh token is rotated on every call. " +
+            "Web clients use the HttpOnly cookie, mobile clients send it in the body."
+        )]
+        [ProducesResponseType(
+            typeof(AccountLoginResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Refresh(
+            [FromBody] RefreshRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            var fromCookie =
+                Request
+                    .Cookies[RefreshCookie];
+
+            var raw = fromCookie ?? request?.RefreshToken;
+
+            if (string.IsNullOrEmpty(raw))
+                return Unauthorized();
+
+            var response =
+                await
+                    sessionManager
+                        .RefreshAsync(
+                            raw,
+                            cancellationToken
+                        );
+
+            if (response == null)
+            {
+                Response
+                    .Cookies
+                    .Delete(
+                        RefreshCookie,
+                        CookieOptionsFor(null)
+                    );
+
+                return Unauthorized();
+            }
+
+            return Respond(
+                response,
+                useCookie: fromCookie != null
+            );
+        }
+
+        [Authorize]
+        [HttpPost("logout")]
+        [EndpointSummary("Logout")]
+        [EndpointGroupName("Authentication")]
+        [EndpointDescription(
+            "Logout / revoke the current session. If LogoutAll is set to 'true', it will revoke the sessions for all users."
+        )]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> Logout(
+            [FromBody] AccountLogoutRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            var revokeAll = request.LogoutAll ?? false;
+
+            if (revokeAll)
+            {
+                await
+                    sessionManager
+                        .RevokeAllAsync(
+                            UserId,
+                            null,
+                            cancellationToken
+                        );
+            }
+            else
+            {
+                await
+                    sessionManager
+                        .RevokeAsync(
+                            UserId,
+                            CurrentSessionId,
+                            cancellationToken
+                        );
+            }
+
+            Response
+                .Cookies
+                .Delete(
+                    RefreshCookie,
+                    CookieOptionsFor(null)
+                );
+
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpGet("sessions")]
+        [EndpointSummary("List sessions")]
+        [EndpointGroupName("Authentication")]
+        [ProducesResponseType(
+            typeof(MySessionsResponse),
+            StatusCodes.Status200OK
+        )]
+        public async Task<IActionResult> Sessions(
+            CancellationToken cancellationToken
+        )
+        {
+            var sessions =
+                await
+                    sessionManager
+                        .ListAsync(
+                            UserId,
+                            cancellationToken
+                        );
+
+            var sessionResults =
+                sessions
+                    .Select(s =>
+                        new TokenSessionSpecifics
+                        {
+                            Id = s.Id,
+                            DeviceName = s.DeviceName,
+                            UserAgent = s.UserAgent,
+                            IpAddress = s.IpAddress,
+                            CreatedAt = s.CreatedAt,
+                            LastLoginAt = s.LastLoginAt,
+                            IsCurrent = s.Id == CurrentSessionId
+                        }
+                    )
+                    .ToArray();
 
             return
-                new AccountLoginResponse
+                new MySessionsResponse
                     {
-                        UserName = user.Username,
-                        Role = user.IsAdmin ? DomainConstants.AdminRole : DomainConstants.UserRole,
-                        DarkMode = user.DarkMode,
-                        CurrentLanguage = globalSettings?.DefaultLanguage,
-                        Token = tokenString
+                        Sessions = sessionResults
                     }
                     .AsApiSuccess();
         }
+
+        [Authorize]
+        [HttpDelete("sessions/{id}")]
+        [EndpointSummary("Revoke a session")]
+        [EndpointGroupName("Authentication")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RevokeSession(
+            string id,
+            CancellationToken cancellationToken
+        ) =>
+            await
+                sessionManager
+                    .RevokeAsync(
+                        UserId,
+                        id,
+                        cancellationToken
+                    )
+                ? NoContent()
+                : NotFound();
+
+        private IActionResult Respond(
+            AccountLoginResponse response,
+            bool useCookie
+        )
+        {
+            if (useCookie)
+            {
+                Response
+                    .Cookies
+                    .Append(
+                        RefreshCookie,
+                        response.RefreshToken,
+                        CookieOptionsFor(DateTimeOffset.UtcNow + RefreshCookieLifetime)
+                    );
+
+                response.RefreshToken = null; // JavaScript never sees it
+            }
+
+            return
+                response
+                    .AsApiSuccess();
+        }
+
+        private static CookieOptions CookieOptionsFor(
+            DateTimeOffset? expires
+        ) => new()
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict, // use None if the web app is on a different site than the API
+            Path = "/api/auth", // cookie paths are case-sensitive, so keep client URLs lowercase
+            Expires = expires
+        };
     }
 }

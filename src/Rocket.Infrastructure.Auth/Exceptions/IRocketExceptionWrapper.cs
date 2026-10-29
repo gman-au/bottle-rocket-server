@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Rocket.Api.Host.Exceptions
+namespace Rocket.Infrastructure.Auth.Exceptions
 {
     public interface IRocketExceptionWrapper
     {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
@@ -8,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson.Serialization;
-using Rocket.Api.Host.Exceptions;
 using Rocket.Api.Host.Notifiers;
 using Rocket.Api.Host.Prepopulation;
 using Rocket.Domain.Connectors;
@@ -18,6 +18,8 @@ using Rocket.Domain.Executions;
 using Rocket.Domain.Utils;
 using Rocket.Domain.Workflows;
 using Rocket.Infrastructure;
+using Rocket.Infrastructure.Auth;
+using Rocket.Infrastructure.Auth.Exceptions;
 using Rocket.Infrastructure.Blob.Local;
 using Rocket.Infrastructure.Blob.Local.Options;
 using Rocket.Infrastructure.Db.Mongo;
@@ -127,13 +129,12 @@ namespace Rocket.Api.Host.Injection
         )
         {
             services
-                .AddTransient<IRocketExceptionWrapper, RocketExceptionWrapper>()
                 .AddTransient<IScannedImageHandler, ScannedImageHandler>()
-                .AddTransient<IAuthenticator, Authenticator>()
                 .AddTransient<ISha256Calculator, Sha256Calculator>()
                 .AddTransient<IStartupInitialization, StartupInitialization>()
-                .AddTransient<IDatabasePrepopulator, DatabasePrepopulator>()
-                .AddTransient<IDatabaseMigrator, DatabaseMigrator>()
+                .AddTransient<IDatabasePreRunAction, DatabasePrepopulator>()
+                .AddTransient<IDatabasePreRunAction, DatabaseMigrator>()
+                .AddTransient<IDatabasePreRunAction, MongoDbStartupIndexer>()
                 .AddTransient<IWorkflowStepValidator, WorkflowStepValidator>()
                 .AddTransient<IEmailAddressValidator, EmailAddressValidator>()
                 .AddTransient<IPasswordHasher, PasswordHasher>()
@@ -157,7 +158,6 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IObfuscator, Obfuscator>()
                 .AddTransient<IFileRetitler, SafeFileRetitler>()
                 .AddTransient<IWorkflowCloner, WorkflowCloner>()
-                .AddSingleton<IAuthSecretProvider, AuthSecretProvider>()
                 .AddSingleton<IDashboardSnapshotProvider, DashboardSnapshotProvider>();
 
             if (environment.IsDevelopment())
@@ -214,7 +214,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IWorkflowStepRepository, MongoDbWorkflowStepRepository>()
                 .AddTransient<IExecutionRepository, MongoDbExecutionRepository>()
                 .AddTransient<IGlobalSettingsRepository, MongoDbGlobalSettingsRepository>()
-                .AddTransient<ITokenRepository, MongoDbTokenRepository>()
+                .AddTransient<ITokenSessionRepository, MongoDbTokenSessionRepository>()
                 .AddTransient<IUserRepository, MongoDbUserRepository>();
 
             return services;
@@ -253,96 +253,6 @@ namespace Rocket.Api.Host.Injection
         {
             services
                 .AddLocalization(options => { options.ResourcesPath = ""; }
-                );
-
-            return services;
-        }
-
-        public static IServiceCollection AddJwtAuthenticationServices(
-            this IServiceCollection services,
-            IWebHostEnvironment environment
-        )
-        {
-            var provider =
-                services
-                    .BuildServiceProvider();
-
-            var authSecretProvider =
-                provider
-                    .GetRequiredService<IAuthSecretProvider>();
-
-            var jwtSecret =
-                authSecretProvider
-                    .Get();
-
-            var key =
-                Encoding
-                    .ASCII
-                    .GetBytes(jwtSecret);
-
-            services
-                .AddAuthentication(options =>
-                    {
-                        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    }
-                )
-                .AddJwtBearer(options =>
-                    {
-                        options.RequireHttpsMetadata = !environment.IsDevelopment();
-                        options.SaveToken = true;
-                        options.TokenValidationParameters =
-                            new TokenValidationParameters
-                            {
-                                ValidateIssuerSigningKey = true,
-                                IssuerSigningKey = new SymmetricSecurityKey(key),
-                                ValidateIssuer = false,
-                                ValidateAudience = false,
-                                ValidateLifetime = true,
-                                ClockSkew = TimeSpan.Zero
-                            };
-
-                        options.Events =
-                            new JwtBearerEvents
-                            {
-                                OnAuthenticationFailed = async context =>
-                                {
-                                    if (context.Exception is SecurityTokenExpiredException)
-                                    {
-                                        var exceptionWrapper =
-                                            context
-                                                .HttpContext
-                                                .RequestServices
-                                                .GetRequiredService<IRocketExceptionWrapper>();
-
-                                        context.Response.StatusCode = 
-                                            StatusCodes
-                                                .Status500InternalServerError;
-                                        
-                                        await
-                                            context
-                                                .Response
-                                                .WriteAsJsonAsync(
-                                                    exceptionWrapper
-                                                        .For(
-                                                            new RocketException(
-                                                                "API token has expired - please login again",
-                                                                ApiStatusCodeEnum.TokenHasExpired
-                                                            )
-                                                        )
-                                                        .Value
-                                                );
-                                        
-                                        context.Exception = null; 
-                                        
-                                        await 
-                                            context
-                                                .Response
-                                                .CompleteAsync(); 
-                                    }
-                                }
-                            };
-                    }
                 );
 
             return services;

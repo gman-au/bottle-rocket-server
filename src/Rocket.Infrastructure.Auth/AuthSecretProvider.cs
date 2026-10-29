@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Rocket.Interfaces;
 
-namespace Rocket.Infrastructure
+namespace Rocket.Infrastructure.Auth
 {
     public class AuthSecretProvider : IAuthSecretProvider
     {

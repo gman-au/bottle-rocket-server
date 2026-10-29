@@ -8,6 +8,6 @@
         public const string WorkflowsCollection = "Workflows";
         public const string ExecutionsCollection = "Executions";
         public const string GlobalSettingsCollection = "GlobalSettings";
-        public const string TokensCollection = "Tokens";
+        public const string TokenSessionsCollection = "TokenSessions";
     }
 }

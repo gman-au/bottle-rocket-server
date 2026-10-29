@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -12,21 +14,36 @@ namespace Rocket.Infrastructure
     public class StartupInitialization(
         ILogger<StartupInitialization> logger,
         IUserRepository userRepository,
-        IDatabasePrepopulator databasePrepopulator,
-        IDatabaseMigrator databaseMigrator,
+        IEnumerable<IDatabasePreRunAction> databasePreRunActions,
         IPasswordGenerator passwordGenerator,
         IPasswordHasher passwordHasher
     ) : IStartupInitialization
     {
-        public async Task InitializeAsync(CancellationToken cancellationToken)
+        public async Task InitializeAsync(
+            CancellationToken cancellationToken
+        )
         {
-            await
-                databasePrepopulator
-                    .PopulateGlobalSettingsAsync(cancellationToken);
-            
-            await 
-                databaseMigrator
-                    .ApplyMigrationsAsync(cancellationToken);
+            try
+            {
+                var preRunActions =
+                    databasePreRunActions
+                        .Select(o => o.RunAsync(cancellationToken));
+
+                await
+                    Task
+                        .WhenAll(preRunActions);
+            }
+            catch (AggregateException ex)
+            {
+                foreach (var iex in ex.InnerExceptions)
+                    logger
+                        .LogError(
+                            "A database pre-run action failed: {message}",
+                            iex.Message
+                        );
+
+                throw;
+            }
 
             logger
                 .LogInformation("Checking first-start initialization...");
@@ -49,11 +66,11 @@ namespace Rocket.Infrastructure
             logger
                 .LogInformation("Creating initial admin account...");
 
-            var password = 
+            var password =
                 passwordGenerator
                     .GeneratePassword();
-            
-            var passwordHash = 
+
+            var passwordHash =
                 passwordHasher
                     .HashPassword(password);
 
@@ -93,7 +110,9 @@ namespace Rocket.Infrastructure
             logger.LogWarning("================================================================================");
         }
 
-        public async Task<StartupPhaseEnum> GetStartupPhaseAsync(CancellationToken cancellationToken)
+        public async Task<StartupPhaseEnum> GetStartupPhaseAsync(
+            CancellationToken cancellationToken
+        )
         {
             try
             {
@@ -115,7 +134,7 @@ namespace Rocket.Infrastructure
                         StartupPhaseEnum
                             .AdminPendingDeactivation;
 
-                return 
+                return
                     StartupPhaseEnum
                         .AdminDeactivated;
             }

@@ -10,9 +10,9 @@ namespace Rocket.Api.Host.Prepopulation
         IScannedImageRepository scannedImageRepository,
         IWorkflowRepository workflowRepository,
         IExecutionRepository executionRepository
-    ) : IDatabaseMigrator
+    ) : IDatabasePreRunAction
     {
-        public async Task ApplyMigrationsAsync(
+        public async Task RunAsync(
             CancellationToken cancellationToken
         )
         {
