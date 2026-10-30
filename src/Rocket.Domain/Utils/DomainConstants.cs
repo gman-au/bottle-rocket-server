@@ -20,6 +20,9 @@ namespace Rocket.Domain.Utils
         public const string RoleKey = "userRole";
         public const string CurrentLanguageKey = "userLanguage";
         
+        public const string RefreshTokenKey = "refreshToken";
+        public const string AccessTokenExpiresAtKey = "accessTokenExpiresAt";
+        
         public const string UnknownType = "Unknown";
 
         public static readonly Dictionary<int, string> ConnectorTypes = new()

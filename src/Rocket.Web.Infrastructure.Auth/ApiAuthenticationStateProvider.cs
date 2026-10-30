@@ -5,28 +5,31 @@ using Microsoft.Extensions.Logging;
 using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 
-namespace Rocket.Web.Client.Authentication
+namespace Rocket.Web.Infrastructure.Auth
 {
     public class ApiAuthenticationStateProvider : AuthenticationStateProvider
     {
         private readonly IAuthenticationManager _authenticationManager;
+        private readonly ISessionRetention _sessionRetention;
         private readonly ILogger<ApiAuthenticationStateProvider> _logger;
 
         public ApiAuthenticationStateProvider(
             IAuthenticationManager authenticationManager,
-            ILogger<ApiAuthenticationStateProvider> logger
+            ILogger<ApiAuthenticationStateProvider> logger,
+            ISessionRetention sessionRetention
         )
         {
             _authenticationManager = authenticationManager;
             _logger = logger;
+            _sessionRetention = sessionRetention;
             _authenticationManager.OnAuthenticationStateChanged += OnAuthStateChanged;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             var isAuthenticated = await _authenticationManager.IsAuthenticatedAsync();
-            var username = await _authenticationManager.GetUsernameAsync();
-            var role = await _authenticationManager.GetRoleAsync();
+            var username = _sessionRetention.CachedUserName;
+            var role = _sessionRetention.CachedRole;
             
             _logger
                 .LogInformation(

@@ -13,17 +13,11 @@ namespace Rocket.Interfaces
         Task<bool> IsAuthenticatedAsync();
 
         Task<string> GetAuthorizationHeaderAsync();
-        
-        Task<string> GetUsernameAsync();
-        
-        Task<string> GetRoleAsync();
-        
-        Task<string> GetCurrentLanguageAsync();
-
-        Task<bool> IsRootAdminAsync();
 
         event Action OnAuthenticationStateChanged;
 
-        Task SetCurrentLanguageAsync(string language);
+        Task<bool> IsRootAdminAsync();
+
+        Task<string> GetCurrentLanguageAsync();
     }
 }

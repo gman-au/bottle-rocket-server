@@ -13,6 +13,7 @@ using Rocket.Api.Contracts.TokenSessions;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Domain.Utils;
 using Rocket.Infrastructure.Auth;
 using Rocket.Interfaces;
 
@@ -81,9 +82,8 @@ namespace Rocket.Api.Host.Controllers
                 cancellationToken
             );
 
-            // I haven't seen User / GlobalSettings, so these are guesses. Fix the names to match.
             response.UserName = user.Username;
-            response.Role = user.IsAdmin ? "Admin" : "User";
+            response.Role = user.IsAdmin ? DomainConstants.AdminRole : DomainConstants.UserRole;
             response.DarkMode = user.DarkMode;
             response.CurrentLanguage = globalSettings.DefaultLanguage;
 
