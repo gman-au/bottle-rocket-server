@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Auth;
-using Rocket.Api.Contracts.TokenSessions;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
@@ -199,70 +197,6 @@ namespace Rocket.Api.Host.Controllers
                     }
                     .AsApiSuccess();
         }
-
-        [Authorize]
-        [HttpGet("sessions")]
-        [EndpointSummary("List sessions")]
-        [EndpointGroupName("Authentication")]
-        [ProducesResponseType(
-            typeof(MySessionsResponse),
-            StatusCodes.Status200OK
-        )]
-        public async Task<IActionResult> Sessions(
-            CancellationToken cancellationToken
-        )
-        {
-            var sessions =
-                await
-                    sessionManager
-                        .ListAsync(
-                            UserId,
-                            cancellationToken
-                        );
-
-            var sessionResults =
-                sessions
-                    .Select(s =>
-                        new TokenSessionSpecifics
-                        {
-                            Id = s.Id,
-                            DeviceName = s.DeviceName,
-                            UserAgent = s.UserAgent,
-                            IpAddress = s.IpAddress,
-                            CreatedAt = s.CreatedAt,
-                            LastLoginAt = s.LastLoginAt,
-                            IsCurrent = s.Id == CurrentSessionId
-                        }
-                    )
-                    .ToArray();
-
-            return
-                new MySessionsResponse
-                    {
-                        Sessions = sessionResults
-                    }
-                    .AsApiSuccess();
-        }
-
-        [Authorize]
-        [HttpDelete("sessions/{id}")]
-        [EndpointSummary("Revoke a session")]
-        [EndpointGroupName("Authentication")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> RevokeSession(
-            string id,
-            CancellationToken cancellationToken
-        ) =>
-            await
-                sessionManager
-                    .RevokeAsync(
-                        UserId,
-                        id,
-                        cancellationToken
-                    )
-                ? NoContent()
-                : NotFound();
 
         private IActionResult Respond(
             AccountLoginResponse response,

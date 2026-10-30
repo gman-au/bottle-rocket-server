@@ -140,6 +140,10 @@ h1:focus {
     opacity: 0.2;
 }
 
+.faded-row {
+    opacity: 0.5;
+}
+
 .mud-chart-donut {
     .mud-donut-text {
         dominant-baseline: central;

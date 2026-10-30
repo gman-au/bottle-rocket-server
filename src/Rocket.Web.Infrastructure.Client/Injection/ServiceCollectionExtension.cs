@@ -15,6 +15,7 @@ namespace Rocket.Web.Infrastructure.Client.Injection
                 .AddTransient<IApiRequestExecutions, ApiRequestExecutions>()
                 .AddTransient<IApiRequestGlobalSettings, ApiRequestGlobalSettings>()
                 .AddTransient<IApiRequestScans, ApiRequestScans>()
+                .AddTransient<IApiRequestSessions, ApiRequestSessions>()
                 .AddTransient<IApiRequestSystem, ApiRequestSystem>()
                 .AddTransient<IApiRequestUsers, ApiRequestUsers>()
                 .AddTransient<IApiRequestWorkflows, ApiRequestWorkflows>()
@@ -35,6 +36,7 @@ namespace Rocket.Web.Infrastructure.Client.Injection
                             sp.GetRequiredService<IApiRequestExecutions>(),
                             sp.GetRequiredService<IApiRequestGlobalSettings>(),
                             sp.GetRequiredService<IApiRequestScans>(),
+                            sp.GetRequiredService<IApiRequestSessions>(),
                             sp.GetRequiredService<IApiRequestSystem>(),
                             sp.GetRequiredService<IApiRequestUsers>(),
                             sp.GetRequiredService<IApiRequestVendors>(),

@@ -212,5 +212,30 @@ namespace Rocket.Infrastructure.Db.Mongo
                         cancellationToken: cancellationToken
                     );
         }
+        
+        public async Task<(IEnumerable<TokenSession> records, long totalRecordCount)> FetchSessionsAsync(
+            string userId,
+            int startIndex,
+            int recordCount,
+            CancellationToken cancellationToken
+        ) => await
+            FetchAllPagedAndFilteredRecordsAsync(
+                startIndex,
+                recordCount,
+                Builders<TokenSession>
+                    .Filter
+                    .Eq(
+                        u => u.UserId,
+                        userId
+                    ) &
+                Builders<TokenSession>
+                    .Filter
+                    .Eq(
+                        u => u.IsActive,
+                        true
+                    ),
+                o => o.LastLoginAt,
+                cancellationToken
+            );
     }
 }

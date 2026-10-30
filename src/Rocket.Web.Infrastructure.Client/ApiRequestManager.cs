@@ -6,6 +6,7 @@
         IApiRequestExecutions executions,
         IApiRequestGlobalSettings globalSettings,
         IApiRequestScans scans,
+        IApiRequestSessions sessions,
         IApiRequestSystem system,
         IApiRequestUsers users,
         IApiRequestVendors vendors,
@@ -18,6 +19,7 @@
         public IApiRequestExecutions Executions => executions;
         public IApiRequestGlobalSettings GlobalSettings => globalSettings;
         public IApiRequestScans Scans => scans;
+        public IApiRequestSessions Sessions => sessions;
         public IApiRequestSystem System => system;
         public IApiRequestUsers Users => users;
         public IApiRequestVendors Vendors => vendors;

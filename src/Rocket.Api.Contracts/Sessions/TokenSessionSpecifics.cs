@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace Rocket.Api.Contracts.TokenSessions
+namespace Rocket.Api.Contracts.Sessions
 {
     public class TokenSessionSpecifics
     {
@@ -25,5 +25,8 @@ namespace Rocket.Api.Contracts.TokenSessions
 
         [JsonPropertyName("is_current")]
         public bool IsCurrent { get; set; }
+
+        [JsonPropertyName("token_prefix")]
+        public string TokenPrefix { get; set; }
     }
 }

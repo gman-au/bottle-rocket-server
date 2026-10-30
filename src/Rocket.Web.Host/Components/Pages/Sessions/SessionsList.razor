@@ -1,0 +1,245 @@
+﻿@page "/Sessions"
+@using Microsoft.Extensions.Localization
+@using Rocket.Api.Contracts.Sessions
+@using Rocket.Localization.Web
+@using Rocket.Web.Host.Components.Dialog
+@using Rocket.Web.Host.Infrastructure
+@using Rocket.Web.Infrastructure.Client
+@implements IAsyncDisposable
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SessionsResource> StringLocalizer
+@inject IDialogService DialogService
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<MudText
+    Align="Align.Center"
+    Typo="Typo.h4"
+    Color="Color.Primary"
+    Class="mb-4">
+    @StringLocalizer["SessionsListTitle"]
+</MudText>
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_sessions.Any())
+    {
+        <MudSimpleTable Dense>
+            <thead>
+            <tr>
+                <th>@StringLocalizer["SessionsCreatedAtFieldHeader"]</th>
+                <th>@StringLocalizer["SessionsDeviceFieldHeader"]</th>
+                <th>@StringLocalizer["SessionsTokenPrefixFieldHeader"]</th>
+                <th>@StringLocalizer["SessionsLastLoginAtFieldHeader"]</th>
+                <th/>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var session in _sessions)
+            {
+                var isCurrent = session.IsCurrent;
+                
+                <tr class="@(isCurrent ? "faded-row" : null)">
+                    <td>
+                        <MudText Color="@(isCurrent ? Color.Default : Color.Secondary)">
+                            @session.CreatedAt.ToString("g")
+                        </MudText>
+                    </td>
+                    <td>
+                        <MudText Class="code-text" Color="@(isCurrent ? Color.Default : Color.Info)">
+                            @session.DeviceName
+                        </MudText>
+                    </td>
+                    <td>
+                        <MudText Class="code-text" Color="@(isCurrent ? Color.Default : Color.Tertiary)">
+                            @($"{session.TokenPrefix}******")
+                        </MudText>
+                    </td>
+                    <td>
+                        <MudText Color="@(isCurrent ? Color.Default : Color.Secondary)">
+                            @session.LastLoginAt?.ToString("g")
+                        </MudText>
+                    </td>
+                    <td>
+                        @if (session.IsCurrent)
+                        {
+                            <MudChip T="string">
+                                @StringLocalizer["SessionsIsCurrentCaption"]
+                            </MudChip>
+                        }
+                        else
+                        {
+                            <MudIconButton
+                                OnClick="@(() => ConfirmRevokeSession(session))"
+                                Icon="@StandardIcons.RevokeIcon"/>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </MudSimpleTable>
+        <MudDivider Class="my-4"/>
+        <MudGrid Justify="Justify.Center">
+            <MudItem>
+                <MudButton
+                    Variant="Variant.Outlined"
+                    Color="Color.Primary"
+                    Disabled="@_noMoreRecords"
+                    @onclick="@(async () => await LoadSessions(
+                                  _currentIndex,
+                                  DefaultPageSize
+                              ))">
+                    @StringLocalizer["SessionsLoadMoreCaption"]
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    }
+    else
+    {
+        <MudText
+            Align="Align.Center"
+            Typo="Typo.body2"
+            Color="Color.Default">
+            @StringLocalizer["SessionsNoSessionsMessage"]
+        </MudText>
+    }
+</BottleRocketLoadingOverlay>
+
+@code {
+    private const int DefaultPageSize = 12;
+    private bool _isLoading;
+    private bool _noMoreRecords = false;
+    private int _currentIndex = 0;
+    private IEnumerable<TokenSessionSpecifics> _sessions = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+
+            await
+                LoadSessions(
+                    _currentIndex,
+                    DefaultPageSize
+                );
+        }
+        catch (Exception ex)
+        {
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task LoadSessions(
+        int index,
+        int count
+    )
+    {
+        var request =
+            new MySessionsRequest
+            {
+                StartIndex = index,
+                RecordCount = count
+            };
+
+        var response =
+            await
+                ApiRequestManager
+                    .Sessions
+                    .GetMySessionsAsync(
+                        request,
+                        BaseCancellationToken
+                    );
+
+        _currentIndex +=
+            (response?.Sessions ?? [])
+            .Count();
+
+        _noMoreRecords = _currentIndex == (response?.TotalRecords ?? 0);
+
+        var existingSessions = new List<TokenSessionSpecifics>(_sessions);
+        var newSessions = new List<TokenSessionSpecifics>(response?.Sessions ?? []);
+
+        _sessions =
+            existingSessions
+                .UnionBy(
+                    newSessions,
+                    o => o.Id
+                )
+                .OrderByDescending(o => o.CreatedAt);
+    }
+
+    private async Task ConfirmRevokeSession(
+        TokenSessionSpecifics session
+    )
+    {
+        var dialog =
+            await
+                DialogService
+                    .ShowAsync<ConfirmRevokeSessionDialog>(
+                        null,
+                        new DialogParameters
+                        {
+                            { "Session", session }
+                        }
+                    );
+
+        var result =
+            await
+                dialog
+                    .Result;
+
+        if (!(result?.Canceled ?? true))
+        {
+            try
+            {
+                _isLoading = true;
+                StateHasChanged();
+
+                await
+                    ApiRequestManager
+                        .Sessions
+                        .RevokeSessionAsync(
+                            session.Id,
+                            BaseCancellationToken
+                        );
+
+                _sessions =
+                    _sessions
+                        .Where(o => o.Id != session.Id);
+
+                Snackbar
+                    .Add(
+                        StringLocalizer["SessionsWasRevokedMessage"].Value,
+                        Severity.Success
+                    );
+            }
+            catch (Exception ex)
+            {
+                await
+                    WebHostErrorHandler
+                        .HandleExceptionAsync(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+    }
+
+}

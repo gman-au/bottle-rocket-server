@@ -189,4 +189,20 @@
     <data name="ExpiredSessionLoginCaption" xml:space="preserve">
         <value>Login</value>
     </data>
+    <!-- REVOKE SESSION -->
+    <data name="DialogRevokeSessionTitle" xml:space="preserve">
+        <value>Revoke session</value>
+    </data>
+    <data name="DialogRevokeSessionBody" xml:space="preserve">
+        <value>Do you wish to revoke this session?</value>
+    </data>
+    <data name="DialogRevokeSessionWarning" xml:space="preserve">
+        <value>Any devices logged in via this session will be logged out immediately.</value>
+    </data>
+    <data name="DialogRevokeSessionCancelCaption" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="DialogRevokeSessionSubmitCaption" xml:space="preserve">
+        <value>Revoke</value>
+    </data>
 </root>

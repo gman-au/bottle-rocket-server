@@ -11,6 +11,8 @@
         IApiRequestGlobalSettings GlobalSettings { get; }
         
         IApiRequestScans Scans { get; }
+        
+        IApiRequestSessions Sessions { get; }
 
         IApiRequestSystem System { get; }
         

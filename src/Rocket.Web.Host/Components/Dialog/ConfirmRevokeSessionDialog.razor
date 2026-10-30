@@ -1,0 +1,82 @@
+﻿@using Microsoft.Extensions.Localization
+@using Rocket.Api.Contracts.Sessions
+@using Rocket.Localization.Web
+@inject IStringLocalizer<DialogResource> StringLocalizer
+
+<MudDialog Class="p-2">
+    <TitleContent>
+        <MudText
+            Color="Color.Primary"
+            GutterBottom
+            Typo="Typo.h5">
+            @StringLocalizer["DialogRevokeSessionTitle"]
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText
+            Typo="Typo.body1"
+            Color="Color.Default">
+            @StringLocalizer["DialogRevokeSessionBody"]
+        </MudText>
+        <MudText
+            Class="mt-2 mb-2"
+            Typo="Typo.h6"
+            Color="Color.Info">
+            @Session?.DeviceName
+        </MudText>
+        <MudText
+            Class="mt-2 mb-4"
+            Typo="Typo.caption"
+            Color="Color.Secondary">
+            @Session?.CreatedAt.ToString("g")
+        </MudText>
+        <MudText
+            Class="mt-2 mb-4"
+            Typo="Typo.body1"
+            Color="Color.Warning"
+        >
+            @StringLocalizer["DialogRevokeSessionWarning"]
+        </MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton
+            Variant="Variant.Outlined"
+            OnClick="Cancel">
+            @StringLocalizer["DialogRevokeSessionCancelCaption"]
+        </MudButton>
+        <MudButton
+            Variant="Variant.Outlined"
+            Color="Color.Error"
+            OnClick="Submit">
+            @StringLocalizer["DialogRevokeSessionSubmitCaption"]
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+    
+    [Parameter]
+    public TokenSessionSpecifics Session { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await
+            MudDialog
+                .SetOptionsAsync(
+                    new DialogOptions
+                    {
+                        FullWidth = true,
+                        MaxWidth = MaxWidth.Small,
+                        BackgroundClass = "dialog-blur-backdrop"
+                    }
+                );
+    }
+
+}

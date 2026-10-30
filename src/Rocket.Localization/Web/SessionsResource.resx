@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <!-- TITLES -->
+    <data name="SessionsListTitle" xml:space="preserve">
+        <value>Sessions</value>
+    </data>
+    <!-- FIELDS & HINTS -->
+    <data name="SessionsCreatedAtFieldHeader" xml:space="preserve">
+        <value>Created At</value>
+    </data>
+    <data name="SessionsDeviceFieldHeader" xml:space="preserve">
+        <value>Device</value>
+    </data>
+    <data name="SessionsTokenPrefixFieldHeader" xml:space="preserve">
+        <value>Token</value>
+    </data>
+    <data name="SessionsIpAddressFieldHeader" xml:space="preserve">
+        <value>IP Address</value>
+    </data>
+    <data name="SessionsLastLoginAtFieldHeader" xml:space="preserve">
+        <value>Last Login</value>
+    </data>
+    <!-- CAPTIONS & MESSAGES -->
+    <data name="SessionsIsCurrentCaption" xml:space="preserve">
+        <value>Current</value>
+    </data>
+    <data name="SessionsLoadMoreCaption" xml:space="preserve">
+        <value>Load more</value>
+    </data>
+    <data name="SessionsNoSessionsMessage" xml:space="preserve">
+        <value>No sessions found</value>
+    </data>
+    <data name="SessionsWasRevokedMessage" xml:space="preserve">
+        <value>The session was revoked successfully.</value>
+    </data>
+</root>

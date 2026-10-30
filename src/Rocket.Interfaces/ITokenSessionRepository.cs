@@ -54,5 +54,12 @@ namespace Rocket.Interfaces
             DateTime now,
             CancellationToken cancellationToken
         );
+
+        Task<(IEnumerable<TokenSession> records, long totalRecordCount)> FetchSessionsAsync(
+            string userId,
+            int startIndex,
+            int recordCount,
+            CancellationToken cancellationToken
+        );
     }
 }
