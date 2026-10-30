@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.JSInterop;
 using Rocket.Api.Contracts.Auth;
 using Rocket.Domain.Utils;
 using Rocket.Interfaces;
@@ -22,6 +23,7 @@ namespace Rocket.Web.Infrastructure.Auth
         private static readonly TimeSpan RefreshSkew = TimeSpan.FromSeconds(60);
 
         private readonly HttpClient _httpClient;
+        private readonly IJSRuntime _jsRuntime;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly ILogger<JwtAuthenticationManager> _logger;
 
@@ -32,6 +34,7 @@ namespace Rocket.Web.Infrastructure.Auth
 
         private readonly ISessionRetention _sessionRetention;
         private readonly IThemeService _themeService;
+        private readonly IUserAgentParser _userAgentParser;
 
         private Task _initializationTask;
 
@@ -40,19 +43,23 @@ namespace Rocket.Web.Infrastructure.Auth
             ILogger<JwtAuthenticationManager> logger,
             IJsonResolverInstanceProvider jsonResolverInstanceProvider,
             ISessionRetention sessionRetention,
-            IThemeService themeService
+            IThemeService themeService,
+            IUserAgentParser userAgentParser,
+            IJSRuntime jsRuntime
         )
         {
             _logger = logger;
             _sessionRetention = sessionRetention;
             _themeService = themeService;
+            _userAgentParser = userAgentParser;
+            _jsRuntime = jsRuntime;
 
             var options =
                 apiConfigurationOptionsAccessor
                     .Value;
 
             _httpClient = new HttpClient();
-            
+
             _httpClient.BaseAddress =
                 new Uri(
                     options?.BaseUrl ??
@@ -76,8 +83,13 @@ namespace Rocket.Web.Infrastructure.Auth
         {
             try
             {
-                //TODO
-                var deviceName = "Toast"; //BuildDeviceName();
+                var userAgent =
+                    await
+                        GetUserAgentAsync();
+
+                var deviceName =
+                    _userAgentParser
+                        .BuildDeviceName(userAgent);
 
                 var request =
                     new HttpRequestMessage(
@@ -238,26 +250,6 @@ namespace Rocket.Web.Infrastructure.Auth
                     .IsNullOrEmpty(_sessionRetention.CachedAuthHeader);
         }
 
-        public async Task<string> GetUsernameAsync()
-        {
-            await
-                EnsureInitializedAsync();
-
-            return
-                _sessionRetention
-                    .CachedUserName;
-        }
-
-        public async Task<string> GetRoleAsync()
-        {
-            await
-                EnsureInitializedAsync();
-
-            return
-                _sessionRetention
-                    .CachedRole;
-        }
-
         public async Task<string> GetCurrentLanguageAsync()
         {
             await
@@ -281,6 +273,26 @@ namespace Rocket.Web.Infrastructure.Auth
                         StringComparison.OrdinalIgnoreCase
                     )
                 ?? false;
+        }
+
+        public async Task<string> GetUsernameAsync()
+        {
+            await
+                EnsureInitializedAsync();
+
+            return
+                _sessionRetention
+                    .CachedUserName;
+        }
+
+        public async Task<string> GetRoleAsync()
+        {
+            await
+                EnsureInitializedAsync();
+
+            return
+                _sessionRetention
+                    .CachedRole;
         }
 
         public async Task<bool> RefreshAsync(
@@ -312,10 +324,11 @@ namespace Rocket.Web.Infrastructure.Auth
 
                 try
                 {
-                    using var request = new HttpRequestMessage(
-                        HttpMethod.Post,
-                        "/api/auth/refresh"
-                    );
+                    using var request =
+                        new HttpRequestMessage(
+                            HttpMethod.Post,
+                            "/api/auth/refresh"
+                        );
 
                     request.Content =
                         JsonContent
@@ -429,6 +442,31 @@ namespace Rocket.Web.Infrastructure.Auth
 
             OnAuthenticationStateChanged?
                 .Invoke();
+        }
+
+        private async Task<string> GetUserAgentAsync()
+        {
+            try
+            {
+                return
+                    await
+                        _jsRuntime
+                            .InvokeAsync<string>("getUserAgent");
+            }
+            catch (Exception ex) when (
+                ex is InvalidOperationException
+                    or JSDisconnectedException
+                    or JSException
+            )
+            {
+                _logger
+                    .LogDebug(
+                        "Could not read user agent: {message}",
+                        ex.Message
+                    );
+
+                return null;
+            }
         }
     }
 }

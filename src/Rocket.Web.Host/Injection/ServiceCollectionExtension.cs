@@ -96,6 +96,9 @@ namespace Rocket.Web.Host.Injection
                 .AddScoped<IAuthenticatedApiClient, AuthenticatedApiClient>();
 
             services
+                .AddTransient<IUserAgentParser, UserAgentParser>();
+            
+            services
                 .AddScoped<ApiAuthenticationStateProvider>();
 
             services
