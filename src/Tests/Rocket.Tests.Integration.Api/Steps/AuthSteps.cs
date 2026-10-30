@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Achar.Infrastructure.Api.Extensions;
 using Achar.Infrastructure.Testing.Extensions;

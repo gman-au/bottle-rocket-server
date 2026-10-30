@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
-using Rocket.Infrastructure.Auth;
 using Rocket.Infrastructure.Auth.Exceptions;
 
 namespace Rocket.Api.Host.Filters

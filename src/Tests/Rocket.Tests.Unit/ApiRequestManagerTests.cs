@@ -13,7 +13,7 @@ using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Interfaces;
 using Rocket.Tests.Unit.Extensions;
-using Rocket.Web.Client;
+using Rocket.Web.Infrastructure.Client;
 using Xunit;
 
 namespace Rocket.Tests.Unit

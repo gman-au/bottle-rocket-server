@@ -36,7 +36,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Json"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Mapping", "Rocket.Infrastructure.Mapping\Rocket.Infrastructure.Mapping.csproj", "{A531A387-7777-43BC-B3E5-A8C520B177CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Web.Client", "Rocket.Web.Client\Rocket.Web.Client.csproj", "{1A0E10B4-2357-4536-AD4A-B4E3BB291E80}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Web.Infrastructure.Client", "Rocket.Web.Infrastructure.Client\Rocket.Web.Infrastructure.Client.csproj", "{1A0E10B4-2357-4536-AD4A-B4E3BB291E80}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Jobs.Service", "Rocket.Jobs.Service\Rocket.Jobs.Service.csproj", "{E1882690-70C7-4DF0-BE2D-C4A36323D745}"
 EndProject
@@ -225,6 +225,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Mailgun.Infrastructure", "Integrations\Mailgun\Rocket.Mailgun.Infrastructure\Rocket.Mailgun.Infrastructure.csproj", "{58CC73BE-E3B1-4480-A99A-D57477465CEF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Auth", "Rocket.Infrastructure.Auth\Rocket.Infrastructure.Auth.csproj", "{35D40FFB-29A2-40BC-9404-2E35AABEAEBE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Web.Infrastructure.Auth", "Rocket.Web.Infrastructure.Auth\Rocket.Web.Infrastructure.Auth.csproj", "{CDD7E213-4504-42AB-BB15-13BB4CD1587B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -624,6 +626,10 @@ Global
 		{35D40FFB-29A2-40BC-9404-2E35AABEAEBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35D40FFB-29A2-40BC-9404-2E35AABEAEBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35D40FFB-29A2-40BC-9404-2E35AABEAEBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDD7E213-4504-42AB-BB15-13BB4CD1587B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDD7E213-4504-42AB-BB15-13BB4CD1587B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDD7E213-4504-42AB-BB15-13BB4CD1587B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDD7E213-4504-42AB-BB15-13BB4CD1587B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{42CB70A2-68E4-4EB7-8AAD-4E2F987D01BA} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}

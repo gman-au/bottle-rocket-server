@@ -27,6 +27,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Rocket.Api.Host\Rocket.Api.Host.csproj"/>
         <ProjectReference Include="..\..\Rocket.Web.Host\Rocket.Web.Host.csproj"/>
+        <ProjectReference Include="..\..\Rocket.Web.Infrastructure.Client\Rocket.Web.Infrastructure.Client.csproj" />
     </ItemGroup>
 
 </Project>
