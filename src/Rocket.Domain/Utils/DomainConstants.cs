@@ -19,6 +19,7 @@ namespace Rocket.Domain.Utils
         public const string UsernameKey = "userName";
         public const string RoleKey = "userRole";
         public const string CurrentLanguageKey = "userLanguage";
+        public const string DarkModeKey = "darkMode";
         
         public const string RefreshTokenKey = "refreshToken";
         public const string AccessTokenExpiresAtKey = "accessTokenExpiresAt";

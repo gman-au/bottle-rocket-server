@@ -29,7 +29,7 @@ namespace Rocket.Api.Host.Controllers
         private const string RefreshCookie = "refresh_token";
 
         private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        
+
         private string CurrentSessionId => User.FindFirstValue(AuthConstants.SessionId)!;
 
         [AllowAnonymous]
@@ -71,14 +71,17 @@ namespace Rocket.Api.Host.Controllers
                     globalSettingsRepository
                         .GetGlobalSettingsAsync(cancellationToken);
 
-            var response = await sessionManager.CreateSessionAsync(
-                user.Id,
-                user.IsAdmin,
-                string.IsNullOrWhiteSpace(request.DeviceName) ? "Unknown device" : request.DeviceName,
-                Request.Headers.UserAgent.ToString(),
-                HttpContext.Connection.RemoteIpAddress?.ToString(),
-                cancellationToken
-            );
+            var response =
+                await
+                    sessionManager
+                        .CreateSessionAsync(
+                            user.Id,
+                            user.IsAdmin,
+                            string.IsNullOrWhiteSpace(request.DeviceName) ? "Unknown device" : request.DeviceName,
+                            Request.Headers.UserAgent.ToString(),
+                            HttpContext.Connection.RemoteIpAddress?.ToString(),
+                            cancellationToken
+                        );
 
             response.UserName = user.Username;
             response.Role = user.IsAdmin ? DomainConstants.AdminRole : DomainConstants.UserRole;
@@ -205,10 +208,10 @@ namespace Rocket.Api.Host.Controllers
         {
             if (useCookie)
             {
-                var refreshCookieLifetime = 
+                var refreshCookieLifetime =
                     tokenExpiryProvider
                         .GetRefreshExpiryLifetime();
-                
+
                 Response
                     .Cookies
                     .Append(

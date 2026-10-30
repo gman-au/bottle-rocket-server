@@ -134,6 +134,7 @@ namespace Rocket.Web.Infrastructure.Auth
                                 authResponse.UserName,
                                 authResponse.Role,
                                 authResponse.CurrentLanguage,
+                                authResponse.DarkMode,
                                 cancellationToken
                             );
 

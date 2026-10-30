@@ -20,7 +20,7 @@
     </resheader>
     <!-- TITLES -->
     <data name="SessionsListTitle" xml:space="preserve">
-        <value>Sessions</value>
+        <value>My Device Logins</value>
     </data>
     <!-- FIELDS & HINTS -->
     <data name="SessionsCreatedAtFieldHeader" xml:space="preserve">

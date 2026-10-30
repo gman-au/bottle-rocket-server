@@ -159,6 +159,13 @@
                         >
                             @(DarkMode ? StringLocalizer["SidebarSwitchLightTitle"] : StringLocalizer["SidebarSwitchDarkTitle"])
                         </MudNavLink>
+                        <MudNavLink
+                            Match="NavLinkMatch.Prefix"
+                            Href="/Sessions"
+                            Icon="@StandardIcons.SessionsIcon"
+                        >
+                            @StringLocalizer["SidebarManageSessionsTitle"]
+                        </MudNavLink>
                         if (_isAdmin)
                         {
                             <MudNavLink

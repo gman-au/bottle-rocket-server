@@ -24,6 +24,7 @@ namespace Rocket.Web.Infrastructure.Auth
         private string _cachedRefreshToken;
         private string _cachedRole;
         private string _cachedUsername;
+        private bool? _cachedDarkMode;
         private DateTime? _cachedExpiresAt;
 
         public SessionRetention(
@@ -48,6 +49,8 @@ namespace Rocket.Web.Infrastructure.Auth
         public string CachedCurrentLanguage => _cachedCurrentLanguage;
         
         public DateTime? CachedExpiresAt => _cachedExpiresAt;
+
+        public bool? CachedDarkMode => _cachedDarkMode;
 
         public bool IsInitialized() => _initialized;
 
@@ -109,12 +112,14 @@ namespace Rocket.Web.Infrastructure.Auth
             string userName,
             string role,
             string currentLanguage,
+            bool darkMode,
             CancellationToken cancellationToken
         )
         {
             _cachedUsername = userName;
             _cachedRole = role;
             _cachedCurrentLanguage = currentLanguage;
+            _cachedDarkMode = darkMode;
 
             try
             {
@@ -137,6 +142,13 @@ namespace Rocket.Web.Infrastructure.Auth
                         .SetAsync(
                             DomainConstants.CurrentLanguageKey,
                             currentLanguage
+                        );
+
+                await
+                    _sessionStorage
+                        .SetAsync(
+                            DomainConstants.DarkModeKey,
+                            darkMode
                         );
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("prerendering"))
@@ -161,6 +173,7 @@ namespace Rocket.Web.Infrastructure.Auth
             _cachedUsername = null;
             _cachedRole = null;
             _cachedCurrentLanguage = null;
+            _cachedDarkMode = null;
 
             try
             {
@@ -170,6 +183,7 @@ namespace Rocket.Web.Infrastructure.Auth
                 await _sessionStorage.DeleteAsync(DomainConstants.UsernameKey);
                 await _sessionStorage.DeleteAsync(DomainConstants.CurrentLanguageKey);
                 await _sessionStorage.DeleteAsync(DomainConstants.RoleKey);
+                await _sessionStorage.DeleteAsync(DomainConstants.DarkModeKey);
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("prerendering"))
             {
@@ -202,6 +216,11 @@ namespace Rocket.Web.Infrastructure.Auth
                         _sessionStorage
                             .GetAsync<string>(DomainConstants.CurrentLanguageKey);
 
+                var darkModeResult =
+                    await
+                        _sessionStorage
+                            .GetAsync<bool>(DomainConstants.DarkModeKey);
+
                 if (authResult.Success && !string.IsNullOrEmpty(authResult.Value))
                 {
                     _cachedAuthHeader = authResult.Value;
@@ -228,6 +247,16 @@ namespace Rocket.Web.Infrastructure.Auth
                     _cachedCurrentLanguage = currentLanguageResult.Value;
                     _logger
                         .LogInformation("Current language restored from session storage");
+                }
+
+                if (darkModeResult.Success)
+                {
+                    _cachedDarkMode = darkModeResult.Value;
+                    _logger
+                        .LogInformation("Dark mode restored from session storage");
+                    
+                    _themeService
+                        .SetDarkMode(_cachedDarkMode.GetValueOrDefault());
                 }
 
                 _initialized = true;

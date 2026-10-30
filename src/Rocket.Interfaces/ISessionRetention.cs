@@ -17,11 +17,14 @@ namespace Rocket.Interfaces
         string CachedCurrentLanguage { get; }
 
         DateTime? CachedExpiresAt { get; }
+        
+        bool? CachedDarkMode { get; }
 
         Task RetainSessionUserAsync(
             string userName,
             string role,
             string currentLanguage,
+            bool darkMode,
             CancellationToken cancellationToken
         );
 
