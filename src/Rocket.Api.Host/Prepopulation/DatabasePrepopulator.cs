@@ -8,9 +8,11 @@ namespace Rocket.Api.Host.Prepopulation
     public class DatabasePrepopulator(
         IGlobalSettingsRepository globalSettingsRepository,
         ILogger<DatabasePrepopulator> logger
-    ) : IDatabasePrepopulator
+    ) : IDatabasePreRunAction
     {
-        public async Task PopulateGlobalSettingsAsync(CancellationToken cancellationToken)
+        public async Task RunAsync(
+            CancellationToken cancellationToken
+        )
         {
             logger
                 .LogInformation("Running global settings prepopulation...");

@@ -2,14 +2,20 @@
 using Achar.Infrastructure.Testing.Extensions;
 using Reqnroll;
 using Rocket.Tests.Integration.Api.Engine;
+using Rocket.Tests.Integration.Api.Extensions;
 
 namespace Rocket.Tests.Integration.Api.Steps
 {
     [Binding]
-    public class MultiPartRequestSteps(IApiExtendedInteractionEngine engine)
+    public class MultiPartRequestSteps(
+        IApiExtendedInteractionEngine engine,
+        IActiveTokenSession activeTokenSession
+    )
     {
         [Given("the multipart file data is set to base64 string \"(.*)\"")]
-        public Task GivenTheMultipartFileDataIsSetToBaseString(string imageBase64)
+        public Task GivenTheMultipartFileDataIsSetToBaseString(
+            string imageBase64
+        )
         {
             engine
                 .SetImageBase64(imageBase64);
@@ -20,7 +26,9 @@ namespace Rocket.Tests.Integration.Api.Steps
         }
 
         [Given(@"an API multipart request is created against endpoint ""(.*)""")]
-        public async Task GivenAnApiMultipartRequestIsCreatedAgainstEndpoint(string endpoint)
+        public async Task GivenAnApiMultipartRequestIsCreatedAgainstEndpoint(
+            string endpoint
+        )
         {
             var context =
                 await
@@ -32,8 +40,23 @@ namespace Rocket.Tests.Integration.Api.Steps
                     .CreateRequestAsync(endpoint);
         }
 
+        [Given("the multipart request authorization is set to the user (.*)")]
+        public async Task GivenTheMultipartRequestAuthorizationIsSetToTheUser(
+            string userIdentifier
+        )
+        {
+            await
+                engine
+                    .SetRequestAuthorizationHeadersAsync(
+                        activeTokenSession,
+                        userIdentifier
+                    );
+        }
+
         [When("the multipart request is sent via \"(.*)\"")]
-        public async Task WhenTheMultipartRequestIsSentVia(string method)
+        public async Task WhenTheMultipartRequestIsSentVia(
+            string method
+        )
         {
             var context =
                 await
@@ -50,7 +73,9 @@ namespace Rocket.Tests.Integration.Api.Steps
         }
 
         [Then(@"the multipart request should have failed with status code (.*)")]
-        public async Task ThenTheMultipartRequestShouldHaveFailedWithStatusCode(int expectedStatusCode)
+        public async Task ThenTheMultipartRequestShouldHaveFailedWithStatusCode(
+            int expectedStatusCode
+        )
         {
             var context =
                 await

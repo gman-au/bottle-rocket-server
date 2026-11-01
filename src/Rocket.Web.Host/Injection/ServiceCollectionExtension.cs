@@ -9,12 +9,12 @@ using Rocket.Infrastructure.Json;
 using Rocket.Infrastructure.Mermaid;
 using Rocket.Interfaces;
 using Rocket.Localization;
-using Rocket.Web.Client;
-using Rocket.Web.Client.Authentication;
-using Rocket.Web.Client.Injection;
-using Rocket.Web.Client.Options;
 using Rocket.Web.Host.HubClients;
 using Rocket.Web.Host.Infrastructure;
+using Rocket.Web.Infrastructure.Auth;
+using Rocket.Web.Infrastructure.Client;
+using Rocket.Web.Infrastructure.Client.Injection;
+using Rocket.Web.Infrastructure.Client.Options;
 
 namespace Rocket.Web.Host.Injection
 {
@@ -91,9 +91,13 @@ namespace Rocket.Web.Host.Injection
         )
         {
             services
-                .AddScoped<IAuthenticationManager, BasicAuthenticationManager>()
+                .AddScoped<IAuthenticationManager, JwtAuthenticationManager>()
+                .AddScoped<ISessionRetention, SessionRetention>()
                 .AddScoped<IAuthenticatedApiClient, AuthenticatedApiClient>();
 
+            services
+                .AddTransient<IUserAgentParser, UserAgentParser>();
+            
             services
                 .AddScoped<ApiAuthenticationStateProvider>();
 

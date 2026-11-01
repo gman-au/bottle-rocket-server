@@ -5,9 +5,9 @@
 @using Rocket.Domain.Exceptions
 @using Rocket.Interfaces
 @using Rocket.Localization.Web
-@using Rocket.Web.Client
 @using Rocket.Web.Host.Components.Dialog
 @using Rocket.Web.Host.Infrastructure
+@using Rocket.Web.Infrastructure.Client
 @inject IApiRequestManager ApiRequestManager
 @inject IEmailAddressValidator EmailAddressValidator
 @inject IWebHostErrorHandler WebHostErrorHandler
@@ -68,8 +68,7 @@
                             InputType="InputType.Password"
                             @bind-Value="_newModel.NewPassword"
                             For="@(() => _newModel.NewPassword)"
-                            Validation="@(new Func<string, IEnumerable<string>>(
-                                            o => PasswordValidation.PasswordStrength(
+                            Validation="@(new Func<string, IEnumerable<string>>(o => PasswordValidation.PasswordStrength(
                                                 o,
                                                 PasswordStringLocalizer
                                             )
@@ -139,8 +138,9 @@
         }
         catch (Exception ex)
         {
-            WebHostErrorHandler
-                .HandleException(ex);
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
         }
         finally
         {
@@ -199,6 +199,10 @@
                         dialog
                             .Result;
                 }
+                
+                await
+                    AuthenticationManager
+                        .LogoutAsync();
 
                 NavigationManager
                     .NavigateTo(
@@ -209,8 +213,9 @@
             }
             catch (Exception ex)
             {
-                WebHostErrorHandler
-                    .HandleException(ex);
+                await
+                    WebHostErrorHandler
+                        .HandleExceptionAsync(ex);
             }
             finally
             {

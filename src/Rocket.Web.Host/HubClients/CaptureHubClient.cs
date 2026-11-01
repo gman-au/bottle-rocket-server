@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Rocket.Interfaces;
-using Rocket.Web.Client.Options;
+using Rocket.Web.Infrastructure.Client.Options;
 
 namespace Rocket.Web.Host.HubClients
 {

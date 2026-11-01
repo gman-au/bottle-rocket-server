@@ -3,23 +3,24 @@ using System.Threading.Tasks;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
+using Rocket.Tests.Infrastructure.Definition;
 using Testcontainers.MongoDb;
 
 namespace Rocket.Tests.Infrastructure
 {
     public class ContainerOrchestrator : IContainerOrchestrator
     {
-        private INetwork _network;
-        private IContainer _apiContainer;
-        private MongoDbContainer _dbContainer;
-
         private const string DbUserName = "mongouser";
         private const string DbPassword = "secretpassword";
 
-        private static readonly string NetworkName = $"integration-network-{Guid.NewGuid()}";
-
         private const string MongoImageTag = "mongo:latest";
-        private const string ApiImageTag = "ghcr.io/gman-au/bottle-rocket-server/bottle-rocket-server-api:smoke";
+
+        private const string ApiImageTag = "ghcr.io/gman-au/bottle-rocket-server/bottle-rocket-server-api:latest";
+
+        private static readonly string NetworkName = $"integration-network-{Guid.NewGuid()}";
+        private IContainer _apiContainer;
+        private MongoDbContainer _dbContainer;
+        private INetwork _network;
 
         public async Task<INetwork> ArrangeDockerNetwork()
         {
@@ -92,7 +93,9 @@ namespace Rocket.Tests.Infrastructure
                         .DisposeAsync();
         }
 
-        public async Task<IContainer> ArrangeApiContainerAsync()
+        public async Task<IContainer> ArrangeApiContainerAsync(
+            OrchestrationParameters orchestrationParameters
+        )
         {
             _apiContainer =
                 new ContainerBuilder(ApiImageTag)
@@ -113,7 +116,11 @@ namespace Rocket.Tests.Infrastructure
                     )
                     .WithEnvironment(
                         "MongoDbConfigurationOptions__DatabaseName",
-                        $"BottleRocket"
+                        orchestrationParameters?.DatabaseName ?? "BottleRocket"
+                    )
+                    .WithEnvironment(
+                        "JWT_ACCESS_EXPIRY_SECONDS",
+                        (orchestrationParameters?.JwtAccessExpirySeconds ?? 60 * 24 * 7).ToString()
                     )
                     .WithEnvironment(
                         "LocalBlobConfigurationOptions__LocalBasePath",
@@ -127,7 +134,10 @@ namespace Rocket.Tests.Infrastructure
                         3001,
                         8080
                     )
-                    .WithVolumeMount("api-scans", "/bottle-rocket/scans")
+                    .WithVolumeMount(
+                        "api-scans",
+                        "/bottle-rocket/scans"
+                    )
                     .WithNetwork(_network)
                     .WithWaitStrategy(
                         Wait

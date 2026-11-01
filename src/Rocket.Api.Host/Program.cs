@@ -1,11 +1,9 @@
 using System.Globalization;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Rocket.Api.Host;
 using Rocket.Api.Host.Filters;
-using Rocket.Api.Host.Handlers;
 using Rocket.Api.Host.Hubs;
 using Rocket.Api.Host.Injection;
 using Rocket.Diagnostics.Injection.Api;
@@ -13,6 +11,7 @@ using Rocket.Domain.Utils;
 using Rocket.Dropbox.Injection.Api;
 using Rocket.Gcp.Injection.Api;
 using Rocket.Google.Injection.Api;
+using Rocket.Infrastructure.Auth.Injection;
 using Rocket.Interfaces;
 using Rocket.Local.Injection.Api;
 using Rocket.Localization;
@@ -71,11 +70,7 @@ services
     .AddEndpointsApiExplorer();
 
 services
-    .AddAuthentication(DomainConstants.BasicAuthentication)
-    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(
-        DomainConstants.BasicAuthentication,
-        null
-    );
+    .AddJwtAuthenticationServices(builder.Environment);
 
 services
     .AddAuthorization();

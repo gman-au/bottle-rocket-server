@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Bson.Serialization;
-using Rocket.Api.Host.Exceptions;
 using Rocket.Api.Host.Notifiers;
 using Rocket.Api.Host.Prepopulation;
 using Rocket.Domain.Connectors;
@@ -34,8 +33,7 @@ namespace Rocket.Api.Host.Injection
         {
             if (!BsonClassMap.IsClassMapRegistered(typeof(BaseConnector)))
             {
-                BsonClassMap.RegisterClassMap<BaseConnector>(
-                    cm =>
+                BsonClassMap.RegisterClassMap<BaseConnector>(cm =>
                     {
                         cm.AutoMap();
                         cm.SetIsRootClass(true);
@@ -45,8 +43,7 @@ namespace Rocket.Api.Host.Injection
 
             if (!BsonClassMap.IsClassMapRegistered(typeof(BaseWorkflowStep)))
             {
-                BsonClassMap.RegisterClassMap<BaseWorkflowStep>(
-                    cm =>
+                BsonClassMap.RegisterClassMap<BaseWorkflowStep>(cm =>
                     {
                         cm.AutoMap();
                         cm.SetIsRootClass(true);
@@ -56,8 +53,7 @@ namespace Rocket.Api.Host.Injection
 
             if (!BsonClassMap.IsClassMapRegistered(typeof(BaseExecutionStep)))
             {
-                BsonClassMap.RegisterClassMap<BaseExecutionStep>(
-                    cm =>
+                BsonClassMap.RegisterClassMap<BaseExecutionStep>(cm =>
                     {
                         cm.AutoMap();
                         cm.SetIsRootClass(true);
@@ -94,8 +90,7 @@ namespace Rocket.Api.Host.Injection
                     .Get<string[]>() ?? [];
 
             services
-                .AddCors(
-                    options =>
+                .AddCors(options =>
                     {
                         options
                             .AddPolicy(
@@ -124,13 +119,12 @@ namespace Rocket.Api.Host.Injection
         )
         {
             services
-                .AddTransient<IRocketExceptionWrapper, RocketExceptionWrapper>()
                 .AddTransient<IScannedImageHandler, ScannedImageHandler>()
-                .AddTransient<IAuthenticator, Authenticator>()
                 .AddTransient<ISha256Calculator, Sha256Calculator>()
                 .AddTransient<IStartupInitialization, StartupInitialization>()
-                .AddTransient<IDatabasePrepopulator, DatabasePrepopulator>()
-                .AddTransient<IDatabaseMigrator, DatabaseMigrator>()
+                .AddTransient<IDatabasePreRunAction, DatabasePrepopulator>()
+                .AddTransient<IDatabasePreRunAction, DatabaseMigrator>()
+                .AddTransient<IDatabasePreRunAction, MongoDbStartupIndexer>()
                 .AddTransient<IWorkflowStepValidator, WorkflowStepValidator>()
                 .AddTransient<IEmailAddressValidator, EmailAddressValidator>()
                 .AddTransient<IPasswordHasher, PasswordHasher>()
@@ -210,6 +204,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IWorkflowStepRepository, MongoDbWorkflowStepRepository>()
                 .AddTransient<IExecutionRepository, MongoDbExecutionRepository>()
                 .AddTransient<IGlobalSettingsRepository, MongoDbGlobalSettingsRepository>()
+                .AddTransient<ITokenSessionRepository, MongoDbTokenSessionRepository>()
                 .AddTransient<IUserRepository, MongoDbUserRepository>();
 
             return services;
@@ -247,11 +242,7 @@ namespace Rocket.Api.Host.Injection
         )
         {
             services
-                .AddLocalization(
-                    options =>
-                    {
-                        options.ResourcesPath = "";
-                    }
+                .AddLocalization(options => { options.ResourcesPath = ""; }
                 );
 
             return services;

@@ -7,9 +7,9 @@
 @using Rocket.Domain.Utils
 @using Rocket.Interfaces
 @using Rocket.Localization.Web
-@using Rocket.Web.Client
-@using Rocket.Web.Client.Options
 @using Rocket.Web.Host.Components.Dialog
+@using Rocket.Web.Infrastructure.Client
+@using Rocket.Web.Infrastructure.Client.Options
 @inject NavigationManager NavigationManager
 @inject IAuthenticationManager AuthenticationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -158,6 +158,13 @@
                             OnClick="@InvokeDarkModeToggleAsync"
                         >
                             @(DarkMode ? StringLocalizer["SidebarSwitchLightTitle"] : StringLocalizer["SidebarSwitchDarkTitle"])
+                        </MudNavLink>
+                        <MudNavLink
+                            Match="NavLinkMatch.Prefix"
+                            Href="/Sessions"
+                            Icon="@StandardIcons.SessionsIcon"
+                        >
+                            @StringLocalizer["SidebarManageSessionsTitle"]
                         </MudNavLink>
                         if (_isAdmin)
                         {
@@ -341,6 +348,10 @@
 
         if (!(result?.Canceled ?? true))
         {
+            await
+                AuthenticationManager
+                    .LogoutAsync();
+            
             NavigationManager
                 .NavigateTo(
                     "/Account/Logout",

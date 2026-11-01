@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Achar" Version="0.0.6" />
+        <PackageReference Include="Achar" Version="0.0.8" />
         <PackageReference Include="coverlet.collector" Version="6.0.2"/>
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.11" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.11" />
@@ -24,6 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Rocket.Domain\Rocket.Domain.csproj" />
       <ProjectReference Include="..\Rocket.Tests.Infrastructure\Rocket.Tests.Infrastructure.csproj" />
     </ItemGroup>
 
@@ -31,6 +32,19 @@
       <None Update="appsettings.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Features\Workflows.feature.cs">
+        <DependentUpon>Workflows.feature</DependentUpon>
+      </Compile>
+      <Compile Update="Features\Authentication.feature.cs">
+        <DependentUpon>Authentication.feature</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Definition\" />
     </ItemGroup>
 
 </Project>

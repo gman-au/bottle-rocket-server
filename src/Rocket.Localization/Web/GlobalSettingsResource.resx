@@ -28,17 +28,17 @@
     </data>
     <data name="GlobalSettingsSweepFieldHintP1" xml:space="preserve">
         <value>
-            #Configure the system to "sweep" successfully processed scans after a specified amount of days.
+            Configure the system to "sweep" successfully processed scans after a specified amount of days.
         </value>
     </data>    
     <data name="GlobalSettingsSweepFieldHintP2" xml:space="preserve">
         <value>
-            #When a workflow has been successfully run for a given scan, that scan will be archived after the amount of days configured below.
+            When a workflow has been successfully run for a given scan, that scan will be archived after the amount of days configured below.
         </value>
     </data>  
     <data name="GlobalSettingsSweepFieldHintP3" xml:space="preserve">
         <value>
-            #You can enable or disable sweeping entirely using the checkbox.
+            You can enable or disable sweeping entirely using the checkbox.
         </value>
     </data>
     <data name="GlobalSettingsEnableSweepingFieldHeader" xml:space="preserve">
@@ -52,12 +52,12 @@
     </data>
     <data name="GlobalSettingsLlmTimeoutFieldHintP1" xml:space="preserve">
         <value>
-            #Configure the timeout (in minutes) for LLM operations (i.e. OCR extraction from models).
+            Configure the timeout (in minutes) for LLM operations (i.e. OCR extraction from models).
         </value>
     </data>
     <data name="GlobalSettingsLlmTimeoutFieldHintP2" xml:space="preserve">
         <value>
-            #If left empty, the default timeout is 10 minutes.
+            If left empty, the default timeout is 10 minutes.
         </value>
     </data>
     <data name="GlobalSettingsModelTimeoutFieldHeader" xml:space="preserve">

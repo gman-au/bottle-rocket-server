@@ -4,7 +4,7 @@ using Rocket.Interfaces;
 namespace Rocket.Localization
 {
     public class CultureSetter(
-        IAuthenticationManager authenticationManager = null
+        ISessionRetention sessionRetention = null
     ) : ICultureSetter
     {
         private static readonly CultureInfo DefaultCulture =
@@ -29,9 +29,8 @@ namespace Rocket.Localization
             CultureInfo.CurrentCulture = culture;
             CultureInfo.CurrentUICulture = culture;
 
-            authenticationManager?
-                .SetCurrentLanguageAsync(languageCode)
-                .Wait();
+            sessionRetention?
+                .SetCurrentLanguage(languageCode);
         }
     }
 }
