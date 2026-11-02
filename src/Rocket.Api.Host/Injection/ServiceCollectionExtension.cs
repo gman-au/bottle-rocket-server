@@ -137,9 +137,6 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IConnectorScrubber, ConnectorScrubber>()
                 .AddTransient<IThumbnailer, Thumbnailer>()
                 .AddTransient<IUserManager, UserManager>()
-                .AddTransient<IAppHealthCheck, TokenExpiryProvider>()
-                .AddTransient<IAppHealthCheck, MongoDbPing>()
-                .AddTransient<IAppHealthCheck, JwtTokenGenerator>()
                 .AddTransient<ISchemaDictionary, SchemaDictionary>()
                 .AddTransient<ISchemaResponseBuilder, SchemaResponseBuilder>()
                 .AddTransient<ISchemaGenerator, SchemaGenerator>()
@@ -166,6 +163,19 @@ namespace Rocket.Api.Host.Injection
 
             services
                 .AddMemoryCache();
+
+            return services;
+        }
+
+        public static IServiceCollection AddAppHealthChecks(
+            this IServiceCollection services
+        )
+        {
+            services
+                .AddTransient<IAppHealthCheck, TokenExpiryProvider>()
+                .AddTransient<IAppHealthCheck, MongoDbPing>()
+                .AddTransient<IAppHealthCheck, MasterKey>()
+                .AddTransient<IAppHealthCheck, JwtTokenGenerator>();
 
             return services;
         }

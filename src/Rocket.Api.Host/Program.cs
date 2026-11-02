@@ -68,6 +68,7 @@ services
 services
     .AddMongoDbServices(configuration)
     .AddLocalFileBlobStore(configuration)
+    .AddAppHealthChecks()
     .AddBottleRocketApiServices(builder.Environment);
 
 services

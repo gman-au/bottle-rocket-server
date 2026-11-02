@@ -31,6 +31,7 @@ namespace Rocket.Infrastructure.Auth.Injection
             services
                 .AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>()
                 .AddSingleton<ISessionManager, SessionManager>()
+                .AddSingleton<IMasterKey, MasterKey>()
                 .AddSingleton<IAuthSecretProvider, AuthSecretProvider>()
                 .AddSingleton<ITokenExpiryProvider, TokenExpiryProvider>();
 
