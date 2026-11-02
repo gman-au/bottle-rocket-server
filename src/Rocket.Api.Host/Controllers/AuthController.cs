@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -63,7 +64,8 @@ namespace Rocket.Api.Host.Controllers
             if (user == null)
                 throw new RocketException(
                     "Invalid username or password",
-                    ApiStatusCodeEnum.InvalidCredentials
+                    ApiStatusCodeEnum.InvalidCredentials,
+                    (int)HttpStatusCode.Unauthorized
                 );
 
             var globalSettings =
@@ -88,10 +90,11 @@ namespace Rocket.Api.Host.Controllers
             response.DarkMode = user.DarkMode;
             response.CurrentLanguage = globalSettings.DefaultLanguage;
 
-            return Respond(
-                response,
-                request.UseCookie
-            );
+            return
+                Respond(
+                    response,
+                    request.UseCookie
+                );
         }
 
         [AllowAnonymous]
