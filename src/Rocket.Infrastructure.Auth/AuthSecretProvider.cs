@@ -18,19 +18,19 @@ namespace Rocket.Infrastructure.Auth
                 configuration["JWT_AUTH_SECRET"];
 
             if (!string.IsNullOrEmpty(_authSecret)) return;
-            
+
             var stableInput = $"{Environment.MachineName}-{Environment.ProcessId}";
-            
-            var inputBytes = 
+
+            var inputBytes =
                 Encoding
                     .UTF8
                     .GetBytes(stableInput);
-            
-            var hashBytes = 
+
+            var hashBytes =
                 SHA256
                     .HashData(inputBytes);
 
-            _authSecret = 
+            _authSecret =
                 Convert
                     .ToHexString(hashBytes);
         }

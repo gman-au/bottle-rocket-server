@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Auth
 {
     public class JwtTokenGenerator
-        : IJwtTokenGenerator
+        : IJwtTokenGenerator, IAppHealthCheck
     {
         private readonly SigningCredentials _credentials;
 
@@ -29,6 +30,30 @@ namespace Rocket.Infrastructure.Auth
                     new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256
                 );
+        }
+
+        public async Task PreRunAsync()
+        {
+            try
+            {
+                var token =
+                    new JwtSecurityToken(
+                        claims: [],
+                        notBefore: DateTime.UtcNow,
+                        expires: DateTime.UtcNow.AddHours(1),
+                        signingCredentials: _credentials
+                    );
+
+                new JwtSecurityTokenHandler()
+                    .WriteToken(token);
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                throw new Exception(
+                    "The JWT signing key configured is of insufficient size. Ensure that the configured value for JWT_AUTH_SECRET is at least 32 bytes long.",
+                    ex
+                );
+            }
         }
 
         public string CreateAccessToken(

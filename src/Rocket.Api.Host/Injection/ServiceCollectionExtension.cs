@@ -139,6 +139,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IUserManager, UserManager>()
                 .AddTransient<IAppHealthCheck, TokenExpiryProvider>()
                 .AddTransient<IAppHealthCheck, MongoDbPing>()
+                .AddTransient<IAppHealthCheck, JwtTokenGenerator>()
                 .AddTransient<ISchemaDictionary, SchemaDictionary>()
                 .AddTransient<ISchemaResponseBuilder, SchemaResponseBuilder>()
                 .AddTransient<ISchemaGenerator, SchemaGenerator>()
