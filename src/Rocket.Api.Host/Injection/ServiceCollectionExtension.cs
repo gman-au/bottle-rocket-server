@@ -10,6 +10,7 @@ using Rocket.Domain.Executions;
 using Rocket.Domain.Utils;
 using Rocket.Domain.Workflows;
 using Rocket.Infrastructure;
+using Rocket.Infrastructure.Auth;
 using Rocket.Infrastructure.Blob.Local;
 using Rocket.Infrastructure.Blob.Local.Options;
 using Rocket.Infrastructure.Db.Mongo;
@@ -136,6 +137,8 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IConnectorScrubber, ConnectorScrubber>()
                 .AddTransient<IThumbnailer, Thumbnailer>()
                 .AddTransient<IUserManager, UserManager>()
+                .AddTransient<IAppHealthCheck, TokenExpiryProvider>()
+                .AddTransient<IAppHealthCheck, MongoDbPing>()
                 .AddTransient<ISchemaDictionary, SchemaDictionary>()
                 .AddTransient<ISchemaResponseBuilder, SchemaResponseBuilder>()
                 .AddTransient<ISchemaGenerator, SchemaGenerator>()
