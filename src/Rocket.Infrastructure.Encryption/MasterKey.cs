@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Rocket.Interfaces;
 
-namespace Rocket.Infrastructure.Auth
+namespace Rocket.Infrastructure.Encryption
 {
     public class MasterKey : IMasterKey, IAppHealthCheck
     {
         private const string MasterKeyEnvVar = "BOTTLE_ROCKET_MASTER_KEY";
         private const string MasterKeyPathEnvVar = "BOTTLE_ROCKET_KEY_PATH";
-        
+        private const string DefaultKeyPath = "/app/config/master.key";
+
         private readonly IConfiguration _configuration;
         private byte[] _key;
 
@@ -81,23 +82,26 @@ namespace Rocket.Infrastructure.Auth
                 throw new Exception($"Could not load master key from file path {keyFilePath}: {ex.Message}");
             }
 
+            if (string.IsNullOrEmpty(keyFilePath))
+                keyFilePath = DefaultKeyPath;
+
             var key =
                 RandomNumberGenerator
                     .GetBytes(32);
 
-            Directory
-                .CreateDirectory(
-                    Path
-                        .GetDirectoryName(
-                            Path
-                                .GetFullPath(
-                                    keyFilePath
-                                )
-                        )!
-                );
-
             try
             {
+                Directory
+                    .CreateDirectory(
+                        Path
+                            .GetDirectoryName(
+                                Path
+                                    .GetFullPath(
+                                        keyFilePath
+                                    )
+                            )!
+                    );
+
                 using var fs =
                     new FileStream(
                         keyFilePath,

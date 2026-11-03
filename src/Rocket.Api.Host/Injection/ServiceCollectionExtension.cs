@@ -16,6 +16,7 @@ using Rocket.Infrastructure.Blob.Local.Options;
 using Rocket.Infrastructure.Db.Mongo;
 using Rocket.Infrastructure.Db.Mongo.Options;
 using Rocket.Infrastructure.Detection;
+using Rocket.Infrastructure.Encryption;
 using Rocket.Infrastructure.Hashing;
 using Rocket.Infrastructure.Json;
 using Rocket.Infrastructure.Mapping;
@@ -149,7 +150,12 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IObfuscator, Obfuscator>()
                 .AddTransient<IFileRetitler, SafeFileRetitler>()
                 .AddTransient<IWorkflowCloner, WorkflowCloner>()
+                .AddSingleton<ISecretProtector, SecretProtector>()
                 .AddSingleton<IDashboardSnapshotProvider, DashboardSnapshotProvider>();
+
+            services
+                .AddSingleton<IMasterKey, MasterKey>()
+                .AddTransient<EncryptedStringSerializer, EncryptedStringSerializer>();
 
             if (environment.IsDevelopment())
                 services

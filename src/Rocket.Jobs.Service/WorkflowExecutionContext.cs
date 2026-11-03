@@ -73,8 +73,14 @@ namespace Rocket.Jobs.Service
 
             if (connector == null)
                 throw new RocketException(
-                    $"Connector has not been defined for step {step?.StepName}",
+                    $"Connector has not been defined for step \"{step?.StepName}\"",
                     ApiStatusCodeEnum.WorkflowMissingConnection
+                );
+            
+            if (connector.DetermineStatus() != ConnectorStatusEnum.Active)
+                throw new RocketException(
+                    $"Connector is not active for step \"{step?.StepName}\"",
+                    ApiStatusCodeEnum.WorkflowInactiveConnector
                 );
 
             return connector;
