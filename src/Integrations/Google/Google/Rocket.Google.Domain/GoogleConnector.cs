@@ -1,5 +1,6 @@
 ﻿using Rocket.Domain.Connectors;
 using Rocket.Domain.Enum;
+using Rocket.Domain.Extensions;
 
 namespace Rocket.Google.Domain
 {
@@ -19,6 +20,9 @@ namespace Rocket.Google.Domain
 
         public override ConnectorStatusEnum DetermineStatus()
         {
+            if (new[] {Credential?.Installed?.ClientId, Credential?.Installed?.ClientSecret, AccessToken, RefreshToken}.IsErrorProperty())
+                return ConnectorStatusEnum.Error;
+            
             return !string.IsNullOrEmpty(RefreshToken)
                 ? ConnectorStatusEnum.Active
                 : ConnectorStatusEnum.Pending;

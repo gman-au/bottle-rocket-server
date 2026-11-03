@@ -17,6 +17,7 @@
 * Set the `ConnectorType`, `ConnectorName`, and `ConnectorCode` override values - define a `DomainConstants` static library if required.
 * Define any custom properties for the connector in this class.
 * Define the logic to indicate the `ConnectorStatusEnum` via the `DetermineStatus()` logic.
+    * For all **encrypted** properties, use the `.IsErrorProperty()` extension methods to determine whether the running server has correctly decrypted the stored values.
 
 ### 3. Create workflow steps
 * Derive new workflow steps from `BaseWorkflowStep`.
@@ -35,6 +36,29 @@
 
 ### 6. Define mapping infrastructure
 * Define an `AbcBsonMapper` implementation of `IBsonMapper` - this implementation should register the BSON **domain** class maps to the appropriate types (i.e. connector, workflow step, execution step).
+  * For connectors or workflow steps that require **encrypted** properties:
+    * Inject the `EncryptedStringSerializer` into the `IBsonMapper` implementation.
+    * In the `MapApplicableBsonTypes()` method, for the given class, set the property to use the injected serializer.
+  * See the following snippet for an example implementation:
+```
+    public class MyCustomBsonMapper(
+        EncryptedStringSerializer enc
+    ) : IBsonMapper
+    {
+        public void MapApplicableBsonTypes()
+        {
+            BsonClassMap.RegisterClassMap<MyCustomConnector>(cm =>
+            {
+                cm.AutoMap();
+                cm.GetMemberMap(o => o.SecureCredential)
+                    .SetSerializer(enc);
+            });
+        
+        ...
+
+        }
+    }    
+```
 * Create an `AbcConnectorMapper` implementation, derived from `ConnectorModelMapperBase<AbcConnector, AbcConnectorSpecifics>` and implement the required interface methods.
     * Ensure that the `For` and `From` methods set any custom connector properties (the `base()` methods handle the common properties).
     * Use the `PreUpdateAsync()` override to perform validation of the data and throw exceptions if invalid.

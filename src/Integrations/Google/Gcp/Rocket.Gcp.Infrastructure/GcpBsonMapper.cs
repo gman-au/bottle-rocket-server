@@ -1,10 +1,13 @@
 ﻿using MongoDB.Bson.Serialization;
 using Rocket.Gcp.Domain;
+using Rocket.Infrastructure.Encryption;
 using Rocket.Interfaces;
 
 namespace Rocket.Gcp.Infrastructure
 {
-    public class GcpBsonMapper : IBsonMapper
+    public class GcpBsonMapper(
+        EncryptedStringSerializer enc
+    ) : IBsonMapper
     {
         public void MapApplicableBsonTypes()
         {
@@ -13,6 +16,17 @@ namespace Rocket.Gcp.Infrastructure
                 BsonClassMap.RegisterClassMap<GcpConnector>(cm =>
                 {
                     cm.AutoMap();
+                });                
+                
+                BsonClassMap.RegisterClassMap<GcpCredential>(cm =>
+                {
+                    cm.AutoMap();
+                    cm.GetMemberMap(o => o.PrivateKeyId)
+                        .SetSerializer(enc);
+                    cm.GetMemberMap(o => o.PrivateKey)
+                        .SetSerializer(enc);
+                    cm.GetMemberMap(o => o.ClientId)
+                        .SetSerializer(enc);
                 });
             }
             
