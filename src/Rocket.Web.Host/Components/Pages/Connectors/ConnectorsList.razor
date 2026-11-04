@@ -229,8 +229,9 @@
     {
         return connectorStatus switch
         {
-            (int)ConnectorStatusEnum.Active => StandardIcons.SyncActive,
-            _ => StandardIcons.SyncPending
+            (int)ConnectorStatusEnum.Error => StandardIcons.SyncError,
+            (int)ConnectorStatusEnum.Pending => StandardIcons.SyncPending,
+            _ => StandardIcons.SyncActive
         };
     }
 
@@ -240,8 +241,9 @@
     {
         return connectorStatus switch
         {
-            (int)ConnectorStatusEnum.Active => Color.Success,
-            _ => Color.Warning
+            (int)ConnectorStatusEnum.Error => Color.Error,
+            (int)ConnectorStatusEnum.Pending => Color.Warning,
+            _ => Color.Success
         };
     }
 

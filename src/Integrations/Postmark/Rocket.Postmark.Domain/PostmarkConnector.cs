@@ -1,5 +1,6 @@
 ﻿using Rocket.Domain.Connectors;
 using Rocket.Domain.Enum;
+using Rocket.Domain.Extensions;
 
 namespace Rocket.Postmark.Domain
 {
@@ -17,6 +18,9 @@ namespace Rocket.Postmark.Domain
 
         public override ConnectorStatusEnum DetermineStatus()
         {
+            if (ServerToken.IsErrorProperty())
+                return ConnectorStatusEnum.Error;
+            
             return !string.IsNullOrEmpty(ServerToken) && !string.IsNullOrEmpty(SenderAddress)
                 ? ConnectorStatusEnum.Active
                 : ConnectorStatusEnum.Pending;

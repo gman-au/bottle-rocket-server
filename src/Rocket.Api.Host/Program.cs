@@ -1,7 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Rocket.Api.Host;
 using Rocket.Api.Host.Filters;
 using Rocket.Api.Host.Hubs;
@@ -36,8 +42,7 @@ var services =
         .Services;
 
 services
-    .Configure<HostOptions>(
-        options => { options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore; }
+    .Configure<HostOptions>(options => { options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore; }
     );
 
 services
@@ -45,8 +50,7 @@ services
 
 services
     .AddOptions<Microsoft.AspNetCore.Mvc.JsonOptions>()
-    .Configure<IJsonResolverInstanceProvider>(
-        (
+    .Configure<IJsonResolverInstanceProvider>((
             jsonOptions,
             resolverProvider
         ) =>
@@ -64,6 +68,7 @@ services
 services
     .AddMongoDbServices(configuration)
     .AddLocalFileBlobStore(configuration)
+    .AddAppHealthChecks()
     .AddBottleRocketApiServices(builder.Environment);
 
 services
@@ -127,8 +132,7 @@ app
     .MapHub<CaptureHub>("/hubs/capture");
 
 app
-    .Use(
-        async (
+    .Use(async (
             context,
             next
         ) =>
@@ -137,16 +141,16 @@ app
                 context
                     .RequestServices
                     .GetRequiredService<IGlobalSettingsRepository>();
-            
+
             var globalSettings =
                 await
                     globalSettingsRepository
                         .GetGlobalSettingsAsync(context.RequestAborted);
 
-            var culture = 
+            var culture =
                 CultureInfo
                     .GetCultureInfo(globalSettings?.DefaultLanguage ?? Languages.DefaultLanguage);
-            
+
             CultureInfo.CurrentCulture = culture;
             CultureInfo.CurrentUICulture = culture;
 
@@ -154,4 +158,58 @@ app
         }
     );
 
-app.Run();
+var logger =
+    app
+        .Services
+        .GetRequiredService<ILogger<Program>>();
+
+// Run initialization / health checks
+Task allHealthCheckTask = null;
+
+try
+{
+    var healthChecks =
+        app
+            .Services
+            .GetRequiredService<IEnumerable<IAppHealthCheck>>();
+
+    var healthCheckTasks =
+        healthChecks
+            .Select(o => o.PreRunAsync());
+
+    allHealthCheckTask =
+        Task
+            .WhenAll(healthCheckTasks);
+
+    await
+        allHealthCheckTask;
+}
+catch (AggregateException)
+{
+    if (allHealthCheckTask?.Exception != null)
+    {
+        foreach (var iex in allHealthCheckTask.Exception?.InnerExceptions ?? ReadOnlyCollection<Exception>.Empty)
+        {
+            logger
+                .LogCritical(
+                    "Cannot start Bottle Rocket: {error}",
+                    iex.Message
+                );
+        }
+    }
+
+    return;
+}
+catch (Exception ex)
+{
+    logger
+        .LogCritical(
+            "Cannot start Bottle Rocket: {error}",
+            ex.Message
+        );
+
+    return;
+}
+
+app
+    .Run();

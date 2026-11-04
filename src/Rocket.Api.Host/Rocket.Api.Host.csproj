@@ -30,6 +30,7 @@
         <ProjectReference Include="..\Rocket.Infrastructure.Blob.Local\Rocket.Infrastructure.Blob.Local.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Db.Mongo\Rocket.Infrastructure.Db.Mongo.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Detection\Rocket.Infrastructure.Detection.csproj" />
+        <ProjectReference Include="..\Rocket.Infrastructure.Encryption\Rocket.Infrastructure.Encryption.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Hashing\Rocket.Infrastructure.Hashing.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.Json\Rocket.Infrastructure.Json.csproj" />
         <ProjectReference Include="..\Rocket.Infrastructure.QrCode\Rocket.Infrastructure.QrCode.csproj" />

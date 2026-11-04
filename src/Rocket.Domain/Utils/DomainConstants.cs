@@ -25,6 +25,7 @@ namespace Rocket.Domain.Utils
         public const string AccessTokenExpiresAtKey = "accessTokenExpiresAt";
         
         public const string UnknownType = "Unknown";
+        public const string ErrorInProperty = "{ERROR}";
 
         public static readonly Dictionary<int, string> ConnectorTypes = new()
         {

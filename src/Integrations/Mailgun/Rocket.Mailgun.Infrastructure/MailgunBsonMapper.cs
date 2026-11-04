@@ -1,10 +1,13 @@
 ﻿using MongoDB.Bson.Serialization;
+using Rocket.Infrastructure.Encryption;
 using Rocket.Interfaces;
 using Rocket.Mailgun.Domain;
 
 namespace Rocket.Mailgun.Infrastructure
 {
-    public class MailgunBsonMapper : IBsonMapper
+    public class MailgunBsonMapper(
+        EncryptedStringSerializer enc
+    ) : IBsonMapper
     {
         public void MapApplicableBsonTypes()
         {
@@ -13,6 +16,8 @@ namespace Rocket.Mailgun.Infrastructure
                 BsonClassMap.RegisterClassMap<MailgunConnector>(cm =>
                 {
                     cm.AutoMap();
+                    cm.GetMemberMap(o => o.ApiKey)
+                        .SetSerializer(enc);
                 });
             }
             

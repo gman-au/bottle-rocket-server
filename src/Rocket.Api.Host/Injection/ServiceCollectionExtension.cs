@@ -10,11 +10,13 @@ using Rocket.Domain.Executions;
 using Rocket.Domain.Utils;
 using Rocket.Domain.Workflows;
 using Rocket.Infrastructure;
+using Rocket.Infrastructure.Auth;
 using Rocket.Infrastructure.Blob.Local;
 using Rocket.Infrastructure.Blob.Local.Options;
 using Rocket.Infrastructure.Db.Mongo;
 using Rocket.Infrastructure.Db.Mongo.Options;
 using Rocket.Infrastructure.Detection;
+using Rocket.Infrastructure.Encryption;
 using Rocket.Infrastructure.Hashing;
 using Rocket.Infrastructure.Json;
 using Rocket.Infrastructure.Mapping;
@@ -125,6 +127,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IDatabasePreRunAction, DatabasePrepopulator>()
                 .AddTransient<IDatabasePreRunAction, DatabaseMigrator>()
                 .AddTransient<IDatabasePreRunAction, MongoDbStartupIndexer>()
+                .AddTransient<IDatabasePreRunAction, MongoDbStartupEncryptor>()
                 .AddTransient<IWorkflowStepValidator, WorkflowStepValidator>()
                 .AddTransient<IEmailAddressValidator, EmailAddressValidator>()
                 .AddTransient<IPasswordHasher, PasswordHasher>()
@@ -148,7 +151,12 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IObfuscator, Obfuscator>()
                 .AddTransient<IFileRetitler, SafeFileRetitler>()
                 .AddTransient<IWorkflowCloner, WorkflowCloner>()
+                .AddSingleton<ISecretProtector, SecretProtector>()
                 .AddSingleton<IDashboardSnapshotProvider, DashboardSnapshotProvider>();
+
+            services
+                .AddSingleton<IMasterKey, MasterKey>()
+                .AddTransient<EncryptedStringSerializer, EncryptedStringSerializer>();
 
             if (environment.IsDevelopment())
                 services
@@ -162,6 +170,19 @@ namespace Rocket.Api.Host.Injection
 
             services
                 .AddMemoryCache();
+
+            return services;
+        }
+
+        public static IServiceCollection AddAppHealthChecks(
+            this IServiceCollection services
+        )
+        {
+            services
+                .AddTransient<IAppHealthCheck, TokenExpiryProvider>()
+                .AddTransient<IAppHealthCheck, MongoDbPing>()
+                .AddTransient<IAppHealthCheck, MasterKey>()
+                .AddTransient<IAppHealthCheck, JwtTokenGenerator>();
 
             return services;
         }

@@ -3,6 +3,7 @@
     public enum ConnectorStatusEnum
     {
         Pending,
-        Active
+        Active,
+        Error
     }
 }

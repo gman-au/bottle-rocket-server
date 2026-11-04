@@ -19,9 +19,6 @@ namespace Rocket.Infrastructure.Db.Mongo
         {
             try
             {
-                logger
-                    .LogInformation("Connecting to MongoDB");
-
                 var options = optionsAccessor.Value;
 
                 _mongoClient =
@@ -29,9 +26,6 @@ namespace Rocket.Infrastructure.Db.Mongo
                         options.ConnectionString ??
                         throw new ConfigurationErrorsException(nameof(options.ConnectionString))
                     );
-
-                logger
-                    .LogInformation("Successfully connected to MongoDB");
 
                 _mongoDatabase =
                     _mongoClient

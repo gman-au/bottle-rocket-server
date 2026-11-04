@@ -1,5 +1,6 @@
 ﻿using Rocket.Domain.Connectors;
 using Rocket.Domain.Enum;
+using Rocket.Domain.Extensions;
 
 namespace Rocket.Notion.Domain
 {
@@ -15,6 +16,9 @@ namespace Rocket.Notion.Domain
 
         public override ConnectorStatusEnum DetermineStatus()
         {
+            if (IntegrationSecret.IsErrorProperty())
+                return ConnectorStatusEnum.Error;
+            
             return !string.IsNullOrEmpty(IntegrationSecret)
                 ? ConnectorStatusEnum.Active
                 : ConnectorStatusEnum.Pending;

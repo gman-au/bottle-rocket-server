@@ -1,5 +1,6 @@
 ﻿using Rocket.Domain.Connectors;
 using Rocket.Domain.Enum;
+using Rocket.Domain.Extensions;
 
 namespace Rocket.Replicate.Domain
 {
@@ -15,6 +16,9 @@ namespace Rocket.Replicate.Domain
 
         public override ConnectorStatusEnum DetermineStatus()
         {
+            if (ApiToken.IsErrorProperty())
+                return ConnectorStatusEnum.Error;
+            
             return !string.IsNullOrEmpty(ApiToken)
                 ? ConnectorStatusEnum.Active
                 : ConnectorStatusEnum.Pending;

@@ -1,10 +1,13 @@
 ﻿using MongoDB.Bson.Serialization;
+using Rocket.Infrastructure.Encryption;
 using Rocket.Interfaces;
 using Rocket.Postmark.Domain;
 
 namespace Rocket.Postmark.Infrastructure
 {
-    public class PostmarkBsonMapper : IBsonMapper
+    public class PostmarkBsonMapper(
+        EncryptedStringSerializer enc
+    ) : IBsonMapper
     {
         public void MapApplicableBsonTypes()
         {
@@ -13,6 +16,8 @@ namespace Rocket.Postmark.Infrastructure
                 BsonClassMap.RegisterClassMap<PostmarkConnector>(cm =>
                 {
                     cm.AutoMap();
+                    cm.GetMemberMap(o => o.ServerToken)
+                        .SetSerializer(enc);
                 });
             }
             

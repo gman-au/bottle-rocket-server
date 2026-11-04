@@ -228,6 +228,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Auth"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Web.Infrastructure.Auth", "Rocket.Web.Infrastructure.Auth\Rocket.Web.Infrastructure.Auth.csproj", "{CDD7E213-4504-42AB-BB15-13BB4CD1587B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Encryption", "Rocket.Infrastructure.Encryption\Rocket.Infrastructure.Encryption.csproj", "{71B68951-149E-4930-9A30-C15EA21FEE42}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -630,6 +632,10 @@ Global
 		{CDD7E213-4504-42AB-BB15-13BB4CD1587B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDD7E213-4504-42AB-BB15-13BB4CD1587B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDD7E213-4504-42AB-BB15-13BB4CD1587B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71B68951-149E-4930-9A30-C15EA21FEE42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71B68951-149E-4930-9A30-C15EA21FEE42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71B68951-149E-4930-9A30-C15EA21FEE42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71B68951-149E-4930-9A30-C15EA21FEE42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{42CB70A2-68E4-4EB7-8AAD-4E2F987D01BA} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}

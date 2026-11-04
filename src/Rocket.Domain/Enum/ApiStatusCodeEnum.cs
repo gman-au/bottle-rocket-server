@@ -21,6 +21,7 @@
         RecordAlreadyExists,
         WorkflowMissingConnection,
         RecordIsArchived,
+        WorkflowInactiveConnector,
         ServerError = 5000,
         ServerConfigurationError,
         ThirdPartyServiceError,

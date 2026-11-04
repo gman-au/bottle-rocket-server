@@ -1,10 +1,13 @@
 ﻿using MongoDB.Bson.Serialization;
+using Rocket.Infrastructure.Encryption;
 using Rocket.Interfaces;
 using Rocket.Microsofts.Domain;
 
 namespace Rocket.Microsofts.Infrastructure
 {
-    public class MicrosoftBsonMapper : IBsonMapper
+    public class MicrosoftBsonMapper(
+        EncryptedStringSerializer enc
+    ) : IBsonMapper
     {
         public void MapApplicableBsonTypes()
         {
@@ -13,6 +16,8 @@ namespace Rocket.Microsofts.Infrastructure
                 BsonClassMap.RegisterClassMap<MicrosoftConnector>(cm =>
                 {
                     cm.AutoMap();
+                    cm.GetMemberMap(o => o.RefreshToken)
+                        .SetSerializer(enc);
                 });
             }
             

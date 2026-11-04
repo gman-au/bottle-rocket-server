@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Configuration;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Auth
 {
-    public class TokenExpiryProvider : ITokenExpiryProvider
+    public class TokenExpiryProvider : ITokenExpiryProvider, IAppHealthCheck
     {
         private static readonly TimeSpan DefaultAccessLifetime = TimeSpan.FromMinutes(10);
         private static readonly TimeSpan DefaultRefreshLifetime = TimeSpan.FromDays(30);
@@ -35,6 +37,13 @@ namespace Rocket.Infrastructure.Auth
                                 .FromSeconds(accessExpirySeconds);
                     }
                 }
+                else
+                {
+                    throw
+                        new ConfigurationErrorsException(
+                            $"JWT_ACCESS_EXPIRY_SECONDS has been configured with an invalid value: {accessExpiryString}"
+                        );
+                }
             }
 
             var refreshExpiryString =
@@ -56,7 +65,23 @@ namespace Rocket.Infrastructure.Auth
                                 .FromSeconds(refreshExpirySeconds);
                     }
                 }
+                else
+                {
+                    throw
+                        new ConfigurationErrorsException(
+                            $"JWT_REFRESH_EXPIRY_SECONDS has been configured with an invalid value: {refreshExpiryString}"
+                        );
+                }
             }
+        }
+
+        public async Task PreRunAsync()
+        {
+            if (!(
+                    _accessTokenExpirySeconds.TotalSeconds > 0 &&
+                    _refreshTokenExpirySeconds.TotalSeconds > 0
+                ))
+                throw new Exception("Invalid JWT expiry configuration");
         }
 
         public TimeSpan GetAccessExpiryLifetime() => _accessTokenExpirySeconds;
