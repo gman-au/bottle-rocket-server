@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Rocket.Infrastructure.Encryption\Rocket.Infrastructure.Encryption.csproj" />
       <ProjectReference Include="..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
     </ItemGroup>
 

@@ -24,5 +24,8 @@ namespace Rocket.Domain.Connectors
         public DateTime? LastUpdatedAt { get; set; }
 
         public abstract ConnectorStatusEnum DetermineStatus();
+
+        [BsonIgnoreIfNull]
+        public bool? IsEncrypted { get; set; } = true;
     }
 }

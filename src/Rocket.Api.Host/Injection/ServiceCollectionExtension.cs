@@ -127,6 +127,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IDatabasePreRunAction, DatabasePrepopulator>()
                 .AddTransient<IDatabasePreRunAction, DatabaseMigrator>()
                 .AddTransient<IDatabasePreRunAction, MongoDbStartupIndexer>()
+                .AddTransient<IDatabasePreRunAction, MongoDbStartupEncryptor>()
                 .AddTransient<IWorkflowStepValidator, WorkflowStepValidator>()
                 .AddTransient<IEmailAddressValidator, EmailAddressValidator>()
                 .AddTransient<IPasswordHasher, PasswordHasher>()
