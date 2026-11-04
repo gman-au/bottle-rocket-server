@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\Rocket.Infrastructure.Encryption\Rocket.Infrastructure.Encryption.csproj" />
       <ProjectReference Include="..\..\..\Rocket.Infrastructure.Mapping\Rocket.Infrastructure.Mapping.csproj" />
       <ProjectReference Include="..\..\Common\Rocket.Integrations.Common\Rocket.Integrations.Common.csproj" />
       <ProjectReference Include="..\Rocket.Microsofts.Contracts\Rocket.Microsofts.Contracts.csproj" />
