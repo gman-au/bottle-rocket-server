@@ -6,8 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using Rocket.Domain;
 using Rocket.Domain.Dashboard;
+using Rocket.Domain.ScannedImages;
 using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 

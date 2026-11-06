@@ -2,7 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Rocket.Domain
+namespace Rocket.Domain.ScannedImages
 {
     public record ScannedImage
     {

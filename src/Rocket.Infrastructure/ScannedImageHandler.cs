@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Rocket.Domain;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Domain.ScannedImages;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure

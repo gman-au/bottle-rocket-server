@@ -122,6 +122,7 @@ namespace Rocket.Api.Host.Injection
         {
             services
                 .AddTransient<IScannedImageHandler, ScannedImageHandler>()
+                .AddTransient<IBatchHandler, BatchHandler>()
                 .AddTransient<ISha256Calculator, Sha256Calculator>()
                 .AddTransient<IStartupInitialization, StartupInitialization>()
                 .AddTransient<IDatabasePreRunAction, DatabasePrepopulator>()
@@ -219,6 +220,7 @@ namespace Rocket.Api.Host.Injection
                 .AddSingleton<IMongoDbClient, MongoDbClient>();
 
             services
+                .AddTransient<IBatchRepository, MongoDbBatchRepository>()
                 .AddTransient<IScannedImageRepository, MongoDbScannedImageRepository>()
                 .AddTransient<IConnectorRepository, MongoDbConnectorRepository>()
                 .AddTransient<IWorkflowRepository, MongoDbWorkflowRepository>()

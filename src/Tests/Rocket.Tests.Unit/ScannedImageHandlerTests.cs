@@ -7,6 +7,7 @@ using NSubstitute;
 using Rocket.Domain;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Domain.ScannedImages;
 using Rocket.Infrastructure;
 using Rocket.Interfaces;
 using Rocket.Tests.Unit.Extensions;

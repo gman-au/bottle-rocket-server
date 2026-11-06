@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Rocket.Domain;
+using Rocket.Domain.ScannedImages;
 
 namespace Rocket.Interfaces
 {
