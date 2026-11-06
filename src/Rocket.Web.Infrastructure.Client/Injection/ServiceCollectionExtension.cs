@@ -10,6 +10,7 @@ namespace Rocket.Web.Infrastructure.Client.Injection
         )
         {
             services
+                .AddTransient<IApiRequestBatches, ApiRequestBatches>()
                 .AddTransient<IApiRequestConnectors, ApiRequestConnectors>()
                 .AddTransient<IApiRequestDashboard, ApiRequestDashboard>()
                 .AddTransient<IApiRequestExecutions, ApiRequestExecutions>()
@@ -31,6 +32,7 @@ namespace Rocket.Web.Infrastructure.Client.Injection
                 .AddTransient<IApiRequestManager>(
                     sp =>
                         new ApiRequestManager(
+                            sp.GetRequiredService<IApiRequestBatches>(),
                             sp.GetRequiredService<IApiRequestConnectors>(),
                             sp.GetRequiredService<IApiRequestDashboard>(),
                             sp.GetRequiredService<IApiRequestExecutions>(),

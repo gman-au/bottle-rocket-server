@@ -1,6 +1,7 @@
 ﻿namespace Rocket.Web.Infrastructure.Client
 {
     public class ApiRequestManager(
+        IApiRequestBatches batches,
         IApiRequestConnectors connectors,
         IApiRequestDashboard dashboard,
         IApiRequestExecutions executions,
@@ -14,6 +15,7 @@
         IApiRequestWorkflowSteps workflowSteps
     ) : IApiRequestManager
     {
+        public IApiRequestBatches Batches => batches;
         public IApiRequestConnectors Connectors => connectors;
         public IApiRequestDashboard Dashboard => dashboard;
         public IApiRequestExecutions Executions => executions;

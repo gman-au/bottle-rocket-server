@@ -2,6 +2,8 @@
 {
     public interface IApiRequestManager
     {
+        IApiRequestBatches Batches { get; }
+        
         IApiRequestConnectors Connectors { get; }
 
         IApiRequestDashboard Dashboard { get; }
