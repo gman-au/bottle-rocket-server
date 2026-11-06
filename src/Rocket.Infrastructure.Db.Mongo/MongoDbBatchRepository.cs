@@ -4,10 +4,14 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Rocket.Domain.Batches;
 using Rocket.Domain.Dashboard;
 using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
+using Rocket.Domain.ScannedImages;
+using Rocket.Domain.Workflows;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Db.Mongo
@@ -191,6 +195,79 @@ namespace Rocket.Infrastructure.Db.Mongo
                             id
                         ),
                     cancellationToken
+                );
+
+        public async Task<ScannedImage> InsertBatchScanAsync(
+            ScannedImage scannedImage,
+            string userId,
+            string batchId,
+            CancellationToken cancellationToken
+        )
+        {
+            var scanId =
+                ObjectId
+                    .GenerateNewId()
+                    .ToString();
+
+            scannedImage.Id = scanId;
+
+            var filter =
+                BuildBatchFilterByIdAndUserId(
+                    batchId,
+                    userId
+                );
+
+            var options = new UpdateOptions();
+
+            var batch =
+                await
+                    GetBatchByIdAsync(
+                        userId,
+                        batchId,
+                        cancellationToken
+                    );
+
+            if (batch == null)
+                throw new RocketException(
+                    $"Could not find batch with id [{batchId}]",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
+            var update =
+                Builders<Batch>
+                    .Update
+                    .Push(
+                        w => w.Scans,
+                        scannedImage
+                    );
+
+            await
+                GetMongoCollection()
+                    .UpdateOneAsync(
+                        filter,
+                        update,
+                        options,
+                        cancellationToken
+                    );
+
+            return scannedImage;
+        }
+
+        private static FilterDefinition<Batch> BuildBatchFilterByIdAndUserId(
+            string batchId,
+            string userId
+        ) =>
+            Builders<Batch>
+                .Filter
+                .Eq(
+                    w => w.Id,
+                    batchId
+                ) &
+            Builders<Batch>
+                .Filter
+                .Eq(
+                    w => w.UserId,
+                    userId
                 );
     }
 }

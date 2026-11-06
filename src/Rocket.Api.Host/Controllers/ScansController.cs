@@ -147,7 +147,6 @@ namespace Rocket.Api.Host.Controllers
                     id
                 );
 
-
             var (record, imageData) =
                 await
                     scannedImageHandler

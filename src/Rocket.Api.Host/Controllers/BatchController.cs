@@ -132,7 +132,7 @@ namespace Rocket.Api.Host.Controllers
 
             logger
                 .LogInformation(
-                    "Received close batche request for username: {userId}",
+                    "Received close batch request for username: {userId}",
                     userId
                 );
 
@@ -146,6 +146,8 @@ namespace Rocket.Api.Host.Controllers
                         cancellationToken
                     );
 
+            // TODO: trigger workflows if required
+            
             var response =
                 new CloseBatchResponse
                 {

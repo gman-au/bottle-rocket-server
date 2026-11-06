@@ -166,6 +166,7 @@ namespace Rocket.Api.Host.Controllers
                                     userId,
                                     model.Vendor,
                                     noteDescription,
+                                    batchId,
                                     cancellationToken
                                 );
                     

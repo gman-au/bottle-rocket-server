@@ -49,6 +49,13 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
+        Task<ScannedImage> InsertBatchScanAsync(
+            ScannedImage scannedImage,
+            string userId,
+            string batchId,
+            CancellationToken cancellationToken
+        );
+
         Task<IEnumerable<ScanByVendorTotal>> AggregateScansByVendorAsync(
             string userId,
             CancellationToken cancellationToken

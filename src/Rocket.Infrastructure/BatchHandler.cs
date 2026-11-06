@@ -14,6 +14,7 @@ namespace Rocket.Infrastructure
         IBlobStore blobStore,
         ISha256Calculator sha256Calculator,
         IScannedImageRepository scannedImageRepository,
+        IBatchRepository batchRepository,
         IExecutionRepository executionRepository,
         IThumbnailer thumbnailer
     ) : IBatchHandler
@@ -25,6 +26,7 @@ namespace Rocket.Infrastructure
             string userId,
             string vendor,
             string description,
+            string batchId,
             CancellationToken cancellationToken
         )
         {
@@ -75,16 +77,19 @@ namespace Rocket.Infrastructure
 
                 var result =
                     await
-                        scannedImageRepository
-                            .InsertScanAsync(
+                        batchRepository
+                            .InsertBatchScanAsync(
                                 scannedImage,
+                                userId,
+                                batchId,
                                 cancellationToken
                             );
 
                 logger
                     .LogInformation(
-                        "Successfully saved scanned image for user ID: {userId}",
-                        userId
+                        "Successfully saved scanned image for user ID: {userId}, batch ID: {batchId}",
+                        userId,
+                        batchId
                     );
 
                 return result;

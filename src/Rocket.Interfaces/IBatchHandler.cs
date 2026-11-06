@@ -13,6 +13,7 @@ namespace Rocket.Interfaces
             string userId,
             string vendor,
             string description,
+            string batchId,
             CancellationToken cancellationToken
         );
 
