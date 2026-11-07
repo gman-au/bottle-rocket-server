@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading;
@@ -26,85 +25,9 @@ namespace Rocket.Api.Host.Controllers
         IUserManager userManager,
         ICaptureNotifier captureNotifier,
         IScannedImageHandler scannedImageHandler,
-        IScannedImageRepository scannedImageRepository,
         IDashboardSnapshotProvider dashboardSnapshotProvider
     ) : RocketControllerBase(userManager)
     {
-        [HttpPost("fetch")]
-        [EndpointSummary("Fetch the users scans")]
-        [EndpointGroupName("Manage captures / scans")]
-        [EndpointDescription(
-            """
-            Retrieves a subset of scans belonging to the authenticated user.\n
-            Provide a zero-based start index and record count to retrieve paged results and minimise server load.\n 
-            A base64 thumbnail image string is also provided instead of the full image data in a multi-record payload.
-            """
-        )]
-        [ProducesResponseType(
-            typeof(MyScansResponse),
-            StatusCodes.Status200OK
-        )]
-        [ProducesResponseType(
-            typeof(ApiResponse),
-            StatusCodes.Status500InternalServerError
-        )]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> FetchMyScansAsync(
-            [FromBody] MyScansRequest request,
-            CancellationToken cancellationToken
-        )
-        {
-            var userId =
-                User
-                    .FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId))
-                throw new RocketException(
-                    "User ID not found in claims",
-                    ApiStatusCodeEnum.UnknownUser,
-                    (int)HttpStatusCode.Unauthorized
-                );
-
-            logger
-                .LogInformation(
-                    "Received fetch scans request for username: {userId}",
-                    userId
-                );
-
-
-            var (records, totalRecordCount) =
-                await
-                    scannedImageRepository
-                        .FetchScansAsync(
-                            userId,
-                            request.StartIndex,
-                            request.RecordCount,
-                            cancellationToken
-                        );
-
-            var response =
-                new MyScansResponse
-                {
-                    Scans =
-                        records
-                            .Select(o =>
-                                new ScanSummary
-                                {
-                                    Id = o.Id,
-                                    Description = o.Description,
-                                    DateScanned = o.CaptureDate.ToLocalTime(),
-                                    ThumbnailBase64 = o.ThumbnailBase64,
-                                    ContentType = o.ContentType
-                                }
-                            ),
-                    TotalRecords = (int)totalRecordCount
-                };
-
-            return
-                response
-                    .AsApiSuccess();
-        }
-
         [HttpGet("{batchId}/{scanId}")]
         [EndpointSummary("Fetch the user scan details")]
         [EndpointGroupName("Manage captures / scans")]
@@ -157,6 +80,8 @@ namespace Rocket.Api.Host.Controllers
                             cancellationToken
                         );
 
+            // TODO: the full image data may not be required at this point
+            
             var response =
                 new ScanSpecifics
                 {
@@ -169,71 +94,8 @@ namespace Rocket.Api.Host.Controllers
                     FileExtension = record.FileExtension,
                     Sha256 = record.Sha256,
                     ImageBase64 = Convert.ToBase64String(imageData),
-                    Archived = record.Archived,
                     Vendor = record.Vendor
                 };
-
-            return
-                response
-                    .AsApiSuccess();
-        }
-
-        [HttpDelete("archive/{id}")]
-        [EndpointSummary("Archive a scan")]
-        [EndpointGroupName("Manage captures / scans")]
-        [EndpointDescription(
-            """
-            Manually archives a scan by its unique ID.\n
-            To preserve drive space, the original image file is permanently deleted and will no longer be available
-            for workflow processing. A stubbed record will remain with a small thumbnail image for reference.
-            """
-        )]
-        [ProducesResponseType(
-            typeof(ArchiveScanResponse),
-            StatusCodes.Status200OK
-        )]
-        [ProducesResponseType(
-            typeof(ApiResponse),
-            StatusCodes.Status500InternalServerError
-        )]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> ArchiveScanAsync(
-            string id,
-            CancellationToken cancellationToken
-        )
-        {
-            var user =
-                await
-                    ThrowIfNotActiveUserAsync(cancellationToken);
-
-            var userId =
-                user
-                    .Id;
-
-            logger
-                .LogInformation(
-                    "Received (manual) scan archival request for username: {userId}, id: {id}",
-                    userId,
-                    id
-                );
-
-            var result =
-                await
-                    scannedImageHandler
-                        .ArchiveAsync(
-                            userId,
-                            id,
-                            cancellationToken
-                        );
-
-            var response =
-                new ArchiveScanResponse
-                {
-                    IsArchived = result
-                };
-
-            dashboardSnapshotProvider
-                .MarkAsDirty(userId);
 
             return
                 response

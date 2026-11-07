@@ -103,7 +103,7 @@ namespace Rocket.Jobs.Service
                                 context
                                     .SetRootArtifactAsync(
                                         userId,
-                                        execution.ScanId,
+                                        execution.BatchId,
                                         cts.Token
                                     );
 
@@ -122,7 +122,7 @@ namespace Rocket.Jobs.Service
                                     context
                                         .SetRootArtifactAsync(
                                             userId,
-                                            execution.ScanId,
+                                            execution.BatchId,
                                             cts.Token
                                         );
                                 

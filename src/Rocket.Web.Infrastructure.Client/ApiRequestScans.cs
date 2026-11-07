@@ -22,38 +22,6 @@ namespace Rocket.Web.Infrastructure.Client
         authenticatedApiClient
     ), IApiRequestScans
     {
-        public async Task<MyScansResponse> GetMyScansAsync(
-            MyScansRequest request,
-            CancellationToken cancellationToken
-        )
-        {
-            Logger
-                .LogInformation("Received My Scans request");
-
-            var response =
-                await
-                    AuthenticatedApiClient
-                        .PostAsJsonAsync(
-                            "/api/scans/fetch",
-                            request,
-                            cancellationToken
-                        );
-
-            var result =
-                await
-                    response
-                        .TryParseResponse<MyScansResponse>(
-                            JsonSerializerOptions,
-                            Logger,
-                            cancellationToken
-                        );
-
-            EnsureApiSuccessStatusCode(result);
-            EnsureHttpSuccessStatusCode(response);
-
-            return result;
-        }
-
         public async Task<ScanSpecifics> GetMyScanAsync(
             string batchId,
             string scanId,

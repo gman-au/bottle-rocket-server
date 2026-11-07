@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain.Batches;
@@ -29,21 +30,21 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
-        Task<(ScannedImage record, byte[] imageData)> ReadAsync(
+        Task<Dictionary<ScannedImage, byte[]>> ReadAsync(
             string userId,
-            string id,
+            string batchId,
             CancellationToken cancellationToken
         );
 
         Task<bool> ArchiveAsync(
             string userId,
-            string id,
+            string batchId,
             CancellationToken cancellationToken
         );
 
         Task<bool> DeleteAsync(
             string userId,
-            string id,
+            string batchId,
             CancellationToken cancellationToken
         );
     }

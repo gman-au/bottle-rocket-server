@@ -69,7 +69,7 @@ namespace Rocket.Api.Host.Controllers
                             userId,
                             request.StartIndex,
                             request.RecordCount,
-                            request.ScanId,
+                            request.BatchId,
                             request.WorkflowId,
                             cancellationToken
                         );
@@ -84,15 +84,15 @@ namespace Rocket.Api.Host.Controllers
                                 {
                                     Id = o.Id,
                                     UserId = o.UserId,
-                                    ScanId = o.ScanId,
+                                    BatchId = o.BatchId,
                                     WorkflowId = o.WorkflowId,
                                     CreatedAt = o.CreatedAt.ToLocalTime(),
                                     RunDate = o.RunDate?.ToLocalTime(),
                                     Name = o.Name,
                                     ExecutionStatus = o.ExecutionStatus,
                                     ThumbnailBase64 = o.ThumbnailBase64,
-                                    ContentType = o.ContentType,
                                     Archived = o.Archived,
+                                    ContentType = o.ContentType,
                                     Vendor = o.Vendor
                                 }
                             ),
@@ -441,15 +441,13 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Id = execution.Id,
                     UserId = execution.UserId,
-                    ScanId = execution.ScanId,
+                    BatchId = execution.BatchId,
                     WorkflowId = execution.WorkflowId,
                     RunDate = execution.RunDate?.ToLocalTime(),
                     CreatedAt = execution.CreatedAt.ToLocalTime(),
                     Name = execution.Name,
                     ExecutionStatus = execution.ExecutionStatus,
                     ThumbnailBase64 = execution.ThumbnailBase64,
-                    ContentType = execution.ContentType,
-                    Vendor = execution.Vendor,
                     Archived = execution.Archived,
                     Steps =
                         (execution.Steps ?? [])

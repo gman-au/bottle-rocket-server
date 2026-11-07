@@ -12,8 +12,8 @@ namespace Rocket.Api.Contracts.Executions
         [JsonPropertyName("user_id")]
         public string UserId { get; set; }
 
-        [JsonPropertyName("scan_id")]
-        public string ScanId { get; set; }
+        [JsonPropertyName("batch_id")]
+        public string BatchId { get; set; }
 
         [JsonPropertyName("workflow_id")]
         public string WorkflowId { get; set; }

@@ -11,6 +11,7 @@ namespace Rocket.Jobs.Service
     public class CaptureSweeper(
         ILogger<CaptureSweeper> logger,
         IScannedImageHandler scannedImageHandler,
+        IBatchHandler batchHandler,
         IExecutionRepository executionRepository
     ) : ICaptureSweeper
     {
@@ -64,17 +65,17 @@ namespace Rocket.Jobs.Service
 
                     // archive the scan
                     await
-                        scannedImageHandler
+                        batchHandler
                             .ArchiveAsync(
                                 pendingExecution.UserId,
-                                pendingExecution.ScanId,
+                                pendingExecution.BatchId,
                                 cancellationToken
                             );
 
                     logger
                         .LogInformation(
-                            "Successfully archived scan ID: {scanId}",
-                            pendingExecution.ScanId
+                            "Successfully archived batch ID: {batchId}",
+                            pendingExecution.BatchId
                         );
 
                     totalScansArchived++;

@@ -11,8 +11,8 @@ namespace Rocket.Infrastructure.Mapping
     {
         public Execution Clone(
             Workflow workflow,
-            string scanId, 
-            string scanThumbnailBase64,
+            string batchId, 
+            string coverThumbnailBase64,
             string scanContentType,
             string scanVendor
         )
@@ -20,8 +20,8 @@ namespace Rocket.Infrastructure.Mapping
             return new Execution
             {
                 UserId = workflow.UserId,
-                ScanId = scanId,
-                ThumbnailBase64 = scanThumbnailBase64,
+                BatchId = batchId,
+                ThumbnailBase64 = coverThumbnailBase64,
                 ContentType = scanContentType,
                 WorkflowId = workflow.Id,
                 CreatedAt = DateTime.UtcNow,

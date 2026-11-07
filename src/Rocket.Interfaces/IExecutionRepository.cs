@@ -14,7 +14,7 @@ namespace Rocket.Interfaces
             string userId,
             int? startIndex,
             int? recordCount,
-            string scanId,
+            string batchId,
             string workflowId,
             CancellationToken cancellationToken
         );
@@ -25,7 +25,7 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
         
-        Task<long> DeleteExecutionsByScanIdAsync(
+        Task<long> DeleteExecutionsByBatchIdAsync(
             string userId,
             string id,
             CancellationToken cancellationToken

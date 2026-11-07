@@ -13,7 +13,7 @@ namespace Rocket.Jobs.Service
 {
     public class WorkflowExecutionContext(
         IEnumerable<IIntegrationHook> hooks,
-        IScannedImageHandler scannedImageHandler,
+        IBatchHandler batchHandler,
         IConnectorRepository connectorRepository
     ) : IWorkflowExecutionContext
     {
@@ -21,25 +21,23 @@ namespace Rocket.Jobs.Service
 
         public async Task SetRootArtifactAsync(
             string userId,
-            string scanId,
+            string batchId,
             CancellationToken cancellationToken
         )
         {
-            var (record, imageData) =
+            var scanData =
                 await
-                    scannedImageHandler
-                        .ReadAsync(userId, scanId, cancellationToken);
+                    batchHandler
+                        .ReadAsync(
+                            userId,
+                            batchId,
+                            cancellationToken
+                        );
 
-            if (record == null)
+            if (scanData == null)
                 throw new RocketException(
-                    $"Could not find scanned image with ID {scanId}",
+                    $"Could not find scanned image data with batch ID: {batchId}",
                     ApiStatusCodeEnum.UnknownOrInaccessibleRecord
-                );
-
-            if (record.Archived)
-                throw new RocketException(
-                    "Record is archived and cannot be processed.",
-                    ApiStatusCodeEnum.RecordIsArchived
                 );
 
             SetCurrentArtifact(
@@ -47,10 +45,18 @@ namespace Rocket.Jobs.Service
                 {
                     Result = (int)ExecutionStatusEnum.Completed,
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.ImageData,
-                    Artifact = imageData,
-                    FileExtension = record.FileExtension,
+                    Elements =
+                        scanData
+                            .Select(o => new ArtifactDataElement
+                                {
+                                    Artifact = o.Value,
+                                    FileExtension = o.Key.FileExtension,
+                                    ScanId = o.Key.Id,
+                                    FileName = o.Key.Description
+                                }
+                            ),
                     FileName = _currentArtifact?.FileName,
-                    ScanId = scanId,
+                    BatchId = batchId,
                     UserId = userId
                 }
             );
@@ -76,7 +82,7 @@ namespace Rocket.Jobs.Service
                     $"Connector has not been defined for step \"{step?.StepName}\"",
                     ApiStatusCodeEnum.WorkflowMissingConnection
                 );
-            
+
             if (connector.DetermineStatus() != ConnectorStatusEnum.Active)
                 throw new RocketException(
                     $"Connector is not active for step \"{step?.StepName}\"",
@@ -86,11 +92,15 @@ namespace Rocket.Jobs.Service
             return connector;
         }
 
-        public void SetCurrentArtifact(ExecutionStepArtifact artifact) => _currentArtifact = artifact;
+        public void SetCurrentArtifact(
+            ExecutionStepArtifact artifact
+        ) => _currentArtifact = artifact;
 
         public ExecutionStepArtifact GetInputArtifact() => _currentArtifact;
 
-        public IIntegrationHook GetApplicableHook(BaseExecutionStep step)
+        public IIntegrationHook GetApplicableHook(
+            BaseExecutionStep step
+        )
         {
             return
                 hooks

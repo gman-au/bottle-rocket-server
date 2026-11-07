@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Rocket.Domain;
 using Rocket.Domain.Dashboard;
 using Rocket.Domain.ScannedImages;
 
@@ -17,21 +16,8 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
-        Task<(IEnumerable<ScannedImage> records, long totalRecordCount)> FetchScansAsync(
-            string userId,
-            int startIndex,
-            int recordCount,
-            CancellationToken cancellationToken
-        );
-
         Task<ScannedImage> InsertScanAsync(
             ScannedImage scannedImage,
-            CancellationToken cancellationToken
-        );
-
-        Task ArchiveScanAsync(
-            string userId,
-            string id,
             CancellationToken cancellationToken
         );
 

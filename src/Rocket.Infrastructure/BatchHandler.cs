@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -14,7 +15,6 @@ namespace Rocket.Infrastructure
         ILogger<BatchHandler> logger,
         IBlobStore blobStore,
         ISha256Calculator sha256Calculator,
-        IScannedImageRepository scannedImageRepository,
         IBatchRepository batchRepository,
         IExecutionRepository executionRepository,
         IThumbnailer thumbnailer
@@ -72,7 +72,6 @@ namespace Rocket.Infrastructure
                 scannedImage.FileExtension = fileExtension;
                 scannedImage.Sha256 = hashString;
                 scannedImage.ThumbnailBase64 = thumbnail;
-                scannedImage.Archived = false;
                 scannedImage.Vendor = vendor;
                 scannedImage.Description = description;
 
@@ -100,85 +99,6 @@ namespace Rocket.Infrastructure
                 logger
                     .LogError(
                         "There was an error handling the scanned image: {error}",
-                        ex.Message
-                    );
-
-                throw;
-            }
-        }
-
-        public async Task<(ScannedImage record, byte[] imageData)> ReadAsync(
-            string userId,
-            string id,
-            CancellationToken cancellationToken
-        )
-        {
-            logger
-                .LogInformation("Retrieving scan record and image data");
-
-            try
-            {
-                var record =
-                    await
-                        scannedImageRepository
-                            .GetScanByIdAsync(
-                                userId,
-                                id,
-                                cancellationToken
-                            );
-
-                if (record == null)
-                    throw new RocketException(
-                        "The record was not found or you do not have access.",
-                        ApiStatusCodeEnum.UnknownOrInaccessibleRecord
-                    );
-
-                byte[] imageData = [];
-                if (!record.Archived)
-                {
-                    imageData =
-                        await
-                            blobStore
-                                .LoadImageAsync(
-                                    record.BlobId,
-                                    record.FileExtension,
-                                    cancellationToken
-                                );
-
-                    var hashString =
-                        sha256Calculator
-                            .CalculateSha256HashAndFormat(imageData);
-
-                    if (hashString != record.Sha256)
-                        throw new RocketException(
-                            "The image data has been modified or corrupted since it was saved.",
-                            ApiStatusCodeEnum.FileDataCorrupted
-                        );
-
-                    logger
-                        .LogInformation(
-                            "Successfully retrieved scanned image for user ID: {userId}, id: {id}",
-                            userId,
-                            id
-                        );
-                }
-                else
-                {
-                    logger
-                        .LogInformation(
-                            "Record is archived, image data not loaded for user ID: {userId}, id: {id}",
-                            userId,
-                            id
-                        );
-                }
-
-                return (record, imageData);
-            }
-            catch (Exception ex)
-            {
-                logger
-                    .LogError(
-                        "There was an error retrieving the scanned image: {error}",
                         ex.Message
                     );
 
@@ -230,23 +150,115 @@ namespace Rocket.Infrastructure
             }
         }
 
-        public async Task<bool> ArchiveAsync(
+        public async Task<Dictionary<ScannedImage, byte[]>> ReadAsync(
             string userId,
-            string id,
+            string batchId,
             CancellationToken cancellationToken
         )
         {
             logger
-                .LogInformation("Archiving scan record and image data");
+                .LogInformation("Retrieving batch record and image data");
 
             try
             {
                 var record =
                     await
-                        scannedImageRepository
-                            .GetScanByIdAsync(
+                        batchRepository
+                            .GetBatchByIdAsync(
                                 userId,
-                                id,
+                                batchId,
+                                cancellationToken
+                            );
+
+                if (record == null)
+                    throw new RocketException(
+                        "The record was not found or you do not have access.",
+                        ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                    );
+
+                if (record.Archived)
+                    throw new RocketException(
+                        "Record is archived and cannot be processed.",
+                        ApiStatusCodeEnum.RecordIsArchived
+                    );
+
+                var results = new Dictionary<ScannedImage, byte[]>();
+
+                if (!record.Archived)
+                {
+                    foreach (var scan in record.Scans ?? [])
+                    {
+                        var imageData =
+                            await
+                                blobStore
+                                    .LoadImageAsync(
+                                        scan.BlobId,
+                                        scan.FileExtension,
+                                        cancellationToken
+                                    );
+
+                        var hashString =
+                            sha256Calculator
+                                .CalculateSha256HashAndFormat(imageData);
+
+                        if (hashString != scan.Sha256)
+                            throw new RocketException(
+                                $"The image data for scan ID {scan.Id} has been modified or corrupted since it was saved.",
+                                ApiStatusCodeEnum.FileDataCorrupted
+                            );
+
+                        logger
+                            .LogInformation(
+                                "Successfully retrieved scanned image for user ID: {userId}, scan ID: {scanId}",
+                                userId,
+                                scan.Id
+                            );
+                        
+                        results
+                            .Add(scan, imageData);
+                    }
+                }
+                else
+                {
+                    logger
+                        .LogInformation(
+                            "Record is archived, image data not loaded for user ID: {userId}, batch ID: {batchId}",
+                            userId,
+                            batchId
+                        );
+                }
+
+                return results;
+            }
+            catch (Exception ex)
+            {
+                logger
+                    .LogError(
+                        "There was an error retrieving the scanned image: {error}",
+                        ex.Message
+                    );
+
+                throw;
+            }
+        }
+
+        public async Task<bool> ArchiveAsync(
+            string userId,
+            string batchId,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation("Archiving batch");
+
+            try
+            {
+                var record =
+                    await
+                        batchRepository
+                            .GetBatchByIdAsync(
+                                userId,
+                                batchId,
                                 cancellationToken
                             );
 
@@ -262,29 +274,27 @@ namespace Rocket.Infrastructure
                         ApiStatusCodeEnum.RecordIsArchived
                     );
 
-                var deleted =
+                var allDeleted =
                     await
-                        blobStore
-                            .DeleteImageAsync(
-                                record.BlobId,
-                                record.FileExtension,
-                                cancellationToken
-                            );
+                        DeleteScanFilesAsync(
+                            record.Scans,
+                            cancellationToken
+                        );
 
-                if (deleted)
+                if (allDeleted)
                 {
                     logger
                         .LogInformation(
-                            "Successfully deleted image for user ID: {userId}, id: {id}",
+                            "Successfully deleted images for user ID: {userId}, batch ID: {batchId}",
                             userId,
-                            id
+                            batchId
                         );
 
                     await
-                        scannedImageRepository
-                            .ArchiveScanAsync(
+                        batchRepository
+                            .ArchiveBatchAsync(
                                 userId,
-                                id,
+                                batchId,
                                 cancellationToken
                             );
                 }
@@ -292,13 +302,13 @@ namespace Rocket.Infrastructure
                 {
                     logger
                         .LogWarning(
-                            "Image for user ID: {userId}, id: {id} was not deleted",
+                            "Not all scans for user ID: {userId}, batch ID: {batchId} were deleted",
                             userId,
-                            id
+                            batchId
                         );
                 }
 
-                return deleted;
+                return allDeleted;
             }
             catch (Exception ex)
             {
@@ -314,7 +324,7 @@ namespace Rocket.Infrastructure
 
         public async Task<bool> DeleteAsync(
             string userId,
-            string id,
+            string batchId,
             CancellationToken cancellationToken
         )
         {
@@ -328,7 +338,7 @@ namespace Rocket.Infrastructure
                         batchRepository
                             .GetBatchByIdAsync(
                                 userId,
-                                id,
+                                batchId,
                                 cancellationToken
                             );
 
@@ -338,36 +348,12 @@ namespace Rocket.Infrastructure
                         ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                     );
 
-                var allDeleted = true;
-                foreach (var scan in record.Scans ?? [])
-                {
-                    try
-                    {
-                        allDeleted &=
-                            await
-                                blobStore
-                                    .DeleteImageAsync(
-                                        scan.BlobId,
-                                        scan.FileExtension,
-                                        cancellationToken
-                                    );
-                    }
-                    catch (RocketException ex)
-                    {
-                        if (ex.ApiStatusCode == (int)ApiStatusCodeEnum.UnknownOrInaccessibleRecord)
-                        {
-                            logger
-                                .LogWarning(
-                                    "Image with user ID: {userId}, blob ID: {blobId} could not be found for deletion, continuing",
-                                    userId,
-                                    scan.BlobId
-                                );
-
-                            allDeleted = false;
-                        }
-                        else throw;
-                    }
-                }
+                var allDeleted =
+                    await
+                        DeleteScanFilesAsync(
+                            record.Scans,
+                            cancellationToken
+                        );
 
                 if (allDeleted)
                 {
@@ -375,15 +361,15 @@ namespace Rocket.Infrastructure
                         .LogInformation(
                             "Successfully deleted images for user ID: {userId}, batch ID: {id}",
                             userId,
-                            id
+                            batchId
                         );
 
                     var count =
                         await
                             executionRepository
-                                .DeleteExecutionsByScanIdAsync(
+                                .DeleteExecutionsByBatchIdAsync(
                                     userId,
-                                    id,
+                                    batchId,
                                     cancellationToken
                                 );
 
@@ -392,14 +378,14 @@ namespace Rocket.Infrastructure
                             "Successfully deleted {count} for user ID: {userId}, scan id: {id}",
                             count,
                             userId,
-                            id
+                            batchId
                         );
 
                     await
                         batchRepository
                             .DeleteBatchAsync(
                                 userId,
-                                id,
+                                batchId,
                                 cancellationToken
                             );
                 }
@@ -409,7 +395,7 @@ namespace Rocket.Infrastructure
                         .LogWarning(
                             "Image for user ID: {userId}, id: {id} was not deleted",
                             userId,
-                            id
+                            batchId
                         );
                 }
 
@@ -463,6 +449,44 @@ namespace Rocket.Infrastructure
 
                 throw;
             }
+        }
+
+        private async Task<bool> DeleteScanFilesAsync(
+            IEnumerable<ScannedImage> scans,
+            CancellationToken cancellationToken
+        )
+        {
+            var allDeleted = true;
+            foreach (var scan in scans ?? [])
+            {
+                try
+                {
+                    allDeleted &=
+                        await
+                            blobStore
+                                .DeleteImageAsync(
+                                    scan.BlobId,
+                                    scan.FileExtension,
+                                    cancellationToken
+                                );
+                }
+                catch (RocketException ex)
+                {
+                    if (ex.ApiStatusCode == (int)ApiStatusCodeEnum.UnknownOrInaccessibleRecord)
+                    {
+                        logger
+                            .LogWarning(
+                                "Image with blob ID: {blobId} could not be found for deletion, continuing",
+                                scan.BlobId
+                            );
+
+                        allDeleted = false;
+                    }
+                    else throw;
+                }
+            }
+
+            return allDeleted;
         }
     }
 }

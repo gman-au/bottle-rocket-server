@@ -228,7 +228,7 @@
                         .GetExecutionsAsync(
                             new FetchExecutionsRequest
                             {
-                                ScanId = Id,
+                                BatchId = Id,
                             }, BaseCancellationToken
                         ))?
                 .Executions;
@@ -376,7 +376,9 @@
         }
     }
 
-    private async Task DownloadFileAsync(string scanId)
+    private async Task DownloadFileAsync(
+        string scanId
+    )
     {
         try
         {
@@ -392,7 +394,7 @@
                             scanId,
                             BaseCancellationToken
                         );
-            
+
             var fileName = scan.Id;
             var contentType = scan.ContentType;
             var base64Data = scan?.ImageBase64;
@@ -430,7 +432,7 @@
             StateHasChanged();
         }
     }
-    
+
     private async Task ConfirmDeleteAsync(
         string id
     )
@@ -486,4 +488,6 @@
             }
         }
     }
+
+
 }

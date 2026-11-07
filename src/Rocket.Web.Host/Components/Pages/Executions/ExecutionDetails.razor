@@ -76,7 +76,7 @@
                                 <SimpleTableRowPair Title="@StringLocalizer["ExecutionsRunDateFieldHeader"]"
                                                     Value=@_currentModel?.RunDate?.ToString("g")/>
                                 <ComplexTableRowPair Title="@StringLocalizer["ExecutionsImageFieldHeader"]">
-                                    <MudLink Href=@($"/MyScans/{_currentModel.ScanId}")>
+                                    <MudLink Href=@($"/MyScans/{_currentModel.BatchId}")>
                                         <MudImage
                                             Class="mud-border-secondary border rounded"
                                             Src=@($"data:{_currentModel.ContentType};base64,{_currentModel.ThumbnailBase64}") Width="200"
@@ -393,7 +393,7 @@
 
     private async Task ConfirmDeleteAsync()
     {
-        var scanId = _currentModel.ScanId;
+        var batchId = _currentModel.BatchId;
 
         var dialog =
             await
@@ -429,7 +429,7 @@
                     );
 
                 NavigationManager
-                    .NavigateTo($"/MyScans/{scanId}");
+                    .NavigateTo($"/MyScans/{batchId}");
             }
             catch (Exception ex)
             {

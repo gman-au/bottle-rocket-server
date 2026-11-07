@@ -92,7 +92,7 @@ namespace Rocket.Infrastructure.Db.Mongo
 
         public async Task ArchiveBatchAsync(
             string userId,
-            string id,
+            string batchId,
             CancellationToken cancellationToken
         )
         {
@@ -110,7 +110,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                         .Filter
                         .Eq(
                             o => o.Id,
-                            id
+                            batchId
                         ),
                     cancellationToken
                 );

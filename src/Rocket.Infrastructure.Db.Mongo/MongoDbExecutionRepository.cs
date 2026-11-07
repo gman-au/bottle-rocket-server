@@ -31,7 +31,7 @@ namespace Rocket.Infrastructure.Db.Mongo
             string userId,
             int? startIndex,
             int? recordCount,
-            string scanId,
+            string batchId,
             string workflowId,
             CancellationToken cancellationToken
         )
@@ -44,14 +44,14 @@ namespace Rocket.Infrastructure.Db.Mongo
                         userId
                     );
 
-            if (!string.IsNullOrWhiteSpace(scanId))
+            if (!string.IsNullOrWhiteSpace(batchId))
             {
                 filter &=
                     Builders<Execution>
                         .Filter
                         .Eq(
-                            o => o.ScanId,
-                            scanId
+                            o => o.BatchId,
+                            batchId
                         );
             }
 
@@ -99,7 +99,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 );
 
-        public async Task<long> DeleteExecutionsByScanIdAsync(
+        public async Task<long> DeleteExecutionsByBatchIdAsync(
             string userId,
             string id,
             CancellationToken cancellationToken
@@ -117,7 +117,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                 Builders<Execution>
                     .Filter
                     .Eq(
-                        o => o.ScanId,
+                        o => o.BatchId,
                         id
                     );
 
@@ -435,6 +435,8 @@ namespace Rocket.Infrastructure.Db.Mongo
             var collection =
                 GetMongoCollection();
             
+            // TODO: fix
+            /*
             var results =
                 await
                     collection
@@ -453,6 +455,8 @@ namespace Rocket.Infrastructure.Db.Mongo
                         .ToListAsync(cancellationToken);
 
             return results;
+            */
+            return [];
         }
     }
 }

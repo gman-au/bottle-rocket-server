@@ -23,8 +23,6 @@ namespace Rocket.Domain.ScannedImages
         public string Sha256 { get; set; }
         
         public string ThumbnailBase64 { get; set; }
-
-        public bool Archived { get; set; }
         
         public string Vendor { get; set; }
         

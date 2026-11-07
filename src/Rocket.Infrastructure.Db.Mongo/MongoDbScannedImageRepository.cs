@@ -33,30 +33,6 @@ namespace Rocket.Infrastructure.Db.Mongo
                     cancellationToken
                 );
 
-        public async Task ArchiveScanAsync(
-            string userId,
-            string id,
-            CancellationToken cancellationToken
-        ) =>
-            await
-                ApplyUpdateToFilteredRecordFieldAsync(
-                    o => o.Archived,
-                    true,
-                    Builders<ScannedImage>
-                        .Filter
-                        .Eq(
-                            o => o.UserId,
-                            userId
-                        ) &
-                    Builders<ScannedImage>
-                        .Filter
-                        .Eq(
-                            o => o.Id,
-                            id
-                        ),
-                    cancellationToken
-                );
-
         public async Task UpdateScannedImageFieldAsync<TField>(
             string userId,
             string id,
@@ -82,31 +58,6 @@ namespace Rocket.Infrastructure.Db.Mongo
                         ),
                     cancellationToken
                 );
-
-        public async Task<(IEnumerable<ScannedImage> records, long totalRecordCount)> FetchScansAsync(
-            string userId,
-            int startIndex,
-            int recordCount,
-            CancellationToken cancellationToken
-        ) => await
-            FetchAllPagedAndFilteredRecordsAsync(
-                startIndex,
-                recordCount,
-                Builders<ScannedImage>
-                    .Filter
-                    .Eq(
-                        u => u.UserId,
-                        userId
-                    ) &
-                Builders<ScannedImage>
-                    .Filter
-                    .Eq(
-                        u => u.Archived,
-                        false
-                    ),
-                o => o.CaptureDate,
-                cancellationToken
-            );
 
         public async Task<ScannedImage> GetScanByIdAsync(
             string userId,

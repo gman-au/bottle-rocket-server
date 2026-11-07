@@ -31,7 +31,7 @@ namespace Rocket.Interfaces
 
         Task ArchiveBatchAsync(
             string userId,
-            string id,
+            string batchId,
             CancellationToken cancellationToken
         );
 

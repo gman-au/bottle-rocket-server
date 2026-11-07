@@ -13,7 +13,7 @@ namespace Rocket.Domain.Executions
         
         public string UserId { get; set; }
 
-        public string ScanId { get; set; }
+        public string BatchId { get; set; }
         
         public string WorkflowId { get; set; }
         

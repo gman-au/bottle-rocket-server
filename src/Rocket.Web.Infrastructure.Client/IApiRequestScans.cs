@@ -7,11 +7,6 @@ namespace Rocket.Web.Infrastructure.Client
 {
     public interface IApiRequestScans
     {
-        Task<MyScansResponse> GetMyScansAsync(
-            MyScansRequest request,
-            CancellationToken cancellationToken
-        );
-
         Task<ScanSpecifics> GetMyScanAsync(
             string batchId,
             string scanId,

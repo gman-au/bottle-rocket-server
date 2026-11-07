@@ -7,7 +7,7 @@ namespace Rocket.Interfaces
     {
         Task<string> ScheduleExecutionAsync(
             string workflowId,
-            string scanId,
+            string batchId,
             string userId,
             bool runImmediately,
             bool throwOnFailure,
