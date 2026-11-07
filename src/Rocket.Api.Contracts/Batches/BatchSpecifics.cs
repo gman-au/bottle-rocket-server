@@ -15,11 +15,17 @@ namespace Rocket.Api.Contracts.Batches
 
         [JsonPropertyName("status")]
         public int Status { get; set; }
+
+        [JsonPropertyName("description")]
+        public string Description { get; set; }
         
         [JsonPropertyName("scans")]
         public IEnumerable<ScanSummary> Scans { get; set; }
         
         [JsonPropertyName("scan_count")]
         public int ScanCount { get; set; }
+        
+        [JsonPropertyName("archived")]
+        public bool Archived { get; set; }
     }
 }

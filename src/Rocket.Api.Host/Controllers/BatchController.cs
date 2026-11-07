@@ -221,19 +221,10 @@ namespace Rocket.Api.Host.Controllers
                                 {
                                     Id = o.Id,
                                     DateScanned = o.CaptureDate.ToLocalTime(),
-                                    Scans =
-                                        o
-                                            .Scans
-                                            .Select(e =>
-                                                new ScanSummary
-                                                {
-                                                    Id = e.Id,
-                                                    Description = e.Description,
-                                                    DateScanned = e.CaptureDate,
-                                                    ContentType = e.ContentType,
-                                                    ThumbnailBase64 = e.ThumbnailBase64
-                                                }
-                                            )
+                                    Description = o.Description,
+                                    ScanCount = o.Scans.Count(),
+                                    CoverContentType = o.Scans.FirstOrDefault()?.ContentType,
+                                    CoverThumbnailBase64 = o.Scans.FirstOrDefault()?.ThumbnailBase64
                                 }
                             ),
                     TotalRecords = (int)totalRecordCount
@@ -254,7 +245,7 @@ namespace Rocket.Api.Host.Controllers
             """
         )]
         [ProducesResponseType(
-            typeof(ScanSpecifics),
+            typeof(BatchSpecifics),
             StatusCodes.Status200OK
         )]
         [ProducesResponseType(
@@ -295,13 +286,12 @@ namespace Rocket.Api.Host.Controllers
                             cancellationToken
                         );
 
-            // take the top 3 page thumbnails (the UI will collage them)
             var response =
                 new BatchSpecifics
                 {
                     Id = record.Id,
                     DateScanned = record.CaptureDate.ToLocalTime(),
-                    Status = record.Status,
+                    Description = record.Description,
                     Scans =
                         record
                             .Scans
@@ -310,12 +300,12 @@ namespace Rocket.Api.Host.Controllers
                                 {
                                     Id = o.Id,
                                     Description = o.Description,
-                                    DateScanned = o.CaptureDate,
+                                    DateScanned = o.CaptureDate.ToLocalTime(),
                                     ContentType = o.ContentType,
+                                    Vendor = o.Vendor,
                                     ThumbnailBase64 = o.ThumbnailBase64
                                 }
-                            )
-                            .Take(3),
+                            ),
                     ScanCount =
                         record
                             .Scans

@@ -16,6 +16,9 @@ namespace Rocket.Api.Contracts.Scans
         
         [JsonPropertyName("content_type")]
         public string ContentType { get; set; }
+
+        [JsonPropertyName("vendor")]
+        public string Vendor { get; set; }
         
         [JsonPropertyName("thumbnail_base64")]
         public string ThumbnailBase64 { get; set; }

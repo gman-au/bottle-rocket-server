@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Rocket.Api.Contracts.Scans;
 
 namespace Rocket.Api.Contracts.Batches
 {
@@ -12,8 +10,17 @@ namespace Rocket.Api.Contracts.Batches
         
         [JsonPropertyName("date_scanned")]
         public DateTime DateScanned { get; set; }
+
+        [JsonPropertyName("description")]
+        public string Description { get; set; }
         
-        [JsonPropertyName("scans")]
-        public IEnumerable<ScanSummary> Scans { get; set; }
+        [JsonPropertyName("scan_count")]
+        public int ScanCount { get; set; }
+        
+        [JsonPropertyName("cover_content_type")]
+        public string CoverContentType { get; set; }
+        
+        [JsonPropertyName("cover_thumbnail_base64")]
+        public string CoverThumbnailBase64 { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿@page "/MyScans"
 @using Microsoft.Extensions.Localization
+@using Rocket.Api.Contracts.Batches
 @using Rocket.Api.Contracts.Scans
 @using Rocket.Localization.Web
 @using Rocket.Web.Host.Components.Dialog
@@ -23,20 +24,19 @@
     @StringLocalizer["ScansListTitle"]
 </MudText>
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
-    @if ((_scans ?? []).Any())
+    @if ((_batches ?? []).Any())
     {
         <MudGrid Justify="Justify.FlexStart" Class="pa-4">
-            @foreach (var scan in _scans)
+            @foreach (var batch in _batches)
             {
                 <MudItem xs="12" sm="6" md="4" lg="3">
                     <MudCard Style="height:100%;" Outlined>
                         <MudCardMedia
                             Style="cursor:pointer;"
-                            @onclick="@(() => NavigationManager.NavigateTo($"/MyScans/{scan.Id}"))"
-                            Image=@($"data:{scan.ContentType};base64,{scan.ThumbnailBase64}") Width="200" Height="200"/>
+                            @onclick="@(() => NavigationManager.NavigateTo($"/MyScans/{batch.Id}"))"
+                            Image=@($"data:{batch.CoverContentType};base64,{batch.CoverThumbnailBase64}") Width="200" Height="200"/>
                         <MudCardContent>
-                            <MudText Typo="Typo.subtitle1">@(scan.Description)</MudText>
-                            <MudText Typo="Typo.caption">@(scan.DateScanned.ToString("g"))</MudText>
+                            <MudText Typo="Typo.caption">@(batch.DateScanned.ToString("g"))</MudText>
                         </MudCardContent>
                         <MudCardActions Class="justify-end">
                             <MudMenu Dense Icon="@StandardIcons.SubMenuIcon">
@@ -44,12 +44,12 @@
                                     Icon="@StandardIcons.InspectIcon"
                                     IconColor="Color.Secondary"
                                     Label="@StringLocalizer["ScansDetailsCaption"]"
-                                    @onclick="@(() => NavigationManager.NavigateTo($"/MyScans/{scan.Id}"))"
+                                    @onclick="@(() => NavigationManager.NavigateTo($"/MyScans/{batch.Id}"))"
                                 />
                                 <MudMenuItem
                                     Icon="@StandardIcons.DeleteIcon"
                                     Label="@StringLocalizer["ScansDeleteCaption"]"
-                                    OnClick="@(() => ConfirmDeleteAsync(scan.Id))"
+                                    OnClick="@(() => ConfirmDeleteAsync(batch.Id))"
                                 />
                             </MudMenu>
                         </MudCardActions>
@@ -64,7 +64,7 @@
                     Variant="Variant.Outlined"
                     Color="Color.Primary"
                     Disabled="@_noMoreRecords"
-                    @onclick="@(async () => await LoadScansAsync(
+                    @onclick="@(async () => await LoadBatchesAsync(
                                   _currentIndex,
                                   DefaultPageSize
                               ))">
@@ -90,7 +90,7 @@
     private bool _isConnected;
     private bool _noMoreRecords = false;
     private int _currentIndex = 0;
-    private IEnumerable<ScanSummary> _scans = [];
+    private IEnumerable<BatchSummary> _batches = [];
 
     protected override async Task OnAfterRenderAsync(
         bool firstRender
@@ -133,7 +133,7 @@
             _isLoading = true;
 
             await
-                LoadScansAsync(
+                LoadBatchesAsync(
                     _currentIndex,
                     DefaultPageSize
                 );
@@ -162,7 +162,7 @@
 
                         // new capture would be the most recent; get the latest record
                         await
-                            LoadScansAsync(
+                            LoadBatchesAsync(
                                 0,
                                 1
                             );
@@ -182,19 +182,19 @@
                     finally
                     {
                         _isLoading = false;
-                        StateHasChanged(); // Force UI update after loading
+                        StateHasChanged();
                     }
                 }
             );
     }
 
-    private async Task LoadScansAsync(
+    private async Task LoadBatchesAsync(
         int index,
         int count
     )
     {
         var request =
-            new MyScansRequest
+            new MyBatchesRequest
             {
                 StartIndex = index,
                 RecordCount = count
@@ -203,25 +203,25 @@
         var response =
             await
                 ApiRequestManager
-                    .Scans
-                    .GetMyScansAsync(
+                    .Batches
+                    .GetMyBatchesAsync(
                         request,
                         BaseCancellationToken
                     );
 
         _currentIndex +=
-            (response?.Scans ?? [])
+            (response?.Batches ?? [])
             .Count();
 
         _noMoreRecords = _currentIndex == (response?.TotalRecords ?? 0);
 
-        var existingScans = new List<ScanSummary>(_scans);
-        var newScans = new List<ScanSummary>(response?.Scans ?? []);
+        var existingBatches = new List<BatchSummary>(_batches);
+        var newBatches = new List<BatchSummary>(response?.Batches ?? []);
 
-        _scans =
-            existingScans
+        _batches =
+            existingBatches
                 .UnionBy(
-                    newScans,
+                    newBatches,
                     o => o.Id
                 )
                 .OrderByDescending(o => o.DateScanned);
@@ -252,14 +252,14 @@
 
                 await
                     ApiRequestManager
-                        .Scans
-                        .DeleteScanByIdAsync(
+                        .Batches
+                        .DeleteBatchByIdAsync(
                             id,
                             BaseCancellationToken
                         );
 
-                _scans =
-                    _scans
+                _batches =
+                    _batches
                         .Where(o => o.Id != id);
 
                 Snackbar
@@ -291,5 +291,5 @@
             CaptureHubClient
                 .StopAsync();
     }
-
+    
 }

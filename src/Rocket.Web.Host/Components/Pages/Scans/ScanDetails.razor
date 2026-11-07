@@ -1,7 +1,7 @@
 ﻿@page "/MyScans/{id}"
 @using Microsoft.Extensions.Localization
+@using Rocket.Api.Contracts.Batches
 @using Rocket.Api.Contracts.Executions
-@using Rocket.Api.Contracts.Scans
 @using Rocket.Api.Contracts.Workflows
 @using Rocket.Localization.Web
 @using Rocket.Web.Host.Components.Dialog
@@ -11,17 +11,16 @@
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
-@inject IJSRuntime JsRuntime
 @inject IStringLocalizer<ScansResource> StringLocalizer
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
     <MudPaper Class="p-4" elevation="2">
-        @if (_scanSpecifics != null)
+        @if (_batchSpecifics != null)
         {
             <MudGrid Class="pa-4" Justify="Justify.SpaceEvenly">
                 <MudItem xs="12" sm="6">
-                    @if (_scanSpecifics.Archived)
+                    @if (_batchSpecifics.Archived)
                     {
                         <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.Center" Style="height:100%;">
                             <MudIcon
@@ -40,10 +39,25 @@
                     }
                     else
                     {
-                        <MudImage
-                            Class="mud-paper mud-paper-outlined"
-                            src=@($"data:{_scanSpecifics.ContentType};base64,{_scanSpecifics.ImageBase64}")
-                            Fluid/>
+                        <div class="mud-border-secondary border p-4 rounded" id="scroll-images" style="height: 600px; overflow-y: auto;">
+                            <MudGrid Spacing="1" Justify="Justify.SpaceEvenly">
+                                @foreach (var scan in _batchSpecifics.Scans)
+                                {
+                                    <MudItem
+                                        Class="d-flex align-center justify-center"
+                                        xs="12" sm="12" md="12" lg="4" xl="4"
+                                    >
+                                        <MudImage
+                                            Class="mb-4 rounded"
+                                            src=@($"data:{scan.ContentType};base64,{scan.ThumbnailBase64}")
+                                            Fluid/>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                            <MudScrollToTop Selector="#scroll-images">
+                                <MudFab Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.ArrowCircleUp"/>
+                            </MudScrollToTop>
+                        </div>
                     }
                 </MudItem>
                 <MudItem xs="12" sm="6">
@@ -52,13 +66,15 @@
                         Justify="Justify.SpaceBetween"
                         StretchItems="StretchItems.Middle"
                         AlignItems="AlignItems.Start">
-                        <MudText
-                            Align="Align.Center"
-                            Typo="Typo.h4"
-                            Color="Color.Primary"
-                            Class="mb-4">
-                            @StringLocalizer["ScansDetailsTitle"]
-                        </MudText>
+                        <div style="width:100%;">
+                            <MudText
+                                Align="Align.Center"
+                                Typo="Typo.h4"
+                                Color="Color.Primary"
+                                Class="mb-4">
+                                @StringLocalizer["ScansDetailsTitle"]
+                            </MudText>
+                        </div>
                         <div style="width:100%;">
                             <MudSimpleTable
                                 Bordered
@@ -66,29 +82,18 @@
                                 <tbody>
                                 <SimpleTableRowPair
                                     Title="@StringLocalizer["ScansDescriptionFieldHeader"]"
-                                    Value=@_scanSpecifics.Description
-                                />
+                                    Value=@_batchSpecifics.Description/>
                                 <SimpleTableRowPair
                                     Title="@StringLocalizer["ScansCaptureDateFieldHeader"]"
-                                    Value=@_scanSpecifics.CaptureDate?.ToString("yyyy-MM-dd HH:mm:ss")
-                                />
-                                <SimpleTableRowPair
-                                    Title="@StringLocalizer["ScansContentTypeFieldHeader"]"
-                                    Value=@_scanSpecifics.ContentType
-                                />
+                                    Value=@_batchSpecifics.DateScanned.ToString("yyyy-MM-dd HH:mm:ss")/>
                                 <SimpleTableRowPair
                                     Title="@StringLocalizer["ScansStatusFieldHeader"]"
-                                    Value=@(_scanSpecifics.Archived ? StringLocalizer["ScansArchivedValue"] : StringLocalizer["ScansActiveValue"])
-                                    ValueColor="@(_scanSpecifics.Archived ? Color.Warning : Color.Success)"
-                                />
-                                <SimpleTableRowPair
-                                    Title="@StringLocalizer["ScansVendorFieldHeader"]"
-                                    Value=@(string.IsNullOrEmpty(_scanSpecifics.Vendor) ? StringLocalizer["ScansUnknownValue"] : _scanSpecifics.Vendor)
-                                />
+                                    Value=@(_batchSpecifics.Archived ? StringLocalizer["ScansArchivedValue"] : StringLocalizer["ScansActiveValue"])
+                                    ValueColor="@(_batchSpecifics.Archived ? Color.Warning : Color.Success)"/>
                                 </tbody>
                             </MudSimpleTable>
                         </div>
-                        @if (!_scanSpecifics.Archived)
+                        @if (!_batchSpecifics.Archived)
                         {
                             <div class="mud-border-tertiary border p-4 rounded">
                                 <MudText
@@ -138,7 +143,7 @@
                                 <MudButton
                                     Variant="Variant.Outlined"
                                     Color="Color.Info"
-                                    Disabled="@(_scanSpecifics.Archived)"
+                                    Disabled="@(_batchSpecifics.Archived)"
                                     OnClick="@(async () => await DownloadFileAsync())">
                                     @StringLocalizer["ScansDownloadCaption"]
                                 </MudButton>
@@ -165,7 +170,7 @@
 
 @code {
     private bool _isLoading;
-    private ScanSpecifics _scanSpecifics = null;
+    private BatchSpecifics _batchSpecifics = null;
     private string _workflowIdToTrigger = null;
 
     [Parameter]
@@ -185,11 +190,11 @@
             _isLoading = true;
             StateHasChanged();
 
-            _scanSpecifics =
+            _batchSpecifics =
                 await
                     ApiRequestManager
-                        .Scans
-                        .GetMyScanAsync(
+                        .Batches
+                        .GetMyBatchAsync(
                             Id,
                             BaseCancellationToken
                         );
@@ -317,10 +322,11 @@
     {
         try
         {
-            var fileName = _scanSpecifics.Id;
-            var contentType = _scanSpecifics.ContentType;
+            // TODO
+            /*var fileName = _batchSpecifics.Id;
+            var contentType = _batchSpecifics.ContentType;
 
-            var base64Data = _scanSpecifics?.ImageBase64;
+            var base64Data = _batchSpecifics?.ImageBase64;
 
             if (!string.IsNullOrEmpty(base64Data))
             {
@@ -341,7 +347,7 @@
             else
             {
                 throw new Exception(StringLocalizer["ScansNoFileDataError"].Value);
-            }
+            }*/
         }
         catch (Exception ex)
         {
