@@ -70,19 +70,11 @@ namespace Rocket.Api.Host.Controllers
                     userId
                 );
 
-            var batch = new Batch
-            {
-                UserId = userId,
-                CaptureDate = DateTime.UtcNow,
-                Status = (int)BatchStatusEnum.Open,
-                Scans = []
-            };
-
-            batch =
+            var batch =
                 await
-                    batchRepository
-                        .InsertBatchAsync(
-                            batch,
+                    batchHandler
+                        .OpenAsync(
+                            userId,
                             cancellationToken
                         );
 
@@ -137,17 +129,15 @@ namespace Rocket.Api.Host.Controllers
                 );
 
             await
-                batchRepository
-                    .UpdateBatchFieldAsync(
+                batchHandler
+                    .CloseAsync(
                         userId,
                         request.Id,
-                        o => o.Status,
-                        (int)BatchStatusEnum.Closed,
                         cancellationToken
                     );
 
             // TODO: trigger workflows if required
-            
+
             var response =
                 new CloseBatchResponse
                 {
@@ -223,8 +213,10 @@ namespace Rocket.Api.Host.Controllers
                                     DateScanned = o.CaptureDate.ToLocalTime(),
                                     Description = o.Description,
                                     ScanCount = o.Scans.Count(),
-                                    CoverContentType = o.Scans.FirstOrDefault()?.ContentType,
-                                    CoverThumbnailBase64 = o.Scans.FirstOrDefault()?.ThumbnailBase64
+                                    CoverContentType = o.Scans.FirstOrDefault()
+                                        ?.ContentType,
+                                    CoverThumbnailBase64 = o.Scans.FirstOrDefault()
+                                        ?.ThumbnailBase64
                                 }
                             ),
                     TotalRecords = (int)totalRecordCount

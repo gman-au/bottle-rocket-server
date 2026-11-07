@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Rocket.Domain.Batches;
 using Rocket.Domain.ScannedImages;
 
 namespace Rocket.Interfaces
@@ -13,6 +14,17 @@ namespace Rocket.Interfaces
             string userId,
             string vendor,
             string description,
+            string batchId,
+            CancellationToken cancellationToken
+        );
+
+        Task<Batch> OpenAsync(
+            string userId,
+            CancellationToken cancellationToken
+        );
+
+        Task CloseAsync(
+            string userId,
             string batchId,
             CancellationToken cancellationToken
         );

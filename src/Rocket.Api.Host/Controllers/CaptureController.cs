@@ -23,7 +23,6 @@ namespace Rocket.Api.Host.Controllers
     [Authorize]
     [Route("/api/capture")]
     public class CaptureController(
-        IScannedImageHandler scannedImageHandler,
         IBatchHandler batchHandler,
         ICaptureNotifier captureNotifier,
         IWorkflowDetector workflowDetector,
@@ -40,6 +39,7 @@ namespace Rocket.Api.Host.Controllers
             Process uploaded images via this endpoint. Use the url-encoded multipart form schema to POST the image data.\n
             You can bind this scanned image to one or more workflows using the workflows parameter.\n
             Include the batch ID in order to add the scanned image to the batch without processing any workflows.\n
+            If no batch ID is provided, the scanned image will be allocated to a single batch.\n
             If you wish to simply upload a captured image to the system and trigger a manual workflow, the qr_code and qr_bounding_box
             parameters can be omitted.
             """
@@ -62,10 +62,11 @@ namespace Rocket.Api.Host.Controllers
                 .LogInformation("Received capture");
 
             var noteDescription = localizer["ScanUntitledNoteDescription"]?.Value;
-            
+
             var userId =
                 User
-                    .FindFirst(ClaimTypes.NameIdentifier)?
+                    .FindFirst(ClaimTypes.NameIdentifier)
+                    ?
                     .Value;
 
             if (string.IsNullOrEmpty(userId))
@@ -97,7 +98,7 @@ namespace Rocket.Api.Host.Controllers
             var scanId = string.Empty;
 
             var batchId = model.BatchId;
-            
+
             foreach (var formFile in formFiles)
             {
                 using var ms = new MemoryStream();
@@ -117,23 +118,51 @@ namespace Rocket.Api.Host.Controllers
                             cancellationToken
                         );
 
-                if (string.IsNullOrEmpty(batchId))
+                var singleScanBatch =
+                    string
+                        .IsNullOrEmpty(batchId);
+
+                if (singleScanBatch)
                 {
-                    var result =
+                    var batch =
                         await
-                            scannedImageHandler
-                                .WriteAsync(
-                                    ms.ToArray(),
-                                    contentType,
-                                    fileExtension,
+                            batchHandler
+                                .OpenAsync(
                                     userId,
-                                    model.Vendor,
-                                    noteDescription,
                                     cancellationToken
                                 );
-                    
-                    scanId = result.Id;
 
+                    batchId = batch.Id;
+                }
+
+                // add image to the batch
+                var result =
+                    await
+                        batchHandler
+                            .WriteAsync(
+                                ms.ToArray(),
+                                contentType,
+                                fileExtension,
+                                userId,
+                                model.Vendor,
+                                noteDescription,
+                                batchId,
+                                cancellationToken
+                            );
+
+                scanId = result.Id;
+
+                if (singleScanBatch)
+                {
+                    // close the batch
+                    await
+                        batchHandler
+                            .CloseAsync(
+                                userId,
+                                batchId,
+                                cancellationToken
+                            );
+                    
                     var workflowIds = model.Workflows ?? [];
 
                     await
@@ -153,31 +182,13 @@ namespace Rocket.Api.Host.Controllers
                                 cancellationToken
                             );
                 }
-                else
-                {
-                    // add image to the batch, don't process any workflows
-                    var result =
-                        await
-                            batchHandler
-                                .WriteAsync(
-                                    ms.ToArray(),
-                                    contentType,
-                                    fileExtension,
-                                    userId,
-                                    model.Vendor,
-                                    noteDescription,
-                                    batchId,
-                                    cancellationToken
-                                );
-                    
-                    scanId = result.Id;
-                }
             }
 
             var response =
                 new ProcessCaptureResponse
                 {
-                    Id = scanId
+                    ScanId = scanId,
+                    BatchId = batchId
                 };
 
             dashboardSnapshotProvider

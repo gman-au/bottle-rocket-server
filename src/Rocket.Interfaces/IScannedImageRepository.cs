@@ -35,12 +35,6 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
-        Task DeleteScanAsync(
-            string userId,
-            string id,
-            CancellationToken cancellationToken
-        );
-
         Task UpdateScannedImageFieldAsync<TField>(
             string userId,
             string id,

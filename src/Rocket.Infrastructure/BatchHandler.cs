@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Rocket.Domain.Batches;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.ScannedImages;
@@ -32,7 +33,7 @@ namespace Rocket.Infrastructure
         {
             logger
                 .LogInformation("Writing image data to store and repository");
-            
+
             try
             {
                 if ((imageData ?? []).Length == 0)
@@ -185,6 +186,50 @@ namespace Rocket.Infrastructure
             }
         }
 
+        public async Task<Batch> OpenAsync(
+            string userId,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation(
+                    "Opening new batch for user ID: {userId}",
+                    userId
+                );
+
+            try
+            {
+                var batch =
+                    new Batch
+                    {
+                        UserId = userId,
+                        CaptureDate = DateTime.UtcNow,
+                        Status = (int)BatchStatusEnum.Open,
+                        Scans = []
+                    };
+
+                batch =
+                    await
+                        batchRepository
+                            .InsertBatchAsync(
+                                batch,
+                                cancellationToken
+                            );
+
+                return batch;
+            }
+            catch (Exception ex)
+            {
+                logger
+                    .LogError(
+                        "There was an error opening a new batch: {error}",
+                        ex.Message
+                    );
+
+                throw;
+            }
+        }
+
         public async Task<bool> ArchiveAsync(
             string userId,
             string id,
@@ -280,8 +325,8 @@ namespace Rocket.Infrastructure
             {
                 var record =
                     await
-                        scannedImageRepository
-                            .GetScanByIdAsync(
+                        batchRepository
+                            .GetBatchByIdAsync(
                                 userId,
                                 id,
                                 cancellationToken
@@ -293,39 +338,42 @@ namespace Rocket.Infrastructure
                         ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                     );
 
-                var deleted = false;
-                try
+                var allDeleted = true;
+                foreach (var scan in record.Scans ?? [])
                 {
-                    deleted =
-                        await
-                            blobStore
-                                .DeleteImageAsync(
-                                    record.BlobId,
-                                    record.FileExtension,
-                                    cancellationToken
-                                );
-                }
-                catch (RocketException ex)
-                {
-                    if (ex.ApiStatusCode == (int)ApiStatusCodeEnum.UnknownOrInaccessibleRecord)
+                    try
                     {
-                        logger
-                            .LogWarning(
-                                "Image with user ID: {userId}, blob ID: {blobId} could not be found for deletion, continuing",
-                                userId,
-                                record.BlobId
-                            );
-                        
-                        deleted = true;
+                        allDeleted &=
+                            await
+                                blobStore
+                                    .DeleteImageAsync(
+                                        scan.BlobId,
+                                        scan.FileExtension,
+                                        cancellationToken
+                                    );
                     }
-                    else throw;
+                    catch (RocketException ex)
+                    {
+                        if (ex.ApiStatusCode == (int)ApiStatusCodeEnum.UnknownOrInaccessibleRecord)
+                        {
+                            logger
+                                .LogWarning(
+                                    "Image with user ID: {userId}, blob ID: {blobId} could not be found for deletion, continuing",
+                                    userId,
+                                    scan.BlobId
+                                );
+
+                            allDeleted = false;
+                        }
+                        else throw;
+                    }
                 }
 
-                if (deleted)
+                if (allDeleted)
                 {
                     logger
                         .LogInformation(
-                            "Successfully deleted image for user ID: {userId}, id: {id}",
+                            "Successfully deleted images for user ID: {userId}, batch ID: {id}",
                             userId,
                             id
                         );
@@ -348,8 +396,8 @@ namespace Rocket.Infrastructure
                         );
 
                     await
-                        scannedImageRepository
-                            .DeleteScanAsync(
+                        batchRepository
+                            .DeleteBatchAsync(
                                 userId,
                                 id,
                                 cancellationToken
@@ -365,13 +413,51 @@ namespace Rocket.Infrastructure
                         );
                 }
 
-                return deleted;
+                return allDeleted;
             }
             catch (Exception ex)
             {
                 logger
                     .LogError(
                         "There was an error deleting the scanned image: {error}",
+                        ex.Message
+                    );
+
+                throw;
+            }
+        }
+
+        public async Task CloseAsync(
+            string userId,
+            string batchId,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation(
+                    "Closing batch for user ID: {userId}, batch ID: {batchId}",
+                    userId,
+                    batchId
+                );
+
+            try
+            {
+                await
+                    batchRepository
+                        .UpdateBatchFieldAsync(
+                            userId,
+                            batchId,
+                            o => o.Status,
+                            (int)BatchStatusEnum.Closed,
+                            cancellationToken
+                        );
+            }
+            catch (Exception ex)
+            {
+                logger
+                    .LogError(
+                        "There was an error closing batch ID: {batchId}, error: {error}",
+                        batchId,
                         ex.Message
                     );
 
