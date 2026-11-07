@@ -11,7 +11,7 @@ using Rocket.Domain.Dashboard;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.ScannedImages;
-using Rocket.Domain.Workflows;
+using Rocket.Infrastructure.Db.Mongo.Extensions;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Db.Mongo
@@ -69,6 +69,12 @@ namespace Rocket.Infrastructure.Db.Mongo
                     .Ne(
                         u => u.Status,
                         (int)BatchStatusEnum.Archived
+                    ) &
+                Builders<Batch>
+                    .Filter
+                    .SizeGt(
+                        u => u.Scans,
+                        0
                     ),
                 o => o.CaptureDate,
                 cancellationToken
@@ -251,6 +257,57 @@ namespace Rocket.Infrastructure.Db.Mongo
                     );
 
             return scannedImage;
+        }
+
+        public async Task<ScannedImage> GetScanByIdAsync(
+            string userId,
+            string batchId,
+            string scanId,
+            CancellationToken cancellationToken
+        )
+        {
+            var batch =
+                await
+                    GetBatchByIdAsync(
+                        userId,
+                        batchId,
+                        cancellationToken
+                    );
+
+            return
+                (batch?.Scans)
+                .FindScanById(
+                    scanId
+                );
+        }
+
+
+        public async Task DeleteScanByIdAsync(
+            string userId,
+            string batchId,
+            string scanId,
+            CancellationToken cancellationToken
+        )
+        {
+            var batch =
+                await
+                    GetBatchByIdAsync(
+                        userId,
+                        batchId,
+                        cancellationToken
+                    );
+
+            batch
+                .DeleteScanById(scanId);
+
+            await
+                UpdateBatchFieldAsync(
+                    userId,
+                    batchId,
+                    o => o.Scans,
+                    batch.Scans,
+                    cancellationToken
+                );
         }
 
         private static FilterDefinition<Batch> BuildBatchFilterByIdAndUserId(

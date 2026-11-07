@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Rocket.Domain;
 using Rocket.Domain.Batches;
 using Rocket.Domain.ScannedImages;
 

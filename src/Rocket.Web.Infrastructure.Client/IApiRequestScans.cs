@@ -13,12 +13,14 @@ namespace Rocket.Web.Infrastructure.Client
         );
 
         Task<ScanSpecifics> GetMyScanAsync(
-            string id,
+            string batchId,
+            string scanId,
             CancellationToken cancellationToken
         );        
         
         Task<ApiResponse> DeleteScanByIdAsync(
-            string id,
+            string batchId,
+            string scanId,
             CancellationToken cancellationToken
         );
     }

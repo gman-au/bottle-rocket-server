@@ -32,5 +32,6 @@ namespace Rocket.Web.Host
         public const string CloneIcon = Icons.Material.Filled.CopyAll;
         public const string RevokeIcon = Icons.Material.Filled.PersonOff;
         public const string SessionsIcon = Icons.Material.Filled.Devices;
+        public const string DownloadIcon = Icons.Material.Filled.Download;
     }
 }

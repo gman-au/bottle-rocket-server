@@ -55,7 +55,8 @@ namespace Rocket.Web.Infrastructure.Client
         }
 
         public async Task<ScanSpecifics> GetMyScanAsync(
-            string id,
+            string batchId,
+            string scanId,
             CancellationToken cancellationToken
         )
         {
@@ -66,7 +67,7 @@ namespace Rocket.Web.Infrastructure.Client
                 await
                     AuthenticatedApiClient
                         .GetAsync(
-                            $"/api/scans/{id}",
+                            $"/api/scans/{batchId}/{scanId}",
                             cancellationToken
                         );
 
@@ -86,7 +87,8 @@ namespace Rocket.Web.Infrastructure.Client
         }
 
         public async Task<ApiResponse> DeleteScanByIdAsync(
-            string id,
+            string batchId,
+            string scanId,
             CancellationToken cancellationToken
         )
         {
@@ -97,7 +99,7 @@ namespace Rocket.Web.Infrastructure.Client
                 await
                     AuthenticatedApiClient
                         .DeleteAsync(
-                            $"/api/scans/delete/{id}",
+                            $"/api/scans/delete/{batchId}/{scanId}",
                             cancellationToken
                         );
 

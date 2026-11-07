@@ -87,16 +87,15 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Scans =
                         records
-                            .Select(
-                                o =>
-                                    new ScanSummary
-                                    {
-                                        Id = o.Id,
-                                        Description = o.Description,
-                                        DateScanned = o.CaptureDate.ToLocalTime(),
-                                        ThumbnailBase64 = o.ThumbnailBase64,
-                                        ContentType = o.ContentType
-                                    }
+                            .Select(o =>
+                                new ScanSummary
+                                {
+                                    Id = o.Id,
+                                    Description = o.Description,
+                                    DateScanned = o.CaptureDate.ToLocalTime(),
+                                    ThumbnailBase64 = o.ThumbnailBase64,
+                                    ContentType = o.ContentType
+                                }
                             ),
                     TotalRecords = (int)totalRecordCount
                 };
@@ -106,12 +105,12 @@ namespace Rocket.Api.Host.Controllers
                     .AsApiSuccess();
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{batchId}/{scanId}")]
         [EndpointSummary("Fetch the user scan details")]
         [EndpointGroupName("Manage captures / scans")]
         [EndpointDescription(
             """
-            Retrieves the full details of a users scan by its unique ID.\n
+            Retrieves the full details of a users scan by its unique ID and batch ID.\n
             The full image data is provided as well as other capture and processing details. 
             """
         )]
@@ -125,7 +124,8 @@ namespace Rocket.Api.Host.Controllers
         )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> FetchMyScanAsync(
-            string id,
+            string batchId,
+            string scanId,
             CancellationToken cancellationToken
         )
         {
@@ -144,15 +144,16 @@ namespace Rocket.Api.Host.Controllers
                 .LogInformation(
                     "Received fetch scan request for username: {userId}, id: {id}",
                     userId,
-                    id
+                    scanId
                 );
 
             var (record, imageData) =
                 await
                     scannedImageHandler
-                        .ReadAsync(
+                        .ReadFromBatchAsync(
                             userId,
-                            id,
+                            batchId,
+                            scanId,
                             cancellationToken
                         );
 
@@ -239,7 +240,7 @@ namespace Rocket.Api.Host.Controllers
                     .AsApiSuccess();
         }
 
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("delete/{batchId}/{scanId}")]
         [EndpointSummary("(Permanently) delete a scan")]
         [EndpointGroupName("Manage captures / scans")]
         [EndpointDescription(
@@ -258,7 +259,8 @@ namespace Rocket.Api.Host.Controllers
         )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> DeleteScanAsync(
-            string id,
+            string batchId,
+            string scanId,
             CancellationToken cancellationToken
         )
         {
@@ -274,20 +276,21 @@ namespace Rocket.Api.Host.Controllers
                 .LogInformation(
                     "Received (manual) deletion request for username: {userId}, id: {id}",
                     userId,
-                    id
+                    scanId
                 );
 
             await
                 scannedImageHandler
-                    .DeleteAsync(
+                    .DeleteFromBatchAsync(
                         userId,
-                        id,
+                        batchId,
+                        scanId,
                         cancellationToken
                     );
 
             var response =
                 new DeleteScanResponse();
-            
+
             dashboardSnapshotProvider
                 .MarkAsDirty(userId);
 

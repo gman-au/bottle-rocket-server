@@ -18,7 +18,7 @@ namespace Rocket.Interfaces
 
         Task<(ScannedImage record, byte[] imageData)> ReadAsync(
             string userId,
-            string id,
+            string scanId,
             CancellationToken cancellationToken
         );
 
@@ -27,10 +27,18 @@ namespace Rocket.Interfaces
             string id,
             CancellationToken cancellationToken
         );
-
-        Task<bool> DeleteAsync(
+        
+        Task<(ScannedImage record, byte[] imageData)> ReadFromBatchAsync(
             string userId,
-            string id,
+            string batchId,
+            string scanId,
+            CancellationToken cancellationToken
+        );
+
+        Task<bool> DeleteFromBatchAsync(
+            string userId,
+            string batchId,
+            string scanId,
             CancellationToken cancellationToken
         );
     }

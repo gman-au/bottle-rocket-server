@@ -37,6 +37,7 @@
                             Image=@($"data:{batch.CoverContentType};base64,{batch.CoverThumbnailBase64}") Width="200" Height="200"/>
                         <MudCardContent>
                             <MudText Typo="Typo.caption">@(batch.DateScanned.ToString("g"))</MudText>
+                            <MudText Typo="Typo.h6" Color="Color.Primary">@batch.ScanCount @StringLocalizer["ScansPagesCaption"]</MudText>
                         </MudCardContent>
                         <MudCardActions Class="justify-end">
                             <MudMenu Dense Icon="@StandardIcons.SubMenuIcon">

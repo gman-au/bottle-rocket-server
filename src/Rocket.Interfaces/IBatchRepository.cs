@@ -60,5 +60,19 @@ namespace Rocket.Interfaces
             string userId,
             CancellationToken cancellationToken
         );
+
+        Task<ScannedImage> GetScanByIdAsync(
+            string userId,
+            string batchId,
+            string scanId,
+            CancellationToken cancellationToken
+        );
+
+        Task DeleteScanByIdAsync(
+            string userId,
+            string batchId,
+            string scanId,
+            CancellationToken cancellationToken
+        );
     }
 }
