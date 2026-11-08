@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using MongoDB.Bson;
+using Rocket.Domain.Batches;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Workflows;
@@ -11,24 +13,18 @@ namespace Rocket.Infrastructure.Mapping
     {
         public Execution Clone(
             Workflow workflow,
-            string batchId, 
-            string coverThumbnailBase64,
-            string scanContentType,
-            string scanVendor
+            Batch batch
         )
         {
             return new Execution
             {
                 UserId = workflow.UserId,
-                BatchId = batchId,
-                ThumbnailBase64 = coverThumbnailBase64,
-                ContentType = scanContentType,
+                BatchId = batch.Id,
                 WorkflowId = workflow.Id,
                 CreatedAt = DateTime.UtcNow,
                 RunDate = null,
                 Archived = false,
                 Name = workflow.Name,
-                Vendor = scanVendor,
                 ExecutionStatus = (int)ExecutionStatusEnum.NotRun,
                 Steps =
                     (workflow.Steps ?? [])
@@ -42,7 +38,21 @@ namespace Rocket.Infrastructure.Mapping
                                 mapper
                                     .Clone(o);
                         }
-                    )
+                    ),
+                    Elements = 
+                        (batch.Scans ?? [])
+                        .Select(o =>
+                            new ExecutionElement
+                            {
+                                Id = ObjectId.GenerateNewId().ToString(),
+                                ScanId = o.Id,
+                                ExecutionStatus = (int)ExecutionStatusEnum.NotRun,
+                                LogMessages = [],
+                                ThumbnailBase64 = o.ThumbnailBase64,
+                                ContentType = o.ContentType,
+                                Vendor = o.Vendor
+                            }
+                        )
             };
         }
     }

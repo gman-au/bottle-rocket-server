@@ -63,6 +63,7 @@ namespace Rocket.Interfaces
             string executionId,
             string userId,
             string logMessage,
+            string scanId,
             CancellationToken cancellationToken
         );
 

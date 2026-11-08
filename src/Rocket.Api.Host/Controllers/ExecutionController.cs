@@ -90,10 +90,7 @@ namespace Rocket.Api.Host.Controllers
                                     RunDate = o.RunDate?.ToLocalTime(),
                                     Name = o.Name,
                                     ExecutionStatus = o.ExecutionStatus,
-                                    ThumbnailBase64 = o.ThumbnailBase64,
-                                    Archived = o.Archived,
-                                    ContentType = o.ContentType,
-                                    Vendor = o.Vendor
+                                    Archived = o.Archived
                                 }
                             ),
                     TotalRecords = (int)totalRecordCount
@@ -214,7 +211,7 @@ namespace Rocket.Api.Host.Controllers
                     executionScheduler
                         .ScheduleExecutionAsync(
                             request.WorkflowId,
-                            request.ScanId,
+                            request.BatchId,
                             userId,
                             request.RunImmediately ?? false,
                             throwOnFailure: true,
@@ -447,7 +444,6 @@ namespace Rocket.Api.Host.Controllers
                     CreatedAt = execution.CreatedAt.ToLocalTime(),
                     Name = execution.Name,
                     ExecutionStatus = execution.ExecutionStatus,
-                    ThumbnailBase64 = execution.ThumbnailBase64,
                     Archived = execution.Archived,
                     Steps =
                         (execution.Steps ?? [])
@@ -460,6 +456,20 @@ namespace Rocket.Api.Host.Controllers
                                 return
                                     mapper
                                         .From(o);
+                            }
+                        ),
+                    Elements = 
+                        (execution.Elements ?? [])
+                        .Select(o => 
+                            new ExecutionElementSummary
+                            {
+                                Id = o.Id,
+                                ScanId = o.ScanId,
+                                ExecutionStatus = o.ExecutionStatus,
+                                LogMessages = o.LogMessages,
+                                ThumbnailBase64 = o.ThumbnailBase64,
+                                ContentType = o.ContentType,
+                                Vendor = o.Vendor
                             }
                         )
                 };

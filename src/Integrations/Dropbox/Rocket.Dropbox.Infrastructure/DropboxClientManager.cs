@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +10,9 @@ using Dropbox.Api.Files;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Dropbox.Domain;
+using Rocket.Integrations.Domain;
+using Rocket.Interfaces;
 
 namespace Rocket.Dropbox.Infrastructure
 {
@@ -15,6 +20,8 @@ namespace Rocket.Dropbox.Infrastructure
         ILogger<DropboxClientManager> logger
     ) : IDropboxClientManager
     {
+        private const int MaxConcurrentUploads = 10;
+
         public string GetAuthorizeUrl(
             string appKey
         )
@@ -81,21 +88,20 @@ namespace Rocket.Dropbox.Infrastructure
             }
         }
 
-        public async Task<string> UploadFileAsync(
+        public async Task<string> UploadFilesAsync(
             string appKey,
             string appSecret,
             string refreshToken,
             string uploadFolder,
-            string fileName,
-            string fileExtension,
-            byte[] fileData,
+            IEnumerable<DropboxFile> files,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {
             try
             {
                 logger
-                    .LogInformation("Uploading file to Dropbox");
+                    .LogInformation("Uploading files to Dropbox");
 
                 cancellationToken
                     .ThrowIfCancellationRequested();
@@ -107,26 +113,82 @@ namespace Rocket.Dropbox.Infrastructure
                         appSecret
                     );
 
-                using var stream = new MemoryStream(fileData);
+                using var throttle = new SemaphoreSlim(MaxConcurrentUploads);
 
-                var path =
-                    $"{((uploadFolder ?? string.Empty).StartsWith('/') ? null : '/')}{uploadFolder}" +
-                    $"{(string.IsNullOrEmpty(uploadFolder) ? string.Empty : "/")}{fileName}{fileExtension}";
+                var tasks = files.Select(async file =>
+                    {
+                        await
+                            throttle
+                                .WaitAsync(cancellationToken);
 
-                var fileMetadata =
-                    await
-                        dbx
-                            .Files
-                            .UploadAsync(
-                                path: path,
-                                mode: WriteMode.Add.Instance,
-                                autorename: true,
-                                body: stream
-                            );
+                        try
+                        {
+                            using var stream = new MemoryStream(file.Artifact);
+
+                            var path =
+                                $"{((uploadFolder ?? string.Empty).StartsWith('/') ? null : '/')}{uploadFolder}" +
+                                $"{(string.IsNullOrEmpty(uploadFolder) ? string.Empty : "/")}{file.FileName}{file.FileExtension}";
+
+                            var result =
+                                await
+                                    dbx
+                                        .Files
+                                        .UploadAsync(
+                                            path: path,
+                                            mode: WriteMode.Overwrite.Instance,
+                                            autorename: true,
+                                            body: stream
+                                        );
+
+                            await
+                                jobControl
+                                    .AppendLogMessageCallback(
+                                        new JobLogEntry
+                                        {
+                                            ExecutionStepId = file.ExecutionStepId,
+                                            ScanId = file.ScanId,
+                                            LogMessage = $"File uploaded: {file.FileName}{file.FileExtension}, Dropbox ID: {result.Id}"
+                                        }
+                                    );
+
+                            await
+                                jobControl
+                                    .UpdateStepStatusCallback(
+                                        new JobStatusEntry
+                                        {
+                                            ExecutionStatus = (int)ExecutionStatusEnum.Completed,
+                                            ScanId = file.ScanId,
+                                            Exception = null
+                                        }
+                                    );
+                        }
+                        catch (Exception ex)
+                        {
+                            await
+                                jobControl
+                                    .UpdateStepStatusCallback(
+                                        new JobStatusEntry
+                                        {
+                                            ExecutionStatus = (int)ExecutionStatusEnum.Errored,
+                                            ScanId = file.ScanId,
+                                            Exception = ex
+                                        }
+                                    );
+                        }
+                        finally
+                        {
+                            throttle
+                                .Release();
+                        }
+                    }
+                );
+
+                await
+                    Task
+                        .WhenAll(tasks);
 
                 return
-                    fileMetadata?
-                        .Name;
+                    "TODO";
             }
             catch (DropboxException ex)
             {

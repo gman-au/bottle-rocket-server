@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading;
@@ -13,7 +12,6 @@ using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Batches;
 using Rocket.Api.Contracts.Scans;
 using Rocket.Api.Host.Extensions;
-using Rocket.Domain.Batches;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Interfaces;

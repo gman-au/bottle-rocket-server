@@ -4,7 +4,7 @@ using Rocket.Domain.Enum;
 
 namespace Rocket.Domain.Jobs
 {
-    public class ExecutionStepArtifact
+    public record ExecutionStepArtifact
     {
         private string _fileName = Guid.NewGuid().ToString();
         

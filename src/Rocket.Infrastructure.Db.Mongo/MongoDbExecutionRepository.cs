@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using MongoDB.Driver.Linq;
 using Rocket.Domain.Dashboard;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
@@ -167,6 +166,7 @@ namespace Rocket.Infrastructure.Db.Mongo
             string executionId,
             string userId,
             string logMessage,
+            string scanId,
             CancellationToken cancellationToken
         )
         {
@@ -210,6 +210,29 @@ namespace Rocket.Infrastructure.Db.Mongo
                 );
 
             execution.Steps = modifiedSteps;
+
+            await
+                GetMongoCollection()
+                    .ReplaceOneAsync(
+                        filter,
+                        execution,
+                        cancellationToken: cancellationToken
+                    );
+
+            if (string.IsNullOrEmpty(scanId)) return execution;
+            
+            if (!BaseExecutionElementEx.AppendLogMessageForScanId(
+                    execution.Elements,
+                    scanId,
+                    logMessage,
+                    out var modifiedElements
+                ))
+                throw new RocketException(
+                    $"Could not find execution scan record with id [{executionStepId}]",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
+            execution.Elements = modifiedElements;
 
             await
                 GetMongoCollection()

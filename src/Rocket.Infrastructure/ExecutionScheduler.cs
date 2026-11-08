@@ -95,32 +95,11 @@ namespace Rocket.Infrastructure
                         ApiStatusCodeEnum.NoAttachmentsFound
                     );
 
-                var coverThumbnailBase64 =
-                    batch
-                        .Scans
-                        .First()
-                        .ThumbnailBase64;
-                
-                var coverContentType =
-                    batch
-                        .Scans
-                        .First()
-                        .ContentType;
-                
-                var coverVendor =
-                    batch
-                        .Scans
-                        .First()
-                        .Vendor;
-
                 var newExecution =
                     workflowCloner
                         .Clone(
                             workflow,
-                            batch.Id,
-                            coverThumbnailBase64,
-                            coverContentType,
-                            coverVendor
+                            batch
                         );
 
                 var result =

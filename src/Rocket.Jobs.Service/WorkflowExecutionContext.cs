@@ -8,6 +8,7 @@ using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Interfaces;
+using Rocket.Jobs.Service.Extensions;
 
 namespace Rocket.Jobs.Service
 {
@@ -40,21 +41,29 @@ namespace Rocket.Jobs.Service
                     ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                 );
 
+            var elements =
+                scanData
+                    .Select(o =>
+                        new ArtifactDataElement
+                        {
+                            Artifact = o.Value,
+                            FileExtension = o.Key.FileExtension,
+                            ScanId = o.Key.Id,
+                            FileName = o.Key.Description
+                        }
+                    );
+            
+            elements =
+                elements
+                    .ToArray()
+                    .EnumerateUniquely();
+
             SetCurrentArtifact(
                 new ExecutionStepArtifact
                 {
                     Result = (int)ExecutionStatusEnum.Completed,
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.ImageData,
-                    Elements =
-                        scanData
-                            .Select(o => new ArtifactDataElement
-                                {
-                                    Artifact = o.Value,
-                                    FileExtension = o.Key.FileExtension,
-                                    ScanId = o.Key.Id,
-                                    FileName = o.Key.Description
-                                }
-                            ),
+                    Elements = elements,
                     FileName = _currentArtifact?.FileName,
                     BatchId = batchId,
                     UserId = userId

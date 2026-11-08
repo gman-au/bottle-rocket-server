@@ -29,12 +29,6 @@ namespace Rocket.Api.Contracts.Executions
         
         [JsonPropertyName("execution_status")]
         public int? ExecutionStatus { get; set; }
-        
-        [JsonPropertyName("thumbnail_base64")]
-        public string ThumbnailBase64 { get; set; }
-        
-        [JsonPropertyName("content_type")]
-        public string ContentType { get; set; }
 
         [JsonPropertyName("archived")]
         public bool Archived { get; set; }
@@ -42,7 +36,7 @@ namespace Rocket.Api.Contracts.Executions
         [JsonPropertyName("steps")]
         public IEnumerable<ExecutionStepSummary> Steps { get; set; }
         
-        [JsonPropertyName("vendor")]
-        public string Vendor { get; set; }
+        [JsonPropertyName("elements")]
+        public IEnumerable<ExecutionElementSummary> Elements { get; set; }
     }
 }

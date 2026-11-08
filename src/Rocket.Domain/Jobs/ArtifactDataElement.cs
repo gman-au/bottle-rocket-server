@@ -2,7 +2,7 @@
 
 namespace Rocket.Domain.Jobs
 {
-    public class ArtifactDataElement
+    public record ArtifactDataElement
     {
         private string _fileName = Guid.NewGuid().ToString();
         

@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
+using Rocket.Integrations.Common;
+using Rocket.Integrations.Domain;
 using Rocket.Interfaces;
 
 namespace Rocket.Jobs.Service
@@ -29,21 +31,21 @@ namespace Rocket.Jobs.Service
         {
             var cts = new CancellationTokenSource();
 
-            var appendLogTask = new Func<string, string, Task>(
-                async (executionStepId, logMessage) =>
+            var appendLogMessageTask = new Func<JobLogEntry, Task>(async jobLogEntry =>
                 {
                     await
                         executionRepository
                             .AppendLogMessageToStepAsync(
-                                executionStepId,
+                                jobLogEntry.ExecutionStepId,
                                 executionId,
                                 userId,
-                                logMessage,
-                                CancellationToken.None
+                                jobLogEntry.LogMessage,
+                                jobLogEntry.ScanId,
+                                cts.Token
                             );
                 }
             );
-            
+
             if (_cancellationTokenSources.ContainsKey(executionId))
                 throw new RocketException(
                     "This task is already running.",
@@ -90,8 +92,7 @@ namespace Rocket.Jobs.Service
                 );
 
             queue
-                .Enqueue(
-                    async token =>
+                .Enqueue(async token =>
                     {
                         try
                         {
@@ -113,10 +114,32 @@ namespace Rocket.Jobs.Service
                                         token,
                                         cts.Token
                                     );
-
+                            
                             // the task
                             foreach (var childStep in execution.Steps ?? [])
                             {
+                                var updateStepStatusTask =
+                                    new Func<JobStatusEntry, Task>(async jobStatusEntry =>
+                                        {
+                                            await
+                                                UpdateExecutionStepStatusCallback(
+                                                    execution.UserId,
+                                                    execution.Id,
+                                                    jobStatusEntry.ExecutionStatus,
+                                                    childStep,
+                                                    jobStatusEntry.ScanId,
+                                                    jobStatusEntry.Exception
+                                                );
+                                        }
+                                    );
+
+                                var jobControl =
+                                    new JobControl
+                                    {
+                                        AppendLogMessageCallback = appendLogMessageTask,
+                                        UpdateStepStatusCallback = updateStepStatusTask
+                                    };
+                                
                                 // reset the root artifact
                                 await
                                     context
@@ -125,15 +148,14 @@ namespace Rocket.Jobs.Service
                                             execution.BatchId,
                                             cts.Token
                                         );
-                                
+
                                 await
                                     childStep
                                         .AsTask(
                                             userId,
                                             executionId,
                                             context,
-                                            appendLogTask,
-                                            UpdateExecutionStepStatusCallback,
+                                            jobControl,
                                             linkedCts.Token
                                         );
                             }
@@ -202,7 +224,9 @@ namespace Rocket.Jobs.Service
             return true;
         }
 
-        public async Task<bool> CancelExecutionAsync(string executionId)
+        public async Task<bool> CancelExecutionAsync(
+            string executionId
+        )
         {
             if (!_cancellationTokenSources.TryGetValue(
                     executionId,
@@ -215,12 +239,13 @@ namespace Rocket.Jobs.Service
 
             return true;
         }
-        
+
         private async Task UpdateExecutionStepStatusCallback(
             string userId,
             string executionId,
             int executionStatus,
             BaseExecutionStep executionStep,
+            string scanId,
             Exception exception = null
         )
         {
@@ -248,6 +273,7 @@ namespace Rocket.Jobs.Service
                             executionId,
                             userId,
                             logMessage,
+                            scanId,
                             CancellationToken.None
                         );
             }

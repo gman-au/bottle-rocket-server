@@ -226,6 +226,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IWorkflowRepository, MongoDbWorkflowRepository>()
                 .AddTransient<IWorkflowStepRepository, MongoDbWorkflowStepRepository>()
                 .AddTransient<IExecutionRepository, MongoDbExecutionRepository>()
+                .AddTransient<IExecutionElementRepository, MongoDbExecutionElementRepository>()
                 .AddTransient<IGlobalSettingsRepository, MongoDbGlobalSettingsRepository>()
                 .AddTransient<ITokenSessionRepository, MongoDbTokenSessionRepository>()
                 .AddTransient<IUserRepository, MongoDbUserRepository>();
