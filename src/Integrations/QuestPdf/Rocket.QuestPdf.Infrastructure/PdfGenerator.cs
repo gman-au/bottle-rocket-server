@@ -73,7 +73,7 @@ namespace Rocket.QuestPdf.Infrastructure
                 foreach (var element in elements)
                 {
                     scanId = element.ScanId;
-                    
+
                     try
                     {
                         var fileData =
@@ -148,7 +148,7 @@ namespace Rocket.QuestPdf.Infrastructure
                                     foreach (var element in elements)
                                     {
                                         scanId = element.ScanId;
-                                        
+
                                         var image =
                                             Image
                                                 .FromBinaryData(element.Artifact);
@@ -164,20 +164,10 @@ namespace Rocket.QuestPdf.Infrastructure
 
                                                     page
                                                         .Content()
-                                                        .Column(column =>
-                                                            {
-                                                                column
-                                                                    .Item()
-                                                                    .Image(
-                                                                        image
-                                                                    )
-                                                                    .FitArea();
-
-                                                                column
-                                                                    .Item()
-                                                                    .PageBreak();
-                                                            }
-                                                        );
+                                                        .Image(
+                                                            image
+                                                        )
+                                                        .FitArea();
                                                 }
                                             );
                                     }
@@ -196,7 +186,7 @@ namespace Rocket.QuestPdf.Infrastructure
                                 new JobStatusEntry
                                 {
                                     ExecutionStatus = (int)ExecutionStatusEnum.Errored,
-                                    ScanId = null,
+                                    ScanId = scanId,
                                     Exception = ex
                                 }
                             );
@@ -207,7 +197,7 @@ namespace Rocket.QuestPdf.Infrastructure
                 foreach (var element in elements)
                 {
                     scanId = element.ScanId;
-                    
+
                     try
                     {
                         var image =
