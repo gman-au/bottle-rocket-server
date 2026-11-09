@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AutoFixture;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using Rocket.Domain;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.ScannedImages;

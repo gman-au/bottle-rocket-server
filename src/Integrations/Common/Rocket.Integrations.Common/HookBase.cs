@@ -1,23 +1,17 @@
-﻿using System.Text;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Interfaces;
-using Rocket.Page.Schemas.ProjectTaskTracker;
 
 namespace Rocket.Integrations.Common
 {
     public abstract class HookBase<TExecutionStep>
         where TExecutionStep : BaseExecutionStep
     {
-        private readonly IFileRetitler _fileRetitler;
-
         protected readonly ILogger Logger;
+        private readonly IFileRetitler _fileRetitler;
 
         protected ExecutionStepArtifact Artifact;
         protected TExecutionStep ExecutionStep;
@@ -55,14 +49,18 @@ namespace Rocket.Integrations.Common
             Artifact =
                 artifact;
 
-            Logger
+            //TODO: fix
+            /*
+             Logger
                 .LogDebug(
                     "Artifact of type {fileExtension} set for hook type {type}",
                     Artifact?.FileExtension,
                     typeof(TExecutionStep).Name
                 );
+                */
         }
 
+        /*
         protected async Task RetitleFileIfApplicableAsync(
             string fileText,
             CancellationToken cancellationToken
@@ -70,8 +68,8 @@ namespace Rocket.Integrations.Common
         {
             var scanId =
                 Artifact
-                    .ScanId;            
-            
+                    .ScanId;
+
             var userId =
                 Artifact
                     .UserId;
@@ -91,6 +89,7 @@ namespace Rocket.Integrations.Common
                 Artifact.FileName = newFileName;
             }
         }
+        
 
         protected string GetArtifactAsText()
         {
@@ -154,5 +153,6 @@ namespace Rocket.Integrations.Common
                 );
             }
         }
+        */
     }
 }

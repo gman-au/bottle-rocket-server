@@ -12,6 +12,13 @@ namespace Rocket.Interfaces
             string elementId,
             CancellationToken cancellationToken
         );
+        
+        Task<ExecutionElement> GetExecutionElementByScanIdAsync(
+            string userId,
+            string executionId,
+            string scanId,
+            CancellationToken cancellationToken
+        );
 
         Task<ExecutionElement> InsertExecutionElementAsync(
             ExecutionElement executionElement,

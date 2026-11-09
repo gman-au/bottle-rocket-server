@@ -1,85 +1,270 @@
-﻿using System.Threading;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Markdown;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Jobs;
+using Rocket.Integrations.Domain;
+using Rocket.Interfaces;
 
 namespace Rocket.QuestPdf.Infrastructure
 {
     public class PdfGenerator : IPdfGenerator
     {
-        public async Task<byte[]> GeneratePdfFromTextAsync(string rawText, CancellationToken cancellationToken)
+        public async Task<IEnumerable<(string, byte[])>> GeneratePdfFromTextAsync(
+            IJobControl jobControl,
+            IEnumerable<ArtifactDataElement> elements,
+            bool mergeFiles,
+            CancellationToken cancellationToken
+        )
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
-            var fileData =
-                Document
-                    .Create(
-                        container =>
-                        {
-                            container
-                                .Page(
-                                    page =>
+            var results = new List<(string, byte[])>();
+            string scanId = null;
+
+            if (mergeFiles)
+            {
+                var fileData =
+                    Document
+                        .Create(container =>
+                            {
+                                foreach (var element in elements)
+                                {
+                                    scanId = element.ScanId;
+                                    container
+                                        .Page(page =>
+                                            {
+                                                page
+                                                    .Content()
+                                                    .Column(column =>
+                                                        {
+                                                            column
+                                                                .Item()
+                                                                .Markdown(
+                                                                    Encoding
+                                                                        .Default
+                                                                        .GetString(element.Artifact),
+                                                                    options => { options.ParagraphSpacing = 7.5F; }
+                                                                );
+
+                                                            column
+                                                                .Item()
+                                                                .PageBreak();
+                                                        }
+                                                    );
+                                            }
+                                        );
+                                }
+                            }
+                        )
+                        .GeneratePdf();
+
+                results
+                    .Add((scanId, fileData));
+            }
+            else
+            {
+                foreach (var element in elements)
+                {
+                    scanId = element.ScanId;
+                    
+                    try
+                    {
+                        var fileData =
+                            Document
+                                .Create(container =>
                                     {
-                                        page
-                                            .Size(PageSizes.A4);
-
-                                        page
-                                            .Margin(40);
-
-                                        page
-                                            .Content()
-                                            .Markdown(rawText, options =>
+                                        container
+                                            .Page(page =>
                                                 {
-                                                    options.ParagraphSpacing = 7.5F;
+                                                    page
+                                                        .Content()
+                                                        .Column(column =>
+                                                            {
+                                                                column
+                                                                    .Item()
+                                                                    .Markdown(
+                                                                        Encoding
+                                                                            .Default
+                                                                            .GetString(element.Artifact),
+                                                                        options => { options.ParagraphSpacing = 7.5F; }
+                                                                    );
+                                                            }
+                                                        );
                                                 }
                                             );
                                     }
-                                );
-                        }
-                    )
-                    .GeneratePdf();
+                                )
+                                .GeneratePdf();
 
-            return fileData;
+                        results
+                            .Add((scanId, fileData));
+                    }
+                    catch (Exception ex)
+                    {
+                        await
+                            jobControl
+                                .UpdateStepStatusCallback(
+                                    new JobStatusEntry
+                                    {
+                                        ExecutionStatus = (int)ExecutionStatusEnum.Errored,
+                                        ScanId = element.ScanId,
+                                        Exception = ex
+                                    }
+                                );
+                    }
+                }
+            }
+
+            return results;
         }
 
-        public async Task<byte[]> GeneratePdfFromImageAsync(byte[] imageBytes, CancellationToken cancellationToken)
+        public async Task<IEnumerable<(string, byte[])>> GeneratePdfFromImageAsync(
+            IJobControl jobControl,
+            IEnumerable<ArtifactDataElement> elements,
+            bool mergeFiles,
+            CancellationToken cancellationToken
+        )
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
-            var image =
-                Image
-                    .FromBinaryData(imageBytes);
+            var results = new List<(string, byte[])>();
+            string scanId = null;
 
-            var fileData =
-                Document
-                    .Create(
-                        container =>
-                        {
-                            container
-                                .Page(
-                                    page =>
+            if (mergeFiles)
+            {
+                try
+                {
+                    var fileData =
+                        Document
+                            .Create(container =>
+                                {
+                                    foreach (var element in elements)
                                     {
-                                        page
-                                            .Size(PageSizes.A4);
+                                        scanId = element.ScanId;
+                                        
+                                        var image =
+                                            Image
+                                                .FromBinaryData(element.Artifact);
 
-                                        page
-                                            .Margin(0);
+                                        container
+                                            .Page(page =>
+                                                {
+                                                    page
+                                                        .Size(PageSizes.A4);
 
-                                        page
-                                            .Content()
-                                            .Image(
-                                                image
-                                            )
-                                            .FitArea();
+                                                    page
+                                                        .Margin(0);
+
+                                                    page
+                                                        .Content()
+                                                        .Column(column =>
+                                                            {
+                                                                column
+                                                                    .Item()
+                                                                    .Image(
+                                                                        image
+                                                                    )
+                                                                    .FitArea();
+
+                                                                column
+                                                                    .Item()
+                                                                    .PageBreak();
+                                                            }
+                                                        );
+                                                }
+                                            );
+                                    }
+                                }
+                            )
+                            .GeneratePdf();
+
+                    results
+                        .Add((scanId, fileData));
+                }
+                catch (Exception ex)
+                {
+                    await
+                        jobControl
+                            .UpdateStepStatusCallback(
+                                new JobStatusEntry
+                                {
+                                    ExecutionStatus = (int)ExecutionStatusEnum.Errored,
+                                    ScanId = null,
+                                    Exception = ex
+                                }
+                            );
+                }
+            }
+            else
+            {
+                foreach (var element in elements)
+                {
+                    scanId = element.ScanId;
+                    
+                    try
+                    {
+                        var image =
+                            Image
+                                .FromBinaryData(element.Artifact);
+
+                        var fileData =
+                            Document
+                                .Create(container =>
+                                    {
+                                        container
+                                            .Page(page =>
+                                                {
+                                                    page
+                                                        .Size(PageSizes.A4);
+
+                                                    page
+                                                        .Margin(0);
+
+                                                    page
+                                                        .Content()
+                                                        .Column(column =>
+                                                            {
+                                                                column
+                                                                    .Item()
+                                                                    .Image(
+                                                                        image
+                                                                    )
+                                                                    .FitArea();
+                                                            }
+                                                        );
+                                                }
+                                            );
+                                    }
+                                )
+                                .GeneratePdf();
+
+                        results
+                            .Add((scanId, fileData));
+                    }
+                    catch (Exception ex)
+                    {
+                        await
+                            jobControl
+                                .UpdateStepStatusCallback(
+                                    new JobStatusEntry
+                                    {
+                                        ExecutionStatus = (int)ExecutionStatusEnum.Errored,
+                                        ScanId = element.ScanId,
+                                        Exception = ex
                                     }
                                 );
-                        }
-                    )
-                    .GeneratePdf();
+                    }
+                }
+            }
 
-            return fileData;
+            return results;
         }
     }
 }

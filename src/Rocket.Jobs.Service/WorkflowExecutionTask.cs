@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
-using Rocket.Integrations.Common;
 using Rocket.Integrations.Domain;
 using Rocket.Interfaces;
 
@@ -16,10 +15,18 @@ namespace Rocket.Jobs.Service
             string userId,
             string executionId,
             IWorkflowExecutionContext context,
-            JobControl jobControl,
+            IJobControlBuilder jobControlBuilder,
             CancellationToken cancellationToken
         )
         {
+            var jobControl =
+                jobControlBuilder
+                    .Build(
+                        userId,
+                        executionId,
+                        step
+                    );
+
             try
             {
                 await
@@ -73,7 +80,7 @@ namespace Rocket.Jobs.Service
                                 userId,
                                 executionId,
                                 context,
-                                jobControl,
+                                jobControlBuilder,
                                 cancellationToken
                             );
                 }

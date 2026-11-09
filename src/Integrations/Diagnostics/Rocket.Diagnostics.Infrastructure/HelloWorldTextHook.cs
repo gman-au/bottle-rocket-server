@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Diagnostics.Domain;
@@ -17,7 +16,7 @@ namespace Rocket.Diagnostics.Infrastructure
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
-            Func<string, string, Task> appendLogMessageCallback,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {

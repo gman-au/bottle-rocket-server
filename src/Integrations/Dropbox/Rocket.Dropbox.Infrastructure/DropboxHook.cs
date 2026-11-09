@@ -64,28 +64,6 @@ namespace Rocket.Dropbox.Infrastructure
                         cancellationToken
                     );
 
-            /*
-            var fileData =
-            await
-                dropboxClientManager
-                    .UploadFileAsync(
-                        Connector.AppKey,
-                        Connector.AppSecret,
-                        Connector.RefreshToken,
-                        ExecutionStep.Subfolder,
-                        Artifact.FileName,
-                        Artifact.FileExtension,
-                        Artifact.Artifact,
-                        cancellationToken
-                    );
-
-            await
-                appendLogMessageCallback(
-                    step.Id,
-                    $"File uploaded: {fileData}"
-                );
-            */
-
             return
                 ExecutionStepArtifact
                     .Empty;

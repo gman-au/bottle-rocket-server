@@ -20,6 +20,22 @@ namespace Rocket.Infrastructure.Db.Mongo.Extensions
             }
 
             return null;
+        }        
+        
+        public static ExecutionElement FindElementByScanId(
+            this IEnumerable<ExecutionElement> elements,
+            string scanId
+        )
+        {
+            if (elements == null) return null;
+
+            foreach (var element in elements)
+            {
+                if (element.ScanId == scanId)
+                    return element;
+            }
+
+            return null;
         }
 
         public static bool UpdateElementById(

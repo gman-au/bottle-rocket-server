@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Rocket.Domain.Jobs;
 
-namespace Rocket.Jobs.Service.Extensions
+namespace Rocket.Integrations.Common.Extensions
 {
-    internal static class ArtifactDataElementsEx
+    public static class ArtifactDataElementsEx
     {
         public static ArtifactDataElement[] EnumerateUniquely(
             this ArtifactDataElement[] elements

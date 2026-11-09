@@ -145,7 +145,6 @@ namespace Rocket.Dropbox.Infrastructure
                                     .AppendLogMessageCallback(
                                         new JobLogEntry
                                         {
-                                            ExecutionStepId = file.ExecutionStepId,
                                             ScanId = file.ScanId,
                                             LogMessage = $"File uploaded: {file.FileName}{file.FileExtension}, Dropbox ID: {result.Id}"
                                         }

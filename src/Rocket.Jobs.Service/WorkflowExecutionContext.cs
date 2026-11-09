@@ -7,8 +7,8 @@ using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
+using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
-using Rocket.Jobs.Service.Extensions;
 
 namespace Rocket.Jobs.Service
 {

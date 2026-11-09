@@ -2,5 +2,8 @@
 
 namespace Rocket.QuestPdf.Domain
 {
-    public record ConvertToPdfExecutionStep : BaseExecutionStep;
+    public record ConvertToPdfExecutionStep : BaseExecutionStep
+    {
+        public bool MergeFiles { get; set; }
+    }
 }

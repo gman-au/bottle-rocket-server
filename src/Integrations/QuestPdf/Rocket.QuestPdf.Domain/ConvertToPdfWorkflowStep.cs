@@ -13,5 +13,7 @@ namespace Rocket.QuestPdf.Domain
         public override string StepCode { get; set; } = QuestPdfDomainConstants.ConvertToPdfWorkflowCode;
 
         public override string RequiresConnectorCode { get; set; } = string.Empty;
+
+        public bool MergeFiles { get; set; }
     }
 }

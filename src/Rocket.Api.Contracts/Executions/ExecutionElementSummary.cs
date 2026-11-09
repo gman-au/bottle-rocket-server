@@ -2,7 +2,7 @@
 
 namespace Rocket.Api.Contracts.Executions
 {
-    public class ExecutionElementSummary : ApiResponse
+    public class ExecutionElementSummary
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

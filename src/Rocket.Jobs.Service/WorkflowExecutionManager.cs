@@ -18,7 +18,8 @@ namespace Rocket.Jobs.Service
         IExecutionRepository executionRepository,
         ILogger<WorkflowExecutionManager> logger,
         IServiceProvider serviceProvider,
-        ICaptureNotifier captureNotifier
+        ICaptureNotifier captureNotifier,
+        IJobControlBuilder jobControlBuilder
     ) : IWorkflowExecutionManager
     {
         private readonly ConcurrentDictionary<string, CancellationTokenSource> _cancellationTokenSources = new();
@@ -30,21 +31,6 @@ namespace Rocket.Jobs.Service
         )
         {
             var cts = new CancellationTokenSource();
-
-            var appendLogMessageTask = new Func<JobLogEntry, Task>(async jobLogEntry =>
-                {
-                    await
-                        executionRepository
-                            .AppendLogMessageToStepAsync(
-                                jobLogEntry.ExecutionStepId,
-                                executionId,
-                                userId,
-                                jobLogEntry.LogMessage,
-                                jobLogEntry.ScanId,
-                                cts.Token
-                            );
-                }
-            );
 
             if (_cancellationTokenSources.ContainsKey(executionId))
                 throw new RocketException(
@@ -114,32 +100,10 @@ namespace Rocket.Jobs.Service
                                         token,
                                         cts.Token
                                     );
-                            
+
                             // the task
                             foreach (var childStep in execution.Steps ?? [])
                             {
-                                var updateStepStatusTask =
-                                    new Func<JobStatusEntry, Task>(async jobStatusEntry =>
-                                        {
-                                            await
-                                                UpdateExecutionStepStatusCallback(
-                                                    execution.UserId,
-                                                    execution.Id,
-                                                    jobStatusEntry.ExecutionStatus,
-                                                    childStep,
-                                                    jobStatusEntry.ScanId,
-                                                    jobStatusEntry.Exception
-                                                );
-                                        }
-                                    );
-
-                                var jobControl =
-                                    new JobControl
-                                    {
-                                        AppendLogMessageCallback = appendLogMessageTask,
-                                        UpdateStepStatusCallback = updateStepStatusTask
-                                    };
-                                
                                 // reset the root artifact
                                 await
                                     context
@@ -155,7 +119,7 @@ namespace Rocket.Jobs.Service
                                             userId,
                                             executionId,
                                             context,
-                                            jobControl,
+                                            jobControlBuilder,
                                             linkedCts.Token
                                         );
                             }
@@ -239,53 +203,7 @@ namespace Rocket.Jobs.Service
 
             return true;
         }
-
-        private async Task UpdateExecutionStepStatusCallback(
-            string userId,
-            string executionId,
-            int executionStatus,
-            BaseExecutionStep executionStep,
-            string scanId,
-            Exception exception = null
-        )
-        {
-            executionStep.ExecutionStatus = executionStatus;
-            executionStep.RunDate = DateTime.UtcNow;
-
-            await
-                executionRepository
-                    .UpdateExecutionStepAsync(
-                        executionStep.Id,
-                        executionId,
-                        userId,
-                        executionStep,
-                        CancellationToken.None
-                    );
-
-            if (exception != null)
-            {
-                var logMessage = exception.Message;
-
-                await
-                    executionRepository
-                        .AppendLogMessageToStepAsync(
-                            executionStep.Id,
-                            executionId,
-                            userId,
-                            logMessage,
-                            scanId,
-                            CancellationToken.None
-                        );
-            }
-
-            await
-                captureNotifier
-                    .NotifyNewExecutionUpdateAsync(
-                        userId,
-                        CancellationToken.None
-                    );
-        }
-
+        
         private async Task UpdateExecutionStatusCallback(
             string userId,
             string executionId,

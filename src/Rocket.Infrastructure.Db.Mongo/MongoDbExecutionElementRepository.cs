@@ -44,6 +44,37 @@ namespace Rocket.Infrastructure.Db.Mongo
                     );
         }
 
+        public async Task<ExecutionElement> GetExecutionElementByScanIdAsync(
+            string userId,
+            string executionId,
+            string scanId,
+            CancellationToken cancellationToken
+        )
+        {
+            var execution =
+                await
+                    GetExecutionByIdAsync(
+                        executionId,
+                        userId,
+                        cancellationToken
+                    );
+
+            var element =
+                execution
+                    .Elements
+                    .FindElementByScanId(
+                        scanId
+                    );
+
+            if (element == null)
+                throw new RocketException(
+                    $"Could not find element in execution ID [{executionId}] with scan ID [{scanId}]",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
+            return element;
+        }
+
         public async Task<ExecutionElement> InsertExecutionElementAsync(
             ExecutionElement executionElement,
             string userId,
@@ -159,7 +190,7 @@ namespace Rocket.Infrastructure.Db.Mongo
 
             return execution;
         }
-        
+
         public async Task<Execution> GetExecutionByIdAsync(
             string executionId,
             string userId,
