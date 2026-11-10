@@ -47,32 +47,43 @@
                                     <MudItem
                                         Class="d-flex align-center justify-center"
                                         xs="12" sm="12" md="12" lg="12" xl="6">
-                                        <MudImage
-                                            @onclick="@(async () => await LoadAndPreviewScanAsync(scan.Id))"
-                                            Class="rounded mb-4"
-                                            Style="cursor: zoom-in;"
-                                            src=@($"data:{scan.ContentType};base64,{scan.ThumbnailBase64}")
-                                            Fluid/>
-                                        <MudMenu
-                                            Dense
-                                            Icon="@StandardIcons.SubMenuIcon"
-                                            Color="Color.Default"
-                                            Variant="Variant.Text"
-                                        >
-                                            <MudMenuItem
-                                                Icon="@StandardIcons.DownloadIcon"
-                                                OnClick="@(async () => await DownloadFileAsync(scan.Id))"
-                                                Label="@StringLocalizer["ScansDownloadCaption"]"/>
-                                            <MudMenuItem
-                                                Icon="@StandardIcons.DeleteIcon"
-                                                OnClick="@(() => ConfirmDeleteAsync(scan.Id))"
-                                                Label="@StringLocalizer["ScansDeleteCaption"]"/>
-                                        </MudMenu>
+                                        <MudStack
+                                            Row
+                                            Style="height:100%;"
+                                            Justify="Justify.SpaceBetween"
+                                            StretchItems="StretchItems.None"
+                                            AlignItems="AlignItems.Center">
+                                            <MudImage
+                                                @onclick="@(async () => await LoadAndPreviewScanAsync(scan.Id))"
+                                                Class="rounded mb-4"
+                                                Style="cursor: zoom-in;"
+                                                src=@($"data:{scan.ContentType};base64,{scan.ThumbnailBase64}")
+                                                Fluid/>
+                                            <MudStack
+                                                Style="height:100%;"
+                                                Justify="Justify.Center"
+                                                StretchItems="StretchItems.None"
+                                                AlignItems="AlignItems.Center">
+                                                <MudFab
+                                                    Size="Size.Small"
+                                                    Color="Color.Default"
+                                                    StartIcon="@StandardIcons.DownloadIcon"
+                                                    OnClick="@(async () => await DownloadFileAsync(scan.Id))"/>
+                                                <MudFab
+                                                    Size="Size.Small"
+                                                    Color="Color.Default"
+                                                    StartIcon="@StandardIcons.DeleteIcon"
+                                                    OnClick="@(() => ConfirmDeleteAsync(scan.Id))"/>
+                                            </MudStack>
+                                        </MudStack>
                                     </MudItem>
                                 }
                             </MudGrid>
                             <MudScrollToTop Selector="#scroll-images">
-                                <MudFab Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.ArrowCircleUp"/>
+                                <MudFab
+                                    Color="Color.Default"
+                                    StartIcon="@Icons.Material.Filled.ArrowCircleUp"
+                                />
                             </MudScrollToTop>
                         </div>
                     }

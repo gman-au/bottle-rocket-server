@@ -90,7 +90,9 @@ namespace Rocket.Api.Host.Controllers
                                     RunDate = o.RunDate?.ToLocalTime(),
                                     Name = o.Name,
                                     ExecutionStatus = o.ExecutionStatus,
-                                    Archived = o.Archived
+                                    Archived = o.Archived,
+                                    CoverContentType = (o.Elements ?? []).FirstOrDefault()?.ContentType,
+                                    CoverThumbnailBase64 = (o.Elements ?? []).FirstOrDefault()?.ThumbnailBase64
                                 }
                             ),
                     TotalRecords = (int)totalRecordCount
@@ -471,7 +473,9 @@ namespace Rocket.Api.Host.Controllers
                                 ContentType = o.ContentType,
                                 Vendor = o.Vendor
                             }
-                        )
+                        ),
+                    CoverContentType = (execution.Elements ?? []).FirstOrDefault()?.ContentType,
+                    CoverThumbnailBase64 = (execution.Elements ?? []).FirstOrDefault()?.ThumbnailBase64
                 };
 
             return

@@ -38,5 +38,11 @@ namespace Rocket.Api.Contracts.Executions
         
         [JsonPropertyName("elements")]
         public IEnumerable<ExecutionElementSummary> Elements { get; set; }
+        
+        [JsonPropertyName("cover_content_type")]
+        public string CoverContentType { get; set; }
+        
+        [JsonPropertyName("cover_thumbnail_base64")]
+        public string CoverThumbnailBase64 { get; set; }
     }
 }
