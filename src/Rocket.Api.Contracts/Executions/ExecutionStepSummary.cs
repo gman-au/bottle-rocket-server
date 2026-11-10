@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Rocket.Api.Contracts.Executions
 {
-    public class ExecutionStepSummary : ApiResponse
+    public class ExecutionStepSummary
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

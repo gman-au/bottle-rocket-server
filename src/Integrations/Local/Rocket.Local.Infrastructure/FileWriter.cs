@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Rocket.Domain.Enum;
 using Rocket.Domain.Jobs;
-using Rocket.Integrations.Domain;
+using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 
 namespace Rocket.Local.Infrastructure
@@ -40,26 +39,12 @@ namespace Rocket.Local.Infrastructure
                                 element.Artifact,
                                 cancellationToken
                             );
-
+                    
                     await
                         jobControl
-                            .AppendLogMessageCallback(
-                                new JobLogEntry
-                                {
-                                    ScanId = element.ScanId,
-                                    LogMessage = $"File uploaded: {element.FileName}{element.FileExtension}"
-                                }
-                            );
-
-                    await
-                        jobControl
-                            .UpdateStepStatusCallback(
-                                new JobStatusEntry
-                                {
-                                    ExecutionStatus = (int)ExecutionStatusEnum.Completed,
-                                    ScanId = element.ScanId,
-                                    Exception = null
-                                }
+                            .SucceedStepAsync(
+                                $"File uploaded to local folder: {fullFilePath}",
+                                element.ScanId
                             );
                 }
                 catch (Exception ex)
@@ -68,13 +53,9 @@ namespace Rocket.Local.Infrastructure
                     
                     await
                         jobControl
-                            .UpdateStepStatusCallback(
-                                new JobStatusEntry
-                                {
-                                    ExecutionStatus = (int)ExecutionStatusEnum.Errored,
-                                    ScanId = element.ScanId,
-                                    Exception = ex
-                                }
+                            .FailStepAsync(
+                                ex,
+                                element.ScanId
                             );
                 }
             }

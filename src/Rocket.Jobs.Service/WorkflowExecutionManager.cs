@@ -6,9 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
-using Rocket.Domain.Executions;
-using Rocket.Integrations.Common;
-using Rocket.Integrations.Domain;
 using Rocket.Interfaces;
 
 namespace Rocket.Jobs.Service

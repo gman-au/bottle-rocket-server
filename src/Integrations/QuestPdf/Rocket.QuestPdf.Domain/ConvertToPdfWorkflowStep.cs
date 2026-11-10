@@ -8,7 +8,11 @@ namespace Rocket.QuestPdf.Domain
 
         public override int OutputType { get; set; } = QuestPdfDomainConstants.ConvertToPdfOutputType;
 
-        public override string StepName { get; set; } = "Convert data to PDF";
+        public override string StepName
+        {
+            get => MergeFiles ? "Convert (merged) data to PDF" : "Convert data to PDF";
+            set { }
+        }
 
         public override string StepCode { get; set; } = QuestPdfDomainConstants.ConvertToPdfWorkflowCode;
 

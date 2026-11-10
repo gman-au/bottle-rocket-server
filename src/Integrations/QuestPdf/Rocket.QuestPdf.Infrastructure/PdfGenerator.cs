@@ -7,9 +7,8 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Markdown;
-using Rocket.Domain.Enum;
 using Rocket.Domain.Jobs;
-using Rocket.Integrations.Domain;
+using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 
 namespace Rocket.QuestPdf.Infrastructure
@@ -30,43 +29,73 @@ namespace Rocket.QuestPdf.Infrastructure
 
             if (mergeFiles)
             {
-                var fileData =
-                    Document
-                        .Create(container =>
-                            {
-                                foreach (var element in elements)
+                try
+                {
+                    var fileData =
+                        Document
+                            .Create(container =>
                                 {
-                                    scanId = element.ScanId;
-                                    container
-                                        .Page(page =>
-                                            {
-                                                page
-                                                    .Content()
-                                                    .Column(column =>
-                                                        {
-                                                            column
-                                                                .Item()
-                                                                .Markdown(
-                                                                    Encoding
-                                                                        .Default
-                                                                        .GetString(element.Artifact),
-                                                                    options => { options.ParagraphSpacing = 7.5F; }
-                                                                );
+                                    foreach (var element in elements)
+                                    {
+                                        try
+                                        {
+                                            scanId = element.ScanId;
+                                            container
+                                                .Page(page =>
+                                                    {
+                                                        page
+                                                            .Content()
+                                                            .Column(column =>
+                                                                {
+                                                                    column
+                                                                        .Item()
+                                                                        .Markdown(
+                                                                            Encoding
+                                                                                .Default
+                                                                                .GetString(element.Artifact),
+                                                                            options => { options.ParagraphSpacing = 7.5F; }
+                                                                        );
 
-                                                            column
-                                                                .Item()
-                                                                .PageBreak();
-                                                        }
-                                                    );
-                                            }
-                                        );
+                                                                    column
+                                                                        .Item()
+                                                                        .PageBreak();
+                                                                }
+                                                            );
+                                                    }
+                                                );
+
+                                            jobControl
+                                                .SucceedStepAsync(
+                                                    "Text converted to merged PDF successfully",
+                                                    scanId
+                                                )
+                                                .Wait(cancellationToken);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            jobControl
+                                                .FailStepAsync(
+                                                    ex,
+                                                    scanId
+                                                )
+                                                .Wait(cancellationToken);
+                                        }
+                                    }
                                 }
-                            }
-                        )
-                        .GeneratePdf();
+                            )
+                            .GeneratePdf();
 
-                results
-                    .Add((scanId, fileData));
+                    results
+                        .Add((scanId, fileData));
+                }
+                catch (Exception ex)
+                {
+                    await
+                        jobControl
+                            .FailStepAsync(
+                                ex
+                            );
+                }
             }
             else
             {
@@ -105,18 +134,21 @@ namespace Rocket.QuestPdf.Infrastructure
 
                         results
                             .Add((scanId, fileData));
+
+                        await
+                            jobControl
+                                .SucceedStepAsync(
+                                    "Text converted to PDF successfully",
+                                    scanId
+                                );
                     }
                     catch (Exception ex)
                     {
                         await
                             jobControl
-                                .UpdateStepStatusCallback(
-                                    new JobStatusEntry
-                                    {
-                                        ExecutionStatus = (int)ExecutionStatusEnum.Errored,
-                                        ScanId = element.ScanId,
-                                        Exception = ex
-                                    }
+                                .FailStepAsync(
+                                    ex,
+                                    scanId
                                 );
                     }
                 }
@@ -147,29 +179,48 @@ namespace Rocket.QuestPdf.Infrastructure
                                 {
                                     foreach (var element in elements)
                                     {
-                                        scanId = element.ScanId;
+                                        try
+                                        {
+                                            scanId = element.ScanId;
 
-                                        var image =
-                                            Image
-                                                .FromBinaryData(element.Artifact);
+                                            var image =
+                                                Image
+                                                    .FromBinaryData(element.Artifact);
 
-                                        container
-                                            .Page(page =>
-                                                {
-                                                    page
-                                                        .Size(PageSizes.A4);
+                                            container
+                                                .Page(page =>
+                                                    {
+                                                        page
+                                                            .Size(PageSizes.A4);
 
-                                                    page
-                                                        .Margin(0);
+                                                        page
+                                                            .Margin(0);
 
-                                                    page
-                                                        .Content()
-                                                        .Image(
-                                                            image
-                                                        )
-                                                        .FitArea();
-                                                }
-                                            );
+                                                        page
+                                                            .Content()
+                                                            .Image(
+                                                                image
+                                                            )
+                                                            .FitArea();
+                                                    }
+                                                );
+
+                                            jobControl
+                                                .SucceedStepAsync(
+                                                    "Image converted to merged PDF successfully",
+                                                    scanId
+                                                )
+                                                .Wait(cancellationToken);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            jobControl
+                                                .FailStepAsync(
+                                                    ex,
+                                                    scanId
+                                                )
+                                                .Wait(cancellationToken);
+                                        }
                                     }
                                 }
                             )
@@ -182,13 +233,8 @@ namespace Rocket.QuestPdf.Infrastructure
                 {
                     await
                         jobControl
-                            .UpdateStepStatusCallback(
-                                new JobStatusEntry
-                                {
-                                    ExecutionStatus = (int)ExecutionStatusEnum.Errored,
-                                    ScanId = scanId,
-                                    Exception = ex
-                                }
+                            .FailStepAsync(
+                                ex
                             );
                 }
             }
@@ -237,18 +283,21 @@ namespace Rocket.QuestPdf.Infrastructure
 
                         results
                             .Add((scanId, fileData));
+
+                        await
+                            jobControl
+                                .SucceedStepAsync(
+                                    "Image converted to PDF successfully",
+                                    scanId
+                                );
                     }
                     catch (Exception ex)
                     {
                         await
                             jobControl
-                                .UpdateStepStatusCallback(
-                                    new JobStatusEntry
-                                    {
-                                        ExecutionStatus = (int)ExecutionStatusEnum.Errored,
-                                        ScanId = element.ScanId,
-                                        Exception = ex
-                                    }
+                                .FailStepAsync(
+                                    ex,
+                                    scanId
                                 );
                     }
                 }
