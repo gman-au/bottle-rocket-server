@@ -73,7 +73,9 @@ namespace Rocket.Jobs.Service
             executionStep.ExecutionStatus = executionStatus;
             executionStep.RunDate = DateTime.UtcNow;
 
-            if (!string.IsNullOrEmpty(scanId))
+            var isElementUpdate = !string.IsNullOrEmpty(scanId);
+
+            if (isElementUpdate)
             {
                 var element =
                     await
@@ -84,7 +86,7 @@ namespace Rocket.Jobs.Service
                                 scanId,
                                 CancellationToken.None
                             );
-                
+
                 element.ExecutionStatus = executionStatus;
 
                 await
@@ -97,7 +99,7 @@ namespace Rocket.Jobs.Service
                             CancellationToken.None
                         );
             }
-            
+
             await
                 executionRepository
                     .UpdateExecutionStepAsync(
@@ -124,13 +126,15 @@ namespace Rocket.Jobs.Service
                         );
             }
 
-            // TODO: hub updates may not be needed per element
-            await
-                captureNotifier
-                    .NotifyNewExecutionUpdateAsync(
-                        userId,
-                        CancellationToken.None
-                    );
+            if (!isElementUpdate)
+            {
+                await
+                    captureNotifier
+                        .NotifyNewExecutionUpdateAsync(
+                            userId,
+                            CancellationToken.None
+                        );
+            }
         }
     }
 }
