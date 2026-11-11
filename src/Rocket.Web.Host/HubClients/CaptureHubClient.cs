@@ -255,7 +255,7 @@ namespace Rocket.Web.Host.HubClients
                 logger
                     .LogInformation("Connected to CaptureHub");
             }
-            catch (TaskCanceledException ex)
+            catch (TaskCanceledException)
             {
                 logger
                     .LogWarning("CaptureHub start task cancelled");
