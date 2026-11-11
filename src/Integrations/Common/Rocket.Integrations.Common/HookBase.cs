@@ -91,23 +91,7 @@ namespace Rocket.Integrations.Common
         }
         
 
-        protected string GetArtifactAsText()
-        {
-            var textBytes =
-                Artifact
-                    .Artifact;
-
-            if (textBytes == null)
-                throw new RocketException(
-                    $"Artifact data for hook [{typeof(TExecutionStep)}] is empty or not initialized; please check configuration",
-                    ApiStatusCodeEnum.DeveloperError
-                );
-
-            return
-                Encoding
-                    .Default
-                    .GetString(textBytes);
-        }
+        
 
         protected byte[] GetArtifactAsBytes()
         {

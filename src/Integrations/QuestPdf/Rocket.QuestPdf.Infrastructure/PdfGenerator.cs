@@ -42,12 +42,19 @@ namespace Rocket.QuestPdf.Infrastructure
                                         try
                                         {
                                             scanId = element.ScanId;
+
+                                            jobControl
+                                                .StartStepAsync(
+                                                    scanId
+                                                )
+                                                .Wait(cancellationToken);
+
                                             container
                                                 .Page(page =>
                                                     {
                                                         page
                                                             .Margin(20);
-                                                        
+
                                                         page
                                                             .Content()
                                                             .Column(column =>
@@ -89,12 +96,13 @@ namespace Rocket.QuestPdf.Infrastructure
                     results
                         .Add(
                             new ArtifactDataElement
-                        {
-                            Artifact = fileData,
-                            FileExtension = CommonFileConstants.PdfFileExtension,
-                            ScanId = null,
-                            FileName = artifactFileName
-                        });
+                            {
+                                Artifact = fileData,
+                                FileExtension = CommonFileConstants.PdfFileExtension,
+                                ScanId = null,
+                                FileName = artifactFileName
+                            }
+                        );
                 }
                 catch (Exception ex)
                 {
@@ -111,6 +119,12 @@ namespace Rocket.QuestPdf.Infrastructure
                 {
                     scanId = element.ScanId;
 
+                    await
+                        jobControl
+                            .StartStepAsync(
+                                scanId
+                            );
+
                     try
                     {
                         var fileData =
@@ -122,7 +136,7 @@ namespace Rocket.QuestPdf.Infrastructure
                                                 {
                                                     page
                                                         .Margin(20);
-                                                    
+
                                                     page
                                                         .Content()
                                                         .Column(column =>
@@ -203,6 +217,12 @@ namespace Rocket.QuestPdf.Infrastructure
                                         {
                                             scanId = element.ScanId;
 
+                                            jobControl
+                                                .StartStepAsync(
+                                                    scanId
+                                                )
+                                                .Wait(cancellationToken);
+
                                             var image =
                                                 Image
                                                     .FromBinaryData(element.Artifact);
@@ -249,12 +269,13 @@ namespace Rocket.QuestPdf.Infrastructure
                     results
                         .Add(
                             new ArtifactDataElement
-                        {
-                            Artifact = fileData,
-                            FileExtension = CommonFileConstants.PdfFileExtension,
-                            ScanId = null,
-                            FileName = artifactFileName
-                        });
+                            {
+                                Artifact = fileData,
+                                FileExtension = CommonFileConstants.PdfFileExtension,
+                                ScanId = null,
+                                FileName = artifactFileName
+                            }
+                        );
                 }
                 catch (Exception ex)
                 {
@@ -270,6 +291,12 @@ namespace Rocket.QuestPdf.Infrastructure
                 foreach (var element in elements)
                 {
                     scanId = element.ScanId;
+
+                    await
+                        jobControl
+                            .StartStepAsync(
+                                scanId
+                            );
 
                     try
                     {

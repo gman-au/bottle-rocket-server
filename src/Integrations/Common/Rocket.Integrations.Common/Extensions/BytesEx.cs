@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Domain.Jobs;
 using Rocket.Page.Schemas.ProjectTaskTracker;
 
@@ -98,6 +99,57 @@ namespace Rocket.Integrations.Common.Extensions
                     FileName = artifact?.FileName,
                     UserId = artifact?.UserId
                 };
+        }
+
+        public static string ArtifactAsText(
+            this ArtifactDataElement element
+        )
+        {
+            var textBytes =
+                element
+                    .Artifact;
+
+            if (textBytes == null)
+                throw new RocketException(
+                    "Artifact data for element is empty or not initialized; please check configuration",
+                    ApiStatusCodeEnum.DeveloperError
+                );
+
+            return
+                Encoding
+                    .Default
+                    .GetString(textBytes);
+        }
+
+        public static ProjectTaskTrackerSchema ArtifactAsProjectData(
+            this ArtifactDataElement element
+        )
+        {
+            var projectBytes =
+                element
+                    .Artifact;
+
+            if (projectBytes == null)
+                throw new RocketException(
+                    "Artifact data for element is empty or not initialized; please check configuration",
+                    ApiStatusCodeEnum.DeveloperError
+                );
+
+            try
+            {
+                var schema =
+                    JsonSerializer
+                        .Deserialize<ProjectTaskTrackerSchema>(projectBytes);
+
+                return schema;
+            }
+            catch (JsonException)
+            {
+                throw new RocketException(
+                    $"There was a problem loading the project task tracker artifact",
+                    ApiStatusCodeEnum.DeveloperError
+                );
+            }
         }
     }
 }
