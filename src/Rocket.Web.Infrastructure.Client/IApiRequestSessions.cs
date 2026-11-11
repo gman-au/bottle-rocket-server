@@ -15,5 +15,9 @@ namespace Rocket.Web.Infrastructure.Client
             string id,
             CancellationToken cancellationToken
         );        
+
+        Task<RevokeSessionResponse> RevokeAllSessionsAsync(
+            CancellationToken cancellationToken
+        );        
     }
 }

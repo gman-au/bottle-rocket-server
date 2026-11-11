@@ -205,4 +205,20 @@
     <data name="DialogRevokeSessionSubmitCaption" xml:space="preserve">
         <value>Revoke</value>
     </data>
+    <!-- REVOKE ALL SESSIONS -->
+    <data name="DialogRevokeAllSessionsTitle" xml:space="preserve">
+        <value>Revoke all sessions</value>
+    </data>
+    <data name="DialogRevokeAllSessionsBody" xml:space="preserve">
+        <value>Do you wish to revoke all sessions for this user?</value>
+    </data>
+    <data name="DialogRevokeAllSessionsWarning" xml:space="preserve">
+        <value>Any devices using these sessions will be logged out immediately.</value>
+    </data>
+    <data name="DialogRevokeAllSessionsCancelCaption" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="DialogRevokeAllSessionsSubmitCaption" xml:space="preserve">
+        <value>Revoke</value>
+    </data>
 </root>

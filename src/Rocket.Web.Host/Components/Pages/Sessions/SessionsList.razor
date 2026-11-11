@@ -24,6 +24,17 @@
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
     @if (_sessions.Any())
     {
+        <MudGrid Justify="Justify.Center" Class="mb-4">
+            <MudItem>
+                <MudButton
+                    Variant="Variant.Outlined"
+                    Color="Color.Warning"
+                    Disabled="@((_sessions ?? []).All(o => o.IsCurrent))"
+                    @onclick="@(async () => await ConfirmRevokeAllSessions())">
+                    @StringLocalizer["SessionsRevokeAllCaption"]
+                </MudButton>
+            </MudItem>
+        </MudGrid>
         <MudSimpleTable Dense>
             <thead>
             <tr>
@@ -38,7 +49,7 @@
             @foreach (var session in _sessions)
             {
                 var isCurrent = session.IsCurrent;
-                
+
                 <tr class="@(isCurrent ? "faded-row" : null)">
                     <td>
                         <MudText Color="@(isCurrent ? Color.Default : Color.Secondary)">
@@ -223,6 +234,60 @@
                         StringLocalizer["SessionsWasRevokedMessage"].Value,
                         Severity.Success
                     );
+            }
+            catch (Exception ex)
+            {
+                await
+                    WebHostErrorHandler
+                        .HandleExceptionAsync(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task ConfirmRevokeAllSessions()
+    {
+        var dialog =
+            await
+                DialogService
+                    .ShowAsync<ConfirmRevokeAllSessionsDialog>(
+                        null
+                    );
+
+        var result =
+            await
+                dialog
+                    .Result;
+
+        if (!(result?.Canceled ?? true))
+        {
+            try
+            {
+                _isLoading = true;
+                StateHasChanged();
+
+                await
+                    ApiRequestManager
+                        .Sessions
+                        .RevokeAllSessionsAsync(
+                            BaseCancellationToken
+                        );
+
+                Snackbar
+                    .Add(
+                        StringLocalizer["SessionsWereRevokedMessage"].Value,
+                        Severity.Success
+                    );
+
+                _currentIndex = 0;
+
+                _sessions = 
+                    _sessions
+                        .Where(o => o.IsCurrent);
             }
             catch (Exception ex)
             {
