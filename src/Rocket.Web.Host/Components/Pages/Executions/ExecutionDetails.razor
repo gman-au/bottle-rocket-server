@@ -104,7 +104,7 @@
                                     Variant="Variant.Outlined"
                                     Color="Color.Error"
                                     Disabled="@(_currentModel.ExecutionStatus == (int)ExecutionStatusEnum.Running)"
-                                    OnClick="@(() => ConfirmDeleteAsync())">
+                                    OnClick="@(ConfirmDeleteAsync)">
                                     @StringLocalizer["ExecutionsDeleteCaption"]
                                 </MudButton>
                             </MudItem>
@@ -165,6 +165,7 @@
                                         <MudFab
                                             Size="Size.Small"
                                             Color="Color.Default"
+                                            Disabled="@(!_currentModel.ExecutionStatus.MapStatusToFinished())"
                                             StartIcon="@StandardIcons.LogsIcon"
                                             OnClick="@(async () => await DisplayExecutionElementLogMessages(element.Id))"
                                         />
@@ -224,6 +225,7 @@
 
             // Set up SignalR listener
             CaptureHubClient.OnNewExecutionUpdateReceived += HandleExecutionUpdate;
+            CaptureHubClient.OnNewExecutionElementUpdateReceived += HandleExecutionElementUpdate;
 
             // Connect to hub
             await
@@ -301,6 +303,52 @@
         MermaidText =
             ExecutionMermaidConverter
                 .Convert(_currentModel);
+    }
+
+    private async Task HandleExecutionElementUpdate(
+        string scanId,
+        int status
+    )
+    {
+        var elements = 
+            _currentModel
+                .Elements
+                .ToList();
+        
+        var element = 
+            elements
+            .FirstOrDefault(x => x.ScanId == scanId);
+
+        if (element != null)
+        {
+            var newElement =
+                new ExecutionElementSummary
+                {
+                    Id = element.Id,
+                    ScanId = element.ScanId,
+                    ExecutionStatus = status,
+                    LogMessages = element.LogMessages,
+                    ThumbnailBase64 = element.ThumbnailBase64,
+                    ContentType = element.ContentType,
+                    Vendor = element.Vendor
+                };
+            
+            var index = elements.IndexOf(element);
+            
+            elements
+                .Remove(element);
+            
+            elements
+                .Insert(
+                index,
+                newElement
+            );
+
+            _currentModel.Elements = elements;
+            
+            await 
+                InvokeAsync(StateHasChanged);
+        }
     }
 
     private async Task HandleExecutionUpdate()

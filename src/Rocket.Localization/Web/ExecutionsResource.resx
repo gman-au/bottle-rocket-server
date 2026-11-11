@@ -27,7 +27,7 @@
         <value>Workflow Name</value>
     </data>
     <data name="ExecutionsStatusFieldHeader" xml:space="preserve">
-        <value>Workflow Name</value>
+        <value>Run Status</value>
     </data>    
     <data name="ExecutionsRunDateFieldHeader" xml:space="preserve">
         <value>Run Date</value>

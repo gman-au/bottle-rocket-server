@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,7 +55,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Project
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
-            Func<string, string, Task> appendLogMessageCallback,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {
@@ -71,132 +72,167 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Project
                     cancellationToken
                 );
 
-            var imageBytes =
+            var fileResults = new List<(string, ProjectTaskTrackerSchema)>();
+
+            var elements =
                 Artifact
-                    .Artifact;
+                    .Elements;
 
             var apiToken =
                 Connector
                     .ApiToken;
 
-            var fileName = $"{Guid.NewGuid()}{Artifact.FileExtension}";
+            var allCompleted = true;
 
-            var imageIdToDelete = string.Empty;
+            var globalSettings =
+                await
+                    globalSettingsRepository
+                        .GetGlobalSettingsAsync(cancellationToken);
 
-            try
+            var timeoutInMinutes =
+                globalSettings?.DefaultModelTimeoutInMinutes ??
+                DomainConstants.GlobalDefaultModelTimeoutInMinutes;
+
+            foreach (var element in elements)
             {
-                // Upload the file
-                var (imageUrl, imageId) =
+                var imageIdToDelete = string.Empty;
+
+                try
+                {
                     await
-                        replicateClient
-                            .UploadFileAsync(
-                                apiToken,
-                                imageBytes,
-                                fileName,
-                                Artifact.FileExtension,
-                                cancellationToken
+                        jobControl
+                            .StartStepAsync(
+                                element.ScanId
                             );
 
-                imageIdToDelete = imageId;
+                    var fileName = $"{Guid.NewGuid()}{element.FileExtension}";
 
-                logger
-                    .LogInformation(
-                        "Uploaded image to Replicate: {imageUrl}",
-                        imageUrl
-                    );
+                    // Upload the file
+                    var (imageUrl, imageId) =
+                        await
+                            replicateClient
+                                .UploadFileAsync(
+                                    apiToken,
+                                    element.Artifact,
+                                    fileName,
+                                    element.FileExtension,
+                                    cancellationToken
+                                );
 
-                // Create the prediction
-                var predictionId =
-                    await
-                        replicateClient
-                            .CreatePredictionAsync(
-                                apiToken,
-                                null,
-                                new DataLabToInput
-                                {
-                                    File = imageUrl,
-                                    OutputFormat = "json",
-                                    DisableImageExtraction = true,
-                                    IncludeMetadata = true,
-                                    PageSchema = HardCodedSchemaString,
-                                    UseLlm = true
-                                },
-                                cancellationToken,
-                                DataLabToCustomEndpoint
-                            );
+                    imageIdToDelete = imageId;
 
-                logger
-                    .LogInformation(
-                        "Created prediction in Replicate: {predictionId}",
-                        predictionId
-                    );
-
-                var globalSettings =
-                    await
-                        globalSettingsRepository
-                            .GetGlobalSettingsAsync(cancellationToken);
-
-                var timeoutInMinutes =
-                    globalSettings?.DefaultModelTimeoutInMinutes ??
-                    DomainConstants.GlobalDefaultModelTimeoutInMinutes;
-                
-                var result =
-                    await
-                        replicateClient
-                            .WaitUntilPredictionCompletesAsync<DataLabToOutput>(
-                                apiToken,
-                                predictionId,
-                                timeoutInMinutes,
-                                cancellationToken
-                            );
-
-                var extractedJson =
-                    result?
-                        .ExtractionSchemaJson ?? string.Empty;
-
-                var data =
-                    schemaResponseBuilder
-                        .Build(
-                            extractedJson,
-                            RocketbookPageTemplateTypeEnum.ProjectTaskTracker
+                    logger
+                        .LogInformation(
+                            "Uploaded image to Replicate: {imageUrl}",
+                            imageUrl
                         );
 
-                if (data is not ProjectTaskTrackerSchema projectTaskTrackerSchema)
-                    throw new RocketException(
-                        $"There was an error parsing the data returned from the model to type {typeof(ProjectTaskTrackerSchema)}.",
-                        ApiStatusCodeEnum.ThirdPartyServiceError
-                    );
+                    // Create the prediction
+                    var predictionId =
+                        await
+                            replicateClient
+                                .CreatePredictionAsync(
+                                    apiToken,
+                                    null,
+                                    new DataLabToInput
+                                    {
+                                        File = imageUrl,
+                                        OutputFormat = "json",
+                                        DisableImageExtraction = true,
+                                        IncludeMetadata = true,
+                                        PageSchema = HardCodedSchemaString,
+                                        UseLlm = true
+                                    },
+                                    cancellationToken,
+                                    DataLabToCustomEndpoint
+                                );
 
-                await
-                    appendLogMessageCallback(
-                        step.Id,
-                        JsonSerializer
-                            .Serialize(projectTaskTrackerSchema)
-                    );
+                    logger
+                        .LogInformation(
+                            "Created prediction in Replicate: {predictionId}",
+                            predictionId
+                        );
 
-                var resultArtifact =
-                    projectTaskTrackerSchema
-                        .AsCompletedProjectTaskTrackerDataArtifact();
+                    var result =
+                        await
+                            replicateClient
+                                .WaitUntilPredictionCompletesAsync<DataLabToOutput>(
+                                    apiToken,
+                                    predictionId,
+                                    timeoutInMinutes,
+                                    cancellationToken
+                                );
 
-                return resultArtifact;
-            }
-            finally
-            {
-                // Delete uploads
-                if (!string.IsNullOrEmpty(imageIdToDelete))
-                    await
-                        replicateClient
-                            .DeleteUploadAsync(
-                                apiToken,
-                                imageIdToDelete
+                    var extractedJson =
+                        result?
+                            .ExtractionSchemaJson ?? string.Empty;
+
+                    var data =
+                        schemaResponseBuilder
+                            .Build(
+                                extractedJson,
+                                RocketbookPageTemplateTypeEnum.ProjectTaskTracker
                             );
 
-                logger
-                    .LogInformation(
-                        "Deleted image in Replicate: {imageIdToDelete}",
-                        imageIdToDelete
-                    );
+                    if (data is not ProjectTaskTrackerSchema projectTaskTrackerSchema)
+                        throw new RocketException(
+                            $"There was an error parsing the data returned from the model to type {typeof(ProjectTaskTrackerSchema)}.",
+                            ApiStatusCodeEnum.ThirdPartyServiceError
+                        );
+
+                    await
+                        jobControl
+                            .SucceedStepAsync(
+                                $"DataLabTo OCR response: \"{JsonSerializer
+                                    .Serialize(projectTaskTrackerSchema)}\"",
+                                element.ScanId
+                            );
+
+                    fileResults
+                        .Add((element.ScanId, projectTaskTrackerSchema));
+                }
+                catch (Exception ex)
+                {
+                    allCompleted = false;
+
+                    await
+                        jobControl
+                            .FailStepAsync(
+                                ex,
+                                element.ScanId
+                            );
+                }
+                finally
+                {
+                    // Delete uploads
+                    if (!string.IsNullOrEmpty(imageIdToDelete))
+                        await
+                            replicateClient
+                                .DeleteUploadAsync(
+                                    apiToken,
+                                    imageIdToDelete
+                                );
+
+                    logger
+                        .LogInformation(
+                            "Deleted image in Replicate: {imageIdToDelete}",
+                            imageIdToDelete
+                        );
+                }
             }
+
+            if (!allCompleted)
+            {
+                throw new RocketException(
+                    "There was an error extracting the text via Replicate",
+                    ApiStatusCodeEnum.ThirdPartyServiceError
+                );
+            }
+
+            return
+                fileResults
+                    .ToArray()
+                    .AsCompletedProjectTaskTrackerDataArtifact();
         }
     }
 }

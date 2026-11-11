@@ -8,16 +8,18 @@ namespace Rocket.QuestPdf.Infrastructure
 {
     public interface IPdfGenerator
     {
-        Task<IEnumerable<(string, byte[])>> GeneratePdfFromTextAsync(
+        Task<IEnumerable<ArtifactDataElement>> GeneratePdfFromTextAsync(
             IJobControl jobControl,
             IEnumerable<ArtifactDataElement> elements,
+            string artifactFileName,
             bool mergeFiles,
             CancellationToken cancellationToken
         );
 
-        Task<IEnumerable<(string, byte[])>> GeneratePdfFromImageAsync(
+        Task<IEnumerable<ArtifactDataElement>> GeneratePdfFromImageAsync(
             IJobControl jobControl,
             IEnumerable<ArtifactDataElement> elements,
+            string artifactFileName,
             bool mergeFiles,
             CancellationToken cancellationToken
         );

@@ -80,8 +80,6 @@ namespace Rocket.Api.Host.Controllers
                             cancellationToken
                         );
 
-            // TODO: the full image data may not be required at this point
-            
             var response =
                 new ScanSpecifics
                 {

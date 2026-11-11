@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Diagnostics.Domain;
@@ -10,7 +11,9 @@ using Rocket.Interfaces;
 
 namespace Rocket.Diagnostics.Infrastructure
 {
-    public class HelloWorldTextHook(ILogger<HelloWorldTextHook> logger) : HookBase<HelloWorldTextExecutionStep>(logger), IIntegrationHook
+    public class HelloWorldTextHook(
+        ILogger<HelloWorldTextHook> logger
+    ) : HookBase<HelloWorldTextExecutionStep>(logger), IIntegrationHook
     {
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
@@ -20,8 +23,10 @@ namespace Rocket.Diagnostics.Infrastructure
             CancellationToken cancellationToken
         )
         {
+            var result = new List<(string, string)> { (null, "Hello, world!") };
+
             return
-                "Hello, world!"
+                result
                     .AsCompletedRawTextArtifact(Artifact);
         }
     }

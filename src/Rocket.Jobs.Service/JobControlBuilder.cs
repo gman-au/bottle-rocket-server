@@ -99,16 +99,19 @@ namespace Rocket.Jobs.Service
                             CancellationToken.None
                         );
             }
-
-            await
-                executionRepository
-                    .UpdateExecutionStepAsync(
-                        executionStep.Id,
-                        executionId,
-                        userId,
-                        executionStep,
-                        CancellationToken.None
-                    );
+            else
+            {
+                // Don't update the step status for a single element
+                await
+                    executionRepository
+                        .UpdateExecutionStepAsync(
+                            executionStep.Id,
+                            executionId,
+                            userId,
+                            executionStep,
+                            CancellationToken.None
+                        );
+            }
 
             if (exception != null)
             {
@@ -132,6 +135,17 @@ namespace Rocket.Jobs.Service
                     captureNotifier
                         .NotifyNewExecutionUpdateAsync(
                             userId,
+                            CancellationToken.None
+                        );
+            }
+            else
+            {
+                await
+                    captureNotifier
+                        .NotifyNewExecutionElementUpdateAsync(
+                            userId,
+                            scanId,
+                            executionStatus,
                             CancellationToken.None
                         );
             }

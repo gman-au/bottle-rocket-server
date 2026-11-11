@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Domain.Utils;
@@ -29,7 +31,7 @@ namespace Rocket.Ollama.Infrastructure.Text
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
-            Func<string, string, Task> appendLogMessageCallback,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {
@@ -46,9 +48,11 @@ namespace Rocket.Ollama.Infrastructure.Text
                     cancellationToken
                 );
 
-            var imageBytes =
+            var fileResults = new List<(string, string)>();
+
+            var elements =
                 Artifact
-                    .Artifact;
+                    .Elements;
 
             var endpoint =
                 Connector.Endpoint ??
@@ -72,46 +76,70 @@ namespace Rocket.Ollama.Infrastructure.Text
                 globalSettings?.DefaultModelTimeoutInMinutes ??
                 DomainConstants.GlobalDefaultModelTimeoutInMinutes;
 
-            var response =
-                await
-                    OllamaClient
-                        .SendRequestAsync<string>(
-                            endpoint,
-                            ExecutionStep.ModelName,
-                            "Perform OCR on this image and return only the text.",
-                            imageBytes,
-                            RocketbookPageTemplateTypeEnum.StandardLined,
-                            useSchema: false,
-                            null,
-                            null,
-                            null,
-                            timeoutInMinutes,
-                            cancellationToken
-                        );
-
-            await
-                appendLogMessageCallback(
-                    step.Id,
-                    response
-                );
-
-            var resultArtifact =
-                new ExecutionStepArtifact
+            var allCompleted = true;
+            
+            foreach (var element in elements)
+            {
+                try
                 {
-                    Result = (int)ExecutionStatusEnum.Completed,
-                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
-                    Artifact =
-                        Encoding
-                            .Default
-                            .GetBytes(
-                                response
-                            ),
-                    FileExtension = ".txt",
-                    ScanId = Artifact.ScanId,
-                    UserId = Artifact.UserId
-                };
+                    await
+                        jobControl
+                            .StartStepAsync(
+                                element.ScanId
+                            );
+                    
+                    var response =
+                        await
+                            OllamaClient
+                                .SendRequestAsync<string>(
+                                    endpoint,
+                                    ExecutionStep.ModelName,
+                                    "Perform OCR on this image and return only the text.",
+                                    element.Artifact,
+                                    RocketbookPageTemplateTypeEnum.StandardLined,
+                                    useSchema: false,
+                                    null,
+                                    null,
+                                    null,
+                                    timeoutInMinutes,
+                                    cancellationToken
+                                );
 
-            return resultArtifact;
+                    await
+                        jobControl
+                            .SucceedStepAsync(
+                                $"Ollama response: \"{response}\"",
+                                element.ScanId
+                            );
+
+                    fileResults
+                        .Add((element.ScanId, response));
+                }
+                catch (Exception ex)
+                {
+                    allCompleted = false;
+                    
+                    await
+                        jobControl
+                            .FailStepAsync(
+                                ex,
+                                element.ScanId
+                            );
+                }
+            }
+
+            if (!allCompleted)
+            {
+                throw new RocketException(
+                    "There was an error extracting the text via Ollama",
+                    ApiStatusCodeEnum.ThirdPartyServiceError
+                );
+            }
+
+            return
+                fileResults
+                    .ToArray()
+                    .AsCompletedRawTextArtifact();
         }
     }
 }

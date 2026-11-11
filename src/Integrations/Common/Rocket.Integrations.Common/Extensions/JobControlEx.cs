@@ -35,6 +35,23 @@ namespace Rocket.Integrations.Common.Extensions
                         }
                     );
         }
+        
+        public static async Task StartStepAsync(
+            this IJobControl jobControl,
+            string scanId = null
+        )
+        {
+            await
+                jobControl
+                    .UpdateStepStatusCallback(
+                        new JobStatusEntry
+                        {
+                            ExecutionStatus = (int)ExecutionStatusEnum.Running,
+                            ScanId = scanId,
+                            Exception = null
+                        }
+                    );
+        }
 
         public static async Task FailStepAsync(
             this IJobControl jobControl,

@@ -8,6 +8,7 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Markdown;
 using Rocket.Domain.Jobs;
+using Rocket.Integrations.Common;
 using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 
@@ -15,16 +16,17 @@ namespace Rocket.QuestPdf.Infrastructure
 {
     public class PdfGenerator : IPdfGenerator
     {
-        public async Task<IEnumerable<(string, byte[])>> GeneratePdfFromTextAsync(
+        public async Task<IEnumerable<ArtifactDataElement>> GeneratePdfFromTextAsync(
             IJobControl jobControl,
             IEnumerable<ArtifactDataElement> elements,
+            string artifactFileName,
             bool mergeFiles,
             CancellationToken cancellationToken
         )
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
-            var results = new List<(string, byte[])>();
+            var results = new List<ArtifactDataElement>();
             string scanId = null;
 
             if (mergeFiles)
@@ -44,6 +46,9 @@ namespace Rocket.QuestPdf.Infrastructure
                                                 .Page(page =>
                                                     {
                                                         page
+                                                            .Margin(20);
+                                                        
+                                                        page
                                                             .Content()
                                                             .Column(column =>
                                                                 {
@@ -55,10 +60,6 @@ namespace Rocket.QuestPdf.Infrastructure
                                                                                 .GetString(element.Artifact),
                                                                             options => { options.ParagraphSpacing = 7.5F; }
                                                                         );
-
-                                                                    column
-                                                                        .Item()
-                                                                        .PageBreak();
                                                                 }
                                                             );
                                                     }
@@ -86,7 +87,14 @@ namespace Rocket.QuestPdf.Infrastructure
                             .GeneratePdf();
 
                     results
-                        .Add((scanId, fileData));
+                        .Add(
+                            new ArtifactDataElement
+                        {
+                            Artifact = fileData,
+                            FileExtension = CommonFileConstants.PdfFileExtension,
+                            ScanId = null,
+                            FileName = artifactFileName
+                        });
                 }
                 catch (Exception ex)
                 {
@@ -113,6 +121,9 @@ namespace Rocket.QuestPdf.Infrastructure
                                             .Page(page =>
                                                 {
                                                     page
+                                                        .Margin(20);
+                                                    
+                                                    page
                                                         .Content()
                                                         .Column(column =>
                                                             {
@@ -133,7 +144,15 @@ namespace Rocket.QuestPdf.Infrastructure
                                 .GeneratePdf();
 
                         results
-                            .Add((scanId, fileData));
+                            .Add(
+                                new ArtifactDataElement
+                                {
+                                    Artifact = fileData,
+                                    FileExtension = CommonFileConstants.PdfFileExtension,
+                                    ScanId = scanId,
+                                    FileName = element.FileName
+                                }
+                            );
 
                         await
                             jobControl
@@ -157,16 +176,17 @@ namespace Rocket.QuestPdf.Infrastructure
             return results;
         }
 
-        public async Task<IEnumerable<(string, byte[])>> GeneratePdfFromImageAsync(
+        public async Task<IEnumerable<ArtifactDataElement>> GeneratePdfFromImageAsync(
             IJobControl jobControl,
             IEnumerable<ArtifactDataElement> elements,
+            string artifactFileName,
             bool mergeFiles,
             CancellationToken cancellationToken
         )
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
-            var results = new List<(string, byte[])>();
+            var results = new List<ArtifactDataElement>();
             string scanId = null;
 
             if (mergeFiles)
@@ -227,7 +247,14 @@ namespace Rocket.QuestPdf.Infrastructure
                             .GeneratePdf();
 
                     results
-                        .Add((scanId, fileData));
+                        .Add(
+                            new ArtifactDataElement
+                        {
+                            Artifact = fileData,
+                            FileExtension = CommonFileConstants.PdfFileExtension,
+                            ScanId = null,
+                            FileName = artifactFileName
+                        });
                 }
                 catch (Exception ex)
                 {
@@ -282,7 +309,15 @@ namespace Rocket.QuestPdf.Infrastructure
                                 .GeneratePdf();
 
                         results
-                            .Add((scanId, fileData));
+                            .Add(
+                                new ArtifactDataElement
+                                {
+                                    Artifact = fileData,
+                                    FileExtension = CommonFileConstants.PdfFileExtension,
+                                    ScanId = scanId,
+                                    FileName = element.FileName
+                                }
+                            );
 
                         await
                             jobControl

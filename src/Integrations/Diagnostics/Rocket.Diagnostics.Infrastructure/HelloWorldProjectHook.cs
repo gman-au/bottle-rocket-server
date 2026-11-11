@@ -97,7 +97,7 @@ namespace Rocket.Diagnostics.Infrastructure
                         new ArtifactDataElement
                         {
                             Artifact = Encoding.Default.GetBytes(responseJson),
-                            FileExtension = ".json",
+                            FileExtension = CommonFileConstants.JsonFileExtension,
                         }
                     ]
                 };

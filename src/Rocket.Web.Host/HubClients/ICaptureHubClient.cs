@@ -9,6 +9,8 @@ namespace Rocket.Web.Host.HubClients
         
         event Func<Task> OnNewExecutionUpdateReceived;
         
+        event Func<string, int, Task> OnNewExecutionElementUpdateReceived;
+        
         event Func<bool, Task> OnNewConnectorUpdateReceived;
         
         event Func<Task> OnScanDeletedReceived;

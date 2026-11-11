@@ -62,6 +62,34 @@ namespace Rocket.Api.Host.Notifiers
                     );
         }
 
+        public async Task NotifyNewExecutionElementUpdateAsync(
+            string userId,
+            string scanId,
+            int executionStatus,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation(
+                    "Notifying user {userId} of new execution element update",
+                    userId
+                );
+
+            dashboardSnapshotProvider
+                .MarkAsDirty(userId);
+
+            await
+                hubContext
+                    .Clients
+                    .Group($"user_{userId}")
+                    .SendAsync(
+                        "NewExecutionElementUpdateReceived",
+                        scanId,
+                        executionStatus,
+                        cancellationToken: cancellationToken
+                    );
+        }
+
         public async Task NotifyConnectorUpdateAsync(
             string userId,
             bool success,

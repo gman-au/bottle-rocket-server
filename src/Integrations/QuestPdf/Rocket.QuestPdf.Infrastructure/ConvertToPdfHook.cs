@@ -33,7 +33,7 @@ namespace Rocket.QuestPdf.Infrastructure
                 )
                 .InitializeArtifact(this);
 
-            IEnumerable<(string, byte[])> fileResults = null;
+            IEnumerable<ArtifactDataElement> fileResults = null;
 
             var elements =
                 Artifact
@@ -49,6 +49,7 @@ namespace Rocket.QuestPdf.Infrastructure
                             .GeneratePdfFromTextAsync(
                                 jobControl,
                                 elements,
+                                Artifact.FileName,
                                 mergeFiles,
                                 cancellationToken
                             );
@@ -61,6 +62,7 @@ namespace Rocket.QuestPdf.Infrastructure
                             .GeneratePdfFromImageAsync(
                                 jobControl,
                                 elements,
+                                Artifact.FileName,
                                 mergeFiles,
                                 cancellationToken
                             );
