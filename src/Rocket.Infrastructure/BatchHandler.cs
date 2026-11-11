@@ -437,6 +437,12 @@ namespace Rocket.Infrastructure
                                 cancellationToken
                             );
                 
+                if (batch == null)
+                    throw new RocketException(
+                        $"Could not find batch with id [{batchId}]",
+                        ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                    );
+                
                 if (batch.Archived)
                     throw new RocketException(
                         "The batch is already archived and cannot be closed.",

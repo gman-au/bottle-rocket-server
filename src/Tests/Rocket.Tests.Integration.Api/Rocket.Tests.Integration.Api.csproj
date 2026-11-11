@@ -41,6 +41,9 @@
       <Compile Update="Features\Authentication.feature.cs">
         <DependentUpon>Authentication.feature</DependentUpon>
       </Compile>
+      <Compile Update="Features\Batch.feature.cs">
+        <DependentUpon>Batch.feature</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>
