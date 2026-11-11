@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,17 +7,21 @@ using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Domain.Jobs;
 using Rocket.Google.Domain;
+using Rocket.Integrations.Common.Extensions;
+using Rocket.Interfaces;
 using File = Google.Apis.Drive.v3.Data.File;
 
 namespace Rocket.Google.Infrastructure
 {
-    public class DriveUploadService(IGoogleTokenAcquirer tokenAcquirer) : IDriveUploadService
+    public class DriveUploadService(
+        IGoogleTokenAcquirer tokenAcquirer
+    ) : IDriveUploadService
     {
         public async Task UploadFileAsync(
-            byte[] fileBytes,
-            string fileName,
-            string fileExtension,
+            IJobControl jobControl,
+            IEnumerable<ArtifactDataElement> elements,
             string targetFolderId,
             GoogleConnector googleConnector,
             CancellationToken cancellationToken
@@ -41,7 +46,7 @@ namespace Rocket.Google.Infrastructure
                     "Refresh token is not supplied for operation, please check Google connector",
                     ApiStatusCodeEnum.ThirdPartyServiceError
                 );
-            
+
             var credential =
                 await tokenAcquirer
                     .GetFlowCredentialAsync(
@@ -58,33 +63,78 @@ namespace Rocket.Google.Infrastructure
                     }
                 );
 
-            var fullFileName = $"{fileName}{fileExtension}";
-
-            var fileMetadata = new File
+            var allCompleted = true;
+            
+            foreach (var element in elements)
             {
-                Name = fullFileName,
-                Parents = new List<string> { targetFolderId } // Specify the parent folder
-            };
+                try
+                {
+                    await
+                        jobControl
+                            .StartStepAsync(
+                                element.ScanId
+                            );
 
-            await using (var fileStream = new MemoryStream(fileBytes))
+                    var fullFileName = $"{element.FileName}{element.FileExtension}";
+
+                    var fileMetadata =
+                        new File
+                        {
+                            Name = fullFileName,
+                            Parents = new List<string> { targetFolderId }
+                        };
+
+                    await using (var fileStream = new MemoryStream(element.Artifact))
+                    {
+                        var mimeType = $"image/{element.FileExtension.Replace(".", "")}";
+
+                        // Create a new file, with metadata and stream
+                        var request =
+                            service
+                                .Files
+                                .Create(
+                                    fileMetadata,
+                                    fileStream,
+                                    mimeType
+                                );
+
+                        request.Fields = "*"; // Request all fields in the response
+
+                        var progress =
+                            await
+                                request
+                                    .UploadAsync(cancellationToken);
+                        
+                        if (progress.Exception != null)
+                            throw progress.Exception;
+                        
+                        await
+                            jobControl
+                                .SucceedStepAsync(
+                                    $"File {element.FileName} uploaded to Google Drive {progress.BytesSent} bytes sent",
+                                    element.ScanId
+                                );
+                    }
+                }
+                catch (Exception ex)
+                {
+                    allCompleted = false;
+
+                    await
+                        jobControl
+                            .FailStepAsync(
+                                ex,
+                                element.ScanId
+                            );
+                }
+            }
+
+            if (!allCompleted)
             {
-                var mimeType = $"image/{fileExtension.Replace(".", "")}";
-
-                // Create a new file, with metadata and stream
-                var request =
-                    service
-                        .Files
-                        .Create(
-                            fileMetadata,
-                            fileStream,
-                            mimeType
-                        );
-
-                request.Fields = "*"; // Request all fields in the response
-
-                await
-                    request
-                        .UploadAsync(cancellationToken);
+                throw new RocketException(
+                    "There was an error uploading the data to Google Drive",
+                    ApiStatusCodeEnum.ThirdPartyServiceError
+                );
             }
         }
     }

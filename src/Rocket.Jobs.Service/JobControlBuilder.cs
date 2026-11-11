@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
 using Rocket.Integrations.Common;
 using Rocket.Integrations.Domain;
@@ -99,9 +100,10 @@ namespace Rocket.Jobs.Service
                             CancellationToken.None
                         );
             }
-            else
+            
+            if (executionStatus == (int)ExecutionStatusEnum.Running || !isElementUpdate)
             {
-                // Don't update the step status for a single element
+                // Don't update the step status for a single element, *unless* it has started running
                 await
                     executionRepository
                         .UpdateExecutionStepAsync(
