@@ -3,7 +3,6 @@ using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
-using Rocket.Interfaces;
 
 namespace Rocket.Integrations.Common
 {
@@ -11,17 +10,14 @@ namespace Rocket.Integrations.Common
         where TExecutionStep : BaseExecutionStep
     {
         protected readonly ILogger Logger;
-        private readonly IFileRetitler _fileRetitler;
 
         protected ExecutionStepArtifact Artifact;
         protected TExecutionStep ExecutionStep;
 
         protected HookBase(
-            ILogger logger,
-            IFileRetitler fileRetitler = null
+            ILogger logger
         )
         {
-            _fileRetitler = fileRetitler;
             Logger = logger;
         }
 
@@ -48,95 +44,6 @@ namespace Rocket.Integrations.Common
         {
             Artifact =
                 artifact;
-
-            //TODO: fix
-            /*
-             Logger
-                .LogDebug(
-                    "Artifact of type {fileExtension} set for hook type {type}",
-                    Artifact?.FileExtension,
-                    typeof(TExecutionStep).Name
-                );
-                */
         }
-
-        /*
-        protected async Task RetitleFileIfApplicableAsync(
-            string fileText,
-            CancellationToken cancellationToken
-        )
-        {
-            var scanId =
-                Artifact
-                    .ScanId;
-
-            var userId =
-                Artifact
-                    .UserId;
-
-            var newFileName =
-                await
-                    _fileRetitler
-                        .RetitleAsync(
-                            fileText,
-                            scanId,
-                            userId,
-                            cancellationToken
-                        );
-
-            if (!string.IsNullOrEmpty(newFileName))
-            {
-                Artifact.FileName = newFileName;
-            }
-        }
-        
-
-        
-
-        protected byte[] GetArtifactAsBytes()
-        {
-            var bytes =
-                Artifact
-                    .Artifact;
-
-            if (bytes == null)
-                throw new RocketException(
-                    $"Artifact data for hook [{typeof(TExecutionStep)}] is empty or not initialized; please check configuration",
-                    ApiStatusCodeEnum.DeveloperError
-                );
-
-            return
-                bytes;
-        }
-
-        protected ProjectTaskTrackerSchema GetArtifactAsProjectTaskTrackerData()
-        {
-            var bytes =
-                Artifact
-                    .Artifact;
-
-            if (bytes == null)
-                throw new RocketException(
-                    $"Artifact data for hook [{typeof(TExecutionStep)}] is empty or not initialized; please check configuration",
-                    ApiStatusCodeEnum.DeveloperError
-                );
-
-            try
-            {
-                var schema =
-                    JsonSerializer
-                        .Deserialize<ProjectTaskTrackerSchema>(bytes);
-
-                return schema;
-            }
-            catch (JsonException)
-            {
-                throw new RocketException(
-                    $"There was a problem loading the project task tracker artifact during step [{typeof(TExecutionStep)}]",
-                    ApiStatusCodeEnum.DeveloperError
-                );
-            }
-        }
-        */
     }
 }

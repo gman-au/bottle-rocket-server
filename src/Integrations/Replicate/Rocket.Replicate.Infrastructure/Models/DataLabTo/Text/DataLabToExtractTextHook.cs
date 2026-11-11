@@ -25,8 +25,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
         IFileRetitler fileRetitler,
         ILogger<DataLabToExtractTextHook> logger
     ) : HookWithConnectorBase<DataLabToExtractTextExecutionStep, ReplicateConnector>(
-        logger,
-        fileRetitler
+        logger
     ), IIntegrationHook
     {
         private const string DataLabToCustomEndpoint = "v1/models/datalab-to/marker/predictions";

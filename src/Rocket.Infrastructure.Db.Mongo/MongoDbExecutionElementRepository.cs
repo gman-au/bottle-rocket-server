@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
@@ -20,29 +19,6 @@ namespace Rocket.Infrastructure.Db.Mongo
     ), IExecutionElementRepository
     {
         protected override string CollectionName => MongoConstants.ExecutionsCollection;
-
-        public async Task<ExecutionElement> GetExecutionElementByIdAsync(
-            string userId,
-            string executionId,
-            string elementId,
-            CancellationToken cancellationToken
-        )
-        {
-            var execution =
-                await
-                    GetExecutionByIdAsync(
-                        executionId,
-                        userId,
-                        cancellationToken
-                    );
-
-            return
-                execution
-                    .Elements
-                    .FindElementById(
-                        elementId
-                    );
-        }
 
         public async Task<ExecutionElement> GetExecutionElementByScanIdAsync(
             string userId,
@@ -73,62 +49,6 @@ namespace Rocket.Infrastructure.Db.Mongo
                 );
 
             return element;
-        }
-
-        public async Task<ExecutionElement> InsertExecutionElementAsync(
-            ExecutionElement executionElement,
-            string userId,
-            string executionId,
-            CancellationToken cancellationToken
-        )
-        {
-            var scanId =
-                ObjectId
-                    .GenerateNewId()
-                    .ToString();
-
-            executionElement.Id = scanId;
-
-            var filter =
-                BuildExecutionFilterByIdAndUserId(
-                    executionId,
-                    userId
-                );
-
-            var options = new UpdateOptions();
-
-            var batch =
-                await
-                    GetExecutionByIdAsync(
-                        executionId,
-                        userId,
-                        cancellationToken
-                    );
-
-            if (batch == null)
-                throw new RocketException(
-                    $"Could not find execution with id [{executionId}]",
-                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
-                );
-
-            var update =
-                Builders<Execution>
-                    .Update
-                    .Push(
-                        w => w.Elements,
-                        executionElement
-                    );
-
-            await
-                GetMongoCollection()
-                    .UpdateOneAsync(
-                        filter,
-                        update,
-                        options,
-                        cancellationToken
-                    );
-
-            return executionElement;
         }
 
         public async Task<Execution> UpdateExecutionElementAsync(
@@ -191,7 +111,7 @@ namespace Rocket.Infrastructure.Db.Mongo
             return execution;
         }
 
-        public async Task<Execution> GetExecutionByIdAsync(
+        private async Task<Execution> GetExecutionByIdAsync(
             string executionId,
             string userId,
             CancellationToken cancellationToken

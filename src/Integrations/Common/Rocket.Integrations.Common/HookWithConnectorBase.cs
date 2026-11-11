@@ -3,7 +3,6 @@ using Rocket.Domain.Connectors;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
-using Rocket.Interfaces;
 
 namespace Rocket.Integrations.Common
 {
@@ -15,16 +14,16 @@ namespace Rocket.Integrations.Common
         protected TConnector Connector;
 
         protected HookWithConnectorBase(
-            ILogger logger,
-            IFileRetitler fileRetitler = null
+            ILogger logger
         ) : base(
-            logger,
-            fileRetitler
+            logger
         )
         {
         }
 
-        public void SetConnector(TConnector connector)
+        public void SetConnector(
+            TConnector connector
+        )
         {
             Connector =
                 connector ??

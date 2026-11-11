@@ -72,16 +72,6 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
-        Task<IEnumerable<ExecutionByWorkflowTotal>> AggregateExecutionsByWorkflowAsync(
-            string userId,
-            CancellationToken cancellationToken
-        );
-
-        Task<IEnumerable<ExecutionByStatusTotal>> AggregateExecutionsByStatusAsync(
-            string userId,
-            CancellationToken cancellationToken
-        );
-
         public Task<IEnumerable<LifecycleTotal>> AggregateLifecycleTotalsAsync(
             string userId,
             CancellationToken cancellationToken

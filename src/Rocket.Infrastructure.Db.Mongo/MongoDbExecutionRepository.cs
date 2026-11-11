@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using Rocket.Domain.Dashboard;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
@@ -220,7 +221,7 @@ namespace Rocket.Infrastructure.Db.Mongo
                     );
 
             if (string.IsNullOrEmpty(scanId)) return execution;
-            
+
             if (!BaseExecutionElementEx.AppendLogMessageForScanId(
                     execution.Elements,
                     scanId,
@@ -382,74 +383,6 @@ namespace Rocket.Infrastructure.Db.Mongo
                     .ToList();
         }
 
-        public async Task<IEnumerable<ExecutionByWorkflowTotal>> AggregateExecutionsByWorkflowAsync(
-            string userId,
-            CancellationToken cancellationToken
-        )
-        {
-            var collection =
-                GetMongoCollection();
-
-            var filter = Builders<Execution>
-                .Filter
-                .Eq(
-                    o => o.UserId,
-                    userId
-                );
-
-            var result =
-                await
-                    collection
-                        .Aggregate()
-                        .Match(filter)
-                        .Group(
-                            o => o.Name,
-                            g =>
-                                new ExecutionByWorkflowTotal
-                                {
-                                    Workflow = g.Key ?? DomainConstants.UnknownType,
-                                    Executions = g.Count()
-                                }
-                        )
-                        .ToListAsync(cancellationToken);
-
-            return result;
-        }
-
-        public async Task<IEnumerable<ExecutionByStatusTotal>> AggregateExecutionsByStatusAsync(
-            string userId,
-            CancellationToken cancellationToken
-        )
-        {
-            var collection =
-                GetMongoCollection();
-
-            var filter = Builders<Execution>
-                .Filter
-                .Eq(
-                    o => o.UserId,
-                    userId
-                );
-
-            var result =
-                await
-                    collection
-                        .Aggregate()
-                        .Match(filter)
-                        .Group(
-                            o => o.ExecutionStatus,
-                            g =>
-                                new ExecutionByStatusTotal
-                                {
-                                    Status = g.Key,
-                                    Executions = g.Count()
-                                }
-                        )
-                        .ToListAsync(cancellationToken);
-
-            return result;
-        }
-
         public async Task<IEnumerable<LifecycleTotal>> AggregateLifecycleTotalsAsync(
             string userId,
             CancellationToken cancellationToken
@@ -457,20 +390,28 @@ namespace Rocket.Infrastructure.Db.Mongo
         {
             var collection =
                 GetMongoCollection();
-            
-            // TODO: fix
-            /*
+
             var results =
                 await
                     collection
                         .AsQueryable()
                         .Where(o => o.UserId == userId)
-                        .GroupBy(e => new { e.ExecutionStatus, e.Name, e.Vendor })
-                        .Select(
-                            g => new LifecycleTotal
+                        .SelectMany(
+                            batch => batch.Elements,
+                            (batch, element) =>
+                                new LifecycleTotal
+                                {
+                                    Status = element.ExecutionStatus,
+                                    Workflow = batch.Name,
+                                    Vendor = element.Vendor
+                                }
+                        )
+                        .GroupBy(o => new { o.Status, o.Workflow, o.Vendor })
+                        .Select(g => 
+                            new LifecycleTotal
                             {
-                                Status = g.Key.ExecutionStatus,
-                                Workflow = g.Key.Name,
+                                Status = g.Key.Status,
+                                Workflow = g.Key.Workflow,
                                 Vendor = g.Key.Vendor,
                                 Count = g.Count()
                             }
@@ -478,8 +419,6 @@ namespace Rocket.Infrastructure.Db.Mongo
                         .ToListAsync(cancellationToken);
 
             return results;
-            */
-            return [];
         }
     }
 }

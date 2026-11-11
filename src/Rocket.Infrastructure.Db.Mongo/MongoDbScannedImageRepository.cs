@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using Rocket.Domain.Dashboard;
 using Rocket.Domain.ScannedImages;
-using Rocket.Domain.Utils;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure.Db.Mongo
@@ -22,16 +18,6 @@ namespace Rocket.Infrastructure.Db.Mongo
     ), IScannedImageRepository
     {
         protected override string CollectionName => MongoConstants.ScannedImageCollection;
-
-        public async Task<ScannedImage> InsertScanAsync(
-            ScannedImage scannedImage,
-            CancellationToken cancellationToken
-        ) =>
-            await
-                InsertRecordAsync(
-                    scannedImage,
-                    cancellationToken
-                );
 
         public async Task UpdateScannedImageFieldAsync<TField>(
             string userId,
@@ -58,60 +44,5 @@ namespace Rocket.Infrastructure.Db.Mongo
                         ),
                     cancellationToken
                 );
-
-        public async Task<ScannedImage> GetScanByIdAsync(
-            string userId,
-            string id,
-            CancellationToken cancellationToken
-        ) =>
-            await
-                FetchFirstFilteredRecordAsync(
-                    Builders<ScannedImage>
-                        .Filter
-                        .Eq(
-                            o => o.UserId,
-                            userId
-                        ) &
-                    Builders<ScannedImage>
-                        .Filter
-                        .Eq(
-                            o => o.Id,
-                            id
-                        ),
-                    cancellationToken
-                );
-
-        public async Task<IEnumerable<ScanByVendorTotal>> AggregateScansByVendorAsync(
-            string userId,
-            CancellationToken cancellationToken
-        )
-        {
-            var collection =
-                GetMongoCollection();
-
-            var filter = Builders<ScannedImage>
-                .Filter
-                .Eq(
-                    o => o.UserId,
-                    userId
-                );
-
-            var result =
-                await
-                    collection
-                        .Aggregate()
-                        .Match(filter)
-                        .Group(
-                            o => o.Vendor,
-                            g => new ScanByVendorTotal
-                            {
-                                Vendor = g.Key ?? DomainConstants.UnknownType,
-                                Scans = g.Count()
-                            }
-                        )
-                        .ToListAsync(cancellationToken);
-
-            return result;
-        }
     }
 }

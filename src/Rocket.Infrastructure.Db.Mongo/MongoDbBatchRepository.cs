@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Rocket.Domain.Dashboard;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.ScannedImages;
+using Rocket.Domain.Utils;
 using Rocket.Infrastructure.Db.Mongo.Extensions;
 using Rocket.Interfaces;
 
@@ -147,34 +149,33 @@ namespace Rocket.Infrastructure.Db.Mongo
         {
             var collection =
                 GetMongoCollection();
-//TODO: aggregate children
-            /*
-            var filter = Builders<ScannedImage>
+
+            var filter = Builders<Batch>
                 .Filter
                 .Eq(
                     o => o.UserId,
                     userId
                 );
 
-
             var result =
                 await
                     collection
                         .Aggregate()
                         .Match(filter)
+                        .Unwind(o => o.Scans)
+                        .ReplaceRoot<ScannedImage>("$Scans")
                         .Group(
                             o => o.Vendor,
-                            g => new ScanByVendorTotal
-                            {
-                                Vendor = g.Key ?? DomainConstants.UnknownType,
-                                Scans = g.Count()
-                            }
+                            g =>
+                                new ScanByVendorTotal
+                                {
+                                    Vendor = g.Key ?? DomainConstants.UnknownType,
+                                    Scans = g.Count()
+                                }
                         )
                         .ToListAsync(cancellationToken);
 
             return result;
-            */
-            return [];
         }
 
         public async Task UpdateBatchFieldAsync<TField>(
