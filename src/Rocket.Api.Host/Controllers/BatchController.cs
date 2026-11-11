@@ -27,6 +27,7 @@ namespace Rocket.Api.Host.Controllers
         ICaptureNotifier captureNotifier,
         IBatchHandler batchHandler,
         IBatchRepository batchRepository,
+        IWorkflowDetector workflowDetector,
         IDashboardSnapshotProvider dashboardSnapshotProvider
     ) : RocketControllerBase(userManager)
     {
@@ -134,12 +135,30 @@ namespace Rocket.Api.Host.Controllers
                         cancellationToken
                     );
 
-            // TODO: trigger workflows if required
+            var workflowIds =
+                (request.Workflows ?? [])
+                .ToList();
+
+            var isStarted = false;
+
+            if (workflowIds.Count != 0)
+            {
+                isStarted = true;
+                
+                await
+                    workflowDetector
+                        .DetectAndScheduleWorkflowAsync(
+                            request.Id,
+                            userId,
+                            workflowIds,
+                            cancellationToken
+                        );
+            }
 
             var response =
                 new CloseBatchResponse
                 {
-                    IsStarted = false
+                    IsStarted = isStarted
                 };
 
             return

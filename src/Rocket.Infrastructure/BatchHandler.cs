@@ -428,6 +428,27 @@ namespace Rocket.Infrastructure
 
             try
             {
+                var batch =
+                    await
+                        batchRepository
+                            .GetBatchByIdAsync(
+                                userId,
+                                batchId,
+                                cancellationToken
+                            );
+                
+                if (batch.Archived)
+                    throw new RocketException(
+                        "The batch is already archived and cannot be closed.",
+                        ApiStatusCodeEnum.RecordIsArchived
+                    );
+                
+                if (batch.Status == (int)BatchStatusEnum.Closed)
+                    throw new RocketException(
+                        "The batch is already closed.",
+                        ApiStatusCodeEnum.RecordIsArchived
+                    );
+                
                 await
                     batchRepository
                         .UpdateBatchFieldAsync(

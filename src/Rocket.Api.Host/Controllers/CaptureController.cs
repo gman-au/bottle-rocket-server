@@ -168,9 +168,8 @@ namespace Rocket.Api.Host.Controllers
                     await
                         workflowDetector
                             .DetectAndScheduleWorkflowAsync(
-                                scanId,
+                                batchId,
                                 userId,
-                                model.Vendor,
                                 workflowIds,
                                 cancellationToken
                             );
