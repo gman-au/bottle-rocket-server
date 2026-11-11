@@ -19,28 +19,6 @@ namespace Rocket.Tests.Unit
         private readonly TestContext _context = new();
 
         [Fact]
-        public async Task Test_Save_Valid_Data()
-        {
-            _context.ArrangeValidDataToSave();
-            await _context.ActWriteScanAsync();
-            _context.AssertShaCalculatorWasCalledOnce();
-            _context.AssertThumbnailerWasCalledOnce();
-            _context.AssertBlobSaveWasCalledOnce();
-            _context.AssertImageRepositorySaveWasCalledOnce();
-        }
-
-        [Fact]
-        public async Task Test_Save_Empty_Data()
-        {
-            _context.ArrangeEmptyDataToSave();
-            await _context.AssertWriteScanThrowsNoAttachmentErrorAsync();
-            _context.AssertShaCalculatorWasNotCalled();
-            _context.AssertThumbnailerWasNotCalled();
-            _context.AssertBlobSaveWasNotCalled();
-            _context.AssertImageRepositorySaveWasNotCalled();
-        }
-
-        [Fact]
         public async Task Test_Load_Valid_Data()
         {
             _context.ArrangeValidDataToLoad();
@@ -72,37 +50,14 @@ namespace Rocket.Tests.Unit
             _context.AssertBlobLoadWasNotCalled();
         }
 
-        [Fact]
-        public async Task Test_Load_Archived_Record_Data()
-        {
-            _context.ArrangeArchivedRecordFoundToLoad();
-            await _context.ActReadScanAsync();
-            _context.AssertImageRepositoryLoadWasCalledOnce();
-            _context.AssertShaCalculatorWasNotCalled();
-            _context.AssertBlobLoadWasNotCalled();
-        }
-
-        [Fact]
-        public async Task Test_Delete_Archived_Record()
-        {
-            _context.ArrangeArchivedRecordFoundToLoad();
-            await _context.AssertDeleteScanThrowsAlreadyDeletedErrorAsync();
-            _context.AssertImageRepositoryLoadWasCalledOnce();
-            _context.AssertShaCalculatorWasNotCalled();
-            _context.AssertBlobLoadWasNotCalled();
-        }
-
         private class TestContext
         {
             private readonly ScannedImageHandler _sut;
-            private byte[] _imageData;
-            private string _userId;
             private string _contentType;
             private string _fileExtension;
             private readonly IBlobStore _blobStore;
             private readonly ISha256Calculator _sha256Calculator;
-            private readonly IScannedImageRepository _scannedImageRepository;
-            private readonly IExecutionRepository _executionRepository;
+            private readonly IBatchRepository _batchRepository;
             private readonly IThumbnailer _thumbnailer;
             private readonly IFixture _fixture;
             private string _vendor;
@@ -114,8 +69,7 @@ namespace Rocket.Tests.Unit
 
                 _blobStore = _fixture.Freeze<IBlobStore>();
                 _sha256Calculator = _fixture.Freeze<ISha256Calculator>();
-                _scannedImageRepository = _fixture.Freeze<IScannedImageRepository>();
-                _executionRepository = _fixture.Freeze<IExecutionRepository>();
+                _batchRepository = _fixture.Freeze<IBatchRepository>();
                 _thumbnailer = _fixture.Freeze<IThumbnailer>();
 
                 _sut =
@@ -123,56 +77,34 @@ namespace Rocket.Tests.Unit
                         _fixture.Freeze<ILogger<ScannedImageHandler>>(),
                         _blobStore,
                         _sha256Calculator,
-                        _scannedImageRepository,
-                        _executionRepository,
-                        _thumbnailer
+                        _batchRepository
                     );
-            }
-
-            public void ArrangeValidDataToSave()
-            {
-                _imageData = [0x12];
-                _userId = Guid.NewGuid().ToString();
-                _contentType = "image/jpeg";
-                _fileExtension = ".jpg";
-                _fileExtension = ".jpg";
-                _vendor = "vendor";
-            }
-
-            public void ArrangeEmptyDataToSave()
-            {
-                _imageData = [];
-                _userId = Guid.NewGuid().ToString();
-                _contentType = "image/jpeg";
-                _fileExtension = ".jpg";
             }
 
             public void ArrangeValidDataToLoad()
             {
-                _scannedImageRepository
-                    .GetScanByIdAsync(null, null, CancellationToken.None)
+                _batchRepository
+                    .GetScanByIdAsync(null, null, null, CancellationToken.None)
                     .ReturnsForAnyArgs(
                         Task
                             .FromResult(
                                 _fixture
                                     .Build<ScannedImage>()
                                     .With(o => o.Sha256, "abc123")
-                                    .With(o => o.Archived, false)
                                     .Create())
                     );
             }
 
             public void ArrangeArchivedRecordFoundToLoad()
             {
-                _scannedImageRepository
-                    .GetScanByIdAsync(null, null, CancellationToken.None)
+                _batchRepository
+                    .GetScanByIdAsync(null, null, null, CancellationToken.None)
                     .ReturnsForAnyArgs(
                         Task
                             .FromResult(
                                 _fixture
                                     .Build<ScannedImage>()
                                     .With(o => o.Sha256, "abc123")
-                                    .With(o => o.Archived, true)
                                     .Create())
                     );
             }
@@ -193,32 +125,18 @@ namespace Rocket.Tests.Unit
 
             public void ArrangeNoRecordFoundToLoad()
             {
-                _scannedImageRepository
-                    .GetScanByIdAsync(null, null, CancellationToken.None)
+                _batchRepository
+                    .GetScanByIdAsync(null, null, null, CancellationToken.None)
                     .ReturnsForAnyArgs(Task.FromResult<ScannedImage>(null));
-            }
-
-            public async Task ActWriteScanAsync()
-            {
-                await
-                    _sut
-                        .WriteAsync(
-                            _imageData,
-                            _contentType,
-                            _fileExtension,
-                            _userId,
-                            _vendor,
-                            "Test",
-                            CancellationToken.None
-                        );
             }
 
             public async Task ActReadScanAsync()
             {
-                (_, _imageData) =
+                (_, _) =
                     await
                         _sut
-                            .ReadAsync(
+                            .ReadFromBatchAsync(
+                                null,
                                 null,
                                 null,
                                 CancellationToken.None
@@ -230,22 +148,12 @@ namespace Rocket.Tests.Unit
                 _ =
                     await
                         _sut
-                            .ArchiveAsync(
+                            .DeleteFromBatchAsync(
+                                null,
                                 null,
                                 null,
                                 CancellationToken.None
                             );
-            }
-
-            public async Task AssertWriteScanThrowsNoAttachmentErrorAsync()
-            {
-                var exception =
-                    await
-                        Assert
-                            .ThrowsAsync<RocketException>(async () => await ActWriteScanAsync());
-
-                Assert
-                    .Equal((int)ApiStatusCodeEnum.NoAttachmentsFound, exception.ApiStatusCode);
             }
 
             public async Task AssertReadScanThrowsNoAttachmentErrorAsync()
@@ -339,30 +247,16 @@ namespace Rocket.Tests.Unit
 
             public void AssertImageRepositoryLoadWasNotCalled()
             {
-                _scannedImageRepository
+                _batchRepository
                     .ReceivedWithAnyArgs(0)
-                    .GetScanByIdAsync(null, null, CancellationToken.None);
+                    .GetScanByIdAsync(null, null, null, CancellationToken.None);
             }
 
             public void AssertImageRepositoryLoadWasCalledOnce()
             {
-                _scannedImageRepository
+                _batchRepository
                     .ReceivedWithAnyArgs(1)
-                    .GetScanByIdAsync(null, null, CancellationToken.None);
-            }
-
-            public void AssertImageRepositorySaveWasNotCalled()
-            {
-                _scannedImageRepository
-                    .ReceivedWithAnyArgs(0)
-                    .InsertScanAsync(null, CancellationToken.None);
-            }
-
-            public void AssertImageRepositorySaveWasCalledOnce()
-            {
-                _scannedImageRepository
-                    .ReceivedWithAnyArgs(1)
-                    .InsertScanAsync(null, CancellationToken.None);
+                    .GetScanByIdAsync(null, null, null, CancellationToken.None);
             }
         }
     }

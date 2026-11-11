@@ -158,6 +158,7 @@ namespace Rocket.Tests.Unit
                         _sut
                             .GetMyScanAsync(
                                 null,
+                                null,
                                 CancellationToken.None
                             );
             }
