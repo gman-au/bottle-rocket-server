@@ -111,7 +111,7 @@ namespace Rocket.Google.Infrastructure
                         await
                             jobControl
                                 .SucceedStepAsync(
-                                    $"File {element.FileName} uploaded to Google Drive {progress.BytesSent} bytes sent",
+                                    $"File {element.FileName} uploaded to Google Drive, {progress.BytesSent} bytes sent",
                                     element.ScanId
                                 );
                     }

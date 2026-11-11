@@ -24,7 +24,7 @@ namespace Rocket.Microsofts.Infrastructure
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
-            Func<string, string, Task> appendLogMessageCallback,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {
@@ -47,41 +47,76 @@ namespace Rocket.Microsofts.Infrastructure
                     ApiStatusCodeEnum.ValidationError
                 );
 
-            var noteTitle = $"BR_Note_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
+            var elements = Artifact.Elements ?? [];
 
-            if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.RawTextData)
+            var allCompleted = true;
+
+            foreach (var element in elements)
             {
-                var textBytes =
-                    Artifact
-                        .Artifact;
+                try
+                {
+                    await
+                        jobControl
+                            .StartStepAsync(
+                                element.ScanId
+                            );
 
-                var textData =
-                    Encoding
-                        .Default
-                        .GetString(textBytes);
+                    var noteTitle = Artifact.FileName ?? $"BR_Note_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
 
-                await
-                    oneNoteUploader
-                        .UploadTextNoteAsync(
-                            Connector,
-                            ExecutionStep.SectionId,
-                            noteTitle,
-                            textData,
-                            cancellationToken
-                        );
+                    if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.RawTextData)
+                    {
+                        var textBytes =
+                            element
+                                .Artifact;
+
+                        var textData =
+                            Encoding
+                                .Default
+                                .GetString(textBytes);
+
+                        await
+                            oneNoteUploader
+                                .UploadTextNoteAsync(
+                                    Connector,
+                                    ExecutionStep.SectionId,
+                                    noteTitle,
+                                    textData,
+                                    cancellationToken
+                                );
+                    }
+                    else if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.ImageData)
+                    {
+                        await
+                            oneNoteUploader
+                                .UploadImageNoteAsync(
+                                    Connector,
+                                    ExecutionStep.SectionId,
+                                    element.FileExtension,
+                                    noteTitle,
+                                    element.Artifact,
+                                    cancellationToken
+                                );
+                    }
+                }
+                catch (Exception ex)
+                {
+                    allCompleted = false;
+
+                    await
+                        jobControl
+                            .FailStepAsync(
+                                ex,
+                                element.ScanId
+                            );
+                }
             }
-            else if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.ImageData)
+
+            if (!allCompleted)
             {
-                await
-                    oneNoteUploader
-                        .UploadImageNoteAsync(
-                            Connector,
-                            ExecutionStep.SectionId,
-                            Artifact.FileExtension,
-                            noteTitle,
-                            Artifact.Artifact,
-                            cancellationToken
-                        );
+                throw new RocketException(
+                    "There was an error uploading the data to OneNote",
+                    ApiStatusCodeEnum.ThirdPartyServiceError
+                );
             }
 
             return
