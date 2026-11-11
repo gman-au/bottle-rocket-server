@@ -97,6 +97,13 @@ namespace Rocket.Microsofts.Infrastructure
                                     cancellationToken
                                 );
                     }
+                    
+                    await
+                        jobControl
+                            .SucceedStepAsync(
+                                $"File {element.FileName} uploaded to OneNote",
+                                element.ScanId
+                            );
                 }
                 catch (Exception ex)
                 {
