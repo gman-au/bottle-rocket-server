@@ -409,7 +409,8 @@
     {
         // Clean up SignalR subscription
         CaptureHubClient.OnNewExecutionUpdateReceived -= HandleExecutionUpdate;
-
+        CaptureHubClient.OnNewExecutionElementUpdateReceived -= HandleExecutionElementUpdate;
+        
         await
             CaptureHubClient
                 .DisposeAsync();
