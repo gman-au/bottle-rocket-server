@@ -79,5 +79,35 @@ namespace Rocket.Web.Infrastructure.Client
 
             return result;
         }
+
+        public async Task<RevokeSessionResponse> RevokeAllSessionsAsync(
+            CancellationToken cancellationToken
+        )
+        {
+            Logger
+                .LogInformation("Received Revoke Session (all) request");
+
+            var response =
+                await
+                    AuthenticatedApiClient
+                        .DeleteAsync(
+                            $"/api/sessions/revokeall",
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<RevokeSessionResponse>(
+                            JsonSerializerOptions,
+                            Logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
     }
 }

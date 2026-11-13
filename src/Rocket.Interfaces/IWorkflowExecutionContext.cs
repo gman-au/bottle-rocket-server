@@ -16,7 +16,7 @@ namespace Rocket.Interfaces
 
         Task SetRootArtifactAsync(
             string userId,
-            string scanId,
+            string batchId,
             CancellationToken cancellationToken
         );
 

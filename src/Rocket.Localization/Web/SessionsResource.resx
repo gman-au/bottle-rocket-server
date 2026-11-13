@@ -45,10 +45,16 @@
     <data name="SessionsLoadMoreCaption" xml:space="preserve">
         <value>Load more</value>
     </data>
+    <data name="SessionsRevokeAllCaption" xml:space="preserve">
+        <value>Revoke all</value>
+    </data>
     <data name="SessionsNoSessionsMessage" xml:space="preserve">
         <value>No sessions found</value>
     </data>
     <data name="SessionsWasRevokedMessage" xml:space="preserve">
         <value>The session was revoked successfully.</value>
+    </data>
+    <data name="SessionsWereRevokedMessage" xml:space="preserve">
+        <value>The sessions were revoked successfully.</value>
     </data>
 </root>

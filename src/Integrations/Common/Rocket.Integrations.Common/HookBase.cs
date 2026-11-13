@@ -1,33 +1,23 @@
-﻿using System.Text;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
-using Rocket.Interfaces;
-using Rocket.Page.Schemas.ProjectTaskTracker;
 
 namespace Rocket.Integrations.Common
 {
     public abstract class HookBase<TExecutionStep>
         where TExecutionStep : BaseExecutionStep
     {
-        private readonly IFileRetitler _fileRetitler;
-
         protected readonly ILogger Logger;
 
         protected ExecutionStepArtifact Artifact;
         protected TExecutionStep ExecutionStep;
 
         protected HookBase(
-            ILogger logger,
-            IFileRetitler fileRetitler = null
+            ILogger logger
         )
         {
-            _fileRetitler = fileRetitler;
             Logger = logger;
         }
 
@@ -54,105 +44,6 @@ namespace Rocket.Integrations.Common
         {
             Artifact =
                 artifact;
-
-            Logger
-                .LogDebug(
-                    "Artifact of type {fileExtension} set for hook type {type}",
-                    Artifact?.FileExtension,
-                    typeof(TExecutionStep).Name
-                );
-        }
-
-        protected async Task RetitleFileIfApplicableAsync(
-            string fileText,
-            CancellationToken cancellationToken
-        )
-        {
-            var scanId =
-                Artifact
-                    .ScanId;            
-            
-            var userId =
-                Artifact
-                    .UserId;
-
-            var newFileName =
-                await
-                    _fileRetitler
-                        .RetitleAsync(
-                            fileText,
-                            scanId,
-                            userId,
-                            cancellationToken
-                        );
-
-            if (!string.IsNullOrEmpty(newFileName))
-            {
-                Artifact.FileName = newFileName;
-            }
-        }
-
-        protected string GetArtifactAsText()
-        {
-            var textBytes =
-                Artifact
-                    .Artifact;
-
-            if (textBytes == null)
-                throw new RocketException(
-                    $"Artifact data for hook [{typeof(TExecutionStep)}] is empty or not initialized; please check configuration",
-                    ApiStatusCodeEnum.DeveloperError
-                );
-
-            return
-                Encoding
-                    .Default
-                    .GetString(textBytes);
-        }
-
-        protected byte[] GetArtifactAsBytes()
-        {
-            var bytes =
-                Artifact
-                    .Artifact;
-
-            if (bytes == null)
-                throw new RocketException(
-                    $"Artifact data for hook [{typeof(TExecutionStep)}] is empty or not initialized; please check configuration",
-                    ApiStatusCodeEnum.DeveloperError
-                );
-
-            return
-                bytes;
-        }
-
-        protected ProjectTaskTrackerSchema GetArtifactAsProjectTaskTrackerData()
-        {
-            var bytes =
-                Artifact
-                    .Artifact;
-
-            if (bytes == null)
-                throw new RocketException(
-                    $"Artifact data for hook [{typeof(TExecutionStep)}] is empty or not initialized; please check configuration",
-                    ApiStatusCodeEnum.DeveloperError
-                );
-
-            try
-            {
-                var schema =
-                    JsonSerializer
-                        .Deserialize<ProjectTaskTrackerSchema>(bytes);
-
-                return schema;
-            }
-            catch (JsonException)
-            {
-                throw new RocketException(
-                    $"There was a problem loading the project task tracker artifact during step [{typeof(TExecutionStep)}]",
-                    ApiStatusCodeEnum.DeveloperError
-                );
-            }
         }
     }
 }

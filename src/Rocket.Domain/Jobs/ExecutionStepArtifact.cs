@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using Rocket.Domain.Enum;
 
 namespace Rocket.Domain.Jobs
 {
-    public class ExecutionStepArtifact
+    public record ExecutionStepArtifact
     {
         private string _fileName = Guid.NewGuid().ToString();
         
@@ -11,22 +12,19 @@ namespace Rocket.Domain.Jobs
         {
             Result = (int)ExecutionStatusEnum.Completed,
             ArtifactDataFormat = (int)WorkflowFormatTypeEnum.Void,
-            Artifact = [],
-            FileExtension = null,
-            ScanId = null,
-            UserId = null
+            Elements = [],
+            UserId = null,
+            BatchId = null
         };
+        
+        public IEnumerable<ArtifactDataElement> Elements { get; set; }
 
         public int Result { get; set; }
 
         public int ArtifactDataFormat { get; set; }
 
-        public byte[] Artifact { get; set; }
-
-        public string FileExtension { get; set; }
-
-        public string ScanId { get; set; }
-
+        public string BatchId { get; set; }
+        
         public string UserId { get; set; }
 
         public string FileName

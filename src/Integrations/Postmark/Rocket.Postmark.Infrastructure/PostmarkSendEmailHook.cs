@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Integrations.Common;
@@ -20,7 +22,7 @@ namespace Rocket.Postmark.Infrastructure
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
-            Func<string, string, Task> appendLogMessageCallback,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {
@@ -37,7 +39,21 @@ namespace Rocket.Postmark.Infrastructure
                     cancellationToken
                 );
 
-            var fileName = $"{Artifact.FileName}{Artifact.FileExtension}";
+            var elements = Artifact.Elements ?? [];
+
+            var allCompleted = true;
+
+            foreach (var element in elements)
+            {
+                try
+                {
+                    await
+                        jobControl
+                            .StartStepAsync(
+                                element.ScanId
+                            );
+
+            var fileName = $"{element.FileName}{element.FileExtension}";
             var subjectName = $"Bottle Rocket attached note - {Artifact.FileName}";
 
             var sendResult =
@@ -45,7 +61,7 @@ namespace Rocket.Postmark.Infrastructure
                     emailSender
                         .SendEmailAsync(
                             Connector.ServerToken,
-                            Artifact.Artifact,
+                            element.Artifact,
                             fileName,
                             ExecutionStep.RecipientAddress,
                             Connector.SenderAddress,
@@ -54,10 +70,32 @@ namespace Rocket.Postmark.Infrastructure
                         );
 
             await
-                appendLogMessageCallback(
-                    step.Id,
-                    sendResult
+                jobControl
+                    .SucceedStepAsync(
+                        $"Email sent from PostMark, response: {{{sendResult}}}",
+                        element.ScanId
+                    );
+                }
+                catch (Exception ex)
+                {
+                    allCompleted = false;
+
+                    await
+                        jobControl
+                            .FailStepAsync(
+                                ex,
+                                element.ScanId
+                            );
+                }
+            }
+
+            if (!allCompleted)
+            {
+                throw new RocketException(
+                    "There was an error sending the data via Mailgun",
+                    ApiStatusCodeEnum.ThirdPartyServiceError
                 );
+            }
 
             return
                 ExecutionStepArtifact

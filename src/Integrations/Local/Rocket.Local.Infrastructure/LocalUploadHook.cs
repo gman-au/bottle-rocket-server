@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Executions;
@@ -22,7 +20,7 @@ namespace Rocket.Local.Infrastructure
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
-            Func<string, string, Task> appendLogMessageCallback,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {
@@ -33,28 +31,16 @@ namespace Rocket.Local.Infrastructure
                 )
                 .InitializeArtifact(this);
 
-            var fileBytes =
+            var elements =
                 Artifact
-                    .Artifact;
-
-            var filePath =
-                ExecutionStep
-                    .UploadPath;
-
-            var fileName = $"{Artifact.FileName}{Artifact.FileExtension}";
-
-            var fullFilePath =
-                Path
-                    .Combine(
-                        filePath,
-                        fileName
-                    );
-
+                    .Elements;
+            
             await
                 fileWriter
                     .WriteAsync(
-                        fullFilePath,
-                        fileBytes,
+                        ExecutionStep.UploadPath,
+                        jobControl,
+                        elements,
                         cancellationToken
                     );
 

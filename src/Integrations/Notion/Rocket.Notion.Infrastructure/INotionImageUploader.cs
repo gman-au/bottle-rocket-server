@@ -1,5 +1,8 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using Rocket.Domain.Jobs;
+using Rocket.Interfaces;
 
 namespace Rocket.Notion.Infrastructure
 {
@@ -8,9 +11,8 @@ namespace Rocket.Notion.Infrastructure
         Task UploadImageNoteAsync(
             string integrationSecret,
             string parentNoteId,
-            string title,
-            byte[] imageBytes,
-            string fileExtension,
+            IEnumerable<ArtifactDataElement> elements,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         );
     }

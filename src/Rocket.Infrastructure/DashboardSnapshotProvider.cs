@@ -12,7 +12,7 @@ namespace Rocket.Infrastructure
 {
     public class DashboardSnapshotProvider(
         ILogger<DashboardSnapshotProvider> logger,
-        IScannedImageRepository scannedImageRepository,
+        IBatchRepository batchRepository,
         IExecutionRepository executionRepository,
         IBlobStore blobStore,
         IMemoryCache cache
@@ -41,7 +41,7 @@ namespace Rocket.Infrastructure
             // Scans by vendor
             var scansByVendor =
                 (await
-                    scannedImageRepository
+                    batchRepository
                         .AggregateScansByVendorAsync(
                             userId,
                             cancellationToken

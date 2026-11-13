@@ -5,33 +5,6 @@ namespace Rocket.Web.Host.Extensions
 {
     internal static class IntEx
     {
-        private const string BaseImagePath = "/img/icons";
-        
-        public static string GetPageSymbolImagePath(this int? pageSymbol)
-        {
-            switch (pageSymbol)
-            {
-                case (int)PageSymbolEnum.Rocket:
-                    return $"{BaseImagePath}/rocket.png";
-                case (int)PageSymbolEnum.Diamond:
-                    return $"{BaseImagePath}/diamond.png";
-                case (int)PageSymbolEnum.Apple:
-                    return $"{BaseImagePath}/apple.png";
-                case (int)PageSymbolEnum.Bell:
-                    return $"{BaseImagePath}/bell.png";
-                case (int)PageSymbolEnum.Clover:
-                    return $"{BaseImagePath}/clover.png";
-                case (int)PageSymbolEnum.Star:
-                    return $"{BaseImagePath}/star.png";
-                case (int)PageSymbolEnum.Horseshoe:
-                    return $"{BaseImagePath}/horseshoe.png";
-                case (int)PageSymbolEnum.Scribzee:
-                    return $"{BaseImagePath}/scribzee.png";
-                default:
-                    return null;
-            }
-        }
-
         public static Color MapStatusToColor(this int? executionStatus)
         {
             return executionStatus switch
@@ -41,6 +14,17 @@ namespace Rocket.Web.Host.Extensions
                 (int)ExecutionStatusEnum.Errored => Color.Error,
                 (int)ExecutionStatusEnum.Running => Color.Info,
                 _ => Color.Default
+            };
+        }
+
+        public static bool MapStatusToFinished(this int? executionStatus)
+        {
+            return executionStatus switch
+            {
+                (int)ExecutionStatusEnum.Cancelled => true,
+                (int)ExecutionStatusEnum.Completed => true,
+                (int)ExecutionStatusEnum.Errored => true,
+                _ => false
             };
         }
     }

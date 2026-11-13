@@ -122,6 +122,7 @@ namespace Rocket.Api.Host.Injection
         {
             services
                 .AddTransient<IScannedImageHandler, ScannedImageHandler>()
+                .AddTransient<IBatchHandler, BatchHandler>()
                 .AddTransient<ISha256Calculator, Sha256Calculator>()
                 .AddTransient<IStartupInitialization, StartupInitialization>()
                 .AddTransient<IDatabasePreRunAction, DatabasePrepopulator>()
@@ -219,11 +220,13 @@ namespace Rocket.Api.Host.Injection
                 .AddSingleton<IMongoDbClient, MongoDbClient>();
 
             services
+                .AddTransient<IBatchRepository, MongoDbBatchRepository>()
                 .AddTransient<IScannedImageRepository, MongoDbScannedImageRepository>()
                 .AddTransient<IConnectorRepository, MongoDbConnectorRepository>()
                 .AddTransient<IWorkflowRepository, MongoDbWorkflowRepository>()
                 .AddTransient<IWorkflowStepRepository, MongoDbWorkflowStepRepository>()
                 .AddTransient<IExecutionRepository, MongoDbExecutionRepository>()
+                .AddTransient<IExecutionElementRepository, MongoDbExecutionElementRepository>()
                 .AddTransient<IGlobalSettingsRepository, MongoDbGlobalSettingsRepository>()
                 .AddTransient<ITokenSessionRepository, MongoDbTokenSessionRepository>()
                 .AddTransient<IUserRepository, MongoDbUserRepository>();
@@ -240,6 +243,7 @@ namespace Rocket.Api.Host.Injection
             services.AddSingleton<IWorkflowExecutionManager, WorkflowExecutionManager>();
             services.AddSingleton<IGlobalSettingsChangedSignal, GlobalSettingsChangedSignal>();
             services.AddTransient<IWorkflowExecutionContext, WorkflowExecutionContext>();
+            services.AddTransient<IJobControlBuilder, JobControlBuilder>();
             services.AddHostedService<QueuedHostedService>();
             services.AddHostedService<ScanSweeperHostedService>();
 

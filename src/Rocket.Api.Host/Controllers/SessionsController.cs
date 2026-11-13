@@ -107,7 +107,7 @@ namespace Rocket.Api.Host.Controllers
         }
 
         [HttpDelete("revoke/{id}")]
-        [EndpointSummary("Revoke a session")]
+        [EndpointSummary("Revoke a user session")]
         [EndpointGroupName("Authentication")]
         [EndpointDescription(
             """
@@ -124,7 +124,7 @@ namespace Rocket.Api.Host.Controllers
             StatusCodes.Status500InternalServerError
         )]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> RevokeSessionAsync(
+        public async Task<IActionResult> RevokeUserSessionAsync(
             string id,
             CancellationToken cancellationToken
         )
@@ -149,6 +149,59 @@ namespace Rocket.Api.Host.Controllers
                     .RevokeAsync(
                         userId,
                         id,
+                        DateTime.UtcNow,
+                        cancellationToken
+                    );
+
+            var response =
+                new RevokeSessionResponse();
+
+            return
+                response
+                    .AsApiSuccess();
+        }
+
+        [HttpDelete("revokeall")]
+        [EndpointSummary("Revoke all user sessions")]
+        [EndpointGroupName("Authentication")]
+        [EndpointDescription(
+            """
+            Revokes all user sessions (except the current one).\n
+            The sessions are removed from the system and any devices using the associated sessions will be signed out immediately.
+            """
+        )]
+        [ProducesResponseType(
+            typeof(RevokeSessionResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> RevokeAllSessionsAsync(
+            CancellationToken cancellationToken
+        )
+        {
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
+
+            var userId =
+                user
+                    .Id;
+
+            logger
+                .LogInformation(
+                    "Received session revocation (all) request for username: {userId}",
+                    userId
+                );
+
+            await
+                tokenSessionRepository
+                    .RevokeAllAsync(
+                        userId,
+                        CurrentSessionId,
                         DateTime.UtcNow,
                         cancellationToken
                     );

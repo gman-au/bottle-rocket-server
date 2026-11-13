@@ -14,7 +14,7 @@ namespace Rocket.Interfaces
             string userId,
             int? startIndex,
             int? recordCount,
-            string scanId,
+            string batchId,
             string workflowId,
             CancellationToken cancellationToken
         );
@@ -25,7 +25,7 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
         
-        Task<long> DeleteExecutionsByScanIdAsync(
+        Task<long> DeleteExecutionsByBatchIdAsync(
             string userId,
             string id,
             CancellationToken cancellationToken
@@ -63,21 +63,12 @@ namespace Rocket.Interfaces
             string executionId,
             string userId,
             string logMessage,
+            string scanId,
             CancellationToken cancellationToken
         );
 
         Task<IEnumerable<Execution>> GetExecutionSuccessesForOlderScansAsync(
             int daysSinceLastSuccessfulExecution,
-            CancellationToken cancellationToken
-        );
-
-        Task<IEnumerable<ExecutionByWorkflowTotal>> AggregateExecutionsByWorkflowAsync(
-            string userId,
-            CancellationToken cancellationToken
-        );
-
-        Task<IEnumerable<ExecutionByStatusTotal>> AggregateExecutionsByStatusAsync(
-            string userId,
             CancellationToken cancellationToken
         );
 

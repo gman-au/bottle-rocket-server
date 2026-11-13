@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -21,7 +21,7 @@ namespace Rocket.Dropbox.Infrastructure
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
-            Func<string, string, Task> appendLogMessageCallback,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {
@@ -38,25 +38,31 @@ namespace Rocket.Dropbox.Infrastructure
                     cancellationToken
                 );
 
-            var fileData =
+            var files =
+                Artifact
+                    .Elements
+                    .Select(o =>
+                        new DropboxFile
+                        {
+                            Artifact = o.Artifact,
+                            FileExtension = o.FileExtension,
+                            FileName = o.FileName,
+                            ScanId = o.ScanId,
+                            ExecutionStepId = step.Id
+                        }
+                    );
+
             await
                 dropboxClientManager
-                    .UploadFileAsync(
+                    .UploadFilesAsync(
                         Connector.AppKey,
                         Connector.AppSecret,
                         Connector.RefreshToken,
                         ExecutionStep.Subfolder,
-                        Artifact.FileName,
-                        Artifact.FileExtension,
-                        Artifact.Artifact,
+                        files,
+                        jobControl,
                         cancellationToken
                     );
-            
-            await
-                appendLogMessageCallback(
-                    step.Id,
-                    $"File uploaded: {fileData}"
-                );
 
             return
                 ExecutionStepArtifact

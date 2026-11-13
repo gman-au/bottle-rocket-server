@@ -1,5 +1,8 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using Rocket.Domain.Jobs;
+using Rocket.Interfaces;
 using Rocket.Microsofts.Domain;
 
 namespace Rocket.Microsofts.Infrastructure
@@ -8,9 +11,9 @@ namespace Rocket.Microsofts.Infrastructure
     {
         Task UploadFileAsync(
             MicrosoftConnector connector,
-            string fileName,
+            IJobControl jobControl,
+            IEnumerable<ArtifactDataElement> elements,
             string folderPath,
-            byte[] inputBytes,
             CancellationToken cancellationToken
         );
     }

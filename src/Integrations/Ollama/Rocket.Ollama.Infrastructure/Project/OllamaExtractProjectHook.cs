@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Domain.Utils;
@@ -40,7 +42,7 @@ namespace Rocket.Ollama.Infrastructure.Project
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
-            Func<string, string, Task> appendLogMessageCallback,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {
@@ -57,9 +59,11 @@ namespace Rocket.Ollama.Infrastructure.Project
                     cancellationToken
                 );
 
-            var imageBytes =
+            var fileResults = new List<(string, ProjectTaskTrackerSchema)>();
+
+            var elements =
                 Artifact
-                    .Artifact;
+                    .Elements;
 
             var endpoint =
                 Connector.Endpoint ??
@@ -74,7 +78,7 @@ namespace Rocket.Ollama.Infrastructure.Project
                     ExecutionStep.FirstPassModelName,
                     ExecutionStep.SecondPassModelName
                 );
-            
+
             var globalSettings =
                 await
                     globalSettingsRepository
@@ -84,52 +88,89 @@ namespace Rocket.Ollama.Infrastructure.Project
                 globalSettings?.DefaultModelTimeoutInMinutes ??
                 DomainConstants.GlobalDefaultModelTimeoutInMinutes;
 
-            var firstPassResponse =
-                await
-                    OllamaClient
-                        .SendRequestAsync<string>(
-                            endpoint,
-                            ExecutionStep.FirstPassModelName,
-                            FirstPassPrompt,
-                            imageBytes,
-                            RocketbookPageTemplateTypeEnum.NotSet,
-                            useSchema: false,
-                            temperature: 0.1F,
-                            maxTokens: 1024,
-                            numCtx: null,
-                            timeoutInMinutes,
-                            cancellationToken: cancellationToken
-                        );
+            var allCompleted = true;
 
-            var secondPassResponse =
-                await
-                    OllamaClient
-                        .SendRequestAsync<ProjectTaskTrackerSchema>(
-                            endpoint,
-                            ExecutionStep.SecondPassModelName,
-                            string.Format(
-                                SecondPassPrompt,
-                                firstPassResponse
-                            ),
-                            imageBytes: null,
-                            pageTemplateType: RocketbookPageTemplateTypeEnum.ProjectTaskTracker,
-                            useSchema: true,
-                            temperature: 0.3F,
-                            maxTokens: 1024,
-                            numCtx: 4096,
-                            timeoutInMinutes,
-                            cancellationToken: cancellationToken
-                        );
+            foreach (var element in elements)
+            {
+                try
+                {
+                    await
+                        jobControl
+                            .StartStepAsync(
+                                element.ScanId
+                            );
+                    
+                    var firstPassResponse =
+                        await
+                            OllamaClient
+                                .SendRequestAsync<string>(
+                                    endpoint,
+                                    ExecutionStep.FirstPassModelName,
+                                    FirstPassPrompt,
+                                    element.Artifact,
+                                    RocketbookPageTemplateTypeEnum.NotSet,
+                                    useSchema: false,
+                                    temperature: 0.1F,
+                                    maxTokens: 1024,
+                                    numCtx: null,
+                                    timeoutInMinutes,
+                                    cancellationToken: cancellationToken
+                                );
 
-            await
-                appendLogMessageCallback(
-                    step.Id,
-                    JsonSerializer
-                        .Serialize(secondPassResponse)
+                    var secondPassResponse =
+                        await
+                            OllamaClient
+                                .SendRequestAsync<ProjectTaskTrackerSchema>(
+                                    endpoint,
+                                    ExecutionStep.SecondPassModelName,
+                                    string.Format(
+                                        SecondPassPrompt,
+                                        firstPassResponse
+                                    ),
+                                    imageBytes: null,
+                                    pageTemplateType: RocketbookPageTemplateTypeEnum.ProjectTaskTracker,
+                                    useSchema: true,
+                                    temperature: 0.3F,
+                                    maxTokens: 1024,
+                                    numCtx: 4096,
+                                    timeoutInMinutes,
+                                    cancellationToken: cancellationToken
+                                );
+
+                    await
+                        jobControl
+                            .SucceedStepAsync(
+                                $"Ollama response: \"{JsonSerializer.Serialize(secondPassResponse)}\"",
+                                element.ScanId
+                            );
+
+                    fileResults
+                        .Add((element.ScanId, secondPassResponse));
+                }
+                catch (Exception ex)
+                {
+                    allCompleted = false;
+
+                    await
+                        jobControl
+                            .FailStepAsync(
+                                ex,
+                                element.ScanId
+                            );
+                }
+            }
+
+            if (!allCompleted)
+            {
+                throw new RocketException(
+                    "There was an error extracting the text via Ollama",
+                    ApiStatusCodeEnum.ThirdPartyServiceError
                 );
+            }
 
             return
-                secondPassResponse
+                fileResults
+                    .ToArray()
                     .AsCompletedProjectTaskTrackerDataArtifact();
         }
     }

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Integrations.Common;
@@ -23,7 +24,7 @@ namespace Rocket.Notion.Infrastructure
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
-            Func<string, string, Task> appendLogMessageCallback,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {
@@ -42,53 +43,94 @@ namespace Rocket.Notion.Infrastructure
 
             if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData)
             {
-                var schema =
-                    GetArtifactAsProjectTaskTrackerData();
+                var allCompleted = true;
 
-                var itemCount =
-                    schema
-                        .Items
-                        .Count();
-
-                var index = 0;
-                
-                foreach (var item in schema.Items)
+                foreach (var element in Artifact.Elements)
                 {
-                    var dataSourcePairs = new List<Tuple<string, string>>
+                    try
                     {
-                        new(
-                            ExecutionStep.ProjectCodeColumn,
-                            item.Project
-                        ),
-                        new(
-                            ExecutionStep.TaskColumn,
-                            item.Task
-                        ),
-                        new(
-                            ExecutionStep.DueDateColumn,
-                            item.DueDate
-                        ),
-                        new(
-                            ExecutionStep.EstTimeColumn,
-                            item.EstimatedTime
-                        )
-                    };
+                        await
+                            jobControl
+                                .StartStepAsync(
+                                    element.ScanId
+                                );
 
-                    await
-                        notionDataSourceUploader
-                            .UploadDataSourceAsync(
-                                Connector.IntegrationSecret,
-                                ExecutionStep.DataSourceId,
-                                dataSourcePairs,
-                                cancellationToken
-                            );
+                        var schema =
+                            element
+                                .ArtifactAsProjectData();
 
-                    logger
-                        .LogInformation(
-                            "Uploaded {index} of {itemCount}",
-                            index++,
-                            itemCount
-                        );
+                        var itemCount =
+                            schema
+                                .Items
+                                .Count();
+
+                        var index = 0;
+
+                        foreach (var item in schema.Items)
+                        {
+                            var dataSourcePairs = new List<Tuple<string, string>>
+                            {
+                                new(
+                                    ExecutionStep.ProjectCodeColumn,
+                                    item.Project
+                                ),
+                                new(
+                                    ExecutionStep.TaskColumn,
+                                    item.Task
+                                ),
+                                new(
+                                    ExecutionStep.DueDateColumn,
+                                    item.DueDate
+                                ),
+                                new(
+                                    ExecutionStep.EstTimeColumn,
+                                    item.EstimatedTime
+                                )
+                            };
+
+                            await
+                                notionDataSourceUploader
+                                    .UploadDataSourceAsync(
+                                        Connector.IntegrationSecret,
+                                        ExecutionStep.DataSourceId,
+                                        dataSourcePairs,
+                                        cancellationToken
+                                    );
+
+                            logger
+                                .LogInformation(
+                                    "Uploaded {index} of {itemCount}",
+                                    index++,
+                                    itemCount
+                                );
+                        }
+
+                        await
+                            jobControl
+                                .SucceedStepAsync(
+                                    $"File {element.FileName} uploaded to Notion",
+                                    element.ScanId
+                                );
+                    }
+                    catch (Exception ex)
+                    {
+                        allCompleted = false;
+
+                        await
+                            jobControl
+                                .FailStepAsync(
+                                    ex,
+                                    element.ScanId
+                                );
+                    }
+                }
+
+                if (!allCompleted)
+                {
+                    throw new RocketException(
+                        "There was an error uploading the project data to Notion",
+                        ApiStatusCodeEnum.ThirdPartyServiceError
+                    );
                 }
             }
 

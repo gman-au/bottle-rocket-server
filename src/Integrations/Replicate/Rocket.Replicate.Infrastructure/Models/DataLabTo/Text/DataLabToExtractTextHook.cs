@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,8 +25,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
         IFileRetitler fileRetitler,
         ILogger<DataLabToExtractTextHook> logger
     ) : HookWithConnectorBase<DataLabToExtractTextExecutionStep, ReplicateConnector>(
-        logger,
-        fileRetitler
+        logger
     ), IIntegrationHook
     {
         private const string DataLabToCustomEndpoint = "v1/models/datalab-to/marker/predictions";
@@ -46,7 +47,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
-            Func<string, string, Task> appendLogMessageCallback,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {
@@ -63,140 +64,205 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
                     cancellationToken
                 );
 
-            var imageBytes =
+            var artifactElements = new List<ArtifactDataElement>();
+
+            var elements =
                 Artifact
-                    .Artifact;
+                    .Elements;
 
             var apiToken =
                 Connector
                     .ApiToken;
 
-            var fileName = $"{Guid.NewGuid()}{Artifact.FileExtension}";
+            var allCompleted = true;
 
-            var imageIdToDelete = string.Empty;
-
-            try
-            {
-                // Upload the file
-                var (imageUrl, imageId) =
-                    await
-                        replicateClient
-                            .UploadFileAsync(
-                                apiToken,
-                                imageBytes,
-                                fileName,
-                                Artifact.FileExtension,
-                                cancellationToken
-                            );
-
-                imageIdToDelete = imageId;
-
-                logger
-                    .LogInformation(
-                        "Uploaded image to Replicate: {imageUrl}",
-                        imageUrl
-                    );
-
-                // Create the prediction
-                var predictionId =
-                    await
-                        replicateClient
-                            .CreatePredictionAsync(
-                                apiToken,
-                                null,
-                                new DataLabToInput
-                                {
-                                    File = imageUrl,
-                                    DisableImageExtraction = true,
-                                    UseLlm = true,
-                                    SkipCache = true,
-                                    ForceOcr = true,
-                                    IncludeMetadata = false,
-                                    PageSchema = HardCodedSchemaString
-                                },
-                                cancellationToken,
-                                DataLabToCustomEndpoint
-                            );
-
-                logger
-                    .LogInformation(
-                        "Created prediction in Replicate: {predictionId}",
-                        predictionId
-                    );
-
-                var globalSettings =
-                    await
-                        globalSettingsRepository
-                            .GetGlobalSettingsAsync(cancellationToken);
-
-                var timeoutInMinutes =
-                    globalSettings?.DefaultModelTimeoutInMinutes ??
-                    DomainConstants.GlobalDefaultModelTimeoutInMinutes;
-
-                var result =
-                    await
-                        replicateClient
-                            .WaitUntilPredictionCompletesAsync<DataLabToOutput>(
-                                apiToken,
-                                predictionId,
-                                timeoutInMinutes,
-                                cancellationToken
-                            );
-
-                var extractedJson = result?.ExtractionSchemaJson;
-
-                if (string.IsNullOrEmpty(extractedJson))
-                    throw new RocketException(
-                        "The extracted text was empty. Please try again.",
-                        ApiStatusCodeEnum.ThirdPartyServiceError
-                    );
-
-                var fallbackTextSchema =
-                    JsonSerializer
-                        .Deserialize<FallbackTextSchema>(extractedJson);
-
-                var extractedMarkdown =
-                    fallbackTextSchema?.MainPage ?? string.Empty;
-
+            var globalSettings =
                 await
-                    RetitleFileIfApplicableAsync(
-                        extractedMarkdown,
-                        cancellationToken
-                    );
+                    globalSettingsRepository
+                        .GetGlobalSettingsAsync(cancellationToken);
 
-                logger
-                    .LogDebug(
-                        "Extracted markdown: {extractedMarkdown}",
-                        extractedMarkdown
-                    );
+            var timeoutInMinutes =
+                globalSettings?.DefaultModelTimeoutInMinutes ??
+                DomainConstants.GlobalDefaultModelTimeoutInMinutes;
 
-                await
-                    appendLogMessageCallback(
-                        step.Id,
-                        extractedMarkdown
-                    );
-
-                return
-                    extractedMarkdown
-                        .AsCompletedRawTextArtifact(Artifact);
-            }
-            finally
+            foreach (var element in elements)
             {
-                // Delete upload
-                if (!string.IsNullOrEmpty(imageIdToDelete))
+                var imageIdToDelete = string.Empty;
+
+                try
+                {
                     await
-                        replicateClient
-                            .DeleteUploadAsync(
-                                apiToken,
-                                imageIdToDelete
+                        jobControl
+                            .StartStepAsync(
+                                element.ScanId
                             );
 
-                logger
-                    .LogInformation(
-                        "Deleted image in Replicate: {imageIdToDelete}",
-                        imageIdToDelete
-                    );
+                    var fileName = $"{Guid.NewGuid()}{element.FileExtension}";
+
+                    // Upload the file
+                    var (imageUrl, imageId) =
+                        await
+                            replicateClient
+                                .UploadFileAsync(
+                                    apiToken,
+                                    element.Artifact,
+                                    fileName,
+                                    element.FileExtension,
+                                    cancellationToken
+                                );
+
+                    imageIdToDelete = imageId;
+
+                    logger
+                        .LogInformation(
+                            "Uploaded image to Replicate: {imageUrl}",
+                            imageUrl
+                        );
+
+                    // Create the prediction
+                    var predictionId =
+                        await
+                            replicateClient
+                                .CreatePredictionAsync(
+                                    apiToken,
+                                    null,
+                                    new DataLabToInput
+                                    {
+                                        File = imageUrl,
+                                        DisableImageExtraction = true,
+                                        UseLlm = true,
+                                        SkipCache = true,
+                                        ForceOcr = true,
+                                        IncludeMetadata = false,
+                                        PageSchema = HardCodedSchemaString
+                                    },
+                                    cancellationToken,
+                                    DataLabToCustomEndpoint
+                                );
+
+                    logger
+                        .LogInformation(
+                            "Created prediction in Replicate: {predictionId}",
+                            predictionId
+                        );
+
+                    var result =
+                        await
+                            replicateClient
+                                .WaitUntilPredictionCompletesAsync<DataLabToOutput>(
+                                    apiToken,
+                                    predictionId,
+                                    timeoutInMinutes,
+                                    cancellationToken
+                                );
+
+                    var extractedJson = result?.ExtractionSchemaJson;
+
+                    if (string.IsNullOrEmpty(extractedJson))
+                        throw new RocketException(
+                            "The extracted text was empty. Please try again.",
+                            ApiStatusCodeEnum.ThirdPartyServiceError
+                        );
+
+                    var fallbackTextSchema =
+                        JsonSerializer
+                            .Deserialize<FallbackTextSchema>(extractedJson);
+
+                    var extractedMarkdown =
+                        fallbackTextSchema?.MainPage ?? string.Empty;
+
+                    logger
+                        .LogDebug(
+                            "Extracted markdown: {extractedMarkdown}",
+                            extractedMarkdown
+                        );
+
+                    await
+                        jobControl
+                            .SucceedStepAsync(
+                                $"DataLabTo OCR response: \"{extractedMarkdown}\"",
+                                element.ScanId
+                            );
+
+                    var resultArtifact =
+                        new ArtifactDataElement
+                        {
+                            Artifact =
+                                Encoding
+                                    .Default
+                                    .GetBytes(
+                                        extractedMarkdown
+                                    ),
+                            FileExtension = CommonFileConstants.TextFileExtension,
+                            ScanId = element.ScanId,
+                            FileName =
+                                await
+                                    fileRetitler
+                                        .RetitleAsync(
+                                            extractedMarkdown,
+                                            element.ScanId,
+                                            Artifact.UserId,
+                                            cancellationToken
+                                        ) ?? Artifact.FileName
+                        };
+
+                    artifactElements
+                        .Add(resultArtifact);
+                }
+                catch (Exception ex)
+                {
+                    allCompleted = false;
+
+                    await
+                        jobControl
+                            .FailStepAsync(
+                                ex,
+                                element.ScanId
+                            );
+                }
+                finally
+                {
+                    // delete uploads
+                    if (!string.IsNullOrEmpty(imageIdToDelete))
+                        await
+                            replicateClient
+                                .DeleteUploadAsync(
+                                    apiToken,
+                                    imageIdToDelete
+                                );
+
+                    logger
+                        .LogInformation(
+                            "Deleted image in Replicate: {imageIdToDelete}",
+                            imageIdToDelete
+                        );
+                }
             }
+
+            if (!allCompleted)
+            {
+                throw new RocketException(
+                    "There was an error extracting the text via Replicate",
+                    ApiStatusCodeEnum.ThirdPartyServiceError
+                );
+            }
+
+            // Retitle
+            var uniqueElements =
+                artifactElements
+                    .ToArray()
+                    .EnumerateUniquely();
+
+            return
+                new ExecutionStepArtifact
+                {
+                    Result = (int)ExecutionStatusEnum.Completed,
+                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
+                    BatchId = Artifact.BatchId,
+                    Elements = uniqueElements,
+                    FileName = Artifact.FileName,
+                    UserId = Artifact.UserId
+                };
         }
     }
 }

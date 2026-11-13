@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Executions;
@@ -21,7 +20,7 @@ namespace Rocket.Microsofts.Infrastructure
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
-            Func<string, string, Task> appendLogMessageCallback,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {
@@ -38,16 +37,17 @@ namespace Rocket.Microsofts.Infrastructure
                     cancellationToken
                 );
 
-            var noteTitle = $"BR_Note_{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
-            var fileName = noteTitle + Artifact.FileExtension;
-
+            var elements =
+                Artifact
+                    .Elements;
+            
             await
                 oneDriveUploader
                     .UploadFileAsync(
                         Connector,
-                        fileName,
+                        jobControl,
+                        elements,
                         ExecutionStep.Subfolder ?? "/",
-                        Artifact.Artifact,
                         cancellationToken
                     );
 

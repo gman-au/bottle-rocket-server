@@ -2,7 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Rocket.Domain
+namespace Rocket.Domain.ScannedImages
 {
     public record ScannedImage
     {
@@ -23,8 +23,6 @@ namespace Rocket.Domain
         public string Sha256 { get; set; }
         
         public string ThumbnailBase64 { get; set; }
-
-        public bool Archived { get; set; }
         
         public string Vendor { get; set; }
         

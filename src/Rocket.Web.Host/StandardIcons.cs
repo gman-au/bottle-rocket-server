@@ -32,5 +32,11 @@ namespace Rocket.Web.Host
         public const string CloneIcon = Icons.Material.Filled.CopyAll;
         public const string RevokeIcon = Icons.Material.Filled.PersonOff;
         public const string SessionsIcon = Icons.Material.Filled.Devices;
+        public const string DownloadIcon = Icons.Material.Filled.Download;
+        public const string LogsIcon = Icons.Material.Filled.ManageSearch;
+        public const string SuccessIcon = Icons.Material.Filled.Check;
+        public const string FailureIcon = Icons.Material.Filled.Clear;
+        public const string NotRunIcon = Icons.Material.Filled.DoDisturb; 
+        public const string RunningIcon = Icons.Material.Filled.HourglassTop; 
     }
 }

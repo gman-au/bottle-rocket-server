@@ -1,0 +1,40 @@
+﻿@using Rocket.Api.Contracts.Scans
+
+<MudDialog Class="p-2">
+    <TitleContent/>
+    <DialogContent>
+        <div style="text-align:center;">
+            <MudImage
+                Class="mb-4 rounded"
+                src=@($"data:{Scan.ContentType};base64,{Scan.ImageBase64}")
+                Fluid/>
+        </div>
+    </DialogContent>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public ScanSpecifics Scan { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await
+            MudDialog
+                .SetOptionsAsync(
+                    new DialogOptions
+                    {
+                        FullWidth = true,
+                        CloseButton = true,
+                        CloseOnEscapeKey = true,
+                        MaxWidth = MaxWidth.Large,
+                        BackgroundClass = "dialog-blur-backdrop"
+                    }
+                );
+    }
+
+
+}

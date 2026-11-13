@@ -10,18 +10,21 @@ using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Integrations.Common;
 using Rocket.Integrations.Common.Extensions;
+using Rocket.Integrations.Domain;
 using Rocket.Interfaces;
 using Rocket.Page.Schemas.ProjectTaskTracker;
 
 namespace Rocket.Diagnostics.Infrastructure
 {
-    public class HelloWorldProjectHook(ILogger<HelloWorldProjectHook> logger) : HookBase<HelloWorldProjectExecutionStep>(logger), IIntegrationHook
+    public class HelloWorldProjectHook(
+        ILogger<HelloWorldProjectHook> logger
+    ) : HookBase<HelloWorldProjectExecutionStep>(logger), IIntegrationHook
     {
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
-            Func<string, string, Task> appendLogMessageCallback,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {
@@ -31,7 +34,7 @@ namespace Rocket.Diagnostics.Infrastructure
                     step
                 )
                 .InitializeArtifact(this);
-            
+
             var projectTaskData =
                 new ProjectTaskTrackerSchema
                 {
@@ -42,21 +45,27 @@ namespace Rocket.Diagnostics.Infrastructure
                         {
                             Project = "PROJECT #1",
                             Task = "Say hello to the world!",
-                            DueDate = DateTime.Now.AddDays(10).ToString("d"),
+                            DueDate = DateTime.Now
+                                .AddDays(10)
+                                .ToString("d"),
                             EstimatedTime = 30.ToString()
                         },
                         new ProjectTaskTrackerItem
                         {
                             Project = "PROJECT #2",
                             Task = "Buy an ice cream",
-                            DueDate = DateTime.Now.AddDays(15).ToString("d"),
+                            DueDate = DateTime.Now
+                                .AddDays(15)
+                                .ToString("d"),
                             EstimatedTime = 10.ToString()
                         },
                         new ProjectTaskTrackerItem
                         {
                             Project = "PROJECT #3",
                             Task = "Run home",
-                            DueDate = DateTime.Now.AddDays(20).ToString("d"),
+                            DueDate = DateTime.Now
+                                .AddDays(20)
+                                .ToString("d"),
                             EstimatedTime = 1400.ToString()
                         }
                     ]
@@ -70,20 +79,27 @@ namespace Rocket.Diagnostics.Infrastructure
                     );
 
             await
-                appendLogMessageCallback(
-                    step.Id,
-                    responseJson
-                );
+                jobControl
+                    .AppendLogMessageCallback(
+                        new JobLogEntry
+                        {
+                            LogMessage = responseJson
+                        }
+                    );
 
             return
                 new ExecutionStepArtifact
                 {
                     Result = (int)ExecutionStatusEnum.Completed,
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData,
-                    Artifact = Encoding.Default.GetBytes(responseJson),
-                    FileExtension = ".json",
-                    ScanId = Artifact.ScanId,
-                    UserId = Artifact.UserId
+                    Elements =
+                    [
+                        new ArtifactDataElement
+                        {
+                            Artifact = Encoding.Default.GetBytes(responseJson),
+                            FileExtension = CommonFileConstants.JsonFileExtension,
+                        }
+                    ]
                 };
         }
     }

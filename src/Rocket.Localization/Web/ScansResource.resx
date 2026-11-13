@@ -60,6 +60,9 @@
     <data name="ScansDetailsCaption" xml:space="preserve">
         <value>Details</value>
     </data>
+    <data name="ScansPagesCaption" xml:space="preserve">
+        <value>pages</value>
+    </data>
     <data name="ScansDeleteCaption" xml:space="preserve">
         <value>Delete</value>
     </data>    

@@ -1,6 +1,9 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Domain.Jobs;
 using Rocket.Page.Schemas.ProjectTaskTracker;
 
@@ -8,57 +11,145 @@ namespace Rocket.Integrations.Common.Extensions
 {
     public static class BytesEx
     {
-        private const string TextFileExtension = ".txt";
-        private const string PdfFileExtension = ".pdf";
-        private const string JsonFileExtension = ".json";
-
-        public static ExecutionStepArtifact AsCompletedRawTextArtifact(this string value, ExecutionStepArtifact artifact = null)
+        public static ExecutionStepArtifact AsCompletedRawTextArtifact(
+            this IEnumerable<(string, string)> values,
+            ExecutionStepArtifact artifact = null
+        )
         {
+            var elements =
+                (values ?? []).Select(o =>
+                    new ArtifactDataElement
+                    {
+                        ScanId = o.Item1,
+                        Artifact = Encoding.Default.GetBytes(o.Item2),
+                        FileExtension = CommonFileConstants.TextFileExtension,
+                        FileName = artifact?.FileName
+                    }
+                )
+                .ToArray()
+                .EnumerateUniquely();
+
             return
                 new ExecutionStepArtifact
                 {
                     Result = (int)ExecutionStatusEnum.Completed,
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
-                    Artifact = Encoding.Default.GetBytes(value),
-                    FileExtension = TextFileExtension,
+                    Elements = elements,
                     FileName = artifact?.FileName,
-                    ScanId = artifact?.ScanId,
                     UserId = artifact?.UserId
                 };
         }
 
-        public static ExecutionStepArtifact AsCompletedPdfArtifact(this byte[] value, ExecutionStepArtifact artifact = null)
+        public static ExecutionStepArtifact AsCompletedPdfArtifact(
+            this IEnumerable<ArtifactDataElement> values,
+            ExecutionStepArtifact artifact = null
+        )
         {
+            var elements =
+                (values ?? []).Select(o =>
+                    new ArtifactDataElement
+                    {
+                        ScanId = o.ScanId,
+                        Artifact = o.Artifact,
+                        FileExtension = CommonFileConstants.PdfFileExtension,
+                        FileName = o.FileName
+                    }
+                )
+                .ToArray()
+                .EnumerateUniquely();
+
             return
                 new ExecutionStepArtifact
                 {
                     Result = (int)ExecutionStatusEnum.Completed,
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.File,
-                    Artifact = value,
-                    FileExtension = PdfFileExtension,
+                    Elements = elements,
                     FileName = artifact?.FileName,
-                    ScanId = artifact?.ScanId,
                     UserId = artifact?.UserId
                 };
         }
 
-        public static ExecutionStepArtifact AsCompletedProjectTaskTrackerDataArtifact(this ProjectTaskTrackerSchema schema, ExecutionStepArtifact artifact = null)
+        public static ExecutionStepArtifact AsCompletedProjectTaskTrackerDataArtifact(
+            this IEnumerable<(string, ProjectTaskTrackerSchema)> values,
+            ExecutionStepArtifact artifact = null
+        )
         {
-            var json =
-                JsonSerializer
-                    .Serialize(schema);
-            
+            var elements =
+                (values ?? []).Select(o =>
+                    new ArtifactDataElement
+                    {
+                        ScanId = o.Item1,
+                        Artifact = Encoding.Default.GetBytes(
+                            JsonSerializer
+                                .Serialize(o.Item2)
+                        ),
+                        FileExtension = CommonFileConstants.JsonFileExtension,
+                        FileName = artifact?.FileName
+                    }
+                )
+                .ToArray()
+                .EnumerateUniquely();
+
             return
                 new ExecutionStepArtifact
                 {
                     Result = (int)ExecutionStatusEnum.Completed,
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData,
-                    Artifact = Encoding.Default.GetBytes(json),
-                    FileExtension = JsonFileExtension,
+                    Elements = elements,
                     FileName = artifact?.FileName,
-                    ScanId = artifact?.ScanId,
                     UserId = artifact?.UserId
                 };
+        }
+
+        public static string ArtifactAsText(
+            this ArtifactDataElement element
+        )
+        {
+            var textBytes =
+                element
+                    .Artifact;
+
+            if (textBytes == null)
+                throw new RocketException(
+                    "Artifact data for element is empty or not initialized; please check configuration",
+                    ApiStatusCodeEnum.DeveloperError
+                );
+
+            return
+                Encoding
+                    .Default
+                    .GetString(textBytes);
+        }
+
+        public static ProjectTaskTrackerSchema ArtifactAsProjectData(
+            this ArtifactDataElement element
+        )
+        {
+            var projectBytes =
+                element
+                    .Artifact;
+
+            if (projectBytes == null)
+                throw new RocketException(
+                    "Artifact data for element is empty or not initialized; please check configuration",
+                    ApiStatusCodeEnum.DeveloperError
+                );
+
+            try
+            {
+                var schema =
+                    JsonSerializer
+                        .Deserialize<ProjectTaskTrackerSchema>(projectBytes);
+
+                return schema;
+            }
+            catch (JsonException)
+            {
+                throw new RocketException(
+                    $"There was a problem loading the project task tracker artifact",
+                    ApiStatusCodeEnum.DeveloperError
+                );
+            }
         }
     }
 }

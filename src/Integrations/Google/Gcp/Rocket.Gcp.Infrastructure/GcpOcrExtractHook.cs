@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Executions;
@@ -23,7 +22,7 @@ namespace Rocket.Gcp.Infrastructure
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
-            Func<string, string, Task> appendLogMessageCallback,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {
@@ -39,9 +38,6 @@ namespace Rocket.Gcp.Infrastructure
                     step,
                     cancellationToken
                 );
-
-            var imageBytes =
-                GetArtifactAsBytes();
 
             var credential =
                 Connector
@@ -60,21 +56,15 @@ namespace Rocket.Gcp.Infrastructure
                 await
                     visionOcrService
                         .ExtractHandwrittenTextAsync(
-                            imageBytes,
+                            jobControl,
+                            Artifact,
                             credential,
                             timeoutInMinutes,
                             cancellationToken
                         );
 
-            await
-                appendLogMessageCallback(
-                    step.Id,
-                    result
-                );
-
             return
-                result
-                    .AsCompletedRawTextArtifact(Artifact);
+                result;
         }
     }
 }

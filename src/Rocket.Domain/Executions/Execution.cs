@@ -13,7 +13,7 @@ namespace Rocket.Domain.Executions
         
         public string UserId { get; set; }
 
-        public string ScanId { get; set; }
+        public string BatchId { get; set; }
         
         public string WorkflowId { get; set; }
         
@@ -24,15 +24,11 @@ namespace Rocket.Domain.Executions
         public string Name { get; set; }
         
         public int ExecutionStatus { get; set; }
-        
-        public string ThumbnailBase64 { get; set; }
-        
-        public string ContentType { get; set; }
 
         public bool Archived { get; set; }
         
         public IEnumerable<BaseExecutionStep> Steps { get; set; }
         
-        public string Vendor { get; set; }
+        public IEnumerable<ExecutionElement> Elements { get; set; }
     }
 }

@@ -148,12 +148,6 @@
                             </MudNavLink>
                         </MudNavGroup>
                         <MudNavLink
-                            Match="NavLinkMatch.All"
-                            OnClick="ConfirmLogoutAsync"
-                            Icon="@StandardIcons.LogoutIcon">
-                            @StringLocalizer["SidebarLogoutTitle"]
-                        </MudNavLink>
-                        <MudNavLink
                             Icon="@(DarkMode ? Icons.Material.Filled.WbSunny : Icons.Material.Filled.ModeNight)"
                             OnClick="@InvokeDarkModeToggleAsync"
                         >
@@ -175,6 +169,12 @@
                                 @StringLocalizer["SidebarGlobalSettingsTitle"]
                             </MudNavLink>
                         }
+                        <MudNavLink
+                            Match="NavLinkMatch.All"
+                            OnClick="ConfirmLogoutAsync"
+                            Icon="@StandardIcons.LogoutIcon">
+                            @StringLocalizer["SidebarLogoutTitle"]
+                        </MudNavLink>
                     }
                 </Authorized>
                 <NotAuthorized>

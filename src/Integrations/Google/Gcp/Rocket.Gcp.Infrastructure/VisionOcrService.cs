@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,19 +10,35 @@ using Google.Api.Gax.Grpc;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Vision.V1;
 using Grpc.Core;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
+using Rocket.Domain.Jobs;
 using Rocket.Gcp.Domain;
+using Rocket.Integrations.Common;
+using Rocket.Integrations.Common.Extensions;
+using Rocket.Interfaces;
 
 namespace Rocket.Gcp.Infrastructure
 {
-    public class VisionOcrService : IVisionOcrService
+    public class VisionOcrService(
+        IFileRetitler fileRetitler
+    ) : IVisionOcrService
     {
-        public async Task<string> ExtractHandwrittenTextAsync(
-            byte[] imageBytes,
+        public async Task<ExecutionStepArtifact> ExtractHandwrittenTextAsync(
+            IJobControl jobControl,
+            ExecutionStepArtifact artifact,
             GcpCredential gcpCredential,
             int timeoutInMinutes,
             CancellationToken cancellationToken
         )
         {
+            if (artifact == null)
+                throw new Exception("Artifact is empty or undefined; please check configuration.");
+
+            var elements = artifact.Elements ?? [];
+
+            var artifactElements = new List<ArtifactDataElement>();
+
             // Convert your credential object back to JSON string
             var credentialJson =
                 JsonSerializer
@@ -51,42 +69,119 @@ namespace Rocket.Gcp.Infrastructure
                     clientBuilder
                         .BuildAsync(cancellationToken);
 
-            // Load the image and perform OCR
-            var image =
-                Image
-                    .FromBytes(imageBytes);
+            var allCompleted = true;
 
-            try
+            foreach (var element in elements)
             {
-                var response =
+                try
+                {
                     await
-                        client
-                            .DetectDocumentTextAsync(
-                                image,
-                                null,
-                                CallSettings
-                                    .FromExpiration(
-                                        Expiration
-                                            .FromTimeout(
-                                                TimeSpan
-                                                    .FromMinutes(timeoutInMinutes)
-                                            )
-                                    )
+                        jobControl
+                            .StartStepAsync(
+                                element.ScanId
                             );
 
-                return
-                    response
-                        .Text;
-            }
-            catch (RpcException ex)
-            {
-                if (ex.StatusCode == StatusCode.DeadlineExceeded)
-                {
-                    throw new OperationCanceledException();
-                }
+                    try
+                    {
+                        var response =
+                            await
+                                client
+                                    .DetectDocumentTextAsync(
+                                        Image.FromBytes(element.Artifact),
+                                        null,
+                                        CallSettings
+                                            .FromExpiration(
+                                                Expiration
+                                                    .FromTimeout(
+                                                        TimeSpan
+                                                            .FromMinutes(timeoutInMinutes)
+                                                    )
+                                            )
+                                    );
 
-                throw;
+                        var ocrResult =
+                            response
+                                .Text;
+
+                        await
+                            jobControl
+                                .SucceedStepAsync(
+                                    $"GCP Vision response: \"{ocrResult}\"",
+                                    element.ScanId
+                                );
+
+                        var resultArtifact =
+                            new ArtifactDataElement
+                            {
+                                Artifact =
+                                    Encoding
+                                        .Default
+                                        .GetBytes(
+                                            ocrResult
+                                        ),
+                                FileExtension = CommonFileConstants.TextFileExtension,
+                                ScanId = element.ScanId,
+                                FileName =
+                                    await
+                                        fileRetitler
+                                            .RetitleAsync(
+                                                ocrResult,
+                                                element.ScanId,
+                                                artifact.UserId,
+                                                cancellationToken
+                                            ) ?? artifact.FileName
+                            };
+
+                        artifactElements
+                            .Add(resultArtifact);
+                    }
+                    catch (RpcException ex)
+                    {
+                        if (ex.StatusCode == StatusCode.DeadlineExceeded)
+                        {
+                            throw new OperationCanceledException();
+                        }
+
+                        throw;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    allCompleted = false;
+
+                    await
+                        jobControl
+                            .FailStepAsync(
+                                ex,
+                                element.ScanId
+                            );
+                }
             }
+
+            if (!allCompleted)
+            {
+                throw new RocketException(
+                    "There was an error extracting the text via GCP Vision",
+                    ApiStatusCodeEnum.ThirdPartyServiceError
+                );
+            }
+
+            // Retitle
+            var uniqueElements =
+                artifactElements
+                    .ToArray()
+                    .EnumerateUniquely();
+
+            return
+                new ExecutionStepArtifact
+                {
+                    Result = (int)ExecutionStatusEnum.Completed,
+                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
+                    BatchId = artifact.BatchId,
+                    Elements = uniqueElements,
+                    FileName = artifact.FileName,
+                    UserId = artifact.UserId
+                };
         }
     }
 }

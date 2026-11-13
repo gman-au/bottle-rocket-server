@@ -32,9 +32,6 @@ namespace Rocket.Api.Contracts.Scans
         [JsonPropertyName("image_base64")]
         public string ImageBase64 { get; set; }
 
-        [JsonPropertyName("archived")]
-        public bool Archived { get; set; }
-
         [JsonPropertyName("vendor")]
         public string Vendor { get; set; }
     }

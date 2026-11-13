@@ -13,6 +13,8 @@ namespace Rocket.QuestPdf.Infrastructure
                 base
                     .Clone(value);
 
+            result.MergeFiles = value.MergeFiles;
+
             return result;
         }
     }

@@ -11,7 +11,7 @@ namespace Rocket.Infrastructure
     public class ExecutionScheduler(
         ILogger<ExecutionScheduler> logger,
         IWorkflowExecutionManager workflowExecutionManager,
-        IScannedImageRepository scannedImageRepository,
+        IBatchRepository batchRepository,
         IExecutionRepository executionRepository,
         IWorkflowRepository workflowRepository,
         IWorkflowCloner workflowCloner,
@@ -20,7 +20,7 @@ namespace Rocket.Infrastructure
     {
         public async Task<string> ScheduleExecutionAsync(
             string workflowId,
-            string scanId,
+            string batchId,
             string userId,
             bool runImmediately,
             bool throwOnFailure,
@@ -29,9 +29,9 @@ namespace Rocket.Infrastructure
         {
             try
             {
-                if (string.IsNullOrEmpty(scanId))
+                if (string.IsNullOrEmpty(batchId))
                     throw new RocketException(
-                        "No scan ID was provided.",
+                        "No batch ID was provided.",
                         ApiStatusCodeEnum.ValidationError
                     );
 
@@ -68,35 +68,38 @@ namespace Rocket.Infrastructure
                         ApiStatusCodeEnum.ValidationError
                     );
 
-                var scan =
+                var batch =
                     await
-                        scannedImageRepository
-                            .GetScanByIdAsync(
+                        batchRepository
+                            .GetBatchByIdAsync(
                                 userId,
-                                scanId,
+                                batchId,
                                 cancellationToken
                             );
 
-                if (scan == null)
+                if (batch == null)
                     throw new RocketException(
-                        "Scan does not exist for this user.",
+                        "Batch does not exist for this user.",
                         ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                     );
 
-                if (scan.Archived)
+                if (batch.Archived)
                     throw new RocketException(
-                        "Scan is archived and cannot be processed.",
+                        "Batch is archived and cannot be processed.",
                         ApiStatusCodeEnum.RecordIsArchived
+                    );
+
+                if (!(batch.Scans ?? []).Any())
+                    throw new RocketException(
+                        "Batch contains no scanned images to process.",
+                        ApiStatusCodeEnum.NoAttachmentsFound
                     );
 
                 var newExecution =
                     workflowCloner
                         .Clone(
                             workflow,
-                            scan.Id,
-                            scan.ThumbnailBase64,
-                            scan.ContentType,
-                            scan.Vendor
+                            batch
                         );
 
                 var result =
@@ -143,7 +146,7 @@ namespace Rocket.Infrastructure
                     .LogWarning(
                         "Could not schedule workflow ID {workflowId} for scan ID {scanId} for user ID {userId} - {error}",
                         workflowId,
-                        scanId,
+                        batchId,
                         userId,
                         ex.Message
                     );

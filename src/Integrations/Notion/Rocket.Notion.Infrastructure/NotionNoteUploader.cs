@@ -1,103 +1,153 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
+using Rocket.Domain.Jobs;
+using Rocket.Integrations.Common.Extensions;
+using Rocket.Interfaces;
 using Rocket.Notion.Infrastructure.Definition.Common;
 using Rocket.Notion.Infrastructure.Definition.FileUpload;
 using Rocket.Notion.Infrastructure.Definition.PageContent;
 
 namespace Rocket.Notion.Infrastructure
 {
-    public class NotionNoteUploader(ILogger<NotionNoteUploader> logger) : BaseNotionClient, INotionNoteUploader
+    public class NotionNoteUploader(
+        ILogger<NotionNoteUploader> logger
+    ) : BaseNotionClient, INotionNoteUploader
     {
         public async Task UploadTextNoteAsync(
             string integrationSecret,
             string parentNoteId,
-            string title,
-            string textContent,
+            IEnumerable<ArtifactDataElement> elements,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {
             using var httpClient = GetBaseHttpClient(integrationSecret);
 
-            var noteTitle = title ?? $"Bottle Rocket note {DateTime.UtcNow.ToLocalTime():f}";
-
-            var request = new PageContentRequest
+            var allCompleted = true;
+            
+            foreach (var element in elements)
             {
-                Parent = new PageContentParent
+                try
                 {
-                    PageId = parentNoteId
-                },
-                Properties = new NotionProperties
-                {
-                    Title = new NotionPropertySet
+                    await
+                        jobControl
+                            .StartStepAsync(
+                                element.ScanId
+                            );
+
+                    var noteTitle = element.FileName ?? $"Bottle Rocket note {DateTime.UtcNow.ToLocalTime():f}";
+
+                    var request = new PageContentRequest
                     {
-                        Title =
-                        [
-                            new NotionProperty
+                        Parent = new PageContentParent
+                        {
+                            PageId = parentNoteId
+                        },
+                        Properties = new NotionProperties
+                        {
+                            Title = new NotionPropertySet
                             {
-                                Type = "text",
-                                Text = new NotionTextProperty
+                                Title =
+                                [
+                                    new NotionProperty
+                                    {
+                                        Type = "text",
+                                        Text = new NotionTextProperty
+                                        {
+                                            Content = noteTitle
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        Children =
+                        [
+                            new NotionParagraphBlock
+                            {
+                                Paragraph = new NotionParagraph
                                 {
-                                    Content = noteTitle
+                                    RichText =
+                                    [
+                                        new NotionProperty
+                                        {
+                                            Type = "text",
+                                            Text = new NotionTextProperty
+                                            {
+                                                Content =
+                                                    element
+                                                        .ArtifactAsText()
+                                            }
+                                        }
+                                    ]
                                 }
                             }
                         ]
-                    }
-                },
-                Children =
-                [
-                    new NotionParagraphBlock
+                    };
+
+                    logger
+                        .LogDebug(
+                            "Sending POST Json: {json}",
+                            JsonSerializer.Serialize(request)
+                        );
+
+                    HttpResponseMessage response = null;
+                    try
                     {
-                        Paragraph = new NotionParagraph
-                        {
-                            RichText =
-                            [
-                                new NotionProperty
-                                {
-                                    Type = "text",
-                                    Text = new NotionTextProperty
-                                    {
-                                        Content = textContent
-                                    }
-                                }
-                            ]
-                        }
+                        response =
+                            await
+                                httpClient
+                                    .PostAsJsonAsync(
+                                        "v1/pages",
+                                        request,
+                                        cancellationToken
+                                    );
+
+                        response
+                            .EnsureSuccessStatusCode();
                     }
-                ]
-            };
-
-            logger
-                .LogDebug(
-                    "Sending POST Json: {json}",
-                    JsonSerializer.Serialize(request)
-                );
-
-            HttpResponseMessage response = null;
-            try
-            {
-                response =
-                    await
-                        httpClient
-                            .PostAsJsonAsync(
-                                "v1/pages",
-                                request,
+                    catch (HttpRequestException)
+                    {
+                        await
+                            HandleNotionExceptionAsync(
+                                response,
                                 cancellationToken
                             );
+                    }
 
-                response
-                    .EnsureSuccessStatusCode();
+                    await
+                        jobControl
+                            .SucceedStepAsync(
+                                $"File {element.FileName} uploaded to Notion",
+                                element.ScanId
+                            );
+                }
+                catch (Exception ex)
+                {
+                    allCompleted = false;
+                    
+                    await
+                        jobControl
+                            .FailStepAsync(
+                                ex,
+                                element.ScanId
+                            );
+                }
             }
-            catch (HttpRequestException)
+            
+            if (!allCompleted)
             {
-                await
-                    HandleNotionExceptionAsync(
-                        response,
-                        cancellationToken
-                    );
+                throw new RocketException(
+                    "There was an error uploading the data to Notion",
+                    ApiStatusCodeEnum.ThirdPartyServiceError
+                );
             }
         }
 

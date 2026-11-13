@@ -14,6 +14,8 @@ namespace Rocket.QuestPdf.Infrastructure
                 base
                     .For(value);
 
+            result.MergeFiles = value.MergeFiles;
+
             return result;
         }
 
@@ -22,6 +24,8 @@ namespace Rocket.QuestPdf.Infrastructure
             var result =
                 base
                     .From(value);
+
+            result.MergeFiles = value.MergeFiles;
 
             return result;
         }

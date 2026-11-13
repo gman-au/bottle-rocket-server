@@ -1,36 +1,22 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Rocket.Domain;
+using Rocket.Domain.ScannedImages;
 
 namespace Rocket.Interfaces
 {
     public interface IScannedImageHandler
     {
-        Task<ScannedImage> WriteAsync(
-            byte[] imageData,
-            string contentType,
-            string fileExtension,
+        Task<(ScannedImage record, byte[] imageData)> ReadFromBatchAsync(
             string userId,
-            string vendor,
-            string description,
+            string batchId,
+            string scanId,
             CancellationToken cancellationToken
         );
 
-        Task<(ScannedImage record, byte[] imageData)> ReadAsync(
+        Task<bool> DeleteFromBatchAsync(
             string userId,
-            string id,
-            CancellationToken cancellationToken
-        );
-
-        Task<bool> ArchiveAsync(
-            string userId,
-            string id,
-            CancellationToken cancellationToken
-        );
-
-        Task<bool> DeleteAsync(
-            string userId,
-            string id,
+            string batchId,
+            string scanId,
             CancellationToken cancellationToken
         );
     }

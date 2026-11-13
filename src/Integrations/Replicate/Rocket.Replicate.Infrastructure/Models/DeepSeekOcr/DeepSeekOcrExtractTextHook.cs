@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +9,8 @@ using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Domain.Utils;
+using Rocket.Integrations.Common;
+using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 using Rocket.Replicate.Domain;
 using Rocket.Replicate.Domain.Models.DeepSeekOcr;
@@ -31,7 +34,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
-            Func<string, string, Task> appendLogMessageCallback,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {
@@ -48,7 +51,11 @@ namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
                             cancellationToken
                         );
 
-            var imageBytes = artifact.Artifact;
+            var artifactElements = new List<ArtifactDataElement>();
+
+            var elements =
+                artifact
+                    .Elements;
 
             if (step is not DeepSeekOcrExtractTextExecutionStep)
                 throw new RocketException(
@@ -60,123 +67,169 @@ namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
                 connector
                     .ApiToken;
 
-            var fileName = $"{artifact.FileName}{artifact.FileExtension}";
+            var allCompleted = true;
 
-            var imageIdToDelete = string.Empty;
-
-            try
-            {
-                // upload the file
-                var (imageUrl, imageId) =
-                    await
-                        replicateClient
-                            .UploadFileAsync(
-                                apiToken,
-                                imageBytes,
-                                fileName,
-                                artifact.FileExtension,
-                                cancellationToken
-                            );
-
-                imageIdToDelete = imageId;
-
-                logger
-                    .LogInformation(
-                        "Uploaded image to Replicate: {imageUrl}",
-                        imageUrl
-                    );
-
-                // create the prediction
-                var predictionId =
-                    await
-                        replicateClient
-                            .CreatePredictionAsync(
-                                apiToken,
-                                DeepSeekModelVersion,
-                                new DeepSeekOcrInput
-                                {
-                                    Image = imageUrl
-                                },
-                                cancellationToken
-                            );
-
-                logger
-                    .LogInformation(
-                        "Created prediction in Replicate: {predictionId}",
-                        predictionId
-                    );
-
-                var globalSettings =
-                    await
-                        globalSettingsRepository
-                            .GetGlobalSettingsAsync(cancellationToken);
-
-                var timeoutInMinutes =
-                    globalSettings?.DefaultModelTimeoutInMinutes ??
-                    DomainConstants.GlobalDefaultModelTimeoutInMinutes;
-
-                var result =
-                    await
-                        replicateClient
-                            .WaitUntilPredictionCompletesAsync(
-                                apiToken,
-                                predictionId,
-                                timeoutInMinutes,
-                                cancellationToken
-                            );
-
-                var extractedText = result ?? string.Empty;
-
+            var globalSettings =
                 await
-                    appendLogMessageCallback(
-                        step.Id,
-                        extractedText
-                    );
+                    globalSettingsRepository
+                        .GetGlobalSettingsAsync(cancellationToken);
 
-                var resultArtifact =
-                    new ExecutionStepArtifact
-                    {
-                        Result = (int)ExecutionStatusEnum.Completed,
-                        ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
-                        Artifact =
-                            Encoding
-                                .Default
-                                .GetBytes(
-                                    extractedText
-                                ),
-                        FileExtension = ".txt",
-                        FileName =
-                            await
-                                fileRetitler
-                                    .RetitleAsync(
-                                        extractedText,
-                                        artifact.ScanId,
-                                        artifact.UserId,
-                                        cancellationToken
-                                    ) ?? artifact.FileName,
-                        ScanId = artifact.ScanId,
-                        UserId = artifact.UserId
-                    };
+            var timeoutInMinutes =
+                globalSettings?.DefaultModelTimeoutInMinutes ??
+                DomainConstants.GlobalDefaultModelTimeoutInMinutes;
 
-                return resultArtifact;
-            }
-            finally
+            foreach (var element in elements)
             {
-                // delete uploads
-                if (!string.IsNullOrEmpty(imageIdToDelete))
+                var imageIdToDelete = string.Empty;
+
+                try
+                {
                     await
-                        replicateClient
-                            .DeleteUploadAsync(
-                                apiToken,
-                                imageIdToDelete
+                        jobControl
+                            .StartStepAsync(
+                                element.ScanId
                             );
 
-                logger
-                    .LogInformation(
-                        "Deleted image in Replicate: {imageIdToDelete}",
-                        imageIdToDelete
-                    );
+                    var fileName = $"{element.FileName}{element.FileExtension}";
+
+                    // upload the file
+                    var (imageUrl, imageId) =
+                        await
+                            replicateClient
+                                .UploadFileAsync(
+                                    apiToken,
+                                    element.Artifact,
+                                    fileName,
+                                    element.FileExtension,
+                                    cancellationToken
+                                );
+
+                    imageIdToDelete = imageId;
+
+                    logger
+                        .LogInformation(
+                            "Uploaded image to Replicate: {imageUrl}",
+                            imageUrl
+                        );
+
+                    // create the prediction
+                    var predictionId =
+                        await
+                            replicateClient
+                                .CreatePredictionAsync(
+                                    apiToken,
+                                    DeepSeekModelVersion,
+                                    new DeepSeekOcrInput
+                                    {
+                                        Image = imageUrl
+                                    },
+                                    cancellationToken
+                                );
+
+                    logger
+                        .LogInformation(
+                            "Created prediction in Replicate: {predictionId}",
+                            predictionId
+                        );
+
+                    var result =
+                        await
+                            replicateClient
+                                .WaitUntilPredictionCompletesAsync(
+                                    apiToken,
+                                    predictionId,
+                                    timeoutInMinutes,
+                                    cancellationToken
+                                );
+
+                    var extractedText = result ?? string.Empty;
+
+                    await
+                        jobControl
+                            .SucceedStepAsync(
+                                $"DeepSeek OCR response: \"{extractedText}\"",
+                                element.ScanId
+                            );
+
+                    var resultArtifact =
+                        new ArtifactDataElement
+                        {
+                            Artifact =
+                                Encoding
+                                    .Default
+                                    .GetBytes(
+                                        extractedText
+                                    ),
+                            FileExtension = CommonFileConstants.TextFileExtension,
+                            ScanId = element.ScanId,
+                            FileName =
+                                await
+                                    fileRetitler
+                                        .RetitleAsync(
+                                            extractedText,
+                                            element.ScanId,
+                                            artifact.UserId,
+                                            cancellationToken
+                                        ) ?? artifact.FileName
+                        };
+
+                    artifactElements
+                        .Add(resultArtifact);
+                }
+                catch (Exception ex)
+                {
+                    allCompleted = false;
+
+                    await
+                        jobControl
+                            .FailStepAsync(
+                                ex,
+                                element.ScanId
+                            );
+                }
+                finally
+                {
+                    // delete uploads
+                    if (!string.IsNullOrEmpty(imageIdToDelete))
+                        await
+                            replicateClient
+                                .DeleteUploadAsync(
+                                    apiToken,
+                                    imageIdToDelete
+                                );
+
+                    logger
+                        .LogInformation(
+                            "Deleted image in Replicate: {imageIdToDelete}",
+                            imageIdToDelete
+                        );
+                }
             }
+
+            if (!allCompleted)
+            {
+                throw new RocketException(
+                    "There was an error extracting the text via Replicate",
+                    ApiStatusCodeEnum.ThirdPartyServiceError
+                );
+            }
+            
+            // Retitle
+            var uniqueElements =
+                artifactElements
+                    .ToArray()
+                    .EnumerateUniquely();
+
+            return
+                new ExecutionStepArtifact
+                {
+                    Result = (int)ExecutionStatusEnum.Completed,
+                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
+                    BatchId = artifact.BatchId,
+                    Elements = uniqueElements,
+                    FileName = artifact.FileName,
+                    UserId = artifact.UserId
+                };
         }
     }
 }

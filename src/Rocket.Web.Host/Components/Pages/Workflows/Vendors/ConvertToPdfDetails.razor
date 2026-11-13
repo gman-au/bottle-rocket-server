@@ -13,12 +13,13 @@
     Context="stepSpecifics">
     <MudGrid>
         <MudItem sm="12">
-            <MudText
-                Align="Align.Center"
-                Typo="Typo.body2"
-                Color="Color.Default">
-                No configuration is required for this step.
-            </MudText>
+            <MudItem sm="12" lg="6" xl="4">
+                <MudCheckBox
+                    TriState
+                    @bind-Value="@stepSpecifics.MergeFiles">
+                    Merge all files into one single PDF
+                </MudCheckBox>
+            </MudItem>
             <MudText
                 type="hidden"
                 T="string"

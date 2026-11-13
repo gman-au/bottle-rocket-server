@@ -1,7 +1,7 @@
 ﻿@page "/MyScans/{id}"
 @using Microsoft.Extensions.Localization
+@using Rocket.Api.Contracts.Batches
 @using Rocket.Api.Contracts.Executions
-@using Rocket.Api.Contracts.Scans
 @using Rocket.Api.Contracts.Workflows
 @using Rocket.Localization.Web
 @using Rocket.Web.Host.Components.Dialog
@@ -11,17 +11,17 @@
 @inject IWebHostErrorHandler WebHostErrorHandler
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
-@inject IJSRuntime JsRuntime
 @inject IStringLocalizer<ScansResource> StringLocalizer
+@inject IJSRuntime JsRuntime
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
     <MudPaper Class="p-4" elevation="2">
-        @if (_scanSpecifics != null)
+        @if (_batchSpecifics != null)
         {
             <MudGrid Class="pa-4" Justify="Justify.SpaceEvenly">
                 <MudItem xs="12" sm="6">
-                    @if (_scanSpecifics.Archived)
+                    @if (_batchSpecifics.Archived)
                     {
                         <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.Center" Style="height:100%;">
                             <MudIcon
@@ -40,10 +40,52 @@
                     }
                     else
                     {
-                        <MudImage
-                            Class="mud-paper mud-paper-outlined"
-                            src=@($"data:{_scanSpecifics.ContentType};base64,{_scanSpecifics.ImageBase64}")
-                            Fluid/>
+                        <div class="mud-border-tertiary border p-4 rounded" id="scroll-images" style="height: 600px; overflow-y: auto;">
+                            <MudGrid Spacing="1" Justify="Justify.FlexStart">
+                                @foreach (var scan in _batchSpecifics.Scans)
+                                {
+                                    <MudItem
+                                        Class="d-flex align-center justify-center"
+                                        xs="12" sm="12" md="12" lg="12" xl="6">
+                                        <MudStack
+                                            Row
+                                            Style="height:100%;"
+                                            Justify="Justify.SpaceBetween"
+                                            StretchItems="StretchItems.None"
+                                            AlignItems="AlignItems.Center">
+                                            <MudImage
+                                                @onclick="@(async () => await LoadAndPreviewScanAsync(scan.Id))"
+                                                Class="rounded mb-4"
+                                                Style="cursor: zoom-in;"
+                                                src=@($"data:{scan.ContentType};base64,{scan.ThumbnailBase64}")
+                                                Fluid/>
+                                            <MudStack
+                                                Style="height:100%;"
+                                                Justify="Justify.Center"
+                                                StretchItems="StretchItems.None"
+                                                AlignItems="AlignItems.Center">
+                                                <MudFab
+                                                    Size="Size.Small"
+                                                    Color="Color.Default"
+                                                    StartIcon="@StandardIcons.DownloadIcon"
+                                                    OnClick="@(async () => await DownloadFileAsync(scan.Id))"/>
+                                                <MudFab
+                                                    Size="Size.Small"
+                                                    Color="Color.Default"
+                                                    StartIcon="@StandardIcons.DeleteIcon"
+                                                    OnClick="@(() => ConfirmDeleteAsync(scan.Id))"/>
+                                            </MudStack>
+                                        </MudStack>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                            <MudScrollToTop Selector="#scroll-images">
+                                <MudFab
+                                    Color="Color.Default"
+                                    StartIcon="@Icons.Material.Filled.ArrowCircleUp"
+                                />
+                            </MudScrollToTop>
+                        </div>
                     }
                 </MudItem>
                 <MudItem xs="12" sm="6">
@@ -52,43 +94,31 @@
                         Justify="Justify.SpaceBetween"
                         StretchItems="StretchItems.Middle"
                         AlignItems="AlignItems.Start">
-                        <MudText
-                            Align="Align.Center"
-                            Typo="Typo.h4"
-                            Color="Color.Primary"
-                            Class="mb-4">
-                            @StringLocalizer["ScansDetailsTitle"]
-                        </MudText>
+                        <div style="width:100%;">
+                            <MudText
+                                Align="Align.Center"
+                                Typo="Typo.h4"
+                                Color="Color.Primary"
+                                Class="mb-4">
+                                @StringLocalizer["ScansDetailsTitle"]
+                            </MudText>
+                        </div>
                         <div style="width:100%;">
                             <MudSimpleTable
                                 Bordered
                                 Dense>
                                 <tbody>
                                 <SimpleTableRowPair
-                                    Title="@StringLocalizer["ScansDescriptionFieldHeader"]"
-                                    Value=@_scanSpecifics.Description
-                                />
-                                <SimpleTableRowPair
                                     Title="@StringLocalizer["ScansCaptureDateFieldHeader"]"
-                                    Value=@_scanSpecifics.CaptureDate?.ToString("yyyy-MM-dd HH:mm:ss")
-                                />
-                                <SimpleTableRowPair
-                                    Title="@StringLocalizer["ScansContentTypeFieldHeader"]"
-                                    Value=@_scanSpecifics.ContentType
-                                />
+                                    Value=@_batchSpecifics.DateScanned.ToString("yyyy-MM-dd HH:mm:ss")/>
                                 <SimpleTableRowPair
                                     Title="@StringLocalizer["ScansStatusFieldHeader"]"
-                                    Value=@(_scanSpecifics.Archived ? StringLocalizer["ScansArchivedValue"] : StringLocalizer["ScansActiveValue"])
-                                    ValueColor="@(_scanSpecifics.Archived ? Color.Warning : Color.Success)"
-                                />
-                                <SimpleTableRowPair
-                                    Title="@StringLocalizer["ScansVendorFieldHeader"]"
-                                    Value=@(string.IsNullOrEmpty(_scanSpecifics.Vendor) ? StringLocalizer["ScansUnknownValue"] : _scanSpecifics.Vendor)
-                                />
+                                    Value=@(_batchSpecifics.Archived ? StringLocalizer["ScansArchivedValue"] : StringLocalizer["ScansActiveValue"])
+                                    ValueColor="@(_batchSpecifics.Archived ? Color.Warning : Color.Success)"/>
                                 </tbody>
                             </MudSimpleTable>
                         </div>
-                        @if (!_scanSpecifics.Archived)
+                        @if (!_batchSpecifics.Archived)
                         {
                             <div class="mud-border-tertiary border p-4 rounded">
                                 <MudText
@@ -134,15 +164,6 @@
                             <MudItem>
                                 <GoBackButton BackPath="/MyScans"/>
                             </MudItem>
-                            <MudItem>
-                                <MudButton
-                                    Variant="Variant.Outlined"
-                                    Color="Color.Info"
-                                    Disabled="@(_scanSpecifics.Archived)"
-                                    OnClick="@(async () => await DownloadFileAsync())">
-                                    @StringLocalizer["ScansDownloadCaption"]
-                                </MudButton>
-                            </MudItem>
                         </MudGrid>
                     </MudStack>
                 </MudItem>
@@ -165,7 +186,7 @@
 
 @code {
     private bool _isLoading;
-    private ScanSpecifics _scanSpecifics = null;
+    private BatchSpecifics _batchSpecifics = null;
     private string _workflowIdToTrigger = null;
 
     [Parameter]
@@ -185,11 +206,11 @@
             _isLoading = true;
             StateHasChanged();
 
-            _scanSpecifics =
+            _batchSpecifics =
                 await
                     ApiRequestManager
-                        .Scans
-                        .GetMyScanAsync(
+                        .Batches
+                        .GetMyBatchAsync(
                             Id,
                             BaseCancellationToken
                         );
@@ -215,10 +236,60 @@
                         .GetExecutionsAsync(
                             new FetchExecutionsRequest
                             {
-                                ScanId = Id,
+                                BatchId = Id,
                             }, BaseCancellationToken
                         ))?
                 .Executions;
+        }
+        catch (Exception ex)
+        {
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadAndPreviewScanAsync(
+        string scanId
+    )
+    {
+        try
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            var scan =
+                await
+                    ApiRequestManager
+                        .Scans
+                        .GetMyScanAsync(
+                            _batchSpecifics.Id,
+                            scanId,
+                            BaseCancellationToken
+                        );
+
+            if (scan != null)
+            {
+                var dialog =
+                    await
+                        DialogService
+                            .ShowAsync<PreviewScanDialog>(
+                                null,
+                                new DialogParameters
+                                {
+                                    { "Scan", scan }
+                                }
+                            );
+
+                await
+                    dialog
+                        .Result;
+            }
         }
         catch (Exception ex)
         {
@@ -260,7 +331,7 @@
                                 new CreateExecutionRequest
                                 {
                                     WorkflowId = _workflowIdToTrigger,
-                                    ScanId = Id,
+                                    BatchId = Id,
                                     RunImmediately = true
                                 },
                                 BaseCancellationToken
@@ -313,14 +384,28 @@
         }
     }
 
-    private async Task DownloadFileAsync()
+    private async Task DownloadFileAsync(
+        string scanId
+    )
     {
         try
         {
-            var fileName = _scanSpecifics.Id;
-            var contentType = _scanSpecifics.ContentType;
+            _isLoading = true;
+            StateHasChanged();
 
-            var base64Data = _scanSpecifics?.ImageBase64;
+            var scan =
+                await
+                    ApiRequestManager
+                        .Scans
+                        .GetMyScanAsync(
+                            _batchSpecifics.Id,
+                            scanId,
+                            BaseCancellationToken
+                        );
+
+            var fileName = scan.Id;
+            var contentType = scan.ContentType;
+            var base64Data = scan?.ImageBase64;
 
             if (!string.IsNullOrEmpty(base64Data))
             {
@@ -355,5 +440,62 @@
             StateHasChanged();
         }
     }
+
+    private async Task ConfirmDeleteAsync(
+        string id
+    )
+    {
+        var dialog =
+            await
+                DialogService
+                    .ShowAsync<ConfirmDeleteScanDialog>(
+                        null
+                    );
+
+        var result =
+            await
+                dialog
+                    .Result;
+
+        if (!(result?.Canceled ?? true))
+        {
+            try
+            {
+                _isLoading = true;
+                StateHasChanged();
+
+                await
+                    ApiRequestManager
+                        .Scans
+                        .DeleteScanByIdAsync(
+                            _batchSpecifics.Id,
+                            id,
+                            BaseCancellationToken
+                        );
+
+                _batchSpecifics.Scans =
+                    _batchSpecifics.Scans
+                        .Where(o => o.Id != id);
+
+                Snackbar
+                    .Add(
+                        StringLocalizer["ScansWasDeletedMessage"].Value,
+                        Severity.Success
+                    );
+            }
+            catch (Exception ex)
+            {
+                await
+                    WebHostErrorHandler
+                        .HandleExceptionAsync(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
 
 }

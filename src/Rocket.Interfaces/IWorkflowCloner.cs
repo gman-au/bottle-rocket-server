@@ -1,4 +1,5 @@
-﻿using Rocket.Domain.Executions;
+﻿using Rocket.Domain.Batches;
+using Rocket.Domain.Executions;
 using Rocket.Domain.Workflows;
 
 namespace Rocket.Interfaces
@@ -7,10 +8,7 @@ namespace Rocket.Interfaces
     {
         Execution Clone(
             Workflow workflow,
-            string scanId,
-            string scanThumbnailBase64,
-            string scanContentType,
-            string scanVendor
+            Batch batch
         );
     }
 }

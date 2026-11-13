@@ -69,7 +69,7 @@ namespace Rocket.Api.Host.Controllers
                             userId,
                             request.StartIndex,
                             request.RecordCount,
-                            request.ScanId,
+                            request.BatchId,
                             request.WorkflowId,
                             cancellationToken
                         );
@@ -84,16 +84,15 @@ namespace Rocket.Api.Host.Controllers
                                 {
                                     Id = o.Id,
                                     UserId = o.UserId,
-                                    ScanId = o.ScanId,
+                                    BatchId = o.BatchId,
                                     WorkflowId = o.WorkflowId,
                                     CreatedAt = o.CreatedAt.ToLocalTime(),
                                     RunDate = o.RunDate?.ToLocalTime(),
                                     Name = o.Name,
                                     ExecutionStatus = o.ExecutionStatus,
-                                    ThumbnailBase64 = o.ThumbnailBase64,
-                                    ContentType = o.ContentType,
                                     Archived = o.Archived,
-                                    Vendor = o.Vendor
+                                    CoverContentType = (o.Elements ?? []).FirstOrDefault()?.ContentType,
+                                    CoverThumbnailBase64 = (o.Elements ?? []).FirstOrDefault()?.ThumbnailBase64
                                 }
                             ),
                     TotalRecords = (int)totalRecordCount
@@ -214,7 +213,7 @@ namespace Rocket.Api.Host.Controllers
                     executionScheduler
                         .ScheduleExecutionAsync(
                             request.WorkflowId,
-                            request.ScanId,
+                            request.BatchId,
                             userId,
                             request.RunImmediately ?? false,
                             throwOnFailure: true,
@@ -441,15 +440,12 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Id = execution.Id,
                     UserId = execution.UserId,
-                    ScanId = execution.ScanId,
+                    BatchId = execution.BatchId,
                     WorkflowId = execution.WorkflowId,
                     RunDate = execution.RunDate?.ToLocalTime(),
                     CreatedAt = execution.CreatedAt.ToLocalTime(),
                     Name = execution.Name,
                     ExecutionStatus = execution.ExecutionStatus,
-                    ThumbnailBase64 = execution.ThumbnailBase64,
-                    ContentType = execution.ContentType,
-                    Vendor = execution.Vendor,
                     Archived = execution.Archived,
                     Steps =
                         (execution.Steps ?? [])
@@ -463,7 +459,23 @@ namespace Rocket.Api.Host.Controllers
                                     mapper
                                         .From(o);
                             }
-                        )
+                        ),
+                    Elements = 
+                        (execution.Elements ?? [])
+                        .Select(o => 
+                            new ExecutionElementSummary
+                            {
+                                Id = o.Id,
+                                ScanId = o.ScanId,
+                                ExecutionStatus = o.ExecutionStatus,
+                                LogMessages = o.LogMessages,
+                                ThumbnailBase64 = o.ThumbnailBase64,
+                                ContentType = o.ContentType,
+                                Vendor = o.Vendor
+                            }
+                        ),
+                    CoverContentType = (execution.Elements ?? []).FirstOrDefault()?.ContentType,
+                    CoverThumbnailBase64 = (execution.Elements ?? []).FirstOrDefault()?.ThumbnailBase64
                 };
 
             return

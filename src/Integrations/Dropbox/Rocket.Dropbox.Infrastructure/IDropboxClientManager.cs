@@ -1,5 +1,8 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using Rocket.Dropbox.Domain;
+using Rocket.Interfaces;
 
 namespace Rocket.Dropbox.Infrastructure
 {
@@ -13,14 +16,13 @@ namespace Rocket.Dropbox.Infrastructure
             string accessCode
         );
 
-        Task<string> UploadFileAsync(
+        Task UploadFilesAsync(
             string appKey,
             string appSecret,
             string refreshToken,
             string uploadFolder,
-            string fileName,
-            string fileExtension,
-            byte[] fileData, 
+            IEnumerable<DropboxFile> files, 
+            IJobControl jobControl,
             CancellationToken cancellationToken
         );
     }

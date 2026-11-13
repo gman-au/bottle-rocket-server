@@ -155,7 +155,9 @@ namespace Rocket.Api.Host.Controllers
         [EndpointSummary("Logout")]
         [EndpointGroupName("Authentication")]
         [EndpointDescription(
-            "Logout / revoke the current session. If LogoutAll is set to 'true', it will revoke the sessions for all users."
+            """
+            Logout / revoke one or more sessions.\nIf LogoutAll is set to 'true', it will revoke all sessions for the user."
+            """
         )]
         [ProducesResponseType(
             typeof(AccountLogoutResponse),
@@ -174,7 +176,7 @@ namespace Rocket.Api.Host.Controllers
                     sessionManager
                         .RevokeAllAsync(
                             UserId,
-                            null,
+                            CurrentSessionId,
                             cancellationToken
                         );
             }

@@ -14,9 +14,8 @@ namespace Rocket.Infrastructure.Detection
     ) : IWorkflowDetector
     {
         public async Task DetectAndScheduleWorkflowAsync(
-            string scanId,
+            string batchId,
             string userId,
-            string vendor,
             IEnumerable<string> workflowIds,
             CancellationToken cancellationToken
         )
@@ -39,7 +38,7 @@ namespace Rocket.Infrastructure.Detection
                         logger
                             .LogInformation(
                                 "Workflow matched for scan ID {scanId}, user {userId}, workflow ID {workflowId}; creating and running execution",
-                                scanId,
+                                batchId,
                                 userId,
                                 workflowId
                             );
@@ -48,7 +47,7 @@ namespace Rocket.Infrastructure.Detection
                             executionScheduler
                                 .ScheduleExecutionAsync(
                                     matchedWorkflow.Id,
-                                    scanId,
+                                    batchId,
                                     userId,
                                     runImmediately: true,
                                     throwOnFailure: false,
@@ -60,7 +59,7 @@ namespace Rocket.Infrastructure.Detection
                         logger
                             .LogWarning(
                                 "Workflow NOT matched for scan ID {scanId}, user {userId}, workflow ID {workflowId}",
-                                scanId,
+                                batchId,
                                 userId,
                                 workflowId
                             );

@@ -7,8 +7,8 @@ namespace Rocket.Api.Contracts.Executions
         [JsonPropertyName("workflow_id")]
         public string WorkflowId { get; set; }
 
-        [JsonPropertyName("scan_id")]
-        public string ScanId { get; set; }
+        [JsonPropertyName("batch_id")]
+        public string BatchId { get; set; }
 
         [JsonPropertyName("run_immediately")]
         public bool? RunImmediately { get; set; }

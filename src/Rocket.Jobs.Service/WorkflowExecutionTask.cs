@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Executions;
+using Rocket.Integrations.Domain;
 using Rocket.Interfaces;
 
 namespace Rocket.Jobs.Service
@@ -14,21 +15,29 @@ namespace Rocket.Jobs.Service
             string userId,
             string executionId,
             IWorkflowExecutionContext context,
-            Func<string, string, Task> appendLogMessageCallback,
-            Func<string, string, int, BaseExecutionStep, Exception, Task> updateExecutionStepCallbackFunc,
+            IJobControlBuilder jobControlBuilder,
             CancellationToken cancellationToken
         )
         {
+            var jobControl =
+                jobControlBuilder
+                    .Build(
+                        userId,
+                        executionId,
+                        step
+                    );
+
             try
             {
                 await
-                    updateExecutionStepCallbackFunc(
-                        userId,
-                        executionId,
-                        (int)ExecutionStatusEnum.Running,
-                        step,
-                        null
-                    );
+                    jobControl
+                        .UpdateStepStatusCallback(
+                            new JobStatusEntry
+                            {
+                                ExecutionStatus = (int)ExecutionStatusEnum.Running,
+                                ScanId = null
+                            }
+                        );
 
                 // base execution step should have the connection ID
                 // we only need the applicable hook
@@ -43,18 +52,19 @@ namespace Rocket.Jobs.Service
                                 context,
                                 step,
                                 userId,
-                                appendLogMessageCallback,
+                                jobControl,
                                 cancellationToken
                             );
 
                 await
-                    updateExecutionStepCallbackFunc(
-                        userId,
-                        executionId,
-                        (int)ExecutionStatusEnum.Completed,
-                        step,
-                        null
-                    );
+                    jobControl
+                        .UpdateStepStatusCallback(
+                            new JobStatusEntry
+                            {
+                                ExecutionStatus = (int)ExecutionStatusEnum.Completed,
+                                ScanId = null
+                            }
+                        );
 
                 foreach (var childStep in step?.ChildSteps ?? [])
                 {
@@ -70,8 +80,7 @@ namespace Rocket.Jobs.Service
                                 userId,
                                 executionId,
                                 context,
-                                appendLogMessageCallback,
-                                updateExecutionStepCallbackFunc,
+                                jobControlBuilder,
                                 cancellationToken
                             );
                 }
@@ -79,13 +88,14 @@ namespace Rocket.Jobs.Service
             catch (OperationCanceledException)
             {
                 await
-                    updateExecutionStepCallbackFunc(
-                        userId,
-                        executionId,
-                        (int)ExecutionStatusEnum.Cancelled,
-                        step,
-                        null
-                    );
+                    jobControl
+                        .UpdateStepStatusCallback(
+                            new JobStatusEntry
+                            {
+                                ExecutionStatus = (int)ExecutionStatusEnum.Cancelled,
+                                ScanId = null
+                            }
+                        );
 
                 throw;
             }
@@ -96,13 +106,15 @@ namespace Rocket.Jobs.Service
             catch (Exception ex)
             {
                 await
-                    updateExecutionStepCallbackFunc(
-                        userId,
-                        executionId,
-                        (int)ExecutionStatusEnum.Errored,
-                        step,
-                        ex
-                    );
+                    jobControl
+                        .UpdateStepStatusCallback(
+                            new JobStatusEntry
+                            {
+                                ExecutionStatus = (int)ExecutionStatusEnum.Errored,
+                                ScanId = null,
+                                Exception = ex
+                            }
+                        );
 
                 throw new ChildStepFailedException();
             }

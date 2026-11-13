@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -23,7 +22,7 @@ namespace Rocket.QuestPdf.Infrastructure
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
-            Func<string, string, Task> appendLogMessageCallback,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {
@@ -34,40 +33,43 @@ namespace Rocket.QuestPdf.Infrastructure
                 )
                 .InitializeArtifact(this);
 
-            byte[] fileData = null;
+            IEnumerable<ArtifactDataElement> fileResults = null;
 
-            var fileBytes =
+            var elements =
                 Artifact
-                    .Artifact;
+                    .Elements;
 
+            var mergeFiles = ExecutionStep.MergeFiles;
+            
             if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.RawTextData)
             {
-                var textData =
-                    Encoding
-                        .Default
-                        .GetString(fileBytes);
-
-                fileData =
+                fileResults =
                     await
                         pdfGenerator
                             .GeneratePdfFromTextAsync(
-                                textData,
+                                jobControl,
+                                elements,
+                                Artifact.FileName,
+                                mergeFiles,
                                 cancellationToken
                             );
             }
             else if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.ImageData)
             {
-                fileData =
+                fileResults =
                     await
                         pdfGenerator
                             .GeneratePdfFromImageAsync(
-                                fileBytes,
+                                jobControl,
+                                elements,
+                                Artifact.FileName,
+                                mergeFiles,
                                 cancellationToken
                             );
             }
 
             return
-                fileData
+                fileResults
                     .AsCompletedPdfArtifact(Artifact);
         }
     }

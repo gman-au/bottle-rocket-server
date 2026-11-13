@@ -4,7 +4,10 @@ namespace Rocket.Api.Contracts.Captures
 {
     public class ProcessCaptureResponse : ApiResponse
     {
-        [JsonPropertyName("id")]
-        public string Id { get; set; }
+        [JsonPropertyName("scan_id")]
+        public string ScanId { get; set; }
+        
+        [JsonPropertyName("batch_id")]
+        public string BatchId { get; set; }
     }
 }

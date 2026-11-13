@@ -42,7 +42,7 @@ namespace Rocket.Google.Infrastructure
                 
                 result.Credential = credential;
             }
-            catch (JsonException ex)
+            catch (JsonException)
             {
                 throw new RocketException(
                     "There was a problem loading the credentials file. Please check it again and re-try.",

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Domain.Enum;
@@ -22,7 +21,7 @@ namespace Rocket.Notion.Infrastructure
             IWorkflowExecutionContext context,
             BaseExecutionStep step,
             string userId,
-            Func<string, string, Task> appendLogMessageCallback,
+            IJobControl jobControl,
             CancellationToken cancellationToken
         )
         {
@@ -39,34 +38,31 @@ namespace Rocket.Notion.Infrastructure
                     cancellationToken
                 );
 
+            var elements =
+                Artifact
+                    .Elements;
+            
             if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.RawTextData)
             {
-                var textData =
-                    GetArtifactAsText();
-
                 await
                     notionNoteUploader
                         .UploadTextNoteAsync(
                             Connector.IntegrationSecret,
                             ExecutionStep.ParentNoteId,
-                            null,
-                            textData,
+                            elements,
+                            jobControl,
                             cancellationToken
                         );
             }
             else if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.ImageData)
             {
-                var imageBytes =
-                    GetArtifactAsBytes();
-
                 await
                     notionImageUploader
                         .UploadImageNoteAsync(
                             Connector.IntegrationSecret,
                             ExecutionStep.ParentNoteId,
-                            null,
-                            imageBytes,
-                            Artifact.FileExtension,
+                            elements,
+                            jobControl,
                             cancellationToken
                         );
             }

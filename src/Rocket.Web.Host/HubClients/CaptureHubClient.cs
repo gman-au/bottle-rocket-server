@@ -26,6 +26,8 @@ namespace Rocket.Web.Host.HubClients
 
         public event Func<Task> OnNewExecutionUpdateReceived;
         
+        public event Func<string, int, Task> OnNewExecutionElementUpdateReceived;
+        
         public event Func<Task> OnScanDeletedReceived;
         
         public event Func<Task> OnExecutionDeletedReceived;
@@ -142,6 +144,30 @@ namespace Rocket.Web.Host.HubClients
                                 }
                             )
                     );
+
+                _hubSubscriptions
+                    .Add(
+                        _hubConnection
+                            .On<string, int>(
+                                "NewExecutionElementUpdateReceived",
+                                async (scanId, status) =>
+                                {
+                                    logger
+                                        .LogInformation(
+                                            "Received NewExecutionElementUpdateReceived notification with scan ID={scanId}, status={status}",
+                                            scanId,
+                                            status
+                                        );
+
+                                    if (OnNewExecutionElementUpdateReceived != null)
+                                    {
+                                        await
+                                            OnNewExecutionElementUpdateReceived
+                                                .Invoke(scanId, status);
+                                    }
+                                }
+                            )
+                    );
                 
                 _hubSubscriptions
                     .Add(
@@ -229,7 +255,7 @@ namespace Rocket.Web.Host.HubClients
                 logger
                     .LogInformation("Connected to CaptureHub");
             }
-            catch (TaskCanceledException ex)
+            catch (TaskCanceledException)
             {
                 logger
                     .LogWarning("CaptureHub start task cancelled");

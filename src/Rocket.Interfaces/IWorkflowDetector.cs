@@ -7,9 +7,8 @@ namespace Rocket.Interfaces
     public interface IWorkflowDetector
     {
         Task DetectAndScheduleWorkflowAsync(
-            string scanId, 
+            string batchId, 
             string userId,
-            string vendor,
             IEnumerable<string> workflowIds,
             CancellationToken cancellationToken
         );

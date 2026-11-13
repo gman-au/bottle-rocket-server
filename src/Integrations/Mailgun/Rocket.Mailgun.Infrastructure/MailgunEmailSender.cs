@@ -14,7 +14,7 @@ namespace Rocket.Mailgun.Infrastructure
 {
     public class MailgunEmailSender(ILogger<MailgunSender> logger) : IMailgunEmailSender
     {
-        public async Task SendEmailAsync(
+        public async Task<string> SendEmailAsync(
             string senderDomain,
             string apiKey,
             byte[] attachmentData,
@@ -63,6 +63,10 @@ namespace Rocket.Mailgun.Infrastructure
                         ),
                         ApiStatusCodeEnum.ThirdPartyServiceError
                     );
+
+                return 
+                    email
+                        .MessageId;
             }
             catch (Exception ex)
             {

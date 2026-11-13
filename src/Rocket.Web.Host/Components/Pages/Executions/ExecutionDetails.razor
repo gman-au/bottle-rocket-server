@@ -57,14 +57,14 @@
                                 <ComplexTableRowPair
                                     Title="@StringLocalizer["ExecutionsStatusFieldHeader"]">
                                     <span style="display:flex;">
-                                    <MudText
-                                        Color="@(_currentModel.ExecutionStatus.MapStatusToColor())"
-                                        Class="code-text"
-                                        Typo="Typo.body1"
-                                        Align="Align.Left"
-                                        GutterBottom="true">
-                                        @(DomainConstants.ExecutionStatusTypes.ContainsKey((int)_currentModel.ExecutionStatus) ? DomainConstants.ExecutionStatusTypes[(int)_currentModel.ExecutionStatus] : StringLocalizer["ExecutionsStatusUnknownValue"])
-                                    </MudText>
+                                        <MudText
+                                            Color="@(_currentModel.ExecutionStatus.MapStatusToColor())"
+                                            Class="code-text"
+                                            Typo="Typo.body1"
+                                            Align="Align.Left"
+                                            GutterBottom="true">
+                                            @(DomainConstants.ExecutionStatusTypes.ContainsKey((int)_currentModel.ExecutionStatus) ? DomainConstants.ExecutionStatusTypes[(int)_currentModel.ExecutionStatus] : StringLocalizer["ExecutionsStatusUnknownValue"])
+                                        </MudText>
                                         @if (_currentModel.ExecutionStatus == (int)ExecutionStatusEnum.Running)
                                         {
                                             <div class="ml-2">
@@ -76,12 +76,23 @@
                                 <SimpleTableRowPair Title="@StringLocalizer["ExecutionsRunDateFieldHeader"]"
                                                     Value=@_currentModel?.RunDate?.ToString("g")/>
                                 <ComplexTableRowPair Title="@StringLocalizer["ExecutionsImageFieldHeader"]">
-                                    <MudLink Href=@($"/MyScans/{_currentModel.ScanId}")>
-                                        <MudImage
-                                            Class="mud-border-secondary border rounded"
-                                            Src=@($"data:{_currentModel.ContentType};base64,{_currentModel.ThumbnailBase64}") Width="200"
-                                            Height="200"/>
-
+                                    <MudLink Href=@($"/MyScans/{_currentModel.BatchId}")>
+                                        @if (!string.IsNullOrEmpty(_currentModel.CoverContentType) && !string.IsNullOrEmpty(_currentModel.CoverThumbnailBase64))
+                                        {
+                                            <MudImage
+                                                Class="mud-border-secondary border rounded my-2"
+                                                Src=@($"data:{_currentModel.CoverContentType};base64,{_currentModel.CoverThumbnailBase64}")
+                                                Width="200"
+                                                Height="200"/>
+                                        }
+                                        else
+                                        {
+                                            <MudIcon
+                                                Size="Size.Large"
+                                                Class="broken-image"
+                                                Icon="@StandardIcons.NoImageIcon"
+                                            />
+                                        }
                                     </MudLink>
                                 </ComplexTableRowPair>
                                 </tbody>
@@ -93,7 +104,7 @@
                                     Variant="Variant.Outlined"
                                     Color="Color.Error"
                                     Disabled="@(_currentModel.ExecutionStatus == (int)ExecutionStatusEnum.Running)"
-                                    OnClick="@(() => ConfirmDeleteAsync())">
+                                    OnClick="@(ConfirmDeleteAsync)">
                                     @StringLocalizer["ExecutionsDeleteCaption"]
                                 </MudButton>
                             </MudItem>
@@ -121,6 +132,51 @@
         </pre>
                         }
                     </MudPaper>
+                </MudItem>
+                <MudItem sm="12">
+                    <div class="mud-border-tertiary border p-4 rounded" id="scroll-images" style="height: 600px; overflow-y: auto;">
+                        <MudGrid Spacing="1" Justify="Justify.FlexStart">
+                            @foreach (var element in _currentModel.Elements)
+                            {
+                                <MudItem
+                                    Class="d-flex align-center justify-center"
+                                    xs="12" sm="12" md="12" lg="6" xl="3">
+                                    <MudStack
+                                        Row
+                                        Style="height:100%;"
+                                        Justify="Justify.SpaceBetween"
+                                        StretchItems="StretchItems.None"
+                                        AlignItems="AlignItems.Center">
+                                        <MudBadge
+                                            Icon="@GetIconFromStatus(element.ExecutionStatus)"
+                                            Color="@(GetColorFromStatus(element.ExecutionStatus))"
+                                        >
+                                            <MudImage
+                                                @onclick="@(async () => await LoadAndPreviewScanAsync(
+                                                              _currentModel.BatchId,
+                                                              element.ScanId
+                                                          ))"
+                                                Class="rounded mb-4"
+                                                Style="cursor: zoom-in;"
+                                                src=@($"data:{element.ContentType};base64,{element.ThumbnailBase64}")
+                                                Fluid
+                                            />
+                                        </MudBadge>
+                                        <MudFab
+                                            Size="Size.Small"
+                                            Color="Color.Default"
+                                            Disabled="@(!_currentModel.ExecutionStatus.MapStatusToFinished())"
+                                            StartIcon="@StandardIcons.LogsIcon"
+                                            OnClick="@(async () => await DisplayExecutionElementLogMessages(element.Id))"
+                                        />
+                                    </MudStack>
+                                </MudItem>
+                            }
+                        </MudGrid>
+                        <MudScrollToTop Selector="#scroll-images">
+                            <MudFab Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.ArrowCircleUp"/>
+                        </MudScrollToTop>
+                    </div>
                 </MudItem>
             </MudGrid>
         </MudPaper>
@@ -169,6 +225,7 @@
 
             // Set up SignalR listener
             CaptureHubClient.OnNewExecutionUpdateReceived += HandleExecutionUpdate;
+            CaptureHubClient.OnNewExecutionElementUpdateReceived += HandleExecutionElementUpdate;
 
             // Connect to hub
             await
@@ -248,6 +305,52 @@
                 .Convert(_currentModel);
     }
 
+    private async Task HandleExecutionElementUpdate(
+        string scanId,
+        int status
+    )
+    {
+        var elements = 
+            _currentModel
+                .Elements
+                .ToList();
+        
+        var element = 
+            elements
+            .FirstOrDefault(x => x.ScanId == scanId);
+
+        if (element != null)
+        {
+            var newElement =
+                new ExecutionElementSummary
+                {
+                    Id = element.Id,
+                    ScanId = element.ScanId,
+                    ExecutionStatus = status,
+                    LogMessages = element.LogMessages,
+                    ThumbnailBase64 = element.ThumbnailBase64,
+                    ContentType = element.ContentType,
+                    Vendor = element.Vendor
+                };
+            
+            var index = elements.IndexOf(element);
+            
+            elements
+                .Remove(element);
+            
+            elements
+                .Insert(
+                index,
+                newElement
+            );
+
+            _currentModel.Elements = elements;
+            
+            await 
+                InvokeAsync(StateHasChanged);
+        }
+    }
+
     private async Task HandleExecutionUpdate()
     {
         await
@@ -306,14 +409,15 @@
     {
         // Clean up SignalR subscription
         CaptureHubClient.OnNewExecutionUpdateReceived -= HandleExecutionUpdate;
-
+        CaptureHubClient.OnNewExecutionElementUpdateReceived -= HandleExecutionElementUpdate;
+        
         await
             CaptureHubClient
                 .DisposeAsync();
     }
 
     [JSInvokable]
-    public async Task DisplayLogMessages(
+    public async Task DisplayExecutionStepLogMessages(
         string executionStepId
     )
     {
@@ -327,7 +431,30 @@
 
         await
             DialogService
-                .ShowAsync<ExecutionStepMessageDialog>(
+                .ShowAsync<ExecutionMessageDialog>(
+                    null,
+                    new DialogParameters
+                    {
+                        { "LogMessages", logMessages }
+                    }
+                );
+    }
+
+    public async Task DisplayExecutionElementLogMessages(
+        string executionElementId
+    )
+    {
+        var element =
+            _currentModel.Elements
+                .FirstOrDefault(o => o.Id == executionElementId);
+
+        if (element == null) return;
+
+        var logMessages = element.LogMessages ?? [];
+
+        await
+            DialogService
+                .ShowAsync<ExecutionMessageDialog>(
                     null,
                     new DialogParameters
                     {
@@ -393,7 +520,7 @@
 
     private async Task ConfirmDeleteAsync()
     {
-        var scanId = _currentModel.ScanId;
+        var batchId = _currentModel.BatchId;
 
         var dialog =
             await
@@ -429,7 +556,7 @@
                     );
 
                 NavigationManager
-                    .NavigateTo($"/MyScans/{scanId}");
+                    .NavigateTo($"/MyScans/{batchId}");
             }
             catch (Exception ex)
             {
@@ -443,6 +570,83 @@
                 StateHasChanged();
             }
         }
+    }
+
+    private async Task LoadAndPreviewScanAsync(
+        string batchId,
+        string scanId
+    )
+    {
+        try
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            var scan =
+                await
+                    ApiRequestManager
+                        .Scans
+                        .GetMyScanAsync(
+                            batchId,
+                            scanId,
+                            BaseCancellationToken
+                        );
+
+            if (scan != null)
+            {
+                var dialog =
+                    await
+                        DialogService
+                            .ShowAsync<PreviewScanDialog>(
+                                null,
+                                new DialogParameters
+                                {
+                                    { "Scan", scan }
+                                }
+                            );
+
+                await
+                    dialog
+                        .Result;
+            }
+        }
+        catch (Exception ex)
+        {
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private static Color GetColorFromStatus(
+        int status
+    )
+    {
+        return status switch
+        {
+            (int)ExecutionStatusEnum.Completed => Color.Success,
+            (int)ExecutionStatusEnum.Errored => Color.Error,
+            (int)ExecutionStatusEnum.Running => Color.Info,
+            _ => Color.Default
+        };
+    }
+
+    private static string GetIconFromStatus(
+        int status
+    )
+    {
+        return status switch
+        {
+            (int)ExecutionStatusEnum.Completed => StandardIcons.SuccessIcon,
+            (int)ExecutionStatusEnum.Errored => StandardIcons.FailureIcon,
+            (int)ExecutionStatusEnum.Running => StandardIcons.RunningIcon,
+            _ => StandardIcons.NotRunIcon
+        };
     }
 
 }

@@ -15,7 +15,7 @@ window.blazorNavigateToRoute = (route) => {
 
 window.displayLogMessages = (stepId) => {
     if (window.blazorDotNetRef) {
-        window.blazorDotNetRef.invokeMethodAsync('DisplayLogMessages', stepId);
+        window.blazorDotNetRef.invokeMethodAsync('DisplayExecutionStepLogMessages', stepId);
     }
 };
 
