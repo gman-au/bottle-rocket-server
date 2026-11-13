@@ -18,11 +18,11 @@ namespace Rocket.Ollama.Infrastructure
     public class OllamaClient(
         ISchemaResponseBuilder schemaResponseBuilder,
         ISchemaGenerator schemaGenerator,
-        ISchemaDictionary schemaDictionary,
         IImageBase64Converter imageBase64Converter,
         ILogger<OllamaClient> logger
     ) : IOllamaClient
     {
+        private const string SystemRole = "system";
         private const string UserRole = "user";
 
         private static readonly JsonSerializerOptions DefaultJsonSerializationOptions = new()
@@ -30,12 +30,15 @@ namespace Rocket.Ollama.Infrastructure
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
 
-        public async Task<IEnumerable<string>> GetModelListAsync(string endpoint, CancellationToken cancellationToken)
+        public async Task<IEnumerable<string>> GetModelListAsync(
+            string endpoint,
+            CancellationToken cancellationToken
+        )
         {
             using var httpClient = new HttpClient();
 
             httpClient.BaseAddress = new Uri(endpoint);
-            
+
             var response =
                 await
                     httpClient
@@ -61,12 +64,12 @@ namespace Rocket.Ollama.Infrastructure
             return results;
         }
 
-        public async Task<T> SendRequestAsync<T>(
+        public async Task<T> SendImageRequestAsync<T>(
             string endpoint,
             string modelName,
             string prompt,
             byte[] imageBytes,
-            RocketbookPageTemplateTypeEnum pageTemplateType,
+            Type schemaType,
             bool useSchema,
             float? temperature,
             int? maxTokens,
@@ -84,6 +87,92 @@ namespace Rocket.Ollama.Infrastructure
                         .Perform(imageBytes);
             }
 
+            var promptMessages = new[]
+            {
+                new OllamaOcrRequestMessage
+                {
+                    Role = UserRole,
+                    Content = prompt,
+                    Images = string.IsNullOrEmpty(base64Image) ? null : [base64Image]
+                }
+            };
+
+            return
+                await
+                    SendRequestAsync<T>(
+                        endpoint,
+                        modelName,
+                        prompt,
+                        schemaType,
+                        useSchema,
+                        temperature,
+                        maxTokens,
+                        numCtx,
+                        timeoutInMinutes,
+                        cancellationToken,
+                        promptMessages
+                    );
+        }
+        
+        public async Task<T> SendTextRequestAsync<T>(
+            string endpoint,
+            string modelName,
+            string systemPrompt,
+            string userPrompt,
+            Type schemaType,
+            bool useSchema,
+            float? temperature,
+            int? maxTokens,
+            int? numCtx,
+            int timeoutInMinutes,
+            CancellationToken cancellationToken
+        ) where T : class
+        {
+            var promptMessages = new[]
+            {
+                new OllamaOcrRequestMessage
+                {
+                    Role = SystemRole,
+                    Content = systemPrompt
+                },
+                new OllamaOcrRequestMessage
+                {
+                    Role = UserRole,
+                    Content = userPrompt
+                }
+            };
+
+            return
+                await
+                    SendRequestAsync<T>(
+                        endpoint,
+                        modelName,
+                        systemPrompt,
+                        schemaType,
+                        useSchema,
+                        temperature,
+                        maxTokens,
+                        numCtx,
+                        timeoutInMinutes,
+                        cancellationToken,
+                        promptMessages
+                    );
+        }
+
+        private async Task<T> SendRequestAsync<T>(
+            string endpoint,
+            string modelName,
+            string prompt,
+            Type schemaType,
+            bool useSchema,
+            float? temperature,
+            int? maxTokens,
+            int? numCtx,
+            int timeoutInMinutes,
+            CancellationToken cancellationToken,
+            params OllamaOcrRequestMessage[] promptMessages
+        ) where T : class
+        {
             using var httpClient = new HttpClient();
 
             httpClient.BaseAddress = new Uri(endpoint);
@@ -93,21 +182,16 @@ namespace Rocket.Ollama.Infrastructure
                     .FromMinutes(timeoutInMinutes);
 
             logger
-                .LogDebug("Ollama prompt:\r\n{prompt}", prompt);
-            
+                .LogDebug(
+                    "Ollama prompt:\r\n{prompt}",
+                    prompt
+                );
+
             var request =
                 new OllamaOcrRequest
                 {
                     Model = modelName,
-                    Messages =
-                    [
-                        new OllamaOcrRequestMessage
-                        {
-                            Role = UserRole,
-                            Content = prompt,
-                            Images = string.IsNullOrEmpty(base64Image) ? null : [base64Image]
-                        }
-                    ],
+                    Messages = promptMessages,
                     Stream = false,
                     Temperature = temperature,
                     NumPredict = maxTokens,
@@ -116,17 +200,14 @@ namespace Rocket.Ollama.Infrastructure
 
             if (useSchema)
             {
-                var pageTemplateSchemaType =
-                    schemaDictionary
-                        .From(pageTemplateType);
-
                 var schemaString =
                     schemaGenerator
-                        .Generate(pageTemplateSchemaType);
+                        .Generate(schemaType);
 
                 request.Format =
                     JsonDocument
-                        .Parse(schemaString).RootElement;
+                        .Parse(schemaString)
+                        .RootElement;
             }
 
             var response =
@@ -157,7 +238,7 @@ namespace Rocket.Ollama.Infrastructure
                 schemaResponseBuilder
                     .Build(
                         messageContent,
-                        pageTemplateType
+                        schemaType
                     );
 
             if (data is not T typedData)

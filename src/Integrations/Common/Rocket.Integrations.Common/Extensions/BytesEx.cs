@@ -4,7 +4,9 @@ using System.Text;
 using System.Text.Json;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Domain.Extensions;
 using Rocket.Domain.Jobs;
+using Rocket.Interfaces;
 using Rocket.Page.Schemas.ProjectTaskTracker;
 
 namespace Rocket.Integrations.Common.Extensions
@@ -150,6 +152,49 @@ namespace Rocket.Integrations.Common.Extensions
                     ApiStatusCodeEnum.DeveloperError
                 );
             }
+        }
+
+        public static ExecutionStepArtifact AsArtifactWithRenamedFiles(
+            this ExecutionStepArtifact artifact,
+            IEnumerable<(string, string)> values
+        )
+        {
+            var elements =
+                (artifact?.Elements ?? []).Select(o =>
+                    {
+                        var matchedEntry =
+                            values
+                                .FirstOrDefault(v => o.ScanId == v.Item1);
+
+                        if (matchedEntry != default)
+                        {
+                            var newFileName = matchedEntry.Item2;
+
+                            return
+                                new ArtifactDataElement
+                                {
+                                    ScanId = o.ScanId,
+                                    Artifact = o.Artifact,
+                                    FileExtension = o.FileExtension,
+                                    FileName = newFileName.ToSanitizedFileName()
+                                };
+                        }
+
+                        return o;
+                    }
+                )
+                .ToArray()
+                .EnumerateUniquely();
+
+            return
+                new ExecutionStepArtifact
+                {
+                    Result = (int)ExecutionStatusEnum.Completed,
+                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData,
+                    Elements = elements,
+                    FileName = artifact?.FileName,
+                    UserId = artifact?.UserId
+                };
         }
     }
 }

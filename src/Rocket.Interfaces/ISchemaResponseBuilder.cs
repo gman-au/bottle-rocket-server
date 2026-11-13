@@ -1,4 +1,4 @@
-﻿using Rocket.Domain.Enum;
+﻿using System;
 
 namespace Rocket.Interfaces
 {
@@ -6,7 +6,7 @@ namespace Rocket.Interfaces
     {
         public object Build(
             string messageContent,
-            RocketbookPageTemplateTypeEnum pageTemplateType
+            Type schemaType
         );
     }
 }

@@ -1,15 +1,16 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Text.Json;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure
 {
-    public class SchemaResponseBuilder(ISchemaDictionary schemaDictionary) : ISchemaResponseBuilder
+    public class SchemaResponseBuilder : ISchemaResponseBuilder
     {
         public object Build(
             string messageContent,
-            RocketbookPageTemplateTypeEnum pageTemplateType
+            Type schemaType
         )
         {
             if (string.IsNullOrEmpty(messageContent))
@@ -17,10 +18,6 @@ namespace Rocket.Infrastructure
                     "No OCR data was extracted from the image.",
                     ApiStatusCodeEnum.ThirdPartyServiceError
                 );
-            
-            var schemaType =
-                schemaDictionary
-                    .From(pageTemplateType);
 
             if (schemaType == typeof(string))
                 return messageContent;

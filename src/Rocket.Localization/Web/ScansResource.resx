@@ -51,7 +51,7 @@
         <value>Workflow</value>
     </data>
     <data name="ScansManuallyTriggerFieldHint" xml:space="preserve">
-        <value>Select a workflow to trigger against this scan.</value>
+        <value>Select a workflow to trigger against this batch.</value>
     </data>
     <!-- CAPTIONS & MESSAGES -->
     <data name="ScansLoadMoreCaption" xml:space="preserve">
@@ -88,7 +88,7 @@
         <value>Scan has been archived</value>
     </data>
     <data name="ScansManuallyTriggerMessage" xml:space="preserve">
-        <value>Select a workflow from the list and click the button to run the workflow against this scan.</value>
+        <value>Select a workflow from the list and click the button to run the workflow against this batch.</value>
     </data>
     <data name="ScansNoFileDataError" xml:space="preserve">
         <value>Password must contain at least one digit</value>

@@ -2,6 +2,7 @@
 using Rocket.Interfaces;
 using Rocket.Ollama.Domain;
 using Rocket.Ollama.Domain.Project;
+using Rocket.Ollama.Domain.Retitle;
 using Rocket.Ollama.Domain.Text;
 
 namespace Rocket.Ollama.Infrastructure
@@ -34,6 +35,14 @@ namespace Rocket.Ollama.Infrastructure
                 });
             }
             
+            if (!BsonClassMap.IsClassMapRegistered(typeof(OllamaRetitleFileExecutionStep)))
+            {
+                BsonClassMap.RegisterClassMap<OllamaRetitleFileExecutionStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
             if (!BsonClassMap.IsClassMapRegistered(typeof(OllamaExtractTextWorkflowStep)))
             {
                 BsonClassMap.RegisterClassMap<OllamaExtractTextWorkflowStep>(cm =>
@@ -45,6 +54,14 @@ namespace Rocket.Ollama.Infrastructure
             if (!BsonClassMap.IsClassMapRegistered(typeof(OllamaExtractProjectWorkflowStep)))
             {
                 BsonClassMap.RegisterClassMap<OllamaExtractProjectWorkflowStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(OllamaRetitleFileWorkflowStep)))
+            {
+                BsonClassMap.RegisterClassMap<OllamaRetitleFileWorkflowStep>(cm =>
                 {
                     cm.AutoMap();
                 });

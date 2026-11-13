@@ -2,6 +2,7 @@
 using Rocket.Interfaces;
 using Rocket.Ollama.Infrastructure;
 using Rocket.Ollama.Infrastructure.Project;
+using Rocket.Ollama.Infrastructure.Retitle;
 using Rocket.Ollama.Infrastructure.Text;
 using Rocket.Ollama.Injection.Serialization;
 
@@ -13,19 +14,23 @@ namespace Rocket.Ollama.Injection.Api
         {
             services
                 .AddTransient<IIntegrationHook, OllamaExtractTextHook>()
-                .AddTransient<IIntegrationHook, OllamaExtractProjectHook>();
+                .AddTransient<IIntegrationHook, OllamaExtractProjectHook>()
+                .AddTransient<IIntegrationHook, OllamaRetitleFileHook>();
             
             services
                 .AddTransient<IWorkflowStepModelMapper, OllamaExtractTextWorkflowStepMapper>()
-                .AddTransient<IWorkflowStepModelMapper, OllamaExtractProjectWorkflowStepMapper>();
-            
+                .AddTransient<IWorkflowStepModelMapper, OllamaExtractProjectWorkflowStepMapper>()
+                .AddTransient<IWorkflowStepModelMapper, OllamaRetitleFileWorkflowStepMapper>();
+
             services
                 .AddTransient<IExecutionStepModelMapper, OllamaExtractTextExecutionStepMapper>()
-                .AddTransient<IExecutionStepModelMapper, OllamaExtractProjectExecutionStepMapper>();
+                .AddTransient<IExecutionStepModelMapper, OllamaExtractProjectExecutionStepMapper>()
+                .AddTransient<IExecutionStepModelMapper, OllamaRetitleFileExecutionStepMapper>();
             
             services
                 .AddTransient<IStepModelCloner, OllamaExtractTextStepCloner>()
-                .AddTransient<IStepModelCloner, OllamaExtractProjectStepCloner>();
+                .AddTransient<IStepModelCloner, OllamaExtractProjectStepCloner>()
+                .AddTransient<IStepModelCloner, OllamaRetitleFileStepCloner>();
             
             services
                 .AddTransient<IConnectorModelMapper, OllamaConnectorMapper>()
