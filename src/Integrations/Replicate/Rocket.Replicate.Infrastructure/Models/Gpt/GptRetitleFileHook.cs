@@ -23,7 +23,7 @@ namespace Rocket.Replicate.Infrastructure.Models.Gpt
     ) : IIntegrationHook
     {
         private const string AdditionalInstructions =
-            "Please responsd only in plain text, no Markdown. Do not include any file extensions e.g. (.md, .txt) in your response.";
+            "Please respond only in plain text, no Markdown. Do not include any file extensions e.g. (.md, .txt) in your response.";
 
         public bool IsApplicable(
             BaseExecutionStep step
