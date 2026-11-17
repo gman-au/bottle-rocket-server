@@ -29,12 +29,9 @@ namespace Rocket.Replicate.Domain
             (int)WorkflowFormatTypeEnum.Markdown
         ];
 
-        public const int ReplicateRetitleFileOutputType = (int)WorkflowFormatTypeEnum.RawTextData;
-        
-        
+        public const int ReplicateRetitleFileOutputType = (int)WorkflowFormatTypeEnum.Inherited;
         public const int ReplicateExtractTextOutputType = (int)WorkflowFormatTypeEnum.RawTextData;
         public const int ReplicateExtractProjectTaskOutputType = (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData;
-        public const int ReplicateRetitleFileTaskOutputType = (int)WorkflowFormatTypeEnum.RawTextData;
         public const int ReplicateExtractMarkdownOutputType = (int)WorkflowFormatTypeEnum.Markdown;
     }
 }

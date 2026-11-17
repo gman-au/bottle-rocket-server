@@ -8,9 +8,9 @@ namespace Rocket.Diagnostics.Infrastructure
     {
         public void MapApplicableBsonTypes()
         {
-            if (!BsonClassMap.IsClassMapRegistered(typeof(HelloWorldMarkdownExecutionStep)))
+            if (!BsonClassMap.IsClassMapRegistered(typeof(HelloWorldTextExecutionStep)))
             {
-                BsonClassMap.RegisterClassMap<HelloWorldMarkdownExecutionStep>(cm =>
+                BsonClassMap.RegisterClassMap<HelloWorldTextExecutionStep>(cm =>
                 {
                     cm.AutoMap();
                 });

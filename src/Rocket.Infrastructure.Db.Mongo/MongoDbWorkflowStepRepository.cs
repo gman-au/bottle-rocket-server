@@ -123,6 +123,29 @@ namespace Rocket.Infrastructure.Db.Mongo
                         workflowStepId
                     );
         }
+        
+        public async Task<BaseWorkflowStep> GetWorkflowParentStepByIdAsync(
+            string workflowStepId,
+            string workflowId,
+            string userId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            var workflow =
+                await
+                    GetWorkflowByIdAsync(
+                        workflowId,
+                        userId,
+                        cancellationToken
+                    );
+
+            return
+                workflow
+                    .Steps
+                    .FindParentStepById(
+                        workflowStepId
+                    );
+        }
 
         public async Task<bool> DeleteWorkflowStepAsync(
             string userId,

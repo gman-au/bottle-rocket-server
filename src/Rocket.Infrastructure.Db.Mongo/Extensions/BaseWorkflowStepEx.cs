@@ -30,6 +30,32 @@ namespace Rocket.Infrastructure.Db.Mongo.Extensions
             }
 
             return null;
+        }        
+        
+        public static BaseWorkflowStep FindParentStepById(
+            this IEnumerable<BaseWorkflowStep> steps,
+            string stepId
+        )
+        {
+            if (steps == null) return null;
+
+            foreach (var step in steps)
+            {
+                if ((step.ChildSteps ?? []).Any(o => o.Id == stepId))
+                    return step;
+
+                var found =
+                    step
+                        .ChildSteps
+                        .FindParentStepById(
+                            stepId
+                        );
+
+                if (found != null)
+                    return found;
+            }
+
+            return null;
         }
 
         public static bool AddChildToParent(

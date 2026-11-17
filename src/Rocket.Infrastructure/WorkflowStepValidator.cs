@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Domain.Workflows;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure
@@ -15,7 +16,7 @@ namespace Rocket.Infrastructure
             string workflowId,
             string parentStepId,
             string userId,
-            int[ ]childInputTypes,
+            int[] childInputTypes,
             CancellationToken cancellationToken
         )
         {
@@ -38,21 +39,49 @@ namespace Rocket.Infrastructure
 
             if (!string.IsNullOrEmpty(parentStepId))
             {
-                var parentStep =
-                    await
-                        workflowStepRepository
-                            .GetWorkflowStepByIdAsync(
-                                parentStepId,
-                                workflowId,
-                                userId,
-                                cancellationToken
-                            );
+                BaseWorkflowStep parentStep;
+                
+                while (true)
+                {
+                    parentStep =
+                        await
+                            workflowStepRepository
+                                .GetWorkflowStepByIdAsync(
+                                    parentStepId,
+                                    workflowId,
+                                    userId,
+                                    cancellationToken
+                                );
 
-                if (parentStep == null)
-                    throw new RocketException(
-                        $"Workflow step record with ID {parentStepId} not found",
-                        ApiStatusCodeEnum.UnknownOrInaccessibleRecord
-                    );
+                    if (parentStep == null)
+                        throw new RocketException(
+                            $"Workflow step record with ID {parentStepId} not found",
+                            ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                        );
+                    
+                    if (parentStep.OutputType != (int)WorkflowFormatTypeEnum.Inherited)
+                        break;
+
+                    parentStep =
+                        await
+                            workflowStepRepository
+                                .GetWorkflowParentStepByIdAsync(
+                                    parentStepId,
+                                    workflowId,
+                                    userId,
+                                    cancellationToken
+                                );
+
+                    // This should not ever occur as it is always assumed that the root for all workflows
+                    // has a non-inheritable output type
+                    if (parentStep == null)
+                        throw new RocketException(
+                            $"Workflow step record with ID {parentStepId} not found",
+                            ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                        );
+                    
+                    parentStepId = parentStep.Id;
+                }
 
                 parentOutputType = parentStep.OutputType;
 

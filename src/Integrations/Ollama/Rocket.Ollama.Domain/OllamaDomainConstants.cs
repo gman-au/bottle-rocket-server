@@ -31,6 +31,6 @@ namespace Rocket.Ollama.Domain
             (int)WorkflowFormatTypeEnum.Markdown
         ];
 
-        public const int OllamaRetitleFileOutputType = (int)WorkflowFormatTypeEnum.RawTextData;
+        public const int OllamaRetitleFileOutputType = (int)WorkflowFormatTypeEnum.Inherited;
     }
 }
