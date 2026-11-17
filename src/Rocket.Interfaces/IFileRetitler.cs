@@ -7,7 +7,7 @@ namespace Rocket.Interfaces
     {
         Task<string> RetitleAsync(
             string rawTextData,
-            string scanId,
+            string batchId,
             string userId,
             CancellationToken cancellationToken
         );

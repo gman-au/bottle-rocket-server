@@ -6,12 +6,12 @@ using Rocket.Interfaces;
 namespace Rocket.Infrastructure
 {
     public class SafeFileRetitler(
-        IScannedImageRepository scannedImageRepository
+        IBatchRepository batchRepository
     ) : IFileRetitler
     {
         public async Task<string> RetitleAsync(
             string rawTextData,
-            string scanId,
+            string batchId,
             string userId,
             CancellationToken cancellationToken
         )
@@ -20,12 +20,12 @@ namespace Rocket.Infrastructure
                 rawTextData
                     .ToSanitizedFileName();
 
-            // Update the description of the scan
+            // Update the description of the batch
             await
-                scannedImageRepository
-                    .UpdateScannedImageFieldAsync(
+                batchRepository
+                    .UpdateBatchFieldAsync(
                         userId,
-                        scanId,
+                        batchId,
                         o => o.Description,
                         sanitised,
                         cancellationToken

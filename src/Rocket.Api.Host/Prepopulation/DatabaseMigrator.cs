@@ -7,7 +7,6 @@ namespace Rocket.Api.Host.Prepopulation
 {
     public class DatabaseMigrator(
         ILogger<DatabaseMigrator> logger,
-        IScannedImageRepository scannedImageRepository,
         IWorkflowRepository workflowRepository,
         IExecutionRepository executionRepository
     ) : IDatabasePreRunAction
@@ -33,20 +32,6 @@ namespace Rocket.Api.Host.Prepopulation
                 executionRepository
                     .SafelyDropColumnAsync(
                         "MatchingPageSymbol",
-                        cancellationToken
-                    );
-            
-            await
-                scannedImageRepository
-                    .SafelyDropColumnAsync(
-                        "QrCode",
-                        cancellationToken
-                    );
-            
-            await
-                scannedImageRepository
-                    .SafelyDropColumnAsync(
-                        "QrBoundingBox",
                         cancellationToken
                     );
             // --------------------------------------------------------

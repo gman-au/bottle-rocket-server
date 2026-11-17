@@ -93,6 +93,9 @@
     <data name="ScansNoFileDataError" xml:space="preserve">
         <value>Password must contain at least one digit</value>
     </data>
+    <data name="ScansUntitledNoteDescription" xml:space="preserve">
+        <value>Untitled Note</value>
+    </data>
     <!-- VALUES -->
     <data name="ScansArchivedValue" xml:space="preserve">
         <value>Archived</value>
