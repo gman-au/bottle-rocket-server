@@ -104,6 +104,13 @@ namespace Rocket.Replicate.Infrastructure.Models.Gpt
                     if (retitleStep.SummarizeAllFiles)
                     {
                         summaryPrompt += Environment.NewLine + documentText;
+                            
+                        await
+                            jobControl
+                                .SucceedStepAsync(
+                                    "Parsed text into GPT prompt",
+                                    element.ScanId
+                                );
                     }
                     else
                     {
