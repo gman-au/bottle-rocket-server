@@ -18,6 +18,7 @@ namespace Rocket.Replicate.Infrastructure.Models.Gpt
 {
     public class GptRetitleFileHook(
         ILogger<GptRetitleFileHook> logger,
+        IFileRetitler fileRetitler,
         IGlobalSettingsRepository globalSettingsRepository,
         IReplicateClient replicateClient
     ) : IIntegrationHook
@@ -103,6 +104,13 @@ namespace Rocket.Replicate.Infrastructure.Models.Gpt
                     if (retitleStep.SummarizeAllFiles)
                     {
                         summaryPrompt += Environment.NewLine + documentText;
+                            
+                        await
+                            jobControl
+                                .SucceedStepAsync(
+                                    "Parsed text into GPT prompt",
+                                    element.ScanId
+                                );
                     }
                     else
                     {
@@ -191,6 +199,15 @@ namespace Rocket.Replicate.Infrastructure.Models.Gpt
 
             if (retitleStep.SummarizeAllFiles)
             {
+                await
+                    fileRetitler
+                        .RetitleAsync(
+                            summaryFileName,
+                            artifact.BatchId,
+                            artifact.UserId,
+                            cancellationToken
+                        );
+
                 return
                     artifact
                         .AsArtifactWithRenamedSummary(summaryFileName);

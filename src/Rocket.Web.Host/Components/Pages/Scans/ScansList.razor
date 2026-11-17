@@ -35,22 +35,55 @@
                             @onclick="@(() => NavigationManager.NavigateTo($"/MyScans/{batch.Id}"))"
                             Image=@($"data:{batch.CoverContentType};base64,{batch.CoverThumbnailBase64}") Width="200" Height="200"/>
                         <MudCardContent>
-                            <MudText Typo="Typo.caption">@(batch.DateScanned.ToString("g"))</MudText>
-                            <MudText Typo="Typo.h6" Color="Color.Primary">@batch.ScanCount @StringLocalizer["ScansPagesCaption"]</MudText>
+                            @if (!string.IsNullOrEmpty(batch.Description))
+                            {
+                                <MudLink
+                                    Underline="Underline.None"
+                                    Href="@($"/MyScans/{batch.Id}")">
+                                    <MudText
+                                        Class="mb-2"
+                                        Typo="Typo.body2"
+                                        Color="Color.Info">
+                                        @batch.Description
+                                    </MudText>
+                                </MudLink>
+                            }
+                            else
+                            {
+                                <MudLink
+                                    Underline="Underline.None"
+                                    Href="@($"/MyScans/{batch.Id}")">
+                                    <MudText
+                                        Class="mb-2 mud-text-disabled"
+                                        Typo="Typo.body2">
+                                        @StringLocalizer["ScansUntitledNoteDescription"]
+                                    </MudText>
+                                </MudLink>
+                            }
                         </MudCardContent>
                         <MudCardActions Class="justify-end">
+                            <MudGrid
+                                Spacing="0"
+                                Class="mx-2"
+                                Justify="Justify.FlexStart" >
+                                <MudItem xs="12">
+                                    <MudText Typo="Typo.subtitle2"
+                                             Color="Color.Primary">@batch.ScanCount @StringLocalizer["ScansPagesCaption"]</MudText>
+                                </MudItem>
+                                <MudItem>
+                                    <MudText Typo="Typo.caption">@(batch.DateScanned.ToString("g"))</MudText>
+                                </MudItem>
+                            </MudGrid>
                             <MudMenu Dense Icon="@StandardIcons.SubMenuIcon">
                                 <MudMenuItem
                                     Icon="@StandardIcons.InspectIcon"
                                     IconColor="Color.Secondary"
                                     Label="@StringLocalizer["ScansDetailsCaption"]"
-                                    @onclick="@(() => NavigationManager.NavigateTo($"/MyScans/{batch.Id}"))"
-                                />
+                                    @onclick="@(() => NavigationManager.NavigateTo($"/MyScans/{batch.Id}"))"/>
                                 <MudMenuItem
                                     Icon="@StandardIcons.DeleteIcon"
                                     Label="@StringLocalizer["ScansDeleteCaption"]"
-                                    OnClick="@(() => ConfirmDeleteAsync(batch.Id))"
-                                />
+                                    OnClick="@(() => ConfirmDeleteAsync(batch.Id))"/>
                             </MudMenu>
                         </MudCardActions>
                     </MudCard>
@@ -291,5 +324,5 @@
             CaptureHubClient
                 .StopAsync();
     }
-    
+
 }

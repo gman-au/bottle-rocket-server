@@ -19,7 +19,7 @@ using Rocket.Interfaces;
 namespace Rocket.Infrastructure.Db.Mongo
 {
     public class MongoDbBatchRepository(
-        ILogger<MongoDbScannedImageRepository> logger,
+        ILogger<MongoDbBatchRepository> logger,
         IMongoDbClient mongoDbClient
     ) : MongoDbRepositoryBase<Batch>(
         mongoDbClient,

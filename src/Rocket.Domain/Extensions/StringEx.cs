@@ -10,7 +10,7 @@ namespace Rocket.Domain.Extensions
     {
         private const int MaxFileNameLength = 150;
         private static readonly char[] InvalidChars = Path.GetInvalidFileNameChars();
-        private static readonly char[] AdditionalBannedChars = ['#', '%', '&', '{', '}', '~', '`'];
+        private static readonly char[] AdditionalBannedChars = ['#', '%', '&', '{', '}', '~', '`', ':'];
         
         public static bool IsErrorProperty(
             this string value
