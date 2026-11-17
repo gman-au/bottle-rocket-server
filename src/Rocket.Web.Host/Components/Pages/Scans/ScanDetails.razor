@@ -109,6 +109,9 @@
                                 Dense>
                                 <tbody>
                                 <SimpleTableRowPair
+                                    Title="@StringLocalizer["ScansDescriptionFieldHeader"]"
+                                    Value=@(string.IsNullOrEmpty(_batchSpecifics.Description) ? StringLocalizer["ScansUntitledNoteDescription"] : _batchSpecifics.Description)/>
+                                <SimpleTableRowPair
                                     Title="@StringLocalizer["ScansCaptureDateFieldHeader"]"
                                     Value=@_batchSpecifics.DateScanned.ToString("yyyy-MM-dd HH:mm:ss")/>
                                 <SimpleTableRowPair
