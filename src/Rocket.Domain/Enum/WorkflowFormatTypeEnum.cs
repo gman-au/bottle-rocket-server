@@ -6,6 +6,7 @@
         ImageData,
         RawTextData,
         File,
-        ProjectTaskTrackerData
+        ProjectTaskTrackerData,
+        Markdown
     }
 }

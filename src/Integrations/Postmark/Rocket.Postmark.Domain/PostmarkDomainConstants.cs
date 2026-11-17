@@ -15,7 +15,8 @@ namespace Rocket.Postmark.Domain
         [
             (int)WorkflowFormatTypeEnum.File,
             (int)WorkflowFormatTypeEnum.RawTextData,
-            (int)WorkflowFormatTypeEnum.ImageData
+            (int)WorkflowFormatTypeEnum.ImageData,
+            (int)WorkflowFormatTypeEnum.Markdown
         ];
     }
 }

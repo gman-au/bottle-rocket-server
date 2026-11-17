@@ -8,9 +8,9 @@ namespace Rocket.Diagnostics.Infrastructure
     {
         public void MapApplicableBsonTypes()
         {
-            if (!BsonClassMap.IsClassMapRegistered(typeof(HelloWorldTextExecutionStep)))
+            if (!BsonClassMap.IsClassMapRegistered(typeof(HelloWorldMarkdownExecutionStep)))
             {
-                BsonClassMap.RegisterClassMap<HelloWorldTextExecutionStep>(cm =>
+                BsonClassMap.RegisterClassMap<HelloWorldMarkdownExecutionStep>(cm =>
                 {
                     cm.AutoMap();
                 });
@@ -19,6 +19,14 @@ namespace Rocket.Diagnostics.Infrastructure
             if (!BsonClassMap.IsClassMapRegistered(typeof(HelloWorldProjectExecutionStep)))
             {
                 BsonClassMap.RegisterClassMap<HelloWorldProjectExecutionStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(HelloWorldMarkdownExecutionStep)))
+            {
+                BsonClassMap.RegisterClassMap<HelloWorldMarkdownExecutionStep>(cm =>
                 {
                     cm.AutoMap();
                 });
@@ -35,6 +43,14 @@ namespace Rocket.Diagnostics.Infrastructure
             if (!BsonClassMap.IsClassMapRegistered(typeof(HelloWorldProjectWorkflowStep)))
             {
                 BsonClassMap.RegisterClassMap<HelloWorldProjectWorkflowStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(HelloWorldMarkdownWorkflowStep)))
+            {
+                BsonClassMap.RegisterClassMap<HelloWorldMarkdownWorkflowStep>(cm =>
                 {
                     cm.AutoMap();
                 });

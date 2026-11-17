@@ -14,7 +14,8 @@ namespace Rocket.Notion.Domain
         [
             (int)WorkflowFormatTypeEnum.File,
             (int)WorkflowFormatTypeEnum.RawTextData,
-            (int)WorkflowFormatTypeEnum.ImageData
+            (int)WorkflowFormatTypeEnum.ImageData,
+            (int)WorkflowFormatTypeEnum.Markdown
         ];
 
         public const int NotionUploadNoteOutputType = (int)WorkflowFormatTypeEnum.Void;

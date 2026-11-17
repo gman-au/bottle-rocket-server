@@ -13,6 +13,7 @@ namespace Rocket.QuestPdf.Infrastructure
             IEnumerable<ArtifactDataElement> elements,
             string artifactFileName,
             bool mergeFiles,
+            int artifactArtifactDataFormat,
             CancellationToken cancellationToken
         );
 

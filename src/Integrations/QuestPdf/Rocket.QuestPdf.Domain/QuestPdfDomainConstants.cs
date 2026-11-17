@@ -9,7 +9,8 @@ namespace Rocket.QuestPdf.Domain
         public static readonly int[] ConvertToPdfInputTypes  =
         [
             (int)WorkflowFormatTypeEnum.RawTextData,
-            (int)WorkflowFormatTypeEnum.ImageData
+            (int)WorkflowFormatTypeEnum.ImageData,
+            (int)WorkflowFormatTypeEnum.Markdown
         ];
 
         public const int ConvertToPdfOutputType = (int)WorkflowFormatTypeEnum.File;

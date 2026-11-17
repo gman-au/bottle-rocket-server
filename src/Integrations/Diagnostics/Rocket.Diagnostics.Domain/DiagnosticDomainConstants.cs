@@ -6,6 +6,7 @@ namespace Rocket.Diagnostics.Domain
     {
         public const string HelloWorldTextWorkflowCode = "HELLO_WORLD_TEXT";
         public const string HelloWorldProjectWorkflowCode = "HELLO_WORLD_PROJECT";
+        public const string HelloWorldMarkdownWorkflowCode = "HELLO_MARKDOWN_PROJECT";
         
         public static readonly int[] HelloWorldTextInputTypes =
         [
@@ -24,5 +25,14 @@ namespace Rocket.Diagnostics.Domain
         ];
         
         public const int HelloWorldProjectOutputType = (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData;
+        
+        public static readonly int[] HelloWorldMarkdownInputTypes  =
+        [
+            (int)WorkflowFormatTypeEnum.File,
+            (int)WorkflowFormatTypeEnum.RawTextData,
+            (int)WorkflowFormatTypeEnum.ImageData
+        ];
+        
+        public const int HelloWorldMarkdownOutputType = (int)WorkflowFormatTypeEnum.Markdown;
     }
 }

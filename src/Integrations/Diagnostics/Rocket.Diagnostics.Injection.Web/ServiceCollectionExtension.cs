@@ -10,7 +10,8 @@ namespace Rocket.Diagnostics.Injection.Web
         {
             services
                 .AddTransient<ISkuWorkflow, HelloWorldTextWorkflowProduct>()
-                .AddTransient<ISkuWorkflow, HelloWorldProjectWorkflowProduct>();
+                .AddTransient<ISkuWorkflow, HelloWorldProjectWorkflowProduct>()
+                .AddTransient<ISkuWorkflow, HelloWorldMarkdownWorkflowProduct>();
 
             services
                 .AddDiagnosticsJsonSerialization();

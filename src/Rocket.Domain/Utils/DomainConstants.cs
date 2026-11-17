@@ -40,6 +40,7 @@ namespace Rocket.Domain.Utils
             { (int)WorkflowFormatTypeEnum.File, "File Data" },
             { (int)WorkflowFormatTypeEnum.ImageData, "Image Data" },
             { (int)WorkflowFormatTypeEnum.RawTextData, "Raw Text Data" },
+            { (int)WorkflowFormatTypeEnum.Markdown, "Markdown" },
             { (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData, "Project Task Tracker Data" },
         };
 

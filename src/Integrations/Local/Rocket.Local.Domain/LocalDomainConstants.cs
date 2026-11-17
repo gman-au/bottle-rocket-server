@@ -10,7 +10,8 @@ namespace Rocket.Local.Domain
         [
             (int)WorkflowFormatTypeEnum.File,
             (int)WorkflowFormatTypeEnum.RawTextData,
-            (int)WorkflowFormatTypeEnum.ImageData
+            (int)WorkflowFormatTypeEnum.ImageData,
+            (int)WorkflowFormatTypeEnum.Markdown
         ];
 
         public const int LocalUploadOutputType = (int)WorkflowFormatTypeEnum.Void;

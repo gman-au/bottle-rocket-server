@@ -13,7 +13,9 @@ namespace Rocket.Diagnostics.Injection.Serialization
                 .AddSingleton<IJsonTypeDiscriminator<BaseWorkflowStep>, HelloWorldTextWorkflowDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, HelloWorldTextExecutionDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseWorkflowStep>, HelloWorldProjectWorkflowDiscriminator>()
-                .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, HelloWorldProjectExecutionDiscriminator>();
+                .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, HelloWorldProjectExecutionDiscriminator>()
+                .AddSingleton<IJsonTypeDiscriminator<BaseWorkflowStep>, HelloWorldMarkdownWorkflowDiscriminator>()
+                .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, HelloWorldMarkdownExecutionDiscriminator>();
 
             return services;
         }
