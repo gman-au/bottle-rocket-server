@@ -9,6 +9,7 @@ namespace Rocket.Replicate.Domain
         
         public const string DataLabToExtractTextWorkflowCode = "REPLICATE_DATALAB_TO_EXTRACT_TEXT";
         public const string DataLabToExtractProjectWorkflowCode = "REPLICATE_DATALAB_TO_EXTRACT_PROJECT";
+        public const string DataLabToExtractMarkdownWorkflowCode = "REPLICATE_DATALAB_TO_EXTRACT_MARKDOWN";
         
         public const string DeepSeekOcrExtractTextWorkflowCode = "REPLICATE_DEEP_SEEK_OCR_EXTRACT_TEXT";
         public const string GptRetitleFileWorkflowCode = "REPLICATE_GPT_RETITLE_FILE";
@@ -28,10 +29,12 @@ namespace Rocket.Replicate.Domain
             (int)WorkflowFormatTypeEnum.Markdown
         ];
 
-        public const int OllamaRetitleFileOutputType = (int)WorkflowFormatTypeEnum.RawTextData;
-
+        public const int ReplicateRetitleFileOutputType = (int)WorkflowFormatTypeEnum.RawTextData;
+        
+        
         public const int ReplicateExtractTextOutputType = (int)WorkflowFormatTypeEnum.RawTextData;
         public const int ReplicateExtractProjectTaskOutputType = (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData;
         public const int ReplicateRetitleFileTaskOutputType = (int)WorkflowFormatTypeEnum.RawTextData;
+        public const int ReplicateExtractMarkdownOutputType = (int)WorkflowFormatTypeEnum.Markdown;
     }
 }

@@ -6,7 +6,7 @@ namespace Rocket.Replicate.Domain.Models.Gpt
     {
         public override int[] InputTypes { get; set; } = ReplicateDomainConstants.ReplicateRetitleFileInputTypes;
 
-        public override int OutputType { get; set; } = ReplicateDomainConstants.OllamaRetitleFileOutputType;
+        public override int OutputType { get; set; } = ReplicateDomainConstants.ReplicateRetitleFileOutputType;
 
         public override string StepName
         {

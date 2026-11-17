@@ -1,7 +1,7 @@
 ﻿using System;
 using Rocket.Domain.Workflows;
 using Rocket.Interfaces;
-using Rocket.Replicate.Contracts.Models.DataLabTo;
+using Rocket.Replicate.Contracts.Models.DataLabTo.Project;
 
 namespace Rocket.Replicate.Injection.Serialization
 {

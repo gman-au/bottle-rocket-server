@@ -15,7 +15,7 @@ using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 using Rocket.Page.Schemas.FallbackText;
 using Rocket.Replicate.Domain;
-using Rocket.Replicate.Domain.Models.DataLabTo;
+using Rocket.Replicate.Domain.Models.DataLabTo.Text;
 
 namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
 {

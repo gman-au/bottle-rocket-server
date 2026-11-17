@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Rocket.Diagnostics.Domain;
 using Rocket.Diagnostics.Infrastructure;
 using Rocket.Diagnostics.Injection.Serialization;
 using Rocket.Interfaces;
