@@ -13,6 +13,8 @@ namespace Rocket.Replicate.Infrastructure.Models.Gpt
                 base
                     .Clone(value);
 
+            result.SummarizeAllFiles = value.SummarizeAllFiles;
+
             return result;
         }
     }

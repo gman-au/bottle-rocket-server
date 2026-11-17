@@ -159,6 +159,8 @@ namespace Rocket.Integrations.Common.Extensions
             IEnumerable<(string, string)> values
         )
         {
+            if (artifact == null) return null;
+            
             var elements =
                 (artifact?.Elements ?? []).Select(o =>
                     {
@@ -190,10 +192,41 @@ namespace Rocket.Integrations.Common.Extensions
                 new ExecutionStepArtifact
                 {
                     Result = (int)ExecutionStatusEnum.Completed,
-                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData,
+                    ArtifactDataFormat = artifact.ArtifactDataFormat,
                     Elements = elements,
-                    FileName = artifact?.FileName,
-                    UserId = artifact?.UserId
+                    FileName = artifact.FileName,
+                    UserId = artifact.UserId
+                };
+        }
+
+        public static ExecutionStepArtifact AsArtifactWithRenamedSummary(
+            this ExecutionStepArtifact artifact,
+            string summaryTitle
+        )
+        {
+            if (artifact == null) return null;
+            
+            var elements =
+                (artifact?.Elements ?? []).Select(o =>
+                    new ArtifactDataElement
+                    {
+                        ScanId = o.ScanId,
+                        Artifact = o.Artifact,
+                        FileExtension = o.FileExtension,
+                        FileName = o.FileName
+                    }
+                )
+                .ToArray()
+                .EnumerateUniquely();
+
+            return
+                new ExecutionStepArtifact
+                {
+                    Result = (int)ExecutionStatusEnum.Completed,
+                    ArtifactDataFormat = artifact.ArtifactDataFormat,
+                    Elements = elements,
+                    FileName = summaryTitle,
+                    UserId = artifact.UserId
                 };
         }
     }

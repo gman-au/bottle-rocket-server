@@ -14,6 +14,21 @@
     StepId="@StepId"
     Context="stepSpecifics">
     <MudGrid>
+        <MudItem sm="12" lg="12" xl="12">
+            <MudCheckBox
+                TriState
+                @bind-Value="@stepSpecifics.SummarizeAllFiles">
+                <MudText
+                    Typo="Typo.body1">
+                    Summarize into one file name
+                </MudText>
+                <MudText
+                    Class="mud-input-helper-text"
+                    Typo="Typo.subtitle1">
+                    (select this option if you will merge the files in a later step)
+                </MudText>
+            </MudCheckBox>
+        </MudItem>
         <MudItem sm="12">
             <MudText
                 type="hidden"

@@ -2,5 +2,8 @@
 
 namespace Rocket.Replicate.Domain.Models.Gpt
 {
-    public record GptRetitleFileExecutionStep : BaseExecutionStep;
+    public record GptRetitleFileExecutionStep : BaseExecutionStep
+    {
+        public bool SummarizeAllFiles { get; set; }
+    }
 }

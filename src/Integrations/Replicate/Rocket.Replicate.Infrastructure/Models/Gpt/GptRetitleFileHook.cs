@@ -24,7 +24,7 @@ namespace Rocket.Replicate.Infrastructure.Models.Gpt
     {
         private const string AdditionalInstructions =
             "Please responsd only in plain text, no Markdown. Do not include any file extensions e.g. (.md, .txt) in your response.";
-        
+
         public bool IsApplicable(
             BaseExecutionStep step
         ) => step is GptRetitleFileExecutionStep;
@@ -56,7 +56,7 @@ namespace Rocket.Replicate.Infrastructure.Models.Gpt
                 artifact
                     .Elements;
 
-            if (step is not GptRetitleFileExecutionStep)
+            if (step is not GptRetitleFileExecutionStep retitleStep)
                 throw new RocketException(
                     "Unexpected step format, please check configuration",
                     ApiStatusCodeEnum.DeveloperError
@@ -77,6 +77,15 @@ namespace Rocket.Replicate.Infrastructure.Models.Gpt
 
             var allCompleted = true;
 
+            var summaryPrompt = string.Empty;
+            var summaryFileName = string.Empty;
+
+            const string systemPrompt =
+                AdditionalInstructions +
+                CommonPromptConstants.SystemPromptRetitleFile;
+
+            const string userPromptTemplate = CommonPromptConstants.UserPromptRetitleFileTemplate;
+
             foreach (var element in elements)
             {
                 try
@@ -87,66 +96,46 @@ namespace Rocket.Replicate.Infrastructure.Models.Gpt
                                 element.ScanId
                             );
 
-                    const string systemPrompt =
-                        AdditionalInstructions +
-                        CommonPromptConstants.SystemPromptRetitleFile;
-
-                    const string userPromptTemplate = CommonPromptConstants.UserPromptRetitleFileTemplate;
-
                     var documentText =
                         element
                             .ArtifactAsText();
 
-                    var userPrompt =
-                        string
-                            .Format(
-                                userPromptTemplate,
-                                documentText
-                            );
-                    
-                    // create the prediction
-                    var predictionId =
-                        await
-                            replicateClient
-                                .CreatePredictionAsync(
-                                    apiToken,
-                                    null,
+                    if (retitleStep.SummarizeAllFiles)
+                    {
+                        summaryPrompt += Environment.NewLine + documentText;
+                    }
+                    else
+                    {
+                        var userPrompt =
+                            string
+                                .Format(
+                                    userPromptTemplate,
+                                    documentText
+                                );
+
+                        var title =
+                            await
+                                GetSummarizedTextFromInputAsync(
                                     new GptSummarizeInput
                                     {
                                         Prompt = userPrompt,
                                         SystemPrompt = systemPrompt
                                     },
-                                    cancellationToken,
-                                    "v1/models/openai/gpt-5.2/predictions"
-                                );
-
-                    logger
-                        .LogInformation(
-                            "Created prediction in Replicate: {predictionId}",
-                            predictionId
-                        );
-
-                    var result =
-                        await
-                            replicateClient
-                                .WaitUntilPredictionCompletesAsync(
                                     apiToken,
-                                    predictionId,
                                     timeoutInMinutes,
                                     cancellationToken
                                 );
 
-                    var title = result ?? string.Empty;
+                        await
+                            jobControl
+                                .SucceedStepAsync(
+                                    $"GPT title suggestion: \"{title}\"",
+                                    element.ScanId
+                                );
 
-                    await
-                        jobControl
-                            .SucceedStepAsync(
-                                $"GPT title suggestion: \"{title}\"",
-                                element.ScanId
-                            );
-
-                    fileResults
-                        .Add((element.ScanId, title));
+                        fileResults
+                            .Add((element.ScanId, title));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -161,6 +150,37 @@ namespace Rocket.Replicate.Infrastructure.Models.Gpt
                 }
             }
 
+            if (retitleStep.SummarizeAllFiles)
+            {
+                var userPrompt =
+                    string
+                        .Format(
+                            userPromptTemplate,
+                            summaryPrompt
+                        );
+
+                var title =
+                    await
+                        GetSummarizedTextFromInputAsync(
+                            new GptSummarizeInput
+                            {
+                                Prompt = userPrompt,
+                                SystemPrompt = systemPrompt
+                            },
+                            apiToken,
+                            timeoutInMinutes,
+                            cancellationToken
+                        );
+
+                await
+                    jobControl
+                        .SucceedStepAsync(
+                            $"GPT title suggestion: \"{title}\""
+                        );
+
+                summaryFileName = title;
+            }
+
             if (!allCompleted)
             {
                 throw new RocketException(
@@ -168,12 +188,57 @@ namespace Rocket.Replicate.Infrastructure.Models.Gpt
                     ApiStatusCodeEnum.ThirdPartyServiceError
                 );
             }
-            
+
+            if (retitleStep.SummarizeAllFiles)
+            {
+                return
+                    artifact
+                        .AsArtifactWithRenamedSummary(summaryFileName);
+            }
+
             return
                 artifact
                     .AsArtifactWithRenamedFiles(
                         fileResults
                     );
+        }
+
+        private async Task<string> GetSummarizedTextFromInputAsync(
+            GptSummarizeInput input,
+            string apiToken,
+            int timeoutInMinutes,
+            CancellationToken cancellationToken
+        )
+        {
+            // create the prediction
+            var predictionId =
+                await
+                    replicateClient
+                        .CreatePredictionAsync(
+                            apiToken,
+                            null,
+                            input,
+                            cancellationToken,
+                            "v1/models/openai/gpt-5.2/predictions"
+                        );
+
+            logger
+                .LogInformation(
+                    "Created prediction in Replicate: {predictionId}",
+                    predictionId
+                );
+
+            var result =
+                await
+                    replicateClient
+                        .WaitUntilPredictionCompletesAsync(
+                            apiToken,
+                            predictionId,
+                            timeoutInMinutes,
+                            cancellationToken
+                        );
+
+            return result;
         }
     }
 }

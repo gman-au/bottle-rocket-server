@@ -8,10 +8,18 @@ namespace Rocket.Replicate.Domain.Models.Gpt
 
         public override int OutputType { get; set; } = ReplicateDomainConstants.OllamaRetitleFileOutputType;
 
-        public override string StepName { get; set; } = "Suggest a title for the file using Replicate (model: gpt-5.2)";
+        public override string StepName
+        {
+            get => SummarizeAllFiles
+                ? "Suggest a summary for all files using Replicate (model: gpt-5.2)"
+                : "Suggest a title for the file using Replicate (model: gpt-5.2)";
+            set { }
+        }
 
         public override string StepCode { get; set; } = ReplicateDomainConstants.GptRetitleFileWorkflowCode;
 
         public override string RequiresConnectorCode { get; set; } = ReplicateDomainConstants.ConnectorCode;
+
+        public bool SummarizeAllFiles { get; set; }
     }
 }
