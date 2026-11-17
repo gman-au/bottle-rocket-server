@@ -1,0 +1,53 @@
+﻿@page "/MyWorkflow/Replicate/Gpt/RetitleFile/{workflowId}/AddStep"
+@page "/MyWorkflow/Replicate/Gpt/RetitleFile/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/Replicate/Gpt/RetitleFile/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.Replicate.Contracts.Models.Gpt
+@using Rocket.Replicate.Domain
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<UpdateWorkflowStepWrapper
+    T="GptRetitleFileWorkflowStepSpecifics"
+    WorkflowStepName="Suggest title for file"
+    WorkflowId="@WorkflowId"
+    ParentStepId="@ParentStepId"
+    RequiresConnectorCode="@ReplicateDomainConstants.ConnectorCode"
+    StepId="@StepId"
+    Context="stepSpecifics">
+    <MudGrid>
+        <MudItem sm="12" lg="12" xl="12">
+            <MudCheckBox
+                TriState
+                @bind-Value="@stepSpecifics.SummarizeAllFiles">
+                <MudText
+                    Typo="Typo.body1">
+                    Summarize into one file name
+                </MudText>
+                <MudText
+                    Class="mud-input-helper-text"
+                    Typo="Typo.subtitle1">
+                    (select this option if you will merge the files in a later step)
+                </MudText>
+            </MudCheckBox>
+        </MudItem>
+        <MudItem sm="12">
+            <MudText
+                type="hidden"
+                T="string"
+                @bind-Value="stepSpecifics.InputTypeName"
+                For="@(() => stepSpecifics.InputTypeName)"/>
+        </MudItem>
+    </MudGrid>
+</UpdateWorkflowStepWrapper>
+
+@code {
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+}

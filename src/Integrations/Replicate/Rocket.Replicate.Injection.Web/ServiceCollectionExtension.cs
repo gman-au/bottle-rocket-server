@@ -12,6 +12,7 @@ namespace Rocket.Replicate.Injection.Web
                 .AddTransient<ISkuWorkflow, DataLabToExtractTextWorkflowProduct>()
                 .AddTransient<ISkuWorkflow, DataLabToExtractProjectWorkflowProduct>()
                 .AddTransient<ISkuWorkflow, DeepSeekOcrExtractTextWorkflowProduct>()
+                .AddTransient<ISkuWorkflow, GptRetitleFileWorkflowProduct>()
                 .AddTransient<ISkuConnector, ReplicateConnectorProduct>();
 
             services

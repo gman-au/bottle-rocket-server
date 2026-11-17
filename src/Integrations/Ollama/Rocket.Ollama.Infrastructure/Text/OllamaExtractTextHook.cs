@@ -90,12 +90,12 @@ namespace Rocket.Ollama.Infrastructure.Text
                     var response =
                         await
                             OllamaClient
-                                .SendRequestAsync<string>(
+                                .SendImageRequestAsync<string>(
                                     endpoint,
                                     ExecutionStep.ModelName,
                                     "Perform OCR on this image and return only the text.",
                                     element.Artifact,
-                                    RocketbookPageTemplateTypeEnum.StandardLined,
+                                    typeof(string),
                                     useSchema: false,
                                     null,
                                     null,

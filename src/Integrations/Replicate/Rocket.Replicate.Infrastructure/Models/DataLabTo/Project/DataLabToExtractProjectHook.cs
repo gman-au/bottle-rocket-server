@@ -171,7 +171,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Project
                         schemaResponseBuilder
                             .Build(
                                 extractedJson,
-                                RocketbookPageTemplateTypeEnum.ProjectTaskTracker
+                                typeof(ProjectTaskTrackerSchema)
                             );
 
                     if (data is not ProjectTaskTrackerSchema projectTaskTrackerSchema)

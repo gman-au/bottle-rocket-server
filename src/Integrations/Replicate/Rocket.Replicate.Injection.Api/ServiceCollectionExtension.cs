@@ -5,6 +5,7 @@ using Rocket.Replicate.Infrastructure.Models.DataLabTo;
 using Rocket.Replicate.Infrastructure.Models.DataLabTo.Project;
 using Rocket.Replicate.Infrastructure.Models.DataLabTo.Text;
 using Rocket.Replicate.Infrastructure.Models.DeepSeekOcr;
+using Rocket.Replicate.Infrastructure.Models.Gpt;
 using Rocket.Replicate.Injection.Serialization;
 using DataLabToExtractTextHook = Rocket.Replicate.Infrastructure.Models.DataLabTo.Text.DataLabToExtractTextHook;
 
@@ -17,26 +18,31 @@ namespace Rocket.Replicate.Injection.Api
             services
                 .AddTransient<IIntegrationHook, DataLabToExtractTextHook>()
                 .AddTransient<IIntegrationHook, DataLabToExtractProjectHook>()
-                .AddTransient<IIntegrationHook, DeepSeekOcrExtractTextHook>();
-            
+                .AddTransient<IIntegrationHook, DeepSeekOcrExtractTextHook>()
+                .AddTransient<IIntegrationHook, GptRetitleFileHook>();
+
             services
                 .AddTransient<IWorkflowStepModelMapper, DataLabToExtractTextWorkflowStepMapper>()
                 .AddTransient<IWorkflowStepModelMapper, DataLabToExtractProjectWorkflowStepMapper>()
-                .AddTransient<IWorkflowStepModelMapper, DeepSeekOcrExtractTextWorkflowStepMapper>();
+                .AddTransient<IWorkflowStepModelMapper, DeepSeekOcrExtractTextWorkflowStepMapper>()
+                .AddTransient<IWorkflowStepModelMapper, GptRetitleFileWorkflowStepMapper>();
 
             services
                 .AddTransient<IExecutionStepModelMapper, DataLabToExtractTextExecutionStepMapper>()
                 .AddTransient<IExecutionStepModelMapper, DataLabToExtractProjectExecutionStepMapper>()
-                .AddTransient<IExecutionStepModelMapper, DeepSeekOcrExtractTextExecutionStepMapper>();
+                .AddTransient<IExecutionStepModelMapper, DeepSeekOcrExtractTextExecutionStepMapper>()
+                .AddTransient<IExecutionStepModelMapper, GptRetitleFileExecutionStepMapper>();
 
             services
                 .AddTransient<IStepModelCloner, DataLabToExtractTextStepCloner>()
                 .AddTransient<IStepModelCloner, DataLabToExtractProjectStepCloner>()
-                .AddTransient<IStepModelCloner, DeepSeekOcrExtractTextStepCloner>();
+                .AddTransient<IStepModelCloner, DeepSeekOcrExtractTextStepCloner>()
+                .AddTransient<IStepModelCloner, GptRetitleFileStepCloner>();
             
             services
                 .AddTransient<IBsonMapper, DataLabToBsonMapper>()
-                .AddTransient<IBsonMapper, DeepSeekBsonMapper>();
+                .AddTransient<IBsonMapper, DeepSeekBsonMapper>()
+                .AddTransient<IBsonMapper, GptBsonMapper>();
             
             services
                 .AddTransient<IConnectorModelMapper, ReplicateConnectorMapper>()

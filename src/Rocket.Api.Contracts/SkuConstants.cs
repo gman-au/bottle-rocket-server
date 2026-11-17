@@ -10,5 +10,6 @@
         public const string ProjectManagement = "Project Management";
         public const string Google = "Google";
         public const string Microsoft = "Microsoft";
+        public const string FileRetitling = "File Retitling";
     }
 }

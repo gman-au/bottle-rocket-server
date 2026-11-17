@@ -103,12 +103,12 @@ namespace Rocket.Ollama.Infrastructure.Project
                     var firstPassResponse =
                         await
                             OllamaClient
-                                .SendRequestAsync<string>(
+                                .SendImageRequestAsync<string>(
                                     endpoint,
                                     ExecutionStep.FirstPassModelName,
                                     FirstPassPrompt,
                                     element.Artifact,
-                                    RocketbookPageTemplateTypeEnum.NotSet,
+                                    null,
                                     useSchema: false,
                                     temperature: 0.1F,
                                     maxTokens: 1024,
@@ -120,7 +120,7 @@ namespace Rocket.Ollama.Infrastructure.Project
                     var secondPassResponse =
                         await
                             OllamaClient
-                                .SendRequestAsync<ProjectTaskTrackerSchema>(
+                                .SendImageRequestAsync<ProjectTaskTrackerSchema>(
                                     endpoint,
                                     ExecutionStep.SecondPassModelName,
                                     string.Format(
@@ -128,7 +128,7 @@ namespace Rocket.Ollama.Infrastructure.Project
                                         firstPassResponse
                                     ),
                                     imageBytes: null,
-                                    pageTemplateType: RocketbookPageTemplateTypeEnum.ProjectTaskTracker,
+                                    typeof(ProjectTaskTrackerSchema),
                                     useSchema: true,
                                     temperature: 0.3F,
                                     maxTokens: 1024,

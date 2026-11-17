@@ -145,7 +145,7 @@
         <value>Manually run workflow</value>
     </data>
     <data name="DialogTriggerWorkflowBody" xml:space="preserve">
-        <value>Do you wish to trigger the workflow against this scan capture?</value>
+        <value>Do you wish to trigger the workflow against this batch?</value>
     </data>
     <data name="DialogTriggerWorkflowCancelCaption" xml:space="preserve">
         <value>Cancel</value>
