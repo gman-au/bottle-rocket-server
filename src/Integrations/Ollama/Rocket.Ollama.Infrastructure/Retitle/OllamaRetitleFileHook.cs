@@ -9,6 +9,7 @@ using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
 using Rocket.Domain.Jobs;
 using Rocket.Domain.Utils;
+using Rocket.Integrations.Common;
 using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 using Rocket.Ollama.Domain;
@@ -88,11 +89,9 @@ namespace Rocket.Ollama.Infrastructure.Retitle
                                 element.ScanId
                             );
 
-                    const string systemPrompt =
-                        "You are an expert editor. Read the provided document and recommend a short, accurate title summarizing the contents.";
+                    const string systemPrompt = CommonPromptConstants.SystemPromptRetitleFile;
 
-                    const string userPromptTemplate =
-                        @"Here is the document:\n\n<document>\n{0}\n</document>\n\nRecommend a short file name title based on the text above.";
+                    const string userPromptTemplate = CommonPromptConstants.UserPromptRetitleFileTemplate;
 
                     var documentText =
                         element
