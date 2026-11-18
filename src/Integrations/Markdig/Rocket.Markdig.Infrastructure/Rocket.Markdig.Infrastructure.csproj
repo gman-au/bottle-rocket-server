@@ -5,12 +5,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Markdig" Version="1.6.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.11" />
       <PackageReference Include="MongoDB.Bson" Version="3.5.2" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\Rocket.Infrastructure.Mapping\Rocket.Infrastructure.Mapping.csproj" />
       <ProjectReference Include="..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
+      <ProjectReference Include="..\..\Common\Rocket.Integrations.Common\Rocket.Integrations.Common.csproj" />
       <ProjectReference Include="..\Rocket.Markdig.Contracts\Rocket.Markdig.Contracts.csproj" />
       <ProjectReference Include="..\Rocket.Markdig.Domain\Rocket.Markdig.Domain.csproj" />
     </ItemGroup>

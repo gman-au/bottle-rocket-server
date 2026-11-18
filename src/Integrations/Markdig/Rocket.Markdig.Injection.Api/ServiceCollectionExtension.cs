@@ -10,11 +10,13 @@ namespace Rocket.Markdig.Injection.Api
         public static IServiceCollection AddMarkdigApiIntegration(this IServiceCollection services)
         {
             services
-                // .AddTransient<IIntegrationHook, ConvertToEpubHook>()
+                .AddTransient<IIntegrationHook, ConvertToEpubHook>()
                 .AddTransient<IWorkflowStepModelMapper, ConvertToEpubWorkflowStepMapper>()
                 .AddTransient<IExecutionStepModelMapper, ConvertToEpubExecutionStepMapper>()
                 .AddTransient<IStepModelCloner, ConvertToEpubStepCloner>()
-                // .AddTransient<IPdfGenerator, PdfGenerator>()
+                .AddTransient<IEpubGenerator, EpubGenerator>()
+                .AddTransient<IEpubRenderer, EpubRenderer>()
+                .AddTransient<IAuthorRetriever, AuthorRetriever>()
                 .AddTransient<IBsonMapper, MarkdigBsonMapper>();
 
             services
