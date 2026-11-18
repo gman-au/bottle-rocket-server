@@ -34,6 +34,32 @@ namespace Rocket.Api.Host.Prepopulation
                         "MatchingPageSymbol",
                         cancellationToken
                     );
+            
+            // --------------------------------------------------------
+            // #134 - Drop thumbnail and content type from execution
+            // --------------------------------------------------------
+            await
+                executionRepository
+                    .SafelyDropColumnAsync(
+                        "ThumbnailBase64",
+                        cancellationToken
+                    );
+            
+            await
+                executionRepository
+                    .SafelyDropColumnAsync(
+                        "ContentType",
+                        cancellationToken
+                    );
+            
+            await
+                executionRepository
+                    .SafelyDropColumnAsync(
+                        "ScanId",
+                        cancellationToken
+                    );
+            
+            
             // --------------------------------------------------------
         }
     }
