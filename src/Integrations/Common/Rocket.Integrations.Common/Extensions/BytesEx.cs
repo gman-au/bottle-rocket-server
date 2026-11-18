@@ -257,5 +257,34 @@ namespace Rocket.Integrations.Common.Extensions
                     UserId = artifact.UserId
                 };
         }
+
+        public static ExecutionStepArtifact AsCompletedEpubArtifact(
+            this IEnumerable<ArtifactDataElement> values,
+            ExecutionStepArtifact artifact = null
+        )
+        {
+            var elements =
+                (values ?? []).Select(o =>
+                    new ArtifactDataElement
+                    {
+                        ScanId = o.ScanId,
+                        Artifact = o.Artifact,
+                        FileExtension = CommonFileConstants.EpubExtension,
+                        FileName = o.FileName
+                    }
+                )
+                .ToArray()
+                .EnumerateUniquely();
+
+            return
+                new ExecutionStepArtifact
+                {
+                    Result = (int)ExecutionStatusEnum.Completed,
+                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.File,
+                    Elements = elements,
+                    FileName = artifact?.FileName,
+                    UserId = artifact?.UserId
+                };
+        }
     }
 }

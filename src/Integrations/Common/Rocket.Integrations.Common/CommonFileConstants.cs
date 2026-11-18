@@ -9,5 +9,7 @@
         public static readonly string JsonFileExtension = ".json";
         
         public static readonly string MarkdownExtension = ".md";
+        
+        public static readonly string EpubExtension = ".epub";
     }
 }

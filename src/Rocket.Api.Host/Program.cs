@@ -22,6 +22,7 @@ using Rocket.Interfaces;
 using Rocket.Local.Injection.Api;
 using Rocket.Localization;
 using Rocket.Mailgun.Injection.Api;
+using Rocket.Markdig.Injection.Api;
 using Rocket.Microsofts.Injection.Api;
 using Rocket.Notion.Injection.Api;
 using Rocket.Ollama.Injection.Api;
@@ -98,7 +99,8 @@ services
     .AddReplicateApiIntegration()
     .AddPostmarkApiIntegration()
     .AddMailgunApiIntegration()
-    .AddLocalApiIntegration();
+    .AddLocalApiIntegration()
+    .AddMarkdigApiIntegration();
 
 services
     .AddWorkflowBackgroundJob();

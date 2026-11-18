@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj"/>
+        <ProjectReference Include="..\Rocket.Markdig.Infrastructure\Rocket.Markdig.Infrastructure.csproj" />
+        <ProjectReference Include="..\Rocket.Markdig.Injection.Serialization\Rocket.Markdig.Injection.Serialization.csproj"/>
+    </ItemGroup>
+
+</Project>

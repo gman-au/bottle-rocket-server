@@ -232,6 +232,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Infrastructure.Encry
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Integrations.Domain", "Integrations\Common\Rocket.Integrations.Domain\Rocket.Integrations.Domain.csproj", "{AA268C91-FF23-444D-9B48-218B7C46EBD6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Markdig", "Markdig", "{3D87381C-01C3-44D0-9642-161DC065ED44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Markdig.Domain", "Integrations\Markdig\Rocket.Markdig.Domain\Rocket.Markdig.Domain.csproj", "{91A6E336-0AC4-4480-9627-B219C0F10FF3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Markdig.Contracts", "Integrations\Markdig\Rocket.Markdig.Contracts\Rocket.Markdig.Contracts.csproj", "{E81DE9DD-0075-495C-8A83-3AA28F161CF6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Markdig.Injection.Serialization", "Integrations\Markdig\Rocket.Markdig.Injection.Serialization\Rocket.Markdig.Injection.Serialization.csproj", "{4B7D5513-2B65-4E8D-A1F6-01C3ECE5605E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Markdig.Injection.Web", "Integrations\Markdig\Rocket.Markdig.Injection.Web\Rocket.Markdig.Injection.Web.csproj", "{433E5793-7BD7-4E43-8FE9-3D8611EDB014}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Markdig.Injection.Api", "Integrations\Markdig\Rocket.Markdig.Injection.Api\Rocket.Markdig.Injection.Api.csproj", "{793FAAC7-DDED-41E1-B91E-5E5648F2CA59}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Markdig.Infrastructure", "Integrations\Markdig\Rocket.Markdig.Infrastructure\Rocket.Markdig.Infrastructure.csproj", "{D13FAB16-DD0C-46D1-BEC0-B2F4E1CAC05F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -642,6 +656,30 @@ Global
 		{AA268C91-FF23-444D-9B48-218B7C46EBD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA268C91-FF23-444D-9B48-218B7C46EBD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA268C91-FF23-444D-9B48-218B7C46EBD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91A6E336-0AC4-4480-9627-B219C0F10FF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91A6E336-0AC4-4480-9627-B219C0F10FF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91A6E336-0AC4-4480-9627-B219C0F10FF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91A6E336-0AC4-4480-9627-B219C0F10FF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E81DE9DD-0075-495C-8A83-3AA28F161CF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E81DE9DD-0075-495C-8A83-3AA28F161CF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E81DE9DD-0075-495C-8A83-3AA28F161CF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E81DE9DD-0075-495C-8A83-3AA28F161CF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B7D5513-2B65-4E8D-A1F6-01C3ECE5605E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B7D5513-2B65-4E8D-A1F6-01C3ECE5605E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B7D5513-2B65-4E8D-A1F6-01C3ECE5605E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B7D5513-2B65-4E8D-A1F6-01C3ECE5605E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{433E5793-7BD7-4E43-8FE9-3D8611EDB014}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{433E5793-7BD7-4E43-8FE9-3D8611EDB014}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{433E5793-7BD7-4E43-8FE9-3D8611EDB014}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{433E5793-7BD7-4E43-8FE9-3D8611EDB014}.Release|Any CPU.Build.0 = Release|Any CPU
+		{793FAAC7-DDED-41E1-B91E-5E5648F2CA59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{793FAAC7-DDED-41E1-B91E-5E5648F2CA59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{793FAAC7-DDED-41E1-B91E-5E5648F2CA59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{793FAAC7-DDED-41E1-B91E-5E5648F2CA59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D13FAB16-DD0C-46D1-BEC0-B2F4E1CAC05F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D13FAB16-DD0C-46D1-BEC0-B2F4E1CAC05F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D13FAB16-DD0C-46D1-BEC0-B2F4E1CAC05F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D13FAB16-DD0C-46D1-BEC0-B2F4E1CAC05F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{42CB70A2-68E4-4EB7-8AAD-4E2F987D01BA} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
@@ -735,5 +773,12 @@ Global
 		{27DC9B93-D978-43FB-ADF6-0201DA23A6AF} = {FF388832-6BFD-4946-A7C9-9443E2F10340}
 		{58CC73BE-E3B1-4480-A99A-D57477465CEF} = {FF388832-6BFD-4946-A7C9-9443E2F10340}
 		{AA268C91-FF23-444D-9B48-218B7C46EBD6} = {0EB309F2-68DC-4EEA-94A2-2CEE0862DA84}
+		{3D87381C-01C3-44D0-9642-161DC065ED44} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
+		{91A6E336-0AC4-4480-9627-B219C0F10FF3} = {3D87381C-01C3-44D0-9642-161DC065ED44}
+		{E81DE9DD-0075-495C-8A83-3AA28F161CF6} = {3D87381C-01C3-44D0-9642-161DC065ED44}
+		{4B7D5513-2B65-4E8D-A1F6-01C3ECE5605E} = {3D87381C-01C3-44D0-9642-161DC065ED44}
+		{433E5793-7BD7-4E43-8FE9-3D8611EDB014} = {3D87381C-01C3-44D0-9642-161DC065ED44}
+		{793FAAC7-DDED-41E1-B91E-5E5648F2CA59} = {3D87381C-01C3-44D0-9642-161DC065ED44}
+		{D13FAB16-DD0C-46D1-BEC0-B2F4E1CAC05F} = {3D87381C-01C3-44D0-9642-161DC065ED44}
 	EndGlobalSection
 EndGlobal

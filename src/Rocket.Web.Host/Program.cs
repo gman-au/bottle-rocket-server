@@ -8,6 +8,7 @@ using Rocket.Gcp.Injection.Web;
 using Rocket.Google.Injection.Web;
 using Rocket.Local.Injection.Web;
 using Rocket.Mailgun.Injection.Web;
+using Rocket.Markdig.Injection.Web;
 using Rocket.Microsofts.Injection.Web;
 using Rocket.Notion.Injection.Web;
 using Rocket.Ollama.Injection.Web;
@@ -74,7 +75,8 @@ services
     .AddReplicateWebIntegration()
     .AddPostmarkWebIntegration()
     .AddMailgunWebIntegration()
-    .AddLocalWebIntegration();
+    .AddLocalWebIntegration()
+    .AddMarkdigWebIntegration();
 
 services
     .AddSignalRClientServices();

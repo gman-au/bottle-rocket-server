@@ -17,6 +17,7 @@
         <ProjectReference Include="..\Integrations\Google\Google\Rocket.Google.Injection.Api\Rocket.Google.Injection.Api.csproj" />
         <ProjectReference Include="..\Integrations\Local\Rocket.Local.Injection.Api\Rocket.Local.Injection.Api.csproj" />
         <ProjectReference Include="..\Integrations\Mailgun\Rocket.Mailgun.Injection.Api\Rocket.Mailgun.Injection.Api.csproj" />
+        <ProjectReference Include="..\Integrations\Markdig\Rocket.Markdig.Injection.Api\Rocket.Markdig.Injection.Api.csproj" />
         <ProjectReference Include="..\Integrations\Microsofts\Rocket.Microsofts.Injection.Api\Rocket.Microsofts.Injection.Api.csproj" />
         <ProjectReference Include="..\Integrations\Notion\Rocket.Notion.Injection.Api\Rocket.Notion.Injection.Api.csproj" />
         <ProjectReference Include="..\Integrations\Ollama\Rocket.Ollama.Injection.Api\Rocket.Ollama.Injection.Api.csproj" />

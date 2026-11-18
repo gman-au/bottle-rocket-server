@@ -1,0 +1,43 @@
+﻿@page "/MyWorkflow/ConvertToEpub/{workflowId}/AddStep"
+@page "/MyWorkflow/ConvertToEpub/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/ConvertToEpub/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.Markdig.Contracts
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<UpdateWorkflowStepWrapper
+    T="ConvertToEpubWorkflowStepSpecifics"
+    WorkflowStepName="Convert to EPUB"
+    WorkflowId="@WorkflowId"
+    ParentStepId="@ParentStepId"
+    StepId="@StepId"
+    Context="stepSpecifics">
+    <MudGrid>
+        <MudItem sm="12">
+            <MudItem sm="12" lg="6" xl="4">
+                <MudCheckBox
+                    TriState
+                    @bind-Value="@stepSpecifics.MergeFiles">
+                    Merge all files into one single EPUB file
+                </MudCheckBox>
+            </MudItem>
+            <MudText
+                type="hidden"
+                T="string"
+                @bind-Value="stepSpecifics.InputTypeName"
+                For="@(() => stepSpecifics.InputTypeName)"/>
+        </MudItem>
+    </MudGrid>
+</UpdateWorkflowStepWrapper>
+
+@code {
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+}
