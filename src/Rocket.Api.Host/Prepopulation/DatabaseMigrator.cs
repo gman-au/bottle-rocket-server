@@ -55,6 +55,13 @@ namespace Rocket.Api.Host.Prepopulation
             await
                 executionRepository
                     .SafelyDropColumnAsync(
+                        "Vendor",
+                        cancellationToken
+                    );
+            
+            await
+                executionRepository
+                    .SafelyDropColumnAsync(
                         "ScanId",
                         cancellationToken
                     );
