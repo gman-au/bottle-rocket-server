@@ -1,6 +1,6 @@
 ﻿using System;
 using Rocket.Infrastructure.Mapping;
-using Rocket.Replicate.Domain.Models.DataLabTo;
+using Rocket.Replicate.Domain.Models.DataLabTo.Text;
 
 namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
 {

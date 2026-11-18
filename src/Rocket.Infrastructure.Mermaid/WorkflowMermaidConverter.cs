@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
@@ -20,80 +21,91 @@ namespace Rocket.Infrastructure.Mermaid
 
         public string Convert(WorkflowSummary workflow)
         {
-            using var aliasEnumerator =
-                "a"
-                    .ToSequence()
-                    .GetEnumerator();
+            try
+            {
+                using var aliasEnumerator =
+                    "a"
+                        .ToSequence()
+                        .GetEnumerator();
 
-            var result = new StringBuilder();
+                var result = new StringBuilder();
 
-            aliasEnumerator.MoveNext();
-            var parent = aliasEnumerator.Current;
+                aliasEnumerator.MoveNext();
+                var parent = aliasEnumerator.Current;
 
-            var entitiesBuilder = new StringBuilder();
-            var linksBuilder = new StringBuilder();
-            var clicksBuilder = new StringBuilder();
-            var styleBuilder = new StringBuilder();
+                var entitiesBuilder = new StringBuilder();
+                var linksBuilder = new StringBuilder();
+                var clicksBuilder = new StringBuilder();
+                var styleBuilder = new StringBuilder();
 
-            // start node
-            entitiesBuilder
-                .AppendLine($"{parent}@{{ shape: lin-rect, label: \"This workflow\"}}");
+                // start node
+                entitiesBuilder
+                    .AppendLine($"{parent}@{{ shape: lin-rect, label: \"This workflow\"}}");
 
-            var workflowId =
-                workflow
-                    .Id;
+                var workflowId =
+                    workflow
+                        .Id;
 
-            WriteNested(
-                workflowId,
-                parent,
-                entitiesBuilder,
-                linksBuilder,
-                clicksBuilder,
-                styleBuilder,
-                workflow.Steps,
-                aliasEnumerator,
-                DomainConstants.WorkflowFormatTypes[(int)WorkflowFormatTypeEnum.ImageData],
-                (int)WorkflowFormatTypeEnum.ImageData,
-                null,
-                skuWorkflows
-            );
-
-            aliasEnumerator
-                .MoveNext();
-
-            // add the "+ Add Step" option for each child
-            entitiesBuilder
-                .AppendLine($"{aliasEnumerator.Current}([\"{AddNewStep}\"]):::clickable");
-
-            linksBuilder
-                .AppendLine(
-                    $"{parent} --> |{DomainConstants.WorkflowFormatTypes[(int)WorkflowFormatTypeEnum.ImageData]}| {aliasEnumerator.Current}"
+                WriteNested(
+                    workflowId,
+                    parent,
+                    entitiesBuilder,
+                    linksBuilder,
+                    clicksBuilder,
+                    styleBuilder,
+                    workflow.Steps,
+                    aliasEnumerator,
+                    DomainConstants.WorkflowFormatTypes[(int)WorkflowFormatTypeEnum.ImageData],
+                    (int)WorkflowFormatTypeEnum.ImageData,
+                    (int)WorkflowFormatTypeEnum.ImageData,
+                    null,
+                    skuWorkflows
                 );
 
-            clicksBuilder
-                .AppendLine(
-                    $"click {aliasEnumerator.Current} call blazorNavigateToRoute(\"/MyWorkflow/{workflowId}/AddStep?OutputType={(int)WorkflowFormatTypeEnum.ImageData}\")"
-                );
+                aliasEnumerator
+                    .MoveNext();
 
-            styleBuilder
-                .AppendLine($"style {aliasEnumerator.Current} fill:{AddBackgroundButtonColor}");
+                // add the "+ Add Step" option for each child
+                entitiesBuilder
+                    .AppendLine($"{aliasEnumerator.Current}([\"{AddNewStep}\"]):::clickable");
 
-            result
-                .AppendLine("flowchart TD")
-                .Append(entitiesBuilder)
-                .Append(linksBuilder)
-                .Append(clicksBuilder)
-                .Append(styleBuilder);
+                linksBuilder
+                    .AppendLine(
+                        $"{parent} --> |{DomainConstants.WorkflowFormatTypes[(int)WorkflowFormatTypeEnum.ImageData]}| {aliasEnumerator.Current}"
+                    );
 
-            logger
-                .LogDebug(
-                    "mermaid: {mermaid}",
-                    result.ToString()
-                );
+                clicksBuilder
+                    .AppendLine(
+                        $"click {aliasEnumerator.Current} call blazorNavigateToRoute(\"/MyWorkflow/{workflowId}/AddStep?OutputType={(int)WorkflowFormatTypeEnum.ImageData}\")"
+                    );
 
-            return
+                styleBuilder
+                    .AppendLine($"style {aliasEnumerator.Current} fill:{AddBackgroundButtonColor}");
+
                 result
-                    .ToString();
+                    .AppendLine("flowchart TD")
+                    .Append(entitiesBuilder)
+                    .Append(linksBuilder)
+                    .Append(clicksBuilder)
+                    .Append(styleBuilder);
+
+                logger
+                    .LogDebug(
+                        "mermaid: {mermaid}",
+                        result.ToString()
+                    );
+
+                return
+                    result
+                        .ToString();
+            }
+            catch (Exception ex)
+            {
+                logger
+                    .LogError("There was an error rendering the workflow: {ex}", ex);
+
+                throw;
+            }
         }
 
         private static void WriteNested(
@@ -107,10 +119,19 @@ namespace Rocket.Infrastructure.Mermaid
             IEnumerator<string> aliasEnumerator,
             string currentParentOutputTypeName,
             int currentParentOutputType,
+            int lastNonInheritedOutputType,
             string currentParentId,
             IEnumerable<ISkuWorkflow> skuWorkflows
         )
         {
+            var nonInheritedOutputType = currentParentOutputType;
+            var nonInheritedOutputTypeName = currentParentOutputTypeName;
+            if (currentParentOutputType == (int)WorkflowFormatTypeEnum.Inherited)
+            {
+                nonInheritedOutputType = lastNonInheritedOutputType;
+                nonInheritedOutputTypeName = DomainConstants.WorkflowFormatTypes[lastNonInheritedOutputType];
+            }
+            
             foreach (var step in steps ?? [])
             {
                 aliasEnumerator
@@ -142,7 +163,7 @@ namespace Rocket.Infrastructure.Mermaid
                 entityLine += "\")";
 
                 linksBuilder
-                    .AppendLine($"{currentParentAlias} --> |{currentParentOutputTypeName}| {currentChildAlias}");
+                    .AppendLine($"{currentParentAlias} --> |{nonInheritedOutputTypeName}| {currentChildAlias}");
 
                 var matchedSku =
                     (skuWorkflows ?? [])
@@ -165,6 +186,10 @@ namespace Rocket.Infrastructure.Mermaid
 
                 entitiesBuilder
                     .AppendLine(entityLine);
+                
+                // if 'inherited', then propagate the parent type
+                var lastNonInheritedOutputTypeForChildren = 
+                    step.OutputType == (int)WorkflowFormatTypeEnum.Inherited ? lastNonInheritedOutputType : step.OutputType;
 
                 WriteNested(
                     workflowId,
@@ -177,6 +202,7 @@ namespace Rocket.Infrastructure.Mermaid
                     aliasEnumerator,
                     step.OutputTypeName,
                     step.OutputType,
+                    lastNonInheritedOutputTypeForChildren,
                     step.Id,
                     skuWorkflows
                 );
@@ -194,11 +220,11 @@ namespace Rocket.Infrastructure.Mermaid
                         .AppendLine($"{aliasEnumerator.Current}([{AddNewStep}]):::clickable");
 
                     linksBuilder
-                        .AppendLine($"{currentParentAlias} --> |{currentParentOutputTypeName}| {aliasEnumerator.Current}");
+                        .AppendLine($"{currentParentAlias} --> |{nonInheritedOutputTypeName}| {aliasEnumerator.Current}");
 
                     clicksBuilder
                         .AppendLine(
-                            $"click {aliasEnumerator.Current} call blazorNavigateToRoute(\"/MyWorkflow/{workflowId}/Steps/{currentParentId}/AddStep?OutputType={currentParentOutputType}\")"
+                            $"click {aliasEnumerator.Current} call blazorNavigateToRoute(\"/MyWorkflow/{workflowId}/Steps/{currentParentId}/AddStep?OutputType={nonInheritedOutputType}\")"
                         );
 
                     styleBuilder

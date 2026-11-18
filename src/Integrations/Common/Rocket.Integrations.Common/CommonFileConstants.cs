@@ -7,5 +7,7 @@
         public static readonly string PdfFileExtension = ".pdf";
         
         public static readonly string JsonFileExtension = ".json";
+        
+        public static readonly string MarkdownExtension = ".md";
     }
 }

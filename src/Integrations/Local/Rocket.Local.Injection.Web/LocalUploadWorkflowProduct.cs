@@ -10,7 +10,7 @@ namespace Rocket.Local.Injection.Web
 
         public string Description => "Upload a file (image, text, PDF) to a server folder.";
 
-        public string[] Categories => [SkuConstants.FileUpload];
+        public string[] Categories => [SkuConstants.FileUpload, SkuConstants.LocalNetworkOnly];
 
         public string HrefBase => "/MyWorkflow/LocalUpload";
 

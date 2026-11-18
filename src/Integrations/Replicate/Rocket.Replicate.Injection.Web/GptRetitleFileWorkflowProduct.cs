@@ -22,6 +22,6 @@ namespace Rocket.Replicate.Injection.Web
         
         public int[] InputTypes => ReplicateDomainConstants.ReplicateRetitleFileInputTypes;
 
-        public int OutputType => ReplicateDomainConstants.ReplicateRetitleFileTaskOutputType;
+        public int OutputType => ReplicateDomainConstants.ReplicateRetitleFileOutputType;
     }
 }

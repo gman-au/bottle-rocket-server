@@ -6,7 +6,6 @@ using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Extensions;
 using Rocket.Domain.Jobs;
-using Rocket.Interfaces;
 using Rocket.Page.Schemas.ProjectTaskTracker;
 
 namespace Rocket.Integrations.Common.Extensions
@@ -36,6 +35,35 @@ namespace Rocket.Integrations.Common.Extensions
                 {
                     Result = (int)ExecutionStatusEnum.Completed,
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
+                    Elements = elements,
+                    FileName = artifact?.FileName,
+                    UserId = artifact?.UserId
+                };
+        }
+        
+        public static ExecutionStepArtifact AsCompletedMarkdownArtifact(
+            this IEnumerable<(string, string)> values,
+            ExecutionStepArtifact artifact = null
+        )
+        {
+            var elements =
+                (values ?? []).Select(o =>
+                    new ArtifactDataElement
+                    {
+                        ScanId = o.Item1,
+                        Artifact = Encoding.Default.GetBytes(o.Item2),
+                        FileExtension = CommonFileConstants.MarkdownExtension,
+                        FileName = artifact?.FileName
+                    }
+                )
+                .ToArray()
+                .EnumerateUniquely();
+
+            return
+                new ExecutionStepArtifact
+                {
+                    Result = (int)ExecutionStatusEnum.Completed,
+                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.Markdown,
                     Elements = elements,
                     FileName = artifact?.FileName,
                     UserId = artifact?.UserId

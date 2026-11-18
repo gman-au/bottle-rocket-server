@@ -11,5 +11,6 @@
         public const string Google = "Google";
         public const string Microsoft = "Microsoft";
         public const string FileRetitling = "File Retitling";
+        public const string LocalNetworkOnly = "Local Network Only";
     }
 }

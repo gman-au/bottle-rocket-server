@@ -19,6 +19,13 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken = default
         );
 
+        Task<BaseWorkflowStep> GetWorkflowParentStepByIdAsync(
+            string workflowStepId,
+            string workflowId,
+            string userId,
+            CancellationToken cancellationToken = default
+        );
+
         Task<BaseWorkflowStep> InsertWorkflowStepAsync(
             BaseWorkflowStep workflowStep,
             string userId,

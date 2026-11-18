@@ -24,6 +24,14 @@ namespace Rocket.Diagnostics.Infrastructure
                 });
             }
             
+            if (!BsonClassMap.IsClassMapRegistered(typeof(HelloWorldMarkdownExecutionStep)))
+            {
+                BsonClassMap.RegisterClassMap<HelloWorldMarkdownExecutionStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
             if (!BsonClassMap.IsClassMapRegistered(typeof(HelloWorldTextWorkflowStep)))
             {
                 BsonClassMap.RegisterClassMap<HelloWorldTextWorkflowStep>(cm =>
@@ -35,6 +43,14 @@ namespace Rocket.Diagnostics.Infrastructure
             if (!BsonClassMap.IsClassMapRegistered(typeof(HelloWorldProjectWorkflowStep)))
             {
                 BsonClassMap.RegisterClassMap<HelloWorldProjectWorkflowStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(HelloWorldMarkdownWorkflowStep)))
+            {
+                BsonClassMap.RegisterClassMap<HelloWorldMarkdownWorkflowStep>(cm =>
                 {
                     cm.AutoMap();
                 });

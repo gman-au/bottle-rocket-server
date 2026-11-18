@@ -7,6 +7,8 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Markdown;
+using Rocket.Domain.Enum;
+using Rocket.Domain.Exceptions;
 using Rocket.Domain.Jobs;
 using Rocket.Integrations.Common;
 using Rocket.Integrations.Common.Extensions;
@@ -21,6 +23,7 @@ namespace Rocket.QuestPdf.Infrastructure
             IEnumerable<ArtifactDataElement> elements,
             string artifactFileName,
             bool mergeFiles,
+            int artifactArtifactDataFormat,
             CancellationToken cancellationToken
         )
         {
@@ -43,6 +46,12 @@ namespace Rocket.QuestPdf.Infrastructure
                                         {
                                             scanId = element.ScanId;
 
+                                            var columnDescriptor =
+                                                GetPdfRenderDescriptor(
+                                                    artifactArtifactDataFormat,
+                                                    element
+                                                );
+
                                             jobControl
                                                 .StartStepAsync(
                                                     scanId
@@ -53,22 +62,11 @@ namespace Rocket.QuestPdf.Infrastructure
                                                 .Page(page =>
                                                     {
                                                         page
-                                                            .Margin(20);
+                                                            .Margin(30);
 
                                                         page
                                                             .Content()
-                                                            .Column(column =>
-                                                                {
-                                                                    column
-                                                                        .Item()
-                                                                        .Markdown(
-                                                                            Encoding
-                                                                                .Default
-                                                                                .GetString(element.Artifact),
-                                                                            options => { options.ParagraphSpacing = 7.5F; }
-                                                                        );
-                                                                }
-                                                            );
+                                                            .Column(columnDescriptor);
                                                     }
                                                 );
 
@@ -127,6 +125,12 @@ namespace Rocket.QuestPdf.Infrastructure
 
                     try
                     {
+                        var columnDescriptor =
+                            GetPdfRenderDescriptor(
+                                artifactArtifactDataFormat,
+                                element
+                            );
+                        
                         var fileData =
                             Document
                                 .Create(container =>
@@ -135,22 +139,11 @@ namespace Rocket.QuestPdf.Infrastructure
                                             .Page(page =>
                                                 {
                                                     page
-                                                        .Margin(20);
+                                                        .Margin(30);
 
                                                     page
                                                         .Content()
-                                                        .Column(column =>
-                                                            {
-                                                                column
-                                                                    .Item()
-                                                                    .Markdown(
-                                                                        Encoding
-                                                                            .Default
-                                                                            .GetString(element.Artifact),
-                                                                        options => { options.ParagraphSpacing = 7.5F; }
-                                                                    );
-                                                            }
-                                                        );
+                                                        .Column(columnDescriptor);
                                                 }
                                             );
                                     }
@@ -366,6 +359,44 @@ namespace Rocket.QuestPdf.Infrastructure
             }
 
             return results;
+        }
+
+        private static Action<ColumnDescriptor> GetPdfRenderDescriptor(
+            int artifactArtifactDataFormat,
+            ArtifactDataElement element
+        )
+        {
+            switch (artifactArtifactDataFormat)
+            {
+                case (int)WorkflowFormatTypeEnum.RawTextData:
+                    return column =>
+                    {
+                        column
+                            .Item()
+                            .Text(
+                                Encoding
+                                    .Default
+                                    .GetString(element.Artifact)
+                            );
+                    };
+                case (int)WorkflowFormatTypeEnum.Markdown:
+                    return column =>
+                    {
+                        column
+                            .Item()
+                            .Markdown(
+                                Encoding
+                                    .Default
+                                    .GetString(element.Artifact),
+                                options => { options.ParagraphSpacing = 7.5F; }
+                            );
+                    };
+                default:
+                    throw new RocketException(
+                        "Unexpected artifact format for PDF generation",
+                        ApiStatusCodeEnum.ThirdPartyServiceError
+                    );
+            }
         }
     }
 }

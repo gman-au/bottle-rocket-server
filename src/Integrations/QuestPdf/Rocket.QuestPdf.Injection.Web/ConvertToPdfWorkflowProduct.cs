@@ -10,7 +10,7 @@ namespace Rocket.QuestPdf.Injection.Web
 
         public string Description => "Convert file data (image, text) to a PDF file.";
 
-        public string[] Categories => [SkuConstants.FileConversion];
+        public string[] Categories => [SkuConstants.FileConversion, SkuConstants.LocalNetworkOnly];
 
         public string HrefBase => "/MyWorkflow/ConvertToPdf";
 

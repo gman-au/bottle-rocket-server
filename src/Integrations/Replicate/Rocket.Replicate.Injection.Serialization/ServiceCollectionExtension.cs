@@ -15,10 +15,12 @@ namespace Rocket.Replicate.Injection.Serialization
                 .AddSingleton<IJsonTypeDiscriminator<BaseWorkflowStep>, DataLabToExtractTextWorkflowDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseWorkflowStep>, DeepSeekOcrExtractTextWorkflowDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseWorkflowStep>, GptRetitleFileWorkflowDiscriminator>()
+                .AddSingleton<IJsonTypeDiscriminator<BaseWorkflowStep>, DataLabToExtractMarkdownWorkflowDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, DataLabToExtractProjectExecutionDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, DataLabToExtractTextExecutionDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, DeepSeekOcrExtractTextExecutionDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, GptRetitleFileExecutionDiscriminator>()
+                .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, DataLabToExtractMarkdownExecutionDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseConnector>, ReplicateConnectorDiscriminator>();
 
             return services;

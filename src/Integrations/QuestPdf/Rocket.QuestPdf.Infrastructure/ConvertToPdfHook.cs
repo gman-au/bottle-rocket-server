@@ -40,8 +40,8 @@ namespace Rocket.QuestPdf.Infrastructure
                     .Elements;
 
             var mergeFiles = ExecutionStep.MergeFiles;
-            
-            if (Artifact.ArtifactDataFormat == (int)WorkflowFormatTypeEnum.RawTextData)
+
+            if (Artifact.ArtifactDataFormat is (int)WorkflowFormatTypeEnum.RawTextData or (int)WorkflowFormatTypeEnum.Markdown)
             {
                 fileResults =
                     await
@@ -51,6 +51,7 @@ namespace Rocket.QuestPdf.Infrastructure
                                 elements,
                                 Artifact.FileName,
                                 mergeFiles,
+                                Artifact.ArtifactDataFormat,
                                 cancellationToken
                             );
             }

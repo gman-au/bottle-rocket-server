@@ -15,14 +15,13 @@ using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 using Rocket.Page.Schemas.FallbackText;
 using Rocket.Replicate.Domain;
-using Rocket.Replicate.Domain.Models.DataLabTo;
+using Rocket.Replicate.Domain.Models.DataLabTo.Text;
 
 namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
 {
     public class DataLabToExtractTextHook(
         IReplicateClient replicateClient,
         IGlobalSettingsRepository globalSettingsRepository,
-        IFileRetitler fileRetitler,
         ILogger<DataLabToExtractTextHook> logger
     ) : HookWithConnectorBase<DataLabToExtractTextExecutionStep, ReplicateConnector>(
         logger
@@ -195,15 +194,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
                                     ),
                             FileExtension = CommonFileConstants.TextFileExtension,
                             ScanId = element.ScanId,
-                            FileName =
-                                await
-                                    fileRetitler
-                                        .RetitleAsync(
-                                            extractedMarkdown,
-                                            element.ScanId,
-                                            Artifact.UserId,
-                                            cancellationToken
-                                        ) ?? Artifact.FileName
+                            FileName = element.FileName
                         };
 
                     artifactElements

@@ -20,9 +20,7 @@ using Rocket.Interfaces;
 
 namespace Rocket.Gcp.Infrastructure
 {
-    public class VisionOcrService(
-        IFileRetitler fileRetitler
-    ) : IVisionOcrService
+    public class VisionOcrService : IVisionOcrService
     {
         public async Task<ExecutionStepArtifact> ExtractHandwrittenTextAsync(
             IJobControl jobControl,
@@ -121,15 +119,7 @@ namespace Rocket.Gcp.Infrastructure
                                         ),
                                 FileExtension = CommonFileConstants.TextFileExtension,
                                 ScanId = element.ScanId,
-                                FileName =
-                                    await
-                                        fileRetitler
-                                            .RetitleAsync(
-                                                ocrResult,
-                                                element.ScanId,
-                                                artifact.UserId,
-                                                cancellationToken
-                                            ) ?? artifact.FileName
+                                FileName = element.FileName
                             };
 
                         artifactElements

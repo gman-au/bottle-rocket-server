@@ -14,7 +14,7 @@ using Rocket.Integrations.Common.Extensions;
 using Rocket.Interfaces;
 using Rocket.Page.Schemas.ProjectTaskTracker;
 using Rocket.Replicate.Domain;
-using Rocket.Replicate.Domain.Models.DataLabTo;
+using Rocket.Replicate.Domain.Models.DataLabTo.Project;
 
 namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Project
 {

@@ -1,6 +1,6 @@
 ﻿using Rocket.Domain.Workflows;
 
-namespace Rocket.Replicate.Domain.Models.DataLabTo
+namespace Rocket.Replicate.Domain.Models.DataLabTo.Project
 {
     public record DataLabToExtractProjectWorkflowStep : BaseWorkflowStep
     {

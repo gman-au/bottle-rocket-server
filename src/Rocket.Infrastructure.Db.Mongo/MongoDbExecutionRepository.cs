@@ -11,7 +11,6 @@ using Rocket.Domain.Dashboard;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.Executions;
-using Rocket.Domain.Utils;
 using Rocket.Infrastructure.Db.Mongo.Extensions;
 using Rocket.Interfaces;
 

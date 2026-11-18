@@ -18,7 +18,6 @@ using Rocket.Replicate.Domain.Models.DeepSeekOcr;
 namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
 {
     public class DeepSeekOcrExtractTextHook(
-        IFileRetitler fileRetitler,
         ILogger<DeepSeekOcrExtractTextHook> logger,
         IGlobalSettingsRepository globalSettingsRepository,
         IReplicateClient replicateClient
@@ -162,15 +161,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
                                     ),
                             FileExtension = CommonFileConstants.TextFileExtension,
                             ScanId = element.ScanId,
-                            FileName =
-                                await
-                                    fileRetitler
-                                        .RetitleAsync(
-                                            extractedText,
-                                            element.ScanId,
-                                            artifact.UserId,
-                                            cancellationToken
-                                        ) ?? artifact.FileName
+                            FileName = element.FileName
                         };
 
                     artifactElements
