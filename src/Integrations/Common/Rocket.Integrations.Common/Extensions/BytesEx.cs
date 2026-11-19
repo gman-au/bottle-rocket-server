@@ -37,7 +37,8 @@ namespace Rocket.Integrations.Common.Extensions
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.RawTextData,
                     Elements = elements,
                     FileName = artifact?.FileName,
-                    UserId = artifact?.UserId
+                    UserId = artifact?.UserId,
+                    BatchId = artifact?.BatchId
                 };
         }
         
@@ -66,7 +67,8 @@ namespace Rocket.Integrations.Common.Extensions
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.Markdown,
                     Elements = elements,
                     FileName = artifact?.FileName,
-                    UserId = artifact?.UserId
+                    UserId = artifact?.UserId,
+                    BatchId = artifact?.BatchId
                 };
         }
 
@@ -95,7 +97,8 @@ namespace Rocket.Integrations.Common.Extensions
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.File,
                     Elements = elements,
                     FileName = artifact?.FileName,
-                    UserId = artifact?.UserId
+                    UserId = artifact?.UserId,
+                    BatchId = artifact?.BatchId
                 };
         }
 
@@ -127,7 +130,8 @@ namespace Rocket.Integrations.Common.Extensions
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData,
                     Elements = elements,
                     FileName = artifact?.FileName,
-                    UserId = artifact?.UserId
+                    UserId = artifact?.UserId,
+                    BatchId = artifact?.BatchId
                 };
         }
 
@@ -223,7 +227,8 @@ namespace Rocket.Integrations.Common.Extensions
                     ArtifactDataFormat = artifact.ArtifactDataFormat,
                     Elements = elements,
                     FileName = artifact.FileName,
-                    UserId = artifact.UserId
+                    UserId = artifact.UserId,
+                    BatchId = artifact.BatchId
                 };
         }
 
@@ -254,7 +259,8 @@ namespace Rocket.Integrations.Common.Extensions
                     ArtifactDataFormat = artifact.ArtifactDataFormat,
                     Elements = elements,
                     FileName = summaryTitle,
-                    UserId = artifact.UserId
+                    UserId = artifact.UserId,
+                    BatchId = artifact.BatchId
                 };
         }
 
@@ -283,7 +289,8 @@ namespace Rocket.Integrations.Common.Extensions
                     ArtifactDataFormat = (int)WorkflowFormatTypeEnum.File,
                     Elements = elements,
                     FileName = artifact?.FileName,
-                    UserId = artifact?.UserId
+                    UserId = artifact?.UserId,
+                    BatchId = artifact?.BatchId
                 };
         }
     }

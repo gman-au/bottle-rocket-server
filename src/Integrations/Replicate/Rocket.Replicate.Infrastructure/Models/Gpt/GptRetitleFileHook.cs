@@ -21,14 +21,12 @@ namespace Rocket.Replicate.Infrastructure.Models.Gpt
         IFileRetitler fileRetitler,
         IGlobalSettingsRepository globalSettingsRepository,
         IReplicateClient replicateClient
-    ) : IIntegrationHook
+    ) : HookWithConnectorBase<GptRetitleFileExecutionStep, ReplicateConnector>(
+        logger
+    ), IIntegrationHook
     {
         private const string AdditionalInstructions =
             "Please respond only in plain text, no Markdown. Do not include any file extensions e.g. (.md, .txt) in your response.";
-
-        public bool IsApplicable(
-            BaseExecutionStep step
-        ) => step is GptRetitleFileExecutionStep;
 
         public async Task<ExecutionStepArtifact> ProcessAsync(
             IWorkflowExecutionContext context,
@@ -38,6 +36,13 @@ namespace Rocket.Replicate.Infrastructure.Models.Gpt
             CancellationToken cancellationToken
         )
         {
+            context
+                .InitializeStep(
+                    this,
+                    step
+                )
+                .InitializeArtifact(this);
+
             var artifact =
                 context
                     .GetInputArtifact();
@@ -104,7 +109,7 @@ namespace Rocket.Replicate.Infrastructure.Models.Gpt
                     if (retitleStep.SummarizeAllFiles)
                     {
                         summaryPrompt += Environment.NewLine + documentText;
-                            
+
                         await
                             jobControl
                                 .SucceedStepAsync(
