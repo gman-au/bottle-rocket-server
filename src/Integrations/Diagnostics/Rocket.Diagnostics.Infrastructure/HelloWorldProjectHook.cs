@@ -99,7 +99,10 @@ namespace Rocket.Diagnostics.Infrastructure
                             Artifact = Encoding.Default.GetBytes(responseJson),
                             FileExtension = CommonFileConstants.JsonFileExtension,
                         }
-                    ]
+                    ],
+                    BatchId = Artifact.BatchId,
+                    UserId = Artifact.UserId,
+                    FileName = Artifact.FileName
                 };
         }
     }

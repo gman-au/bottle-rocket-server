@@ -24,6 +24,13 @@ namespace Rocket.Diagnostics.Infrastructure
             CancellationToken cancellationToken
         )
         {
+            context
+                .InitializeStep(
+                    this,
+                    step
+                )
+                .InitializeArtifact(this);
+            
             var sb = new StringBuilder();
 
             sb
