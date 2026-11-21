@@ -5,7 +5,7 @@ namespace Rocket.Interfaces
 {
     public interface ICaptureNotifier
     {
-        Task NotifyNewCaptureAsync(string userId, CancellationToken cancellationToken);
+        Task NotifyNewCaptureAsync(string userId, string batchId, CancellationToken cancellationToken);
 
         Task NotifyNewExecutionUpdateAsync(string userId, CancellationToken cancellationToken);
 

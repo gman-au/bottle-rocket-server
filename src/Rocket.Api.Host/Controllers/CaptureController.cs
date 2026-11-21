@@ -172,15 +172,16 @@ namespace Rocket.Api.Host.Controllers
                                 workflowIds,
                                 cancellationToken
                             );
-
-                    await
-                        captureNotifier
-                            .NotifyNewCaptureAsync(
-                                userId,
-                                cancellationToken
-                            );
                 }
             }
+
+            await
+                captureNotifier
+                    .NotifyNewCaptureAsync(
+                        userId,
+                        batchId,
+                        cancellationToken
+                    );
 
             var response =
                 new ProcessCaptureResponse

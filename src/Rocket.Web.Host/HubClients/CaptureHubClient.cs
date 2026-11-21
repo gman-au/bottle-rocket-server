@@ -22,7 +22,7 @@ namespace Rocket.Web.Host.HubClients
         private readonly ApiConfigurationOptions _options = apiConfigurationOptionsAccessor.Value;
         private HubConnection _hubConnection;
 
-        public event Func<Task> OnNewCaptureReceived;
+        public event Func<string, Task> OnNewCaptureReceived;
 
         public event Func<Task> OnNewExecutionUpdateReceived;
         
@@ -85,9 +85,9 @@ namespace Rocket.Web.Host.HubClients
                 _hubSubscriptions
                     .Add(
                         _hubConnection
-                            .On(
+                            .On<string>(
                                 "NewCaptureReceived",
-                                async () =>
+                                async batchId =>
                                 {
                                     logger
                                         .LogInformation("Received NewCaptureReceived notification");
@@ -96,7 +96,7 @@ namespace Rocket.Web.Host.HubClients
                                     {
                                         await
                                             OnNewCaptureReceived
-                                                .Invoke();
+                                                .Invoke(batchId);
                                     }
                                 }
                             )
