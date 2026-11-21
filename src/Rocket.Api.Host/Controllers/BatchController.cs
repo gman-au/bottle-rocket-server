@@ -301,6 +301,7 @@ namespace Rocket.Api.Host.Controllers
                     Id = record.Id,
                     DateScanned = record.CaptureDate.ToLocalTime(),
                     Description = record.Description,
+                    Status = record.Status,
                     Scans =
                         record
                             .Scans

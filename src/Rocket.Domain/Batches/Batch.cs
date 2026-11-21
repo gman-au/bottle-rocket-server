@@ -19,8 +19,6 @@ namespace Rocket.Domain.Batches
         public int Status { get; set; }
         
         public string Description { get; set; }
-
-        public bool Archived { get; set; }
         
         public IEnumerable<ScannedImage> Scans { get; set; }
     }

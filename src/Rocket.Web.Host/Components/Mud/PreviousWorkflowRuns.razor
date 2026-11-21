@@ -32,7 +32,7 @@
                     @if (execution?.ExecutionStatus != null)
                     {
                         <span style="display:inline-flex;">
-                        <MudText Color="@(execution.ExecutionStatus.MapStatusToColor())">
+                        <MudText Color="@(execution.ExecutionStatus.MapExecutionStatusToColor())">
                             @if (execution.ExecutionStatus != null && DomainConstants.ExecutionStatusTypes.ContainsKey((int)execution.ExecutionStatus))
                             {
                                 @DomainConstants.ExecutionStatusTypes[(int)execution.ExecutionStatus]

@@ -83,7 +83,7 @@ namespace Rocket.Infrastructure
                         ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                     );
 
-                if (batch.Archived)
+                if (batch.Status == (int)BatchStatusEnum.Archived)
                     throw new RocketException(
                         "Batch is archived and cannot be processed.",
                         ApiStatusCodeEnum.RecordIsArchived
