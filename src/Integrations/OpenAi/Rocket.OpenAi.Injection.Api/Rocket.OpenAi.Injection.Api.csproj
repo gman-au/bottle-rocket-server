@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj"/>
+        <ProjectReference Include="..\Rocket.OpenAi.Infrastructure\Rocket.OpenAi.Infrastructure.csproj"/>
+        <ProjectReference Include="..\Rocket.OpenAi.Injection.Serialization\Rocket.OpenAi.Injection.Serialization.csproj"/>
+    </ItemGroup>
+
+</Project>
