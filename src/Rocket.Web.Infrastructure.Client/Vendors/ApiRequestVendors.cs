@@ -4,7 +4,8 @@
         IApiRequestDropbox dropbox,
         IApiRequestGoogle google,
         IApiRequestMicrosoft microsofts,
-        IApiRequestNotion notion
+        IApiRequestNotion notion,
+        IApiRequestOllama ollama
     )
         : IApiRequestVendors
     {
@@ -15,5 +16,7 @@
         public IApiRequestMicrosoft Microsofts => microsofts;
 
         public IApiRequestNotion Notion => notion;
+
+        public IApiRequestOllama Ollama => ollama;
     }
 }
