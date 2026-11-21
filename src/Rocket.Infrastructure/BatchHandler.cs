@@ -540,7 +540,7 @@ namespace Rocket.Infrastructure
 
             if (batch.Status == (int)BatchStatusEnum.Archived)
                 throw new RocketException(
-                    "The batch is already archived and cannot be closed.",
+                    "The batch is already archived.",
                     ApiStatusCodeEnum.RecordIsArchived
                 );
 
