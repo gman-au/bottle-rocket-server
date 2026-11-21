@@ -1,0 +1,165 @@
+﻿@page "/MyConnector/OpenAi/Add"
+@using Rocket.Api.Contracts.Connectors
+@using Rocket.Notion.Contracts
+@using Rocket.OpenAi.Contracts
+@using Rocket.Web.Host.Infrastructure
+@using Rocket.Web.Infrastructure.Client
+@inject IApiRequestManager ApiRequestManager
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject ISnackbar Snackbar
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+
+<BottleRocketLoadingOverlay IsLoading="@_isLoading">
+    @if (_connector != null)
+    {
+        <MudForm
+            Model="@_connector"
+            @ref="_form">
+            <MudPaper Class="p-4" elevation="2">
+                <MudText
+                    Align="Align.Center"
+                    Typo="Typo.h4"
+                    Color="Color.Primary"
+                    Class="mb-4">
+                    Add an OpenAI connector
+                </MudText>
+
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5"
+                        >
+                            Step 1: Set up the Notion integration
+                        </MudText>
+                        <MudText>
+                            <MudLink
+                                Target="_blank"
+                                Href="https://gman-au.github.io/bottle-rocket-documentation/docs/docs-general/workflow-integrations/notion#create-the-internal-integration">
+                                Follow the instructions to set up a Notion integration.
+                            </MudLink>
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText
+                            Color="Color.Secondary"
+                            Typo="Typo.h5">
+                            Step 2: Enter the OpenAI API key
+                        </MudText>
+                        <MudText>
+                            Enter the API key you have created for the OpenAI integration below.
+                        </MudText>
+                    </MudItem>
+                    <MudItem sm="12" lg="6">
+                        <MudTextField
+                            T="string"
+                            Required
+                            Label="API key"
+                            HelperText="Enter the API key here"
+                            @bind-Value="_connector.ApiKey"
+                            For="@(() => _connector.ApiKey)"
+                            RequiredError="API key is required."/>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="align-start mt-2" Justify="Justify.FlexEnd">
+                    <MudItem>
+                        <GoBackButton/>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton
+                            Variant="Variant.Outlined"
+                            Color="Color.Success"
+                            Disabled="@(_isLoading)"
+                            OnClick="@SubmitAsync">
+                            Submit
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudForm>
+    }
+</BottleRocketLoadingOverlay>
+
+@code {
+
+    MudForm _form;
+
+    private bool _isLoading;
+    private readonly OpenAiConnectorSpecifics _connector = new();
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SubmitAsync()
+    {
+        await
+            _form
+                .Validate();
+
+        if (_form.IsValid)
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                var response =
+                    await
+                        ApiRequestManager
+                            .Connectors
+                            .CreateConnectorAsync(
+                                new CreateConnectorRequest<OpenAiConnectorSpecifics>
+                                {
+                                    Connector = _connector
+                                },
+                                BaseCancellationToken
+                            );
+
+                Snackbar
+                    .Add(
+                        "The connection has been added.",
+                        Severity.Success
+                    );
+
+                NavigationManager
+                    .NavigateTo("/MyConnectors");
+            }
+            catch (Exception ex)
+            {
+                await
+                    WebHostErrorHandler
+                        .HandleExceptionAsync(ex);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+}

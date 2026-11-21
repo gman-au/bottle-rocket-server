@@ -13,5 +13,7 @@ namespace Rocket.Web.Infrastructure.Client
         IApiRequestNotion Notion { get; }
         
         IApiRequestOllama Ollama { get; }
+        
+        IApiRequestOpenAi OpenAi { get; }
     }
 }

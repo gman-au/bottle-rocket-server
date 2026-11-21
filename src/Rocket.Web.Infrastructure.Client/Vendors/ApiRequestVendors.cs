@@ -5,7 +5,8 @@
         IApiRequestGoogle google,
         IApiRequestMicrosoft microsofts,
         IApiRequestNotion notion,
-        IApiRequestOllama ollama
+        IApiRequestOllama ollama,
+        IApiRequestOpenAi openAi
     )
         : IApiRequestVendors
     {
@@ -18,5 +19,7 @@
         public IApiRequestNotion Notion => notion;
 
         public IApiRequestOllama Ollama => ollama;
+
+        public IApiRequestOpenAi OpenAi => openAi;
     }
 }

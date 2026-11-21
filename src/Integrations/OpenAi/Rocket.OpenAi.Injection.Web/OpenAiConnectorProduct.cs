@@ -7,6 +7,6 @@ namespace Rocket.OpenAi.Injection.Web
     {
         public string Name => OpenAiDomainConstants.ConnectorName;
         public string Href => "/MyConnector/OpenAi/Add";
-        public string ImagePath => "/img/openai-logo.png";
+        public string ImagePath => "/img/openai-logo.jpg";
     }
 }

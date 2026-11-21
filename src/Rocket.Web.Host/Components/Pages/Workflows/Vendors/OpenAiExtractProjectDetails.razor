@@ -1,0 +1,205 @@
+﻿@page "/MyWorkflow/OpenAi/ExtractProject/{workflowId}/AddStep"
+@page "/MyWorkflow/OpenAi/ExtractProject/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/OpenAi/ExtractProject/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.OpenAi.Contracts
+@using Rocket.OpenAi.Contracts.Project
+@using Rocket.OpenAi.Domain
+@using Rocket.Web.Infrastructure.Client
+
+@using Rocket.Web.Host.Infrastructure
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject IApiRequestManager ApiRequestManager
+
+<UpdateWorkflowStepWrapper
+    @ref="_wrapper"
+    T="OpenAiExtractProjectWorkflowStepSpecifics"
+    WorkflowStepName="Extract project data from image"
+    WorkflowId="@WorkflowId"
+    ParentStepId="@ParentStepId"
+    RequiresConnectorCode="@OpenAiDomainConstants.ConnectorCode"
+    OnConnectorIdChanged="ConnectorChangedAsync"
+    StepId="@StepId"
+    Context="stepSpecifics">
+    <MudGrid>
+        <MudItem sm="12" lg="6">
+            <MudSelect
+                T="OpenAiModel"
+                Label=@(_isLoading ? "Loading..." : "Select an OpenAI model")
+                @bind-Value="@_firstPassModelSelected"
+                Required="true"
+                RequiredError="Model name is required"
+                HelperText="Enter the OpenAI model name to use for the first pass (OCR extraction)"
+                @bind-Value:after="() => FirstPassIdChangedAsync(stepSpecifics)"
+                Disabled="@(_isLoading || string.IsNullOrEmpty(_connectorId))"
+                Clearable
+            >
+                @foreach (var openAiModel in _openAiModels ?? [])
+                {
+                    <MudSelectItem
+                        T="OpenAiModel"
+                        Value="@openAiModel">
+                        <MudStack Spacing="0">
+                            <MudItem>
+                                <MudText
+                                    Typo="Typo.body1">
+                                    @openAiModel.Model
+                                </MudText>
+                            </MudItem>
+                            <MudItem>
+                                <MudText
+                                    Color="Color.Info"
+                                    Typo="Typo.subtitle2">
+                                    @(string.Join(", ", openAiModel.Capabilities))
+                                </MudText>
+                            </MudItem>
+                        </MudStack>
+                    </MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem sm="12" lg="6">
+            <MudSelect
+                T="OpenAiModel"
+                Label=@(_isLoading ? "Loading..." : "Select an OpenAi model")
+                @bind-Value="@_secondPassModelSelected"
+                Required="true"
+                RequiredError="Model name is required"
+                HelperText="Enter the OpenAi model name to use for the second pass (text -> schema)"
+                @bind-Value:after="() => SecondPassIdChangedAsync(stepSpecifics)"
+                Disabled="@(_isLoading || string.IsNullOrEmpty(_connectorId))"
+                Clearable
+            >
+                @foreach (var ollamaModel in _openAiModels ?? [])
+                {
+                    <MudSelectItem
+                        T="OpenAiModel"
+                        Value="@ollamaModel">
+                        <MudStack Spacing="0">
+                            <MudItem>
+                                <MudText
+                                    Typo="Typo.body1">
+                                    @ollamaModel.Model
+                                </MudText>
+                            </MudItem>
+                            <MudItem>
+                                <MudText
+                                    Color="Color.Info"
+                                    Typo="Typo.subtitle2">
+                                    @(string.Join(", ", ollamaModel.Capabilities))
+                                </MudText>
+                            </MudItem>
+                        </MudStack>
+                    </MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>        
+    </MudGrid>
+</UpdateWorkflowStepWrapper>
+
+@code {
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+    private bool _isLoading;
+
+    private string _connectorId;
+
+    private UpdateWorkflowStepWrapper<OpenAiExtractProjectWorkflowStepSpecifics> _wrapper;
+
+    private OpenAiModel _firstPassModelSelected;
+
+    private OpenAiModel _secondPassModelSelected;
+
+    private IEnumerable<OpenAiModel> _openAiModels = [];
+    
+    private async Task RefreshOpenAiModelsAsync()
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(_connectorId))
+            {
+                _isLoading = true;
+                StateHasChanged();
+
+                var response =
+                    await
+                        ApiRequestManager
+                            .Vendors
+                            .OpenAi
+                            .GetOpenAiModelsAsync(
+                                new OpenAiListModelsRequest
+                                {
+                                    ConnectorId = _connectorId
+                                },
+                                BaseCancellationToken
+                            );
+
+                _openAiModels =
+                    response?
+                        .Models ?? [];
+
+                _firstPassModelSelected =
+                    _openAiModels
+                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.FirstPassModelName == o.Model);
+
+                _secondPassModelSelected =
+                    _openAiModels
+                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.SecondPassModelName == o.Model);
+            }
+            else
+            {
+                _openAiModels = [];
+            }
+        }
+        catch (Exception ex)
+        {
+            await 
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+
+        StateHasChanged();
+    }
+    
+    private async Task FirstPassIdChangedAsync(OpenAiExtractProjectWorkflowStepSpecifics stepSpecifics)
+    {
+        stepSpecifics.FirstPassModelName =
+            _firstPassModelSelected?
+                .Model;
+    }    
+    
+    private async Task SecondPassIdChangedAsync(OpenAiExtractProjectWorkflowStepSpecifics stepSpecifics)
+    {
+        stepSpecifics.SecondPassModelName =
+            _secondPassModelSelected?
+                .Model;
+    }
+
+    private async Task ConnectorChangedAsync(string connectorId)
+    {
+        _connectorId = connectorId;
+
+        if (string.IsNullOrEmpty(connectorId))
+        {
+            _firstPassModelSelected = null;
+            _secondPassModelSelected = null;
+        }
+
+        await
+            RefreshOpenAiModelsAsync();
+    }
+
+}

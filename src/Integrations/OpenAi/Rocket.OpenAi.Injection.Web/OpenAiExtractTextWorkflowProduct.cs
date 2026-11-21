@@ -14,7 +14,7 @@ namespace Rocket.OpenAi.Injection.Web
 
         public string HrefBase => "/MyWorkflow/OpenAi/ExtractText";
 
-        public string ImagePath => "/img/openai-logo.png";
+        public string ImagePath => "/img/openai-logo.jpg";
 
         public int DataLeavesYourServer => (int)SkuDataExposureEnum.DataWillLeaveYourServer;
 
