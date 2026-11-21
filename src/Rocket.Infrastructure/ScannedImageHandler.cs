@@ -50,6 +50,7 @@ namespace Rocket.Infrastructure
                     await
                         blobStore
                             .LoadImageAsync(
+                                userId,
                                 record.BlobId,
                                 record.FileExtension,
                                 cancellationToken
@@ -121,6 +122,7 @@ namespace Rocket.Infrastructure
                         await
                             blobStore
                                 .DeleteImageAsync(
+                                    userId,
                                     record.BlobId,
                                     record.FileExtension,
                                     cancellationToken

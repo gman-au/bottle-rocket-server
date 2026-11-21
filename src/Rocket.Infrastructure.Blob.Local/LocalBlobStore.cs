@@ -22,6 +22,7 @@ namespace Rocket.Infrastructure.Blob.Local
         private readonly LocalBlobConfigurationOptions _options = optionsAccessor.Value;
 
         public async Task<string> SaveImageAsync(
+            string userId,
             byte[] imageData,
             string fileExtension,
             CancellationToken cancellationToken
@@ -29,6 +30,9 @@ namespace Rocket.Infrastructure.Blob.Local
         {
             try
             {
+                if (string.IsNullOrEmpty(userId))
+                    throw new ArgumentNullException(nameof(userId));
+
                 var localBasePath =
                     _options.LocalBasePath ??
                     throw new ConfigurationErrorsException(
@@ -53,6 +57,7 @@ namespace Rocket.Infrastructure.Blob.Local
                         .Combine(
                             localBasePath,
                             localSubfolder,
+                            userId,
                             Path.GetDirectoryName(blobId)
                         );
 
@@ -95,6 +100,7 @@ namespace Rocket.Infrastructure.Blob.Local
         }
 
         public async Task<byte[]> LoadImageAsync(
+            string userId,
             string filePath,
             string fileExtension,
             CancellationToken cancellationToken
@@ -105,6 +111,7 @@ namespace Rocket.Infrastructure.Blob.Local
                     .Combine(
                         _options.LocalBasePath,
                         _options.LocalSubfolder,
+                        userId,
                         Path.GetDirectoryName(filePath)
                     );
 
@@ -148,6 +155,7 @@ namespace Rocket.Infrastructure.Blob.Local
         }
 
         public async Task<bool> DeleteImageAsync(
+            string userId,
             string blobId,
             string fileExtension,
             CancellationToken cancellationToken
@@ -160,6 +168,7 @@ namespace Rocket.Infrastructure.Blob.Local
                     .Combine(
                         _options.LocalBasePath,
                         _options.LocalSubfolder,
+                        userId,
                         filePath
                     );
 
@@ -182,6 +191,7 @@ namespace Rocket.Infrastructure.Blob.Local
         }
 
         public async Task<Tuple<long, long>> GetDriveInfoAsync(
+            string userId,
             CancellationToken cancellationToken
         )
         {
@@ -201,7 +211,8 @@ namespace Rocket.Infrastructure.Blob.Local
                 Path
                     .Combine(
                         localBasePath,
-                        localSubfolder
+                        localSubfolder,
+                        userId
                     );
 
             EnsureFolderExists(folderPath);
