@@ -31,8 +31,11 @@ namespace Rocket.Infrastructure
                 ))
             {
                 logger
-                    .LogInformation("Returning cached dashboard snapshot for user {userId}", userId);
-                
+                    .LogInformation(
+                        "Returning cached dashboard snapshot for user {userId}",
+                        userId
+                    );
+
                 return cachedSnapshot;
             }
 
@@ -62,7 +65,10 @@ namespace Rocket.Infrastructure
             var storage =
                 await
                     blobStore
-                        .GetDriveInfoAsync(cancellationToken);
+                        .GetDriveInfoAsync(
+                            userId,
+                            cancellationToken
+                        );
 
             result.Storage =
                 new StorageSummary
@@ -70,7 +76,7 @@ namespace Rocket.Infrastructure
                     UsedStorageBytes = storage.Item1,
                     AvailableStorageBytes = storage.Item2
                 };
-            
+
             // Lifecycle totals
             var executionLifecycleTotals =
                 await
@@ -83,7 +89,7 @@ namespace Rocket.Infrastructure
             result.Lifecycles =
                 new LifecycleSummary
                 {
-                    LifecyclesByGroup = 
+                    LifecyclesByGroup =
                         executionLifecycleTotals
                             .Select(o => new LifecycleTotal
                                 {
@@ -98,13 +104,16 @@ namespace Rocket.Infrastructure
             var hasRunningExecutions =
                 result.Lifecycles.LifecyclesByGroup
                     .Any(o => o.Status == (int)ExecutionStatusEnum.Running);
-            
+
             // If there is a 'running' status, do not cache
             if (!hasRunningExecutions)
             {
                 logger
-                    .LogInformation("Caching dashboard snapshot for user {userId}", userId);
-                
+                    .LogInformation(
+                        "Caching dashboard snapshot for user {userId}",
+                        userId
+                    );
+
                 cache
                     .Set(
                         userId,
@@ -116,7 +125,10 @@ namespace Rocket.Infrastructure
             else
             {
                 logger
-                    .LogWarning("Dashboard snapshot for user {userId} has running workflows - not caching", userId);
+                    .LogWarning(
+                        "Dashboard snapshot for user {userId} has running workflows - not caching",
+                        userId
+                    );
             }
 
             return result;

@@ -192,28 +192,28 @@ namespace Rocket.Tests.Unit
             {
                 _blobStore
                     .ReceivedWithAnyArgs(0)
-                    .SaveImageAsync(null, null, CancellationToken.None);
+                    .SaveImageAsync(null, null, null, CancellationToken.None);
             }
 
             public void AssertBlobSaveWasCalledOnce()
             {
                 _blobStore
                     .ReceivedWithAnyArgs(1)
-                    .SaveImageAsync(null, null, CancellationToken.None);
+                    .SaveImageAsync(null, null, null, CancellationToken.None);
             }
 
             public void AssertBlobLoadWasNotCalled()
             {
                 _blobStore
                     .ReceivedWithAnyArgs(0)
-                    .LoadImageAsync(null, null, CancellationToken.None);
+                    .LoadImageAsync(null, null, null, CancellationToken.None);
             }
 
             public void AssertBlobLoadWasCalledOnce()
             {
                 _blobStore
                     .ReceivedWithAnyArgs(1)
-                    .LoadImageAsync(null, null, CancellationToken.None);
+                    .LoadImageAsync(null, null, null, CancellationToken.None);
             }
 
             public void AssertShaCalculatorWasNotCalled()

@@ -420,7 +420,9 @@
         _storageChartOptions.ChartPalette[1] = statusAvailableColor;
     }
 
-    private async Task HandleDashboardUpdate()
+    private async Task HandleDashboardUpdate() => await HandleDashboardUpdate(null);
+
+    private async Task HandleDashboardUpdate(string batchId = null)
     {
         await
             InvokeAsync(async () =>

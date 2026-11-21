@@ -132,7 +132,7 @@ namespace Rocket.Api.Host.Controllers.Vendors
             Finalizes a Google connector for the given user.\n
             When this endpoint is called, it is assumed that the user has already navigated to the Google authorization URL,
             authenticated, approved permissions, and copied the access code into the form / API request.
-            The access code will be sent back to Google 
+            The access code will be sent back to Google for finalization.
             """
         )]
         [ProducesResponseType(

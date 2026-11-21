@@ -39,9 +39,8 @@ namespace Rocket.Api.Host.Controllers
             Process uploaded images via this endpoint. Use the url-encoded multipart form schema to POST the image data.\n
             You can bind this scanned image to one or more workflows using the workflows parameter.\n
             Include the batch ID in order to add the scanned image to the batch without processing any workflows.\n
-            If no batch ID is provided, the scanned image will be allocated to a single batch.\n
-            If you wish to simply upload a captured image to the system and trigger a manual workflow, the qr_code and qr_bounding_box
-            parameters can be omitted.
+            If no batch ID is provided, the scanned image will be allocated to a single batch, which is opened and closed within the
+            single transaction.
             """
         )]
         [ProducesResponseType(
@@ -173,15 +172,16 @@ namespace Rocket.Api.Host.Controllers
                                 workflowIds,
                                 cancellationToken
                             );
-
-                    await
-                        captureNotifier
-                            .NotifyNewCaptureAsync(
-                                userId,
-                                cancellationToken
-                            );
                 }
             }
+
+            await
+                captureNotifier
+                    .NotifyNewCaptureAsync(
+                        userId,
+                        batchId,
+                        cancellationToken
+                    );
 
             var response =
                 new ProcessCaptureResponse

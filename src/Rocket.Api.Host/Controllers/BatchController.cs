@@ -93,7 +93,7 @@ namespace Rocket.Api.Host.Controllers
         [EndpointGroupName("Manage captures / scans")]
         [EndpointDescription(
             """
-            Closes an (open) batch./nThe user can also opt to run one or more workflows against the entire batch.
+            Closes an (open) batch.\nThe user can also opt to run one or more workflows against the entire batch.
             """
         )]
         [ProducesResponseType(
@@ -301,6 +301,7 @@ namespace Rocket.Api.Host.Controllers
                     Id = record.Id,
                     DateScanned = record.CaptureDate.ToLocalTime(),
                     Description = record.Description,
+                    Status = record.Status,
                     Scans =
                         record
                             .Scans

@@ -156,7 +156,7 @@ namespace Rocket.Api.Host.Controllers
         [EndpointGroupName("Authentication")]
         [EndpointDescription(
             """
-            Logout / revoke one or more sessions.\nIf LogoutAll is set to 'true', it will revoke all sessions for the user."
+            Logout / revoke one or more sessions.\nIf LogoutAll is set to 'true', it will revoke all sessions for the user.
             """
         )]
         [ProducesResponseType(

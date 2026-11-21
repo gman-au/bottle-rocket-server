@@ -3,8 +3,10 @@
 @using Rocket.Api.Contracts.Batches
 @using Rocket.Api.Contracts.Executions
 @using Rocket.Api.Contracts.Workflows
+@using Rocket.Domain.Enum
 @using Rocket.Localization.Web
 @using Rocket.Web.Host.Components.Dialog
+@using Rocket.Web.Host.Extensions
 @using Rocket.Web.Host.Infrastructure
 @using Rocket.Web.Infrastructure.Client
 @inject IApiRequestManager ApiRequestManager
@@ -21,7 +23,7 @@
         {
             <MudGrid Class="pa-4" Justify="Justify.SpaceEvenly">
                 <MudItem xs="12" sm="6">
-                    @if (_batchSpecifics.Archived)
+                    @if (_batchSpecifics.Status == (int)BatchStatusEnum.Archived)
                     {
                         <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.Center" Style="height:100%;">
                             <MudIcon
@@ -116,12 +118,12 @@
                                     Value=@_batchSpecifics.DateScanned.ToString("yyyy-MM-dd HH:mm:ss")/>
                                 <SimpleTableRowPair
                                     Title="@StringLocalizer["ScansStatusFieldHeader"]"
-                                    Value=@(_batchSpecifics.Archived ? StringLocalizer["ScansArchivedValue"] : StringLocalizer["ScansActiveValue"])
-                                    ValueColor="@(_batchSpecifics.Archived ? Color.Warning : Color.Success)"/>
+                                    Value=@(MapStatusToText(_batchSpecifics.Status))
+                                    ValueColor="@(IntEx.MapBatchStatusToColor(_batchSpecifics.Status))"/>
                                 </tbody>
                             </MudSimpleTable>
                         </div>
-                        @if (!_batchSpecifics.Archived)
+                        @if (_batchSpecifics.Status != (int)BatchStatusEnum.Archived)
                         {
                             <div class="mud-border-tertiary border p-4 rounded">
                                 <MudText
@@ -498,6 +500,19 @@
                 StateHasChanged();
             }
         }
+    }
+
+    private string MapStatusToText(
+        int status
+    )
+    {
+        return status switch
+        {
+            (int)BatchStatusEnum.Open => StringLocalizer["ScansActiveValue"],
+            (int)BatchStatusEnum.Archived => StringLocalizer["ScansArchivedValue"],
+            (int)BatchStatusEnum.Closed => StringLocalizer["ScansClosedValue"],
+            _ => StringLocalizer["ScansUnknownValue"]
+        };
     }
 
 

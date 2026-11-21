@@ -103,6 +103,9 @@
     <data name="ScansActiveValue" xml:space="preserve">
         <value>Active</value>
     </data>
+    <data name="ScansClosedValue" xml:space="preserve">
+        <value>Closed</value>
+    </data>
     <data name="ScansUnknownValue" xml:space="preserve">
         <value>Unknown</value>
     </data>

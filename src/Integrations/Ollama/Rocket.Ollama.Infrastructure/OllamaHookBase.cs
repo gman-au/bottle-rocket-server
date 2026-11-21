@@ -40,6 +40,7 @@ namespace Rocket.Ollama.Infrastructure
                             endpoint,
                             cancellationToken
                         ))
+                .Select(o => o.Model)
                 .ToList();
 
             foreach (var model in models)

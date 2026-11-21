@@ -5,7 +5,7 @@ namespace Rocket.Web.Host.Extensions
 {
     internal static class IntEx
     {
-        public static Color MapStatusToColor(this int? executionStatus)
+        public static Color MapExecutionStatusToColor(this int? executionStatus)
         {
             return executionStatus switch
             {
@@ -16,8 +16,19 @@ namespace Rocket.Web.Host.Extensions
                 _ => Color.Default
             };
         }
+        
+        public static Color MapBatchStatusToColor(this int? batchStatus)
+        {
+            return batchStatus switch
+            {
+                (int)BatchStatusEnum.Open => Color.Success,
+                (int)BatchStatusEnum.Closed => Color.Info,
+                (int)BatchStatusEnum.Archived => Color.Warning,
+                _ => Color.Default
+            };
+        }
 
-        public static bool MapStatusToFinished(this int? executionStatus)
+        public static bool MapExecutionStatusToFinished(this int? executionStatus)
         {
             return executionStatus switch
             {

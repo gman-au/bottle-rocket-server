@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Rocket.Ollama.Infrastructure.Definition;
 
 namespace Rocket.Ollama.Infrastructure
 {
     public interface IOllamaClient
     {
-        Task<IEnumerable<string>> GetModelListAsync(
+        Task<IEnumerable<OllamaTagsModel>> GetModelListAsync(
             string endpoint,
             CancellationToken cancellationToken
         );

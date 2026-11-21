@@ -1,4 +1,5 @@
 ﻿@page "/MyScans"
+@using System.Collections.Immutable
 @using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts.Batches
 @using Rocket.Localization.Web
@@ -65,7 +66,7 @@
                             <MudGrid
                                 Spacing="0"
                                 Class="mx-2"
-                                Justify="Justify.FlexStart" >
+                                Justify="Justify.FlexStart">
                                 <MudItem xs="12">
                                     <MudText Typo="Typo.subtitle2"
                                              Color="Color.Primary">@batch.ScanCount @StringLocalizer["ScansPagesCaption"]</MudText>
@@ -183,7 +184,9 @@
         }
     }
 
-    private async Task HandleNewCapture()
+    private async Task HandleNewCapture(
+        string batchId
+    )
     {
         await
             InvokeAsync(async () =>
@@ -195,9 +198,8 @@
 
                         // new capture would be the most recent; get the latest record
                         await
-                            LoadBatchesAsync(
-                                0,
-                                1
+                            LoadUpdatedBatchAsync(
+                                batchId
                             );
 
                         Snackbar
@@ -221,43 +223,146 @@
             );
     }
 
-    private async Task LoadBatchesAsync(
-        int index,
-        int count
+    private async Task LoadUpdatedBatchAsync(
+        string batchId
     )
     {
-        var request =
-            new MyBatchesRequest
+        var existingBatch =
+            _batches
+                .FirstOrDefault(o => o.Id == batchId);
+
+        if (existingBatch != null)
+        {
+            var newBatches =
+                _batches
+                    .ToImmutableArray();
+
+            var existingIndex =
+                newBatches
+                    .IndexOf(existingBatch);
+
+            var response =
+                await
+                    ApiRequestManager
+                        .Batches
+                        .GetMyBatchAsync(
+                            batchId,
+                            BaseCancellationToken
+                        );
+
+            if (response != null)
             {
-                StartIndex = index,
-                RecordCount = count
-            };
+                var updatedBatchSummary =
+                    new BatchSummary
+                    {
+                        Id = response.Id,
+                        DateScanned = response.DateScanned,
+                        Description = response.Description,
+                        ScanCount = response.ScanCount,
+                        CoverContentType = existingBatch.CoverContentType,
+                        CoverThumbnailBase64 = existingBatch.CoverThumbnailBase64
+                    };
 
-        var response =
+                newBatches =
+                    newBatches
+                        .RemoveAt(existingIndex);
+
+                newBatches =
+                    newBatches
+                        .Insert(
+                            existingIndex,
+                            updatedBatchSummary
+                        );
+                
+                _batches = newBatches;
+            }
+        }
+        else
+        {
             await
-                ApiRequestManager
-                    .Batches
-                    .GetMyBatchesAsync(
-                        request,
-                        BaseCancellationToken
-                    );
+                LoadBatchesAsync(
+                    0,
+                    1
+                );
+        }
+    }
 
-        _currentIndex +=
-            (response?.Batches ?? [])
-            .Count();
 
-        _noMoreRecords = _currentIndex == (response?.TotalRecords ?? 0);
+    private async Task LoadBatchesAsync(
+        int index,
+        int count,
+        string batchId = null
+    )
+    {
+        BatchSummary existingBatch = null;
 
-        var existingBatches = new List<BatchSummary>(_batches);
-        var newBatches = new List<BatchSummary>(response?.Batches ?? []);
+        if (!string.IsNullOrEmpty(batchId))
+        {
+            existingBatch =
+                _batches
+                    .FirstOrDefault(o => o.Id == batchId);
+        }
 
-        _batches =
-            existingBatches
-                .UnionBy(
-                    newBatches,
-                    o => o.Id
-                )
-                .OrderByDescending(o => o.DateScanned);
+        if (existingBatch != null)
+        {
+            var response =
+                await
+                    ApiRequestManager
+                        .Batches
+                        .GetMyBatchAsync(
+                            batchId,
+                            BaseCancellationToken
+                        );
+
+            if (response != null)
+            {
+                var updatedSummary =
+                    new BatchSummary
+                    {
+                        Id = response.Id,
+                        DateScanned = response.DateScanned,
+                        Description = response.Description,
+                        ScanCount = response.ScanCount,
+                        CoverContentType = existingBatch.CoverContentType,
+                        CoverThumbnailBase64 = existingBatch.CoverThumbnailBase64
+                    };
+            }
+        }
+        else
+        {
+            var request =
+                new MyBatchesRequest
+                {
+                    StartIndex = index,
+                    RecordCount = count
+                };
+
+            var response =
+                await
+                    ApiRequestManager
+                        .Batches
+                        .GetMyBatchesAsync(
+                            request,
+                            BaseCancellationToken
+                        );
+
+            _currentIndex +=
+                (response?.Batches ?? [])
+                .Count();
+
+            _noMoreRecords = _currentIndex == (response?.TotalRecords ?? 0);
+
+            var existingBatches = new List<BatchSummary>(_batches);
+            var newBatches = new List<BatchSummary>(response?.Batches ?? []);
+
+            _batches =
+                existingBatches
+                    .UnionBy(
+                        newBatches,
+                        o => o.Id
+                    )
+                    .OrderByDescending(o => o.DateScanned);
+        }
     }
 
     private async Task ConfirmDeleteAsync(

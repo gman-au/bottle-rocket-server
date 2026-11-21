@@ -42,6 +42,21 @@ namespace Rocket.Infrastructure
                         ApiStatusCodeEnum.NoAttachmentsFound
                     );
 
+                // check if batch exists before writing the file
+                var batch =
+                    await
+                        batchRepository
+                            .GetBatchByIdAsync(
+                                userId,
+                                batchId,
+                                cancellationToken
+                            );
+
+                ValidateBatch(
+                    batchId,
+                    batch
+                );
+
                 var scannedImage = new ScannedImage();
 
                 var hashString =
@@ -60,6 +75,7 @@ namespace Rocket.Infrastructure
                     await
                         blobStore
                             .SaveImageAsync(
+                                userId,
                                 imageData,
                                 fileExtension,
                                 cancellationToken
@@ -176,7 +192,7 @@ namespace Rocket.Infrastructure
                         ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                     );
 
-                if (record.Archived)
+                if (record.Status == (int)BatchStatusEnum.Archived)
                     throw new RocketException(
                         "Record is archived and cannot be processed.",
                         ApiStatusCodeEnum.RecordIsArchived
@@ -184,7 +200,7 @@ namespace Rocket.Infrastructure
 
                 var results = new Dictionary<ScannedImage, byte[]>();
 
-                if (!record.Archived)
+                if (record.Status != (int)BatchStatusEnum.Archived)
                 {
                     foreach (var scan in record.Scans ?? [])
                     {
@@ -192,6 +208,7 @@ namespace Rocket.Infrastructure
                             await
                                 blobStore
                                     .LoadImageAsync(
+                                        userId,
                                         scan.BlobId,
                                         scan.FileExtension,
                                         cancellationToken
@@ -213,9 +230,12 @@ namespace Rocket.Infrastructure
                                 userId,
                                 scan.Id
                             );
-                        
+
                         results
-                            .Add(scan, imageData);
+                            .Add(
+                                scan,
+                                imageData
+                            );
                     }
                 }
                 else
@@ -268,7 +288,7 @@ namespace Rocket.Infrastructure
                         ApiStatusCodeEnum.UnknownOrInaccessibleRecord
                     );
 
-                if (record.Archived)
+                if (record.Status == (int)BatchStatusEnum.Archived)
                     throw new RocketException(
                         "The record is already archived.",
                         ApiStatusCodeEnum.RecordIsArchived
@@ -277,6 +297,7 @@ namespace Rocket.Infrastructure
                 var allDeleted =
                     await
                         DeleteScanFilesAsync(
+                            userId,
                             record.Scans,
                             cancellationToken
                         );
@@ -289,14 +310,6 @@ namespace Rocket.Infrastructure
                             userId,
                             batchId
                         );
-
-                    await
-                        batchRepository
-                            .ArchiveBatchAsync(
-                                userId,
-                                batchId,
-                                cancellationToken
-                            );
                 }
                 else
                 {
@@ -307,6 +320,14 @@ namespace Rocket.Infrastructure
                             batchId
                         );
                 }
+
+                await
+                    batchRepository
+                        .ArchiveBatchAsync(
+                            userId,
+                            batchId,
+                            cancellationToken
+                        );
 
                 return allDeleted;
             }
@@ -351,6 +372,7 @@ namespace Rocket.Infrastructure
                 var allDeleted =
                     await
                         DeleteScanFilesAsync(
+                            userId,
                             record.Scans,
                             cancellationToken
                         );
@@ -436,25 +458,12 @@ namespace Rocket.Infrastructure
                                 batchId,
                                 cancellationToken
                             );
-                
-                if (batch == null)
-                    throw new RocketException(
-                        $"Could not find batch with id [{batchId}]",
-                        ApiStatusCodeEnum.UnknownOrInaccessibleRecord
-                    );
-                
-                if (batch.Archived)
-                    throw new RocketException(
-                        "The batch is already archived and cannot be closed.",
-                        ApiStatusCodeEnum.RecordIsArchived
-                    );
-                
-                if (batch.Status == (int)BatchStatusEnum.Closed)
-                    throw new RocketException(
-                        "The batch is already closed.",
-                        ApiStatusCodeEnum.RecordIsArchived
-                    );
-                
+
+                ValidateBatch(
+                    batchId,
+                    batch
+                );
+
                 await
                     batchRepository
                         .UpdateBatchFieldAsync(
@@ -479,6 +488,7 @@ namespace Rocket.Infrastructure
         }
 
         private async Task<bool> DeleteScanFilesAsync(
+            string userId,
             IEnumerable<ScannedImage> scans,
             CancellationToken cancellationToken
         )
@@ -492,6 +502,7 @@ namespace Rocket.Infrastructure
                         await
                             blobStore
                                 .DeleteImageAsync(
+                                    userId,
                                     scan.BlobId,
                                     scan.FileExtension,
                                     cancellationToken
@@ -514,6 +525,30 @@ namespace Rocket.Infrastructure
             }
 
             return allDeleted;
+        }
+
+        private void ValidateBatch(
+            string batchId,
+            Batch batch
+        )
+        {
+            if (batch == null)
+                throw new RocketException(
+                    $"Could not find batch with id [{batchId}]",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
+            if (batch.Status == (int)BatchStatusEnum.Archived)
+                throw new RocketException(
+                    "The batch is already archived.",
+                    ApiStatusCodeEnum.RecordIsArchived
+                );
+
+            if (batch.Status == (int)BatchStatusEnum.Closed)
+                throw new RocketException(
+                    "The batch is already closed.",
+                    ApiStatusCodeEnum.RecordIsArchived
+                );
         }
     }
 }

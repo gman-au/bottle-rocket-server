@@ -30,7 +30,7 @@ namespace Rocket.Ollama.Infrastructure
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
 
-        public async Task<IEnumerable<string>> GetModelListAsync(
+        public async Task<IEnumerable<OllamaTagsModel>> GetModelListAsync(
             string endpoint,
             CancellationToken cancellationToken
         )
@@ -57,9 +57,8 @@ namespace Rocket.Ollama.Infrastructure
                         .ReadFromJsonAsync<OllamaTagsResponse>(cancellationToken);
 
             var results =
-                (tagsListResponse
-                    .Models ?? [])
-                .Select(o => o.Model);
+                tagsListResponse
+                    .Models ?? [];
 
             return results;
         }

@@ -8,7 +8,8 @@ namespace Rocket.Api.Host.Prepopulation
     public class DatabaseMigrator(
         ILogger<DatabaseMigrator> logger,
         IWorkflowRepository workflowRepository,
-        IExecutionRepository executionRepository
+        IExecutionRepository executionRepository,
+        IBatchRepository batchRepository
     ) : IDatabasePreRunAction
     {
         public async Task RunAsync(
@@ -27,14 +28,14 @@ namespace Rocket.Api.Host.Prepopulation
                         "MatchingPageSymbol",
                         cancellationToken
                     );
-            
+
             await
                 executionRepository
                     .SafelyDropColumnAsync(
                         "MatchingPageSymbol",
                         cancellationToken
                     );
-            
+
             // --------------------------------------------------------
             // #134 - Drop thumbnail and content type from execution
             // --------------------------------------------------------
@@ -44,29 +45,39 @@ namespace Rocket.Api.Host.Prepopulation
                         "ThumbnailBase64",
                         cancellationToken
                     );
-            
+
             await
                 executionRepository
                     .SafelyDropColumnAsync(
                         "ContentType",
                         cancellationToken
                     );
-            
+
             await
                 executionRepository
                     .SafelyDropColumnAsync(
                         "Vendor",
                         cancellationToken
                     );
-            
+
             await
                 executionRepository
                     .SafelyDropColumnAsync(
                         "ScanId",
                         cancellationToken
                     );
-            
-            
+
+            // --------------------------------------------------------
+            // #177 - Checking two places for archived batches, remove archived flag
+            // --------------------------------------------------------
+            await
+                batchRepository
+                    .SafelyDropColumnAsync(
+                        "Archived",
+                        cancellationToken
+                    );
+
+
             // --------------------------------------------------------
         }
     }

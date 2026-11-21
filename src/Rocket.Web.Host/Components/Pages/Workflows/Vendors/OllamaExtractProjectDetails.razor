@@ -1,38 +1,98 @@
 ﻿@page "/MyWorkflow/Ollama/ExtractProject/{workflowId}/AddStep"
 @page "/MyWorkflow/Ollama/ExtractProject/{workflowId}/Steps/{parentStepId}/AddStep"
 @page "/MyWorkflow/Ollama/ExtractProject/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.Ollama.Contracts
 @using Rocket.Ollama.Contracts.Project
 @using Rocket.Ollama.Domain
+@using Rocket.Web.Infrastructure.Client
+
+@using Rocket.Web.Host.Infrastructure
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject IApiRequestManager ApiRequestManager
 
 <UpdateWorkflowStepWrapper
+    @ref="_wrapper"
     T="OllamaExtractProjectWorkflowStepSpecifics"
-    WorkflowStepName="Extract text from image"
+    WorkflowStepName="Extract project data from image"
     WorkflowId="@WorkflowId"
     ParentStepId="@ParentStepId"
     RequiresConnectorCode="@OllamaDomainConstants.ConnectorCode"
+    OnConnectorIdChanged="ConnectorChangedAsync"
     StepId="@StepId"
     Context="stepSpecifics">
     <MudGrid>
         <MudItem sm="12" lg="6">
-            <MudTextField
-                T="string"
-                Label="Model Name (first pass)"
+            <MudSelect
+                T="OllamaModel"
+                Label=@(_isLoading ? "Loading..." : "Select an Ollama model")
+                @bind-Value="@_firstPassModelSelected"
                 Required="true"
-                RequiredError="Model name (first pass) is required"
+                RequiredError="Model name is required"
                 HelperText="Enter the Ollama model name to use for the first pass (OCR extraction)"
-                @bind-Value="stepSpecifics.FirstPassModelName"
-                For="@(() => stepSpecifics.FirstPassModelName)"/>
+                @bind-Value:after="() => FirstPassIdChangedAsync(stepSpecifics)"
+                Disabled="@(_isLoading || string.IsNullOrEmpty(_connectorId))"
+                Clearable
+            >
+                @foreach (var ollamaModel in _ollamaModels ?? [])
+                {
+                    <MudSelectItem
+                        T="OllamaModel"
+                        Value="@ollamaModel">
+                        <MudStack Spacing="0">
+                            <MudItem>
+                                <MudText
+                                    Typo="Typo.body1">
+                                    @ollamaModel.Model
+                                </MudText>
+                            </MudItem>
+                            <MudItem>
+                                <MudText
+                                    Color="Color.Info"
+                                    Typo="Typo.subtitle2">
+                                    @(string.Join(", ", ollamaModel.Capabilities))
+                                </MudText>
+                            </MudItem>
+                        </MudStack>
+                    </MudSelectItem>
+                }
+            </MudSelect>
         </MudItem>
         <MudItem sm="12" lg="6">
-            <MudTextField
-                T="string"
-                Label="Model Name (second pass)"
+            <MudSelect
+                T="OllamaModel"
+                Label=@(_isLoading ? "Loading..." : "Select an Ollama model")
+                @bind-Value="@_secondPassModelSelected"
                 Required="true"
-                RequiredError="Model name (second pass) is required"
+                RequiredError="Model name is required"
                 HelperText="Enter the Ollama model name to use for the second pass (text -> schema)"
-                @bind-Value="stepSpecifics.SecondPassModelName"
-                For="@(() => stepSpecifics.SecondPassModelName)"/>
+                @bind-Value:after="() => SecondPassIdChangedAsync(stepSpecifics)"
+                Disabled="@(_isLoading || string.IsNullOrEmpty(_connectorId))"
+                Clearable
+            >
+                @foreach (var ollamaModel in _ollamaModels ?? [])
+                {
+                    <MudSelectItem
+                        T="OllamaModel"
+                        Value="@ollamaModel">
+                        <MudStack Spacing="0">
+                            <MudItem>
+                                <MudText
+                                    Typo="Typo.body1">
+                                    @ollamaModel.Model
+                                </MudText>
+                            </MudItem>
+                            <MudItem>
+                                <MudText
+                                    Color="Color.Info"
+                                    Typo="Typo.subtitle2">
+                                    @(string.Join(", ", ollamaModel.Capabilities))
+                                </MudText>
+                            </MudItem>
+                        </MudStack>
+                    </MudSelectItem>
+                }
+            </MudSelect>
         </MudItem>        
     </MudGrid>
 </UpdateWorkflowStepWrapper>
@@ -47,5 +107,99 @@
 
     [Parameter]
     public string StepId { get; set; }
+
+    private bool _isLoading;
+
+    private string _connectorId;
+
+    private UpdateWorkflowStepWrapper<OllamaExtractProjectWorkflowStepSpecifics> _wrapper;
+
+    private OllamaModel _firstPassModelSelected;
+
+    private OllamaModel _secondPassModelSelected;
+
+    private IEnumerable<OllamaModel> _ollamaModels = [];
+    
+    private async Task RefreshOllamaModelsAsync()
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(_connectorId))
+            {
+                _isLoading = true;
+                StateHasChanged();
+
+                var response =
+                    await
+                        ApiRequestManager
+                            .Vendors
+                            .Ollama
+                            .GetOllamaModelsAsync(
+                                new OllamaListModelsRequest
+                                {
+                                    ConnectorId = _connectorId
+                                },
+                                BaseCancellationToken
+                            );
+
+                _ollamaModels =
+                    response?
+                        .Models ?? [];
+
+                _firstPassModelSelected =
+                    _ollamaModels
+                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.FirstPassModelName == o.Model);
+
+                _secondPassModelSelected =
+                    _ollamaModels
+                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.SecondPassModelName == o.Model);
+            }
+            else
+            {
+                _ollamaModels = [];
+            }
+        }
+        catch (Exception ex)
+        {
+            await 
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+
+        StateHasChanged();
+    }
+    
+    private async Task FirstPassIdChangedAsync(OllamaExtractProjectWorkflowStepSpecifics stepSpecifics)
+    {
+        stepSpecifics.FirstPassModelName =
+            _firstPassModelSelected?
+                .Model;
+    }    
+    
+    private async Task SecondPassIdChangedAsync(OllamaExtractProjectWorkflowStepSpecifics stepSpecifics)
+    {
+        stepSpecifics.SecondPassModelName =
+            _secondPassModelSelected?
+                .Model;
+    }
+
+    private async Task ConnectorChangedAsync(string connectorId)
+    {
+        _connectorId = connectorId;
+
+        if (string.IsNullOrEmpty(connectorId))
+        {
+            _firstPassModelSelected = null;
+            _secondPassModelSelected = null;
+        }
+
+        await
+            RefreshOllamaModelsAsync();
+    }
 
 }

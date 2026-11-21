@@ -16,13 +16,15 @@ namespace Rocket.Api.Host.Notifiers
     {
         public async Task NotifyNewCaptureAsync(
             string userId,
+            string batchId,
             CancellationToken cancellationToken
         )
         {
             logger
                 .LogInformation(
-                    "Notifying user {userId} of new capture",
-                    userId
+                    "Notifying user {userId} of new capture: {batchId}",
+                    userId,
+                    batchId
                 );
 
             dashboardSnapshotProvider
@@ -34,6 +36,7 @@ namespace Rocket.Api.Host.Notifiers
                     .Group($"user_{userId}")
                     .SendAsync(
                         "NewCaptureReceived",
+                        batchId,
                         cancellationToken: cancellationToken
                     );
         }
