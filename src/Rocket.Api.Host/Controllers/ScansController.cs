@@ -165,5 +165,135 @@ namespace Rocket.Api.Host.Controllers
                 response
                     .AsApiSuccess();
         }
+        
+        [HttpGet("transcription/{batchId}/{scanId}")]
+        [EndpointSummary("Fetch the scan transcription details")]
+        [EndpointGroupName("Manage captures / scans")]
+        [EndpointDescription(
+            """
+            Retrieves the full (text) transcription a users scan by its unique ID and batch ID.\n
+            The response will also include the execution ID and name that performed the transcription. 
+            """
+        )]
+        [ProducesResponseType(
+            typeof(TranscriptionSpecifics),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> FetchMyTranscriptionAsync(
+            string batchId,
+            string scanId,
+            CancellationToken cancellationToken
+        )
+        {
+            var userId =
+                User
+                    .FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+                throw new RocketException(
+                    "User ID not found in claims",
+                    ApiStatusCodeEnum.UnknownUser,
+                    (int)HttpStatusCode.Unauthorized
+                );
+
+            logger
+                .LogInformation(
+                    "Received fetch transcription request for username: {userId}, id: {id}",
+                    userId,
+                    scanId
+                );
+
+            var (record, imageData) =
+                await
+                    scannedImageHandler
+                        .ReadFromBatchAsync(
+                            userId,
+                            batchId,
+                            scanId,
+                            cancellationToken
+                        );
+            
+            var transcription = record.Transcription;
+            
+            if (transcription == null)
+                return 
+                    ((TranscriptionSpecifics)null)
+                    .AsApiSuccess();
+
+            var response =
+                new TranscriptionSpecifics
+                {
+                    Id = transcription.Id,
+                    ExecutionId = transcription.ExecutionId,
+                    ExecutionName = transcription.ExecutionName,
+                    TranscriptionDate = transcription.TranscriptionDate,
+                    Text = transcription.Text
+                };
+
+            return
+                response
+                    .AsApiSuccess();
+        }
+        
+        [HttpDelete("transcription/delete/{batchId}/{scanId}")]
+        [EndpointSummary("(Permanently) delete a scan transcription")]
+        [EndpointGroupName("Manage captures / scans")]
+        [EndpointDescription(
+            """
+            Permanently and completely deletes any scan transcription by its unique scan ID.\n
+            All traces of the transcription will be removed.
+            """
+        )]
+        [ProducesResponseType(
+            typeof(DeleteTranscriptionResponse),
+            StatusCodes.Status200OK
+        )]
+        [ProducesResponseType(
+            typeof(ApiResponse),
+            StatusCodes.Status500InternalServerError
+        )]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> DeleteTranscriptionAsync(
+            string batchId,
+            string scanId,
+            CancellationToken cancellationToken
+        )
+        {
+            var user =
+                await
+                    ThrowIfNotActiveUserAsync(cancellationToken);
+
+            var userId =
+                user
+                    .Id;
+
+            logger
+                .LogInformation(
+                    "Received (manual) transcription deletion request for username: {userId}, id: {id}",
+                    userId,
+                    scanId
+                );
+
+            await
+                scannedImageHandler
+                    .DeleteTranscriptionFromBatchAsync(
+                        userId,
+                        batchId,
+                        scanId,
+                        cancellationToken
+                    );
+
+            var response =
+                new DeleteTranscriptionResponse();
+
+            return
+                response
+                    .AsApiSuccess();
+        }
     }
 }

@@ -63,7 +63,7 @@ namespace Rocket.Jobs.Service
                                 userId,
                                 batchId,
                                 scanId,
-                                executionStep.Id,
+                                executionId,
                                 executionStep.StepName,
                                 executionStep.RunDate ?? DateTime.UtcNow,
                                 text,

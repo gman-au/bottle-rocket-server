@@ -66,6 +66,14 @@
                                                 Justify="Justify.Center"
                                                 StretchItems="StretchItems.None"
                                                 AlignItems="AlignItems.Center">
+                                                @if (scan.IsTranscribed)
+                                                {
+                                                    <MudFab
+                                                        Size="Size.Small"
+                                                        Color="Color.Default"
+                                                        StartIcon="@StandardIcons.TranscriptionIcon"
+                                                        OnClick="@(async () => await LoadAndPreviewTranscriptionAsync(scan.Id))"/>
+                                                }
                                                 <MudFab
                                                     Size="Size.Small"
                                                     Color="Color.Default"
@@ -309,6 +317,56 @@
         }
     }
 
+    private async Task LoadAndPreviewTranscriptionAsync(
+        string scanId
+    )
+    {
+        try
+        {
+            _isLoading = true;
+            StateHasChanged();
+
+            var transcription =
+                await
+                    ApiRequestManager
+                        .Scans
+                        .GetMyTranscriptionAsync(
+                            _batchSpecifics.Id,
+                            scanId,
+                            BaseCancellationToken
+                        );
+
+            if (transcription != null)
+            {
+                var dialog =
+                    await
+                        DialogService
+                            .ShowAsync<PreviewTranscriptionDialog>(
+                                null,
+                                new DialogParameters
+                                {
+                                    { "Transcription", transcription }
+                                }
+                            );
+
+                await
+                    dialog
+                        .Result;
+            }
+        }
+        catch (Exception ex)
+        {
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+    
     private async Task ConfirmTriggerWorkflowAsync()
     {
         var dialog =

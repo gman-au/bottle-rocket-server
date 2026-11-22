@@ -22,5 +22,8 @@ namespace Rocket.Api.Contracts.Scans
         
         [JsonPropertyName("thumbnail_base64")]
         public string ThumbnailBase64 { get; set; }
+        
+        [JsonPropertyName("is_transcribed")]
+        public bool IsTranscribed { get; set; }
     }
 }

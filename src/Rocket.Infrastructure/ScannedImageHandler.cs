@@ -185,5 +185,38 @@ namespace Rocket.Infrastructure
                 throw;
             }
         }
+
+        public async Task DeleteTranscriptionFromBatchAsync(
+            string userId,
+            string batchId,
+            string scanId,
+            CancellationToken cancellationToken
+        )
+        {
+            logger
+                .LogInformation("Deleting scan transcription");
+
+            try
+            {
+                await
+                    batchRepository
+                        .ClearBatchScanTranscriptionsAsync(
+                            userId,
+                            batchId,
+                            scanId,
+                            cancellationToken
+                        );
+            }
+            catch (Exception ex)
+            {
+                logger
+                    .LogError(
+                        "There was an error deleting the scanned image transcription: {error}",
+                        ex.Message
+                    );
+
+                throw;
+            }
+        }
     }
 }

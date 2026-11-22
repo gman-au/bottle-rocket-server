@@ -81,6 +81,10 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>SessionsResource.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="Web\TranscriptionResource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>TranscriptionResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
