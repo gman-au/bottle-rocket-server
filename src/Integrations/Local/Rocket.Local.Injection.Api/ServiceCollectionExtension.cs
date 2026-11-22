@@ -11,9 +11,13 @@ namespace Rocket.Local.Injection.Api
         {
             services
                 .AddTransient<IIntegrationHook, LocalUploadHook>()
+                .AddTransient<IIntegrationHook, LocalRetitleFileHook>()
                 .AddTransient<IWorkflowStepModelMapper, LocalUploadWorkflowStepMapper>()
+                .AddTransient<IWorkflowStepModelMapper, LocalRetitleFileWorkflowStepMapper>()
                 .AddTransient<IExecutionStepModelMapper, LocalUploadExecutionStepMapper>()
+                .AddTransient<IExecutionStepModelMapper, LocalRetitleFileExecutionStepMapper>()
                 .AddTransient<IStepModelCloner, LocalUploadStepCloner>()
+                .AddTransient<IStepModelCloner, LocalRetitleFileStepCloner>()
                 .AddTransient<IFileWriter, FileWriter>()
                 .AddTransient<IBsonMapper, LocalBsonMapper>();
 

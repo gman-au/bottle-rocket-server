@@ -37,6 +37,7 @@ namespace Rocket.Web.Host
         public const string SuccessIcon = Icons.Material.Filled.Check;
         public const string FailureIcon = Icons.Material.Filled.Clear;
         public const string NotRunIcon = Icons.Material.Filled.DoDisturb; 
-        public const string RunningIcon = Icons.Material.Filled.HourglassTop; 
+        public const string RunningIcon = Icons.Material.Filled.HourglassTop;
+        public const string AiIcon = Icons.Material.Filled.AutoAwesome;
     }
 }

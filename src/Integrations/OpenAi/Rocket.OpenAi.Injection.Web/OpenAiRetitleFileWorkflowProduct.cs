@@ -10,7 +10,7 @@ namespace Rocket.OpenAi.Injection.Web
 
         public string Description => "Re-title a document file using an OpenAI model.";
 
-        public string[] Categories => [SkuConstants.FileRetitling];
+        public string[] Categories => [SkuConstants.FileRetitling, SkuConstants.AiMl];
 
         public string HrefBase => "/MyWorkflow/OpenAi/RetitleFile";
 

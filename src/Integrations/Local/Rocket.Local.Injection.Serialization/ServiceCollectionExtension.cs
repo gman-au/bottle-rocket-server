@@ -11,7 +11,9 @@ namespace Rocket.Local.Injection.Serialization
         {
             services
                 .AddSingleton<IJsonTypeDiscriminator<BaseWorkflowStep>, LocalUploadWorkflowDiscriminator>()
-                .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, LocalUploadExecutionDiscriminator>();
+                .AddSingleton<IJsonTypeDiscriminator<BaseWorkflowStep>, LocalRetitleFileWorkflowDiscriminator>()
+                .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, LocalUploadExecutionDiscriminator>()
+                .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, LocalRetitleFileExecutionDiscriminator>();
 
             return services;
         }

@@ -2,6 +2,7 @@
 {
     public static class SkuConstants
     {
+        public const string AiMl = "AI / Machine Learning";
         public const string Diagnostics = "Diagnostics";
         public const string FileConversion = "File Conversion";
         public const string FileUpload = "File Upload";

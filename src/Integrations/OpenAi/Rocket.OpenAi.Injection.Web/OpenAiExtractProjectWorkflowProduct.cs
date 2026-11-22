@@ -10,7 +10,7 @@ namespace Rocket.OpenAi.Injection.Web
 
         public string Description => "Extract project task information from an image using an OpenAI model.";
 
-        public string[] Categories => [SkuConstants.TextRecognition, SkuConstants.ProjectManagement];
+        public string[] Categories => [SkuConstants.TextRecognition, SkuConstants.ProjectManagement, SkuConstants.AiMl];
 
         public string HrefBase => "/MyWorkflow/OpenAi/ExtractProject";
 

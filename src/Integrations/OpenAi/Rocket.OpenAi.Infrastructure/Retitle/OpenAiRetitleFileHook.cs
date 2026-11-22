@@ -232,14 +232,6 @@ namespace Rocket.OpenAi.Infrastructure.Retitle
                         .AsArtifactWithRenamedSummary(summaryFileName);
             }
 
-            if (!allCompleted)
-            {
-                throw new RocketException(
-                    "There was an error re-titling the file via OpenAI",
-                    ApiStatusCodeEnum.ThirdPartyServiceError
-                );
-            }
-
             return
                 Artifact
                     .AsArtifactWithRenamedFiles(
