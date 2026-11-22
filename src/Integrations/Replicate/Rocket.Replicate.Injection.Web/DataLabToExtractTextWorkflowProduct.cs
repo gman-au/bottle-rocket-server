@@ -10,7 +10,7 @@ namespace Rocket.Replicate.Injection.Web
 
         public string Description => "Extract text from image using Replicate (model: datalab-to/marker)";
 
-        public string[] Categories => [SkuConstants.TextRecognition];
+        public string[] Categories => [SkuConstants.TextRecognition, SkuConstants.AiMl];
 
         public string HrefBase => "/MyWorkflow/Replicate/DataLabTo/Text";
 

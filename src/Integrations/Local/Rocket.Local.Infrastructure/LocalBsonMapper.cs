@@ -8,9 +8,25 @@ namespace Rocket.Local.Infrastructure
     {
         public void MapApplicableBsonTypes()
         {
+            if (!BsonClassMap.IsClassMapRegistered(typeof(LocalRetitleFileExecutionStep)))
+            {
+                BsonClassMap.RegisterClassMap<LocalRetitleFileExecutionStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
             if (!BsonClassMap.IsClassMapRegistered(typeof(LocalUploadExecutionStep)))
             {
                 BsonClassMap.RegisterClassMap<LocalUploadExecutionStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(LocalRetitleFileWorkflowStep)))
+            {
+                BsonClassMap.RegisterClassMap<LocalRetitleFileWorkflowStep>(cm =>
                 {
                     cm.AutoMap();
                 });

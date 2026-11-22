@@ -10,7 +10,7 @@ namespace Rocket.Ollama.Injection.Web
 
         public string Description => "Extract raw text from an image using an Ollama model.";
 
-        public string[] Categories => [SkuConstants.TextRecognition];
+        public string[] Categories => [SkuConstants.TextRecognition, SkuConstants.AiMl];
 
         public string HrefBase => "/MyWorkflow/Ollama/ExtractText";
 

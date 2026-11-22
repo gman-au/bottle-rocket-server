@@ -1,0 +1,172 @@
+﻿@page "/MyWorkflow/OpenAi/ExtractText/{workflowId}/AddStep"
+@page "/MyWorkflow/OpenAi/ExtractText/{workflowId}/Steps/{parentStepId}/AddStep"
+@page "/MyWorkflow/OpenAi/ExtractText/{workflowId}/Steps/{stepId}/UpdateStep"
+@using Rocket.OpenAi.Contracts
+@using Rocket.OpenAi.Contracts.Text
+@using Rocket.OpenAi.Domain
+@using Rocket.Web.Infrastructure.Client
+
+@using Rocket.Web.Host.Infrastructure
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject IApiRequestManager ApiRequestManager
+
+<UpdateWorkflowStepWrapper
+    @ref="_wrapper"
+    T="OpenAiExtractTextWorkflowStepSpecifics"
+    WorkflowStepName="Extract text from image"
+    WorkflowId="@WorkflowId"
+    ParentStepId="@ParentStepId"
+    RequiresConnectorCode="@OpenAiDomainConstants.ConnectorCode"
+    OnConnectorIdChanged="ConnectorChangedAsync"
+    StepId="@StepId"
+    Context="stepSpecifics">
+    <MudGrid>
+        <MudItem sm="12" lg="6">
+            <MudSelect
+                T="OpenAiModel"
+                Label=@(_isLoading ? "Loading..." : "Select an OpenAI model")
+                @bind-Value="@_modelSelected"
+                Required="true"
+                RequiredError="Model name is required"
+                HelperText="Enter the OpenAI model name to use for OCR extraction"
+                @bind-Value:after="() => SectionIdChangedAsync(stepSpecifics)"
+                Disabled="@(_isLoading || string.IsNullOrEmpty(_connectorId))"
+                Clearable
+            >
+                @foreach (var openAiModel in _openAiModels ?? [])
+                {
+                    <MudSelectItem
+                        T="OpenAiModel"
+                        Value="@openAiModel">
+                        @openAiModel.Name
+                    </MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+    </MudGrid>
+</UpdateWorkflowStepWrapper>
+
+@code {
+
+    [Parameter]
+    public string WorkflowId { get; set; }
+
+    [Parameter]
+    public string ParentStepId { get; set; }
+
+    [Parameter]
+    public string StepId { get; set; }
+
+    private bool _isLoading;
+
+    private string _connectorId;
+
+    private UpdateWorkflowStepWrapper<OpenAiExtractTextWorkflowStepSpecifics> _wrapper;
+
+    private OpenAiModel _modelSelected;
+
+    private IEnumerable<OpenAiModel> _openAiModels = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await
+                base
+                    .OnInitializedAsync();
+
+            _isLoading = true;
+            StateHasChanged();
+
+            await
+                RefreshOpenAiModelsAsync();
+        }
+        catch (Exception ex)
+        {
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RefreshOpenAiModelsAsync()
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(_connectorId))
+            {
+                _isLoading = true;
+                StateHasChanged();
+
+                var response =
+                    await
+                        ApiRequestManager
+                            .Vendors
+                            .OpenAi
+                            .GetOpenAiModelsAsync(
+                                new OpenAiListModelsRequest
+                                {
+                                    ConnectorId = _connectorId
+                                },
+                                BaseCancellationToken
+                            );
+
+                _openAiModels =
+                    response?
+                        .Models ?? [];
+
+                _modelSelected =
+                    _openAiModels
+                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.ModelName == o.Name);
+            }
+            else
+            {
+                _openAiModels = [];
+            }
+        }
+        catch (Exception ex)
+        {
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task SectionIdChangedAsync(
+        OpenAiExtractTextWorkflowStepSpecifics stepSpecifics
+    )
+    {
+        stepSpecifics.ModelName =
+            _modelSelected?
+                .Name;
+    }
+
+    private async Task ConnectorChangedAsync(
+        string connectorId
+    )
+    {
+        _connectorId = connectorId;
+
+        if (string.IsNullOrEmpty(connectorId))
+        {
+            _modelSelected = null;
+        }
+
+        await
+            RefreshOpenAiModelsAsync();
+    }
+
+}

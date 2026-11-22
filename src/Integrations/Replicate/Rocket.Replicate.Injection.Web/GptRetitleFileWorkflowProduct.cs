@@ -8,9 +8,9 @@ namespace Rocket.Replicate.Injection.Web
     {
         public string Name => "Auto-title file (GPT)";
 
-        public string Description => "Re-title a document file using Replicate (model: model: gpt-5.2).";
+        public string Description => "Re-title a document file using Replicate (model: gpt-5.2).";
 
-        public string[] Categories => [SkuConstants.FileRetitling];
+        public string[] Categories => [SkuConstants.FileRetitling, SkuConstants.AiMl];
 
         public string HrefBase => "/MyWorkflow/Replicate/Gpt/RetitleFile";
 

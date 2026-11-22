@@ -9,7 +9,8 @@ namespace Rocket.Local.Injection.Web
         public static IServiceCollection AddLocalWebIntegration(this IServiceCollection services)
         {
             services
-                .AddTransient<ISkuWorkflow, LocalUploadWorkflowProduct>();
+                .AddTransient<ISkuWorkflow, LocalUploadWorkflowProduct>()
+                .AddTransient<ISkuWorkflow, LocalRetitleFileWorkflowProduct>();
 
             services
                 .AddLocalJsonSerialization();

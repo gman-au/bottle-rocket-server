@@ -27,7 +27,8 @@ namespace Rocket.Web.Infrastructure.Client.Injection
                 .AddTransient<IApiRequestGoogle, ApiRequestGoogle>()
                 .AddTransient<IApiRequestMicrosoft, ApiRequestMicrosoft>()
                 .AddTransient<IApiRequestNotion, ApiRequestNotion>()
-                .AddTransient<IApiRequestOllama, ApiRequestOllama>();
+                .AddTransient<IApiRequestOllama, ApiRequestOllama>()
+                .AddTransient<IApiRequestOpenAi, ApiRequestOpenAi>();
 
             services
                 .AddTransient<IApiRequestManager>(
@@ -56,7 +57,8 @@ namespace Rocket.Web.Infrastructure.Client.Injection
                             sp.GetRequiredService<IApiRequestGoogle>(),
                             sp.GetRequiredService<IApiRequestMicrosoft>(),
                             sp.GetRequiredService<IApiRequestNotion>(),
-                            sp.GetRequiredService<IApiRequestOllama>()
+                            sp.GetRequiredService<IApiRequestOllama>(),
+                            sp.GetRequiredService<IApiRequestOpenAi>()
                         )
                 );
 
