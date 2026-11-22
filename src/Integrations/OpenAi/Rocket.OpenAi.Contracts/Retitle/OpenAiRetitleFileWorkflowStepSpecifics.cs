@@ -7,5 +7,8 @@ namespace Rocket.OpenAi.Contracts.Retitle
     {
         [JsonPropertyName("model_name")]
         public string ModelName { get; set; }
+        
+        [JsonPropertyName("summarize_all_files")]
+        public bool SummarizeAllFiles { get; set; }
     }
 }

@@ -14,6 +14,7 @@ namespace Rocket.OpenAi.Infrastructure.Retitle
                     .Clone(value);
 
             result.ModelName = value.ModelName;
+            result.SummarizeAllFiles = value.SummarizeAllFiles;
 
             return result;
         }

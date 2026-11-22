@@ -15,6 +15,7 @@ namespace Rocket.OpenAi.Infrastructure.Retitle
                     .For(value);
 
             result.ModelName = value.ModelName;
+            result.SummarizeAllFiles = value.SummarizeAllFiles;
 
             return result;
         }
@@ -26,6 +27,7 @@ namespace Rocket.OpenAi.Infrastructure.Retitle
                     .From(value);
 
             result.ModelName = value.ModelName;
+            result.SummarizeAllFiles = value.SummarizeAllFiles;
 
             return result;
         }

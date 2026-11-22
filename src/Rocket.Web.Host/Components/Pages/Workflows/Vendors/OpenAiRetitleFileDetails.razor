@@ -26,7 +26,7 @@
             <MudSelect
                 T="OpenAiModel"
                 Label=@(_isLoading ? "Loading..." : "Select an OpenAI model")
-                @bind-Value="@_modelSelected"
+                                @bind-Value="@_modelSelected"
                 Required="true"
                 RequiredError="Model name is required"
                 HelperText="Enter the OpenAI model name to use for title suggestion"
@@ -43,6 +43,21 @@
                     </MudSelectItem>
                 }
             </MudSelect>
+        </MudItem>
+        <MudItem sm="12" lg="12" xl="12">
+            <MudCheckBox
+                TriState
+                @bind-Value="@stepSpecifics.SummarizeAllFiles">
+                <MudText
+                    Typo="Typo.body1">
+                    Summarize into one file name
+                </MudText>
+                <MudText
+                    Class="mud-input-helper-text"
+                    Typo="Typo.subtitle1">
+                    (select this option if you will merge the files in a later step)
+                </MudText>
+            </MudCheckBox>
         </MudItem>
     </MudGrid>
 </UpdateWorkflowStepWrapper>

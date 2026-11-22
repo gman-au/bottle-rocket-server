@@ -19,6 +19,7 @@ using Rocket.Page.Schemas.RetitleFile;
 namespace Rocket.OpenAi.Infrastructure.Retitle
 {
     public class OpenAiRetitleFileHook(
+        IFileRetitler fileRetitler,
         IOpenAiClient openAiClient,
         IGlobalSettingsRepository globalSettingsRepository,
         ILogger<OpenAiRetitleFileHook> logger
@@ -54,6 +55,12 @@ namespace Rocket.OpenAi.Infrastructure.Retitle
             var elements =
                 Artifact
                     .Elements;
+            
+            if (step is not OpenAiRetitleFileExecutionStep retitleStep)
+                throw new RocketException(
+                    "Unexpected step format, please check configuration",
+                    ApiStatusCodeEnum.DeveloperError
+                );
 
             var endpoint =
                 Connector.ApiKey ??
@@ -79,6 +86,12 @@ namespace Rocket.OpenAi.Infrastructure.Retitle
 
             var allCompleted = true;
 
+            var summaryPrompt = string.Empty;
+            var summaryFileName = string.Empty;
+
+            const string systemPrompt = CommonPromptConstants.SystemPromptRetitleFile;
+            const string userPromptTemplate = CommonPromptConstants.UserPromptRetitleFileTemplate;
+
             foreach (var element in elements)
             {
                 try
@@ -89,50 +102,60 @@ namespace Rocket.OpenAi.Infrastructure.Retitle
                                 element.ScanId
                             );
 
-                    const string systemPrompt = CommonPromptConstants.SystemPromptRetitleFile;
-
-                    const string userPromptTemplate = CommonPromptConstants.UserPromptRetitleFileTemplate;
-
                     var documentText =
                         element
                             .ArtifactAsText();
+                    
+                    if (retitleStep.SummarizeAllFiles)
+                    {
+                        summaryPrompt += Environment.NewLine + documentText;
 
-                    var userPrompt =
-                        string
-                            .Format(
-                                userPromptTemplate,
-                                documentText
-                            );
-
-                    var response =
                         await
-                            openAiClient
-                                .SendTextRequestAsync<RetitleFileSchema>(
-                                    endpoint,
-                                    ExecutionStep.ModelName,
-                                    systemPrompt,
-                                    userPrompt,
-                                    typeof(RetitleFileSchema),
-                                    useSchema: true,
-                                    temperature: 0,
-                                    maxTokens: null,
-                                    null,
-                                    timeoutInMinutes,
-                                    cancellationToken
+                            jobControl
+                                .SucceedStepAsync(
+                                    "Parsed text into OpenAI prompt",
+                                    element.ScanId
+                                );
+                    }
+                    else
+                    {
+                        var userPrompt =
+                            string
+                                .Format(
+                                    userPromptTemplate,
+                                    documentText
                                 );
 
-                    var title =
-                        response?.RecommendedTitle;
+                        var response =
+                            await
+                                openAiClient
+                                    .SendTextRequestAsync<RetitleFileSchema>(
+                                        endpoint,
+                                        ExecutionStep.ModelName,
+                                        systemPrompt,
+                                        userPrompt,
+                                        typeof(RetitleFileSchema),
+                                        useSchema: true,
+                                        temperature: 0,
+                                        maxTokens: null,
+                                        null,
+                                        timeoutInMinutes,
+                                        cancellationToken
+                                    );
 
-                    await
-                        jobControl
-                            .SucceedStepAsync(
-                                $"OpenAi title suggestion: \"{title}\"",
-                                element.ScanId
-                            );
+                        var title =
+                            response?.RecommendedTitle;
 
-                    fileResults
-                        .Add((element.ScanId, title));
+                        await
+                            jobControl
+                                .SucceedStepAsync(
+                                    $"OpenAI title suggestion: \"{title}\"",
+                                    element.ScanId
+                                );
+
+                        fileResults
+                            .Add((element.ScanId, title));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -145,6 +168,68 @@ namespace Rocket.OpenAi.Infrastructure.Retitle
                                 element.ScanId
                             );
                 }
+            }
+            
+            if (retitleStep.SummarizeAllFiles)
+            {
+                var userPrompt =
+                    string
+                        .Format(
+                            userPromptTemplate,
+                            summaryPrompt
+                        );
+
+                var response =
+                    await
+                        openAiClient
+                            .SendTextRequestAsync<RetitleFileSchema>(
+                                endpoint,
+                                ExecutionStep.ModelName,
+                                systemPrompt,
+                                userPrompt,
+                                typeof(RetitleFileSchema),
+                                useSchema: true,
+                                temperature: 0,
+                                maxTokens: null,
+                                null,
+                                timeoutInMinutes,
+                                cancellationToken
+                            );
+
+                var title =
+                    response?.RecommendedTitle;
+
+                await
+                    jobControl
+                        .SucceedStepAsync(
+                            $"OpenAI title suggestion: \"{title}\""
+                        );
+
+                summaryFileName = title;
+            }
+
+            if (!allCompleted)
+            {
+                throw new RocketException(
+                    "There was an error re-titling the file via OpenAI",
+                    ApiStatusCodeEnum.ThirdPartyServiceError
+                );
+            }
+
+            if (retitleStep.SummarizeAllFiles)
+            {
+                await
+                    fileRetitler
+                        .RetitleAsync(
+                            summaryFileName,
+                            Artifact.BatchId,
+                            Artifact.UserId,
+                            cancellationToken
+                        );
+
+                return
+                    Artifact
+                        .AsArtifactWithRenamedSummary(summaryFileName);
             }
 
             if (!allCompleted)

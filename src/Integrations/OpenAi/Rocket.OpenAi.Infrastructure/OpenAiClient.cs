@@ -40,7 +40,8 @@ namespace Rocket.OpenAi.Infrastructure
                 var results =
                     models
                         .Value
-                        .Select(o => new OpenAiTagsModel { Id = o.Id });
+                        .Select(o => new OpenAiTagsModel { Id = o.Id })
+                        .OrderBy(o => o.Id);
 
                 return results;
             }
