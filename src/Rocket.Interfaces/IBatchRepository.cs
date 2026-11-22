@@ -74,5 +74,20 @@ namespace Rocket.Interfaces
             string scanId,
             CancellationToken cancellationToken
         );
+
+        Task<Transcription> UpdateBatchScanTranscriptionAsync(
+            string userId,
+            string batchId,
+            string scanId,
+            Transcription transcription,
+            CancellationToken cancellationToken
+        );
+
+        Task ClearBatchScanTranscriptionsAsync(
+            string userId,
+            string batchId,
+            string scanId,
+            CancellationToken cancellationToken
+        );
     }
 }

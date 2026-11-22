@@ -123,6 +123,7 @@ namespace Rocket.Api.Host.Injection
             services
                 .AddTransient<IScannedImageHandler, ScannedImageHandler>()
                 .AddTransient<IBatchHandler, BatchHandler>()
+                .AddTransient<ITranscriber, Transcriber>()
                 .AddTransient<ISha256Calculator, Sha256Calculator>()
                 .AddTransient<IStartupInitialization, StartupInitialization>()
                 .AddTransient<IDatabasePreRunAction, DatabasePrepopulator>()

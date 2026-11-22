@@ -311,6 +311,88 @@ namespace Rocket.Infrastructure.Db.Mongo
                 );
         }
 
+        public async Task<Transcription> UpdateBatchScanTranscriptionAsync(
+            string userId,
+            string batchId,
+            string scanId,
+            Transcription transcription,
+            CancellationToken cancellationToken
+        )
+        {
+            if (transcription != null)
+            {
+                transcription.Id ??=
+                    ObjectId
+                        .GenerateNewId()
+                        .ToString();
+            }
+
+            var updatedScan =
+                await
+                    GetScanByIdAsync(
+                        userId,
+                        batchId,
+                        scanId,
+                        cancellationToken
+                    );
+
+            if (updatedScan == null)
+                throw new RocketException(
+                    $"Could not find scan with id [{scanId}], batch [{batchId}]",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
+            var batch =
+                await
+                    GetBatchByIdAsync(
+                        userId,
+                        batchId,
+                        cancellationToken
+                    );
+
+            if (batch == null)
+                throw new RocketException(
+                    $"Could not find batch with id [{batchId}]",
+                    ApiStatusCodeEnum.UnknownOrInaccessibleRecord
+                );
+
+            updatedScan.Transcription = transcription;
+
+            BaseScannedImageEx
+                .UpdateScanById(
+                    batch.Scans,
+                    scanId,
+                    updatedScan,
+                    out var modifiedScans
+                );
+
+            batch.Scans = modifiedScans;
+
+            await
+                UpdateBatchFieldAsync(
+                    userId,
+                    batchId,
+                    o => o.Scans,
+                    modifiedScans,
+                    cancellationToken
+                );
+
+            return transcription;
+        }
+
+        public async Task ClearBatchScanTranscriptionsAsync(
+            string userId,
+            string batchId,
+            string scanId,
+            CancellationToken cancellationToken
+        ) => await UpdateBatchScanTranscriptionAsync(
+            userId,
+            batchId,
+            scanId,
+            null,
+            cancellationToken
+        );
+
         private static FilterDefinition<Batch> BuildBatchFilterByIdAndUserId(
             string batchId,
             string userId
