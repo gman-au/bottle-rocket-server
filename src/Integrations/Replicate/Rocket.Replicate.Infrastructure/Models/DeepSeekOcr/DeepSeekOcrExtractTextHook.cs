@@ -149,7 +149,14 @@ namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
                                 $"DeepSeek OCR response: \"{extractedText}\"",
                                 element.ScanId
                             );
-
+                    
+                    await
+                        jobControl
+                            .TranscribeTextAsync(
+                                element.ScanId,
+                                extractedText
+                            );
+                    
                     var resultArtifact =
                         new ArtifactDataElement
                         {

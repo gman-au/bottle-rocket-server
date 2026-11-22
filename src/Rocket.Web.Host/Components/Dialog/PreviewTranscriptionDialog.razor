@@ -1,4 +1,5 @@
-﻿@using Microsoft.Extensions.Localization
+﻿@using global::Markdig
+@using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts.Scans
 @using Rocket.Localization.Web
 @inject IStringLocalizer<TranscriptionResource> StringLocalizer
@@ -8,8 +9,8 @@
     <DialogContent>
         <MudGrid>
             <MudItem xs="12" sm="6">
-                <div class="mud-border-tertiary border p-4 rounded">
-                    @Transcription.Text
+                <div class="mud-border-tertiary border p-4 rounded" id="scroll-images" style="height: 600px; overflow-y: auto;">
+                    @((MarkupString)Markdown.ToHtml(Transcription.Text))
                 </div>
             </MudItem>
             <MudItem xs="12" sm="6">
@@ -18,6 +19,7 @@
                     Dense>
                     <tbody>
                     <ComplexTableRowPair
+                        Alignment="left"
                         Title="@StringLocalizer["TranscriptionExecutionFieldHeader"]">
                         <MudLink
                             Color="Color.Secondary"
@@ -30,9 +32,12 @@
                         Value=@Transcription.TranscriptionDate.ToString("yyyy-MM-dd HH:mm:ss")/>
                     </tbody>
                 </MudSimpleTable>
-                <MudText>
-
-                </MudText>
+                <MudScrollToTop Selector="#scroll-images">
+                    <MudFab
+                        Color="Color.Default"
+                        StartIcon="@Icons.Material.Filled.ArrowCircleUp"
+                    />
+                </MudScrollToTop>
             </MudItem>
         </MudGrid>
     </DialogContent>

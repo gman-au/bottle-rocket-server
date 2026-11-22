@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using Markdig;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -61,6 +62,14 @@ namespace Rocket.Web.Host.Injection
             services
                 .AddSingleton<IJsonResolverInstanceProvider, RocketJsonResolverInstanceProvider>();
 
+            services
+                .AddSingleton(
+                    new MarkdownPipelineBuilder()
+                        .DisableHtml()
+                        .UseAdvancedExtensions()
+                        .Build()
+                );
+
             return services;
         }
 
@@ -97,7 +106,7 @@ namespace Rocket.Web.Host.Injection
 
             services
                 .AddTransient<IUserAgentParser, UserAgentParser>();
-            
+
             services
                 .AddScoped<ApiAuthenticationStateProvider>();
 

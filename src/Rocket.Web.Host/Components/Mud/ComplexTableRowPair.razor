@@ -9,7 +9,7 @@
             @Title
         </MudText>
     </td>
-    <td style="text-align: center;">
+    <td style="text-align: @Alignment;">
         @ChildContent
     </td>
 </tr>
@@ -18,6 +18,9 @@
 
     [Parameter]
     public string Title { get; set; }
+
+    [Parameter]
+    public string Alignment { get; set; } = "center";
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }
