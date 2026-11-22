@@ -6,6 +6,9 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\Rocket.Api.Contracts\Rocket.Api.Contracts.csproj" />
+      <ProjectReference Include="..\..\..\Rocket.Domain\Rocket.Domain.csproj" />
+      <ProjectReference Include="..\..\..\Rocket.Interfaces\Rocket.Interfaces.csproj" />
+      <ProjectReference Include="..\Rocket.OpenAi.Domain\Rocket.OpenAi.Domain.csproj" />
     </ItemGroup>
 
 </Project>
