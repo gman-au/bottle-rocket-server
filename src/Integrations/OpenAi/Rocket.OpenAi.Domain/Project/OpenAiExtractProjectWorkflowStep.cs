@@ -14,8 +14,6 @@ namespace Rocket.OpenAi.Domain.Project
 
         public override string RequiresConnectorCode { get; set; } = OpenAiDomainConstants.ConnectorCode;
 
-        public string FirstPassModelName { get; set; }
-        
-        public string SecondPassModelName { get; set; }
+        public string ModelName { get; set; }
     }
 }

@@ -14,8 +14,7 @@ namespace Rocket.OpenAi.Infrastructure.Project
                 base
                     .For(value);
 
-            result.FirstPassModelName = value.FirstPassModelName;
-            result.SecondPassModelName = value.SecondPassModelName;
+            result.ModelName = value.ModelName;
 
             return result;
         }
@@ -26,8 +25,7 @@ namespace Rocket.OpenAi.Infrastructure.Project
                 base
                     .From(value);
 
-            result.FirstPassModelName = value.FirstPassModelName;
-            result.SecondPassModelName = value.SecondPassModelName;
+            result.ModelName = value.ModelName;
 
             return result;
         }

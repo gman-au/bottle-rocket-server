@@ -20,6 +20,7 @@ namespace Rocket.OpenAi.Infrastructure
             string userPrompt,
             byte[] imageBytes,
             Type schemaType,
+            bool useSchema,
             float? temperature,
             int? maxTokens,
             int timeoutInMinutes,

@@ -98,6 +98,7 @@ namespace Rocket.OpenAi.Infrastructure.Text
                                     CommonPromptConstants.UserPromptExtractTextFromImage,
                                     element.Artifact,
                                     typeof(string),
+                                    useSchema: false,
                                     temperature: 0,
                                     maxTokens: null,
                                     timeoutInMinutes,

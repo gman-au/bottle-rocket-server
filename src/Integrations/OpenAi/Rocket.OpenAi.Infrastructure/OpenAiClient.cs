@@ -155,6 +155,7 @@ namespace Rocket.OpenAi.Infrastructure
             string userPrompt,
             byte[] imageBytes,
             Type schemaType,
+            bool useSchema,
             float? temperature,
             int? maxTokens,
             int timeoutInMinutes,
@@ -201,6 +202,20 @@ namespace Rocket.OpenAi.Infrastructure
                             )
                     )
                 };
+
+            if (useSchema)
+            {
+                var schemaString =
+                    schemaGenerator
+                        .Generate(schemaType);
+
+                chatCompletionOptions.ResponseFormat =
+                    ChatResponseFormat
+                        .CreateJsonSchemaFormat(
+                            jsonSchemaFormatName: "response_format",
+                            jsonSchema: BinaryData.FromString(schemaString)
+                        );
+            }
 
             var result =
                 await

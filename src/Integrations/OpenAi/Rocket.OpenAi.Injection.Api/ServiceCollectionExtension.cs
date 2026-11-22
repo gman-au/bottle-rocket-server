@@ -10,13 +10,15 @@ namespace Rocket.OpenAi.Injection.Api
 {
     public static class ServiceCollectionExtension
     {
-        public static IServiceCollection AddOpenAiApiIntegration(this IServiceCollection services)
+        public static IServiceCollection AddOpenAiApiIntegration(
+            this IServiceCollection services
+        )
         {
-            // services
-            //     .AddTransient<IIntegrationHook, OpenAiExtractTextHook>()
-            //     .AddTransient<IIntegrationHook, OpenAiExtractProjectHook>()
-            //     .AddTransient<IIntegrationHook, OpenAiRetitleFileHook>();
-            
+            services
+                .AddTransient<IIntegrationHook, OpenAiExtractTextHook>()
+                .AddTransient<IIntegrationHook, OpenAiExtractProjectHook>()
+                .AddTransient<IIntegrationHook, OpenAiRetitleFileHook>();
+
             services
                 .AddTransient<IWorkflowStepModelMapper, OpenAiExtractTextWorkflowStepMapper>()
                 .AddTransient<IWorkflowStepModelMapper, OpenAiExtractProjectWorkflowStepMapper>()
@@ -26,12 +28,12 @@ namespace Rocket.OpenAi.Injection.Api
                 .AddTransient<IExecutionStepModelMapper, OpenAiExtractTextExecutionStepMapper>()
                 .AddTransient<IExecutionStepModelMapper, OpenAiExtractProjectExecutionStepMapper>()
                 .AddTransient<IExecutionStepModelMapper, OpenAiRetitleFileExecutionStepMapper>();
-            
+
             services
                 .AddTransient<IStepModelCloner, OpenAiExtractTextStepCloner>()
                 .AddTransient<IStepModelCloner, OpenAiExtractProjectStepCloner>()
                 .AddTransient<IStepModelCloner, OpenAiRetitleFileStepCloner>();
-            
+
             services
                 .AddTransient<IConnectorModelMapper, OpenAiConnectorMapper>()
                 .AddTransient<IOpenAiClient, OpenAiClient>()

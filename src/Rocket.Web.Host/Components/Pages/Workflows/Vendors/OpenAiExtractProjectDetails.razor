@@ -26,11 +26,11 @@
             <MudSelect
                 T="OpenAiModel"
                 Label=@(_isLoading ? "Loading..." : "Select an OpenAI model")
-                @bind-Value="@_firstPassModelSelected"
+                @bind-Value="@_modelSelected"
                 Required="true"
                 RequiredError="Model name is required"
-                HelperText="Enter the OpenAI model name to use for the first pass (OCR extraction)"
-                @bind-Value:after="() => FirstPassIdChangedAsync(stepSpecifics)"
+                HelperText="Enter the OpenAI model name to use for the data extraction"
+                @bind-Value:after="() => ModelIdChangedAsync(stepSpecifics)"
                 Disabled="@(_isLoading || string.IsNullOrEmpty(_connectorId))"
                 Clearable
             >
@@ -44,28 +44,6 @@
                 }
             </MudSelect>
         </MudItem>
-        <MudItem sm="12" lg="6">
-            <MudSelect
-                T="OpenAiModel"
-                Label=@(_isLoading ? "Loading..." : "Select an OpenAi model")
-                @bind-Value="@_secondPassModelSelected"
-                Required="true"
-                RequiredError="Model name is required"
-                HelperText="Enter the OpenAi model name to use for the second pass (text -> schema)"
-                @bind-Value:after="() => SecondPassIdChangedAsync(stepSpecifics)"
-                Disabled="@(_isLoading || string.IsNullOrEmpty(_connectorId))"
-                Clearable
-            >
-                @foreach (var openAiModel in _openAiModels ?? [])
-                {
-                    <MudSelectItem
-                        T="OpenAiModel"
-                        Value="@openAiModel">
-                        @openAiModel.Name
-                    </MudSelectItem>
-                }
-            </MudSelect>
-        </MudItem>        
     </MudGrid>
 </UpdateWorkflowStepWrapper>
 
@@ -86,9 +64,7 @@
 
     private UpdateWorkflowStepWrapper<OpenAiExtractProjectWorkflowStepSpecifics> _wrapper;
 
-    private OpenAiModel _firstPassModelSelected;
-
-    private OpenAiModel _secondPassModelSelected;
+    private OpenAiModel _modelSelected;
 
     private IEnumerable<OpenAiModel> _openAiModels = [];
     
@@ -118,13 +94,9 @@
                     response?
                         .Models ?? [];
 
-                _firstPassModelSelected =
+                _modelSelected =
                     _openAiModels
-                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.FirstPassModelName == o.Name);
-
-                _secondPassModelSelected =
-                    _openAiModels
-                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.SecondPassModelName == o.Name);
+                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.ModelName == o.Name);
             }
             else
             {
@@ -146,17 +118,10 @@
         StateHasChanged();
     }
     
-    private async Task FirstPassIdChangedAsync(OpenAiExtractProjectWorkflowStepSpecifics stepSpecifics)
+    private async Task ModelIdChangedAsync(OpenAiExtractProjectWorkflowStepSpecifics stepSpecifics)
     {
-        stepSpecifics.FirstPassModelName =
-            _firstPassModelSelected?
-                .Name;
-    }    
-    
-    private async Task SecondPassIdChangedAsync(OpenAiExtractProjectWorkflowStepSpecifics stepSpecifics)
-    {
-        stepSpecifics.SecondPassModelName =
-            _secondPassModelSelected?
+        stepSpecifics.ModelName =
+            _modelSelected?
                 .Name;
     }
 
@@ -166,8 +131,7 @@
 
         if (string.IsNullOrEmpty(connectorId))
         {
-            _firstPassModelSelected = null;
-            _secondPassModelSelected = null;
+            _modelSelected = null;
         }
 
         await

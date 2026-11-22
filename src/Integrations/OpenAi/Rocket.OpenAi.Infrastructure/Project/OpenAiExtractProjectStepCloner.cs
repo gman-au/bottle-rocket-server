@@ -13,8 +13,7 @@ namespace Rocket.OpenAi.Infrastructure.Project
                 base
                     .Clone(value);
 
-            result.FirstPassModelName = value.FirstPassModelName;
-            result.SecondPassModelName = value.SecondPassModelName;
+            result.ModelName = value.ModelName;
 
             return result;
         }
