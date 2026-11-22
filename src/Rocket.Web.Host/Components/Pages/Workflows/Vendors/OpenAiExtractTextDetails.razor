@@ -39,21 +39,7 @@
                     <MudSelectItem
                         T="OpenAiModel"
                         Value="@openAiModel">
-                        <MudStack Spacing="0">
-                            <MudItem>
-                                <MudText
-                                    Typo="Typo.body1">
-                                    @openAiModel.Model
-                                </MudText>
-                            </MudItem>
-                            <MudItem>
-                                <MudText
-                                    Color="Color.Info"
-                                    Typo="Typo.subtitle2">
-                                    @(string.Join(", ", openAiModel.Capabilities))
-                                </MudText>
-                            </MudItem>
-                        </MudStack>
+                        @openAiModel.Name
                     </MudSelectItem>
                 }
             </MudSelect>
@@ -137,7 +123,7 @@
 
                 _modelSelected =
                     _openAiModels
-                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.ModelName == o.Model);
+                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.ModelName == o.Name);
             }
             else
             {
@@ -165,7 +151,7 @@
     {
         stepSpecifics.ModelName =
             _modelSelected?
-                .Model;
+                .Name;
     }
 
     private async Task ConnectorChangedAsync(

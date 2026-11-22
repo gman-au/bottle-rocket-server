@@ -26,6 +26,7 @@ using Rocket.Markdig.Injection.Api;
 using Rocket.Microsofts.Injection.Api;
 using Rocket.Notion.Injection.Api;
 using Rocket.Ollama.Injection.Api;
+using Rocket.OpenAi.Injection.Api;
 using Rocket.Postmark.Injection.Api;
 using Rocket.QuestPdf.Injection.Api;
 using Rocket.Replicate.Injection.Api;
@@ -100,7 +101,8 @@ services
     .AddPostmarkApiIntegration()
     .AddMailgunApiIntegration()
     .AddLocalApiIntegration()
-    .AddMarkdigApiIntegration();
+    .AddMarkdigApiIntegration()
+    .AddOpenAiApiIntegration();
 
 services
     .AddWorkflowBackgroundJob();

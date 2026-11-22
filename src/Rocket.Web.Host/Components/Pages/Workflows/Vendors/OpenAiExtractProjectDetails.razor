@@ -39,21 +39,7 @@
                     <MudSelectItem
                         T="OpenAiModel"
                         Value="@openAiModel">
-                        <MudStack Spacing="0">
-                            <MudItem>
-                                <MudText
-                                    Typo="Typo.body1">
-                                    @openAiModel.Model
-                                </MudText>
-                            </MudItem>
-                            <MudItem>
-                                <MudText
-                                    Color="Color.Info"
-                                    Typo="Typo.subtitle2">
-                                    @(string.Join(", ", openAiModel.Capabilities))
-                                </MudText>
-                            </MudItem>
-                        </MudStack>
+                        @openAiModel.Name
                     </MudSelectItem>
                 }
             </MudSelect>
@@ -70,26 +56,12 @@
                 Disabled="@(_isLoading || string.IsNullOrEmpty(_connectorId))"
                 Clearable
             >
-                @foreach (var ollamaModel in _openAiModels ?? [])
+                @foreach (var openAiModel in _openAiModels ?? [])
                 {
                     <MudSelectItem
                         T="OpenAiModel"
-                        Value="@ollamaModel">
-                        <MudStack Spacing="0">
-                            <MudItem>
-                                <MudText
-                                    Typo="Typo.body1">
-                                    @ollamaModel.Model
-                                </MudText>
-                            </MudItem>
-                            <MudItem>
-                                <MudText
-                                    Color="Color.Info"
-                                    Typo="Typo.subtitle2">
-                                    @(string.Join(", ", ollamaModel.Capabilities))
-                                </MudText>
-                            </MudItem>
-                        </MudStack>
+                        Value="@openAiModel">
+                        @openAiModel.Name
                     </MudSelectItem>
                 }
             </MudSelect>
@@ -148,11 +120,11 @@
 
                 _firstPassModelSelected =
                     _openAiModels
-                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.FirstPassModelName == o.Model);
+                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.FirstPassModelName == o.Name);
 
                 _secondPassModelSelected =
                     _openAiModels
-                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.SecondPassModelName == o.Model);
+                        .FirstOrDefault(o => _wrapper?.StepSpecifics?.SecondPassModelName == o.Name);
             }
             else
             {
@@ -178,14 +150,14 @@
     {
         stepSpecifics.FirstPassModelName =
             _firstPassModelSelected?
-                .Model;
+                .Name;
     }    
     
     private async Task SecondPassIdChangedAsync(OpenAiExtractProjectWorkflowStepSpecifics stepSpecifics)
     {
         stepSpecifics.SecondPassModelName =
             _secondPassModelSelected?
-                .Model;
+                .Name;
     }
 
     private async Task ConnectorChangedAsync(string connectorId)

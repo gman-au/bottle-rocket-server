@@ -8,7 +8,7 @@ namespace Rocket.OpenAi.Domain.Text
 
         public override int OutputType { get; set; } = OpenAiDomainConstants.OpenAiExtractTextOutputType;
 
-        public override string StepName { get; set; } = "Extract raw text from image using OpenAi model";
+        public override string StepName { get; set; } = "Extract raw text from image using OpenAI model";
 
         public override string StepCode { get; set; } = OpenAiDomainConstants.OpenAiExtractTextWorkflowCode;
 

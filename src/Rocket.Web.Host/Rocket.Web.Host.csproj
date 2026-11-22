@@ -27,6 +27,7 @@
         <ProjectReference Include="..\Integrations\Ollama\Rocket.Ollama.Injection.Web\Rocket.Ollama.Injection.Web.csproj" />
         <ProjectReference Include="..\Integrations\OpenAi\Rocket.OpenAi.Contracts\Rocket.OpenAi.Contracts.csproj" />
         <ProjectReference Include="..\Integrations\OpenAi\Rocket.OpenAi.Domain\Rocket.OpenAi.Domain.csproj" />
+        <ProjectReference Include="..\Integrations\OpenAi\Rocket.OpenAi.Injection.Web\Rocket.OpenAi.Injection.Web.csproj" />
         <ProjectReference Include="..\Integrations\Postmark\Rocket.Postmark.Injection.Web\Rocket.Postmark.Injection.Web.csproj" />
         <ProjectReference Include="..\Integrations\QuestPdf\Rocket.QuestPdf.Injection.Web\Rocket.QuestPdf.Injection.Web.csproj" />
         <ProjectReference Include="..\Integrations\Replicate\Rocket.Replicate.Domain\Rocket.Replicate.Domain.csproj" />

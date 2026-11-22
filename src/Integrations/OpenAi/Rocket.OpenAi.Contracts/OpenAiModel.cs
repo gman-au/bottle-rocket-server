@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Rocket.OpenAi.Contracts
 {
@@ -7,11 +6,5 @@ namespace Rocket.OpenAi.Contracts
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }
-        
-        [JsonPropertyName("model")]
-        public string Model { get; set; }
-        
-        [JsonPropertyName("capabilities")]
-        public IEnumerable<string> Capabilities { get; set; }
     }
 }

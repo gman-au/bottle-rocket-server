@@ -34,7 +34,7 @@ namespace Rocket.OpenAi.Injection.Api
             
             services
                 .AddTransient<IConnectorModelMapper, OpenAiConnectorMapper>()
-                //.AddTransient<IOpenAiClient, OpenAiClient>()
+                .AddTransient<IOpenAiClient, OpenAiClient>()
                 .AddTransient<IBsonMapper, OpenAiBsonMapper>();
 
             services
