@@ -25,6 +25,7 @@ namespace Rocket.Api.Host.Controllers
         IUserManager userManager,
         ICaptureNotifier captureNotifier,
         IScannedImageHandler scannedImageHandler,
+        IExecutionRepository executionRepository,
         IDashboardSnapshotProvider dashboardSnapshotProvider
     ) : RocketControllerBase(userManager)
     {
@@ -224,6 +225,16 @@ namespace Rocket.Api.Host.Controllers
                 return 
                     ((TranscriptionSpecifics)null)
                     .AsApiSuccess();
+            
+            // check if execution link is dead
+            var execution =
+                await
+                    executionRepository
+                        .GetExecutionByIdAsync(
+                            userId,
+                            transcription.ExecutionId,
+                            cancellationToken
+                        );
 
             var response =
                 new TranscriptionSpecifics
@@ -232,6 +243,7 @@ namespace Rocket.Api.Host.Controllers
                     ExecutionId = transcription.ExecutionId,
                     ExecutionName = transcription.ExecutionName,
                     TranscriptionDate = transcription.TranscriptionDate,
+                    ExecutionExists = execution != null,
                     Text = transcription.Text
                 };
 

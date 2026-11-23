@@ -5,7 +5,14 @@
 @inject IStringLocalizer<TranscriptionResource> StringLocalizer
 
 <MudDialog Class="p-2">
-    <TitleContent/>
+    <TitleContent>
+        <MudText
+            Color="Color.Primary"
+            GutterBottom
+            Typo="Typo.h5">
+            @StringLocalizer["TranscriptionViewTitle"]
+        </MudText>
+    </TitleContent>
     <DialogContent>
         <MudGrid>
             <MudItem xs="12" sm="6">
@@ -22,6 +29,7 @@
                         Alignment="left"
                         Title="@StringLocalizer["TranscriptionExecutionFieldHeader"]">
                         <MudLink
+                            Disabled="@(!Transcription.ExecutionExists)"
                             Color="Color.Secondary"
                             Href="@($"/MyExecution/{Transcription.ExecutionId}")">
                             @Transcription.ExecutionName

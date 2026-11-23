@@ -14,6 +14,9 @@ namespace Rocket.Api.Contracts.Scans
         [JsonPropertyName("execution_name")]
         public string ExecutionName { get; set; }
         
+        [JsonPropertyName("execution_exists")]
+        public bool ExecutionExists { get; set; }
+        
         [JsonPropertyName("transcription_date")]
         public DateTime TranscriptionDate { get; set; }
         
