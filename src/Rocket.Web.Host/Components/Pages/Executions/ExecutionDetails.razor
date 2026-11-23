@@ -310,14 +310,14 @@
         int status
     )
     {
-        var elements = 
+        var elements =
             _currentModel
                 .Elements
                 .ToList();
-        
-        var element = 
+
+        var element =
             elements
-            .FirstOrDefault(x => x.ScanId == scanId);
+                .FirstOrDefault(x => x.ScanId == scanId);
 
         if (element != null)
         {
@@ -332,21 +332,21 @@
                     ContentType = element.ContentType,
                     Vendor = element.Vendor
                 };
-            
+
             var index = elements.IndexOf(element);
-            
+
             elements
                 .Remove(element);
-            
+
             elements
                 .Insert(
-                index,
-                newElement
-            );
+                    index,
+                    newElement
+                );
 
             _currentModel.Elements = elements;
-            
-            await 
+
+            await
                 InvokeAsync(StateHasChanged);
         }
     }
@@ -410,7 +410,7 @@
         // Clean up SignalR subscription
         CaptureHubClient.OnNewExecutionUpdateReceived -= HandleExecutionUpdate;
         CaptureHubClient.OnNewExecutionElementUpdateReceived -= HandleExecutionElementUpdate;
-        
+
         await
             CaptureHubClient
                 .DisposeAsync();
@@ -496,13 +496,25 @@
                 _isLoading = true;
                 StateHasChanged();
 
-                await
-                    ApiRequestManager
-                        .Executions
-                        .CancelExecutionAsync(
-                            _currentModel.Id,
-                            BaseCancellationToken
+                var response =
+                    await
+                        ApiRequestManager
+                            .Executions
+                            .CancelExecutionAsync(
+                                _currentModel.Id,
+                                BaseCancellationToken
+                            );
+
+                if (response.IsCancelled)
+                {
+                    _currentModel.ExecutionStatus = (int)ExecutionStatusEnum.Cancelled;
+
+                    Snackbar
+                        .Add(
+                            StringLocalizer["ExecutionsHasBeenCancelledMessage"].Value,
+                            Severity.Success
                         );
+                }
             }
             catch (Exception ex)
             {

@@ -11,6 +11,10 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
-        Task<bool> CancelExecutionAsync(string executionId);
+        Task<bool> CancelExecutionAsync(
+            string executionId,
+            string userId,
+            CancellationToken cancellationToken
+        );
     }
 }

@@ -91,8 +91,10 @@ namespace Rocket.Api.Host.Controllers
                                     Name = o.Name,
                                     ExecutionStatus = o.ExecutionStatus,
                                     Archived = o.Archived,
-                                    CoverContentType = (o.Elements ?? []).FirstOrDefault()?.ContentType,
-                                    CoverThumbnailBase64 = (o.Elements ?? []).FirstOrDefault()?.ThumbnailBase64
+                                    CoverContentType = (o.Elements ?? []).FirstOrDefault()
+                                        ?.ContentType,
+                                    CoverThumbnailBase64 = (o.Elements ?? []).FirstOrDefault()
+                                        ?.ThumbnailBase64
                                 }
                             ),
                     TotalRecords = (int)totalRecordCount
@@ -154,7 +156,7 @@ namespace Rocket.Api.Host.Controllers
                 {
                     IsDeleted = result
                 };
-            
+
             dashboardSnapshotProvider
                 .MarkAsDirty(userId);
 
@@ -225,7 +227,7 @@ namespace Rocket.Api.Host.Controllers
                 {
                     Id = executionId
                 };
-            
+
             dashboardSnapshotProvider
                 .MarkAsDirty(userId);
 
@@ -292,14 +294,18 @@ namespace Rocket.Api.Host.Controllers
             var result =
                 await
                     workflowExecutionManager
-                        .CancelExecutionAsync(id);
+                        .CancelExecutionAsync(
+                            id,
+                            userId,
+                            cancellationToken
+                        );
 
             var response =
                 new CancelExecutionResponse
                 {
                     IsCancelled = result
                 };
-            
+
             dashboardSnapshotProvider
                 .MarkAsDirty(userId);
 
@@ -377,7 +383,7 @@ namespace Rocket.Api.Host.Controllers
                 {
                     IsStarted = result
                 };
-            
+
             dashboardSnapshotProvider
                 .MarkAsDirty(userId);
 
@@ -460,9 +466,9 @@ namespace Rocket.Api.Host.Controllers
                                         .From(o);
                             }
                         ),
-                    Elements = 
+                    Elements =
                         (execution.Elements ?? [])
-                        .Select(o => 
+                        .Select(o =>
                             new ExecutionElementSummary
                             {
                                 Id = o.Id,
@@ -474,8 +480,10 @@ namespace Rocket.Api.Host.Controllers
                                 Vendor = o.Vendor
                             }
                         ),
-                    CoverContentType = (execution.Elements ?? []).FirstOrDefault()?.ContentType,
-                    CoverThumbnailBase64 = (execution.Elements ?? []).FirstOrDefault()?.ThumbnailBase64
+                    CoverContentType = (execution.Elements ?? []).FirstOrDefault()
+                        ?.ContentType,
+                    CoverThumbnailBase64 = (execution.Elements ?? []).FirstOrDefault()
+                        ?.ThumbnailBase64
                 };
 
             return
