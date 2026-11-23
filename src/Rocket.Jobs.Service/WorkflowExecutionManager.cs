@@ -187,18 +187,31 @@ namespace Rocket.Jobs.Service
         }
 
         public async Task<bool> CancelExecutionAsync(
-            string executionId
+            string executionId,
+            string userId,
+            CancellationToken cancellationToken
         )
         {
-            if (!_cancellationTokenSources.TryGetValue(
+            if (_cancellationTokenSources.TryGetValue(
                     executionId,
                     out var cts
-                )) return false;
+                ))
+            {
+                await
+                    cts
+                        .CancelAsync();
+            }
 
             await
-                cts
-                    .CancelAsync();
-
+                executionRepository
+                    .UpdateExecutionFieldAsync(
+                        executionId,
+                        userId,
+                        o => o.ExecutionStatus,
+                        (int)ExecutionStatusEnum.Cancelled,
+                        cancellationToken
+                    );
+            
             return true;
         }
         

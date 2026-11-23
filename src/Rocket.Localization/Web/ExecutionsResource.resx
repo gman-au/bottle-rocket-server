@@ -45,6 +45,9 @@
     <data name="ExecutionsHasBeenDeletedMessage" xml:space="preserve">
         <value>The workflow run has been deleted.</value>
     </data>
+    <data name="ExecutionsHasBeenCancelledMessage" xml:space="preserve">
+        <value>The workflow run has been cancelled.</value>
+    </data>
     <!-- VALUES -->
     <data name="ExecutionsStatusUnknownValue" xml:space="preserve">
         <value>Unknown</value>
