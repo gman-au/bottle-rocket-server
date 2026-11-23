@@ -385,31 +385,6 @@ namespace Rocket.Infrastructure
                             userId,
                             batchId
                         );
-
-                    var count =
-                        await
-                            executionRepository
-                                .DeleteExecutionsByBatchIdAsync(
-                                    userId,
-                                    batchId,
-                                    cancellationToken
-                                );
-
-                    logger
-                        .LogInformation(
-                            "Successfully deleted {count} for user ID: {userId}, scan id: {id}",
-                            count,
-                            userId,
-                            batchId
-                        );
-
-                    await
-                        batchRepository
-                            .DeleteBatchAsync(
-                                userId,
-                                batchId,
-                                cancellationToken
-                            );
                 }
                 else
                 {
@@ -420,6 +395,31 @@ namespace Rocket.Infrastructure
                             batchId
                         );
                 }
+
+                var count =
+                    await
+                        executionRepository
+                            .DeleteExecutionsByBatchIdAsync(
+                                userId,
+                                batchId,
+                                cancellationToken
+                            );
+
+                logger
+                    .LogInformation(
+                        "Successfully deleted {count} for user ID: {userId}, scan id: {id}",
+                        count,
+                        userId,
+                        batchId
+                    );
+
+                await
+                    batchRepository
+                        .DeleteBatchAsync(
+                            userId,
+                            batchId,
+                            cancellationToken
+                        );
 
                 return allDeleted;
             }
