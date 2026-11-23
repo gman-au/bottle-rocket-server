@@ -23,6 +23,21 @@
     Class="mb-4">
     @StringLocalizer["ScansListTitle"]
 </MudText>
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="4">
+        <MudTextField
+            @bind-Value="_searchTerm"
+            Variant="Variant.Outlined"
+            T="string"
+            Clearable
+            Label="@StringLocalizer["ScansSearchTitle"]"
+            Adornment="Adornment.Start"
+            AdornmentIcon="@StandardIcons.SearchScansIcon"
+            DebounceInterval="500"
+            OnDebounceIntervalElapsed="@(TextSearchAsync)"/>
+    </MudItem>
+</MudGrid>
+<hr/>
 <BottleRocketLoadingOverlay IsLoading="@_isLoading">
     @if ((_batches ?? []).Any())
     {
@@ -100,7 +115,8 @@
                     Disabled="@_noMoreRecords"
                     @onclick="@(async () => await LoadBatchesAsync(
                                   _currentIndex,
-                                  DefaultPageSize
+                                  DefaultPageSize,
+                                  _searchTerm
                               ))">
                     @StringLocalizer["ScansLoadMoreCaption"]
                 </MudButton>
@@ -124,6 +140,7 @@
     private bool _isConnected;
     private bool _noMoreRecords = false;
     private int _currentIndex = 0;
+    private string _searchTerm = null;
     private IEnumerable<BatchSummary> _batches = [];
 
     protected override async Task OnAfterRenderAsync(
@@ -169,7 +186,8 @@
             await
                 LoadBatchesAsync(
                     _currentIndex,
-                    DefaultPageSize
+                    DefaultPageSize,
+                    _searchTerm
                 );
         }
         catch (Exception ex)
@@ -273,7 +291,7 @@
                             existingIndex,
                             updatedBatchSummary
                         );
-                
+
                 _batches = newBatches;
             }
         }
@@ -282,87 +300,51 @@
             await
                 LoadBatchesAsync(
                     0,
-                    1
+                    1,
+                    _searchTerm
                 );
         }
     }
 
-
     private async Task LoadBatchesAsync(
         int index,
         int count,
-        string batchId = null
+        string searchTerm = null
     )
     {
-        BatchSummary existingBatch = null;
-
-        if (!string.IsNullOrEmpty(batchId))
-        {
-            existingBatch =
-                _batches
-                    .FirstOrDefault(o => o.Id == batchId);
-        }
-
-        if (existingBatch != null)
-        {
-            var response =
-                await
-                    ApiRequestManager
-                        .Batches
-                        .GetMyBatchAsync(
-                            batchId,
-                            BaseCancellationToken
-                        );
-
-            if (response != null)
+        var request =
+            new MyBatchesRequest
             {
-                var updatedSummary =
-                    new BatchSummary
-                    {
-                        Id = response.Id,
-                        DateScanned = response.DateScanned,
-                        Description = response.Description,
-                        ScanCount = response.ScanCount,
-                        CoverContentType = existingBatch.CoverContentType,
-                        CoverThumbnailBase64 = existingBatch.CoverThumbnailBase64
-                    };
-            }
-        }
-        else
-        {
-            var request =
-                new MyBatchesRequest
-                {
-                    StartIndex = index,
-                    RecordCount = count
-                };
+                StartIndex = index,
+                RecordCount = count,
+                SearchTerm = searchTerm
+            };
 
-            var response =
-                await
-                    ApiRequestManager
-                        .Batches
-                        .GetMyBatchesAsync(
-                            request,
-                            BaseCancellationToken
-                        );
+        var response =
+            await
+                ApiRequestManager
+                    .Batches
+                    .GetMyBatchesAsync(
+                        request,
+                        BaseCancellationToken
+                    );
 
-            _currentIndex +=
-                (response?.Batches ?? [])
-                .Count();
+        _currentIndex +=
+            (response?.Batches ?? [])
+            .Count();
 
-            _noMoreRecords = _currentIndex == (response?.TotalRecords ?? 0);
+        _noMoreRecords = _currentIndex == (response?.TotalRecords ?? 0);
 
-            var existingBatches = new List<BatchSummary>(_batches);
-            var newBatches = new List<BatchSummary>(response?.Batches ?? []);
+        var existingBatches = new List<BatchSummary>(_batches);
+        var newBatches = new List<BatchSummary>(response?.Batches ?? []);
 
-            _batches =
-                existingBatches
-                    .UnionBy(
-                        newBatches,
-                        o => o.Id
-                    )
-                    .OrderByDescending(o => o.DateScanned);
-        }
+        _batches =
+            existingBatches
+                .UnionBy(
+                    newBatches,
+                    o => o.Id
+                )
+                .OrderByDescending(o => o.DateScanned);
     }
 
     private async Task ConfirmDeleteAsync(
@@ -417,6 +399,37 @@
                 _isLoading = false;
                 StateHasChanged();
             }
+        }
+    }
+
+    private async Task TextSearchAsync()
+    {
+        try
+        {
+            _isLoading = true;
+            StateHasChanged();
+            
+            // reset results
+            _batches = [];
+            _currentIndex = 0;
+
+            await
+                LoadBatchesAsync(
+                    _currentIndex,
+                    DefaultPageSize,
+                    _searchTerm
+                );
+        }
+        catch (Exception ex)
+        {
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
         }
     }
 

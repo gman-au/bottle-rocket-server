@@ -22,6 +22,7 @@ namespace Rocket.Web.Host
         public const string SyncError = Icons.Material.Filled.SyncProblem;
         public const string WorkflowsIcon = Icons.Material.Filled.AccountTree;
         public const string SearchWorkflowIcon = Icons.Material.Filled.Search;
+        public const string SearchScansIcon = Icons.Material.Filled.Search;
         public const string AddWorkflowIcon = Icons.Material.Filled.AddCircleOutline;
         public const string AttachmentIcon = Icons.Material.Filled.AttachFile;
         public const string CloudIcon = Icons.Material.Filled.CloudUpload;

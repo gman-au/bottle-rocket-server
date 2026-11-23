@@ -215,6 +215,7 @@ namespace Rocket.Api.Host.Controllers
                             userId,
                             request.StartIndex,
                             request.RecordCount,
+                            request.SearchTerm,
                             cancellationToken
                         );
 

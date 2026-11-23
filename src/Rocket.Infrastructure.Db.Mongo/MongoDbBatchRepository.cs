@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -55,32 +56,79 @@ namespace Rocket.Infrastructure.Db.Mongo
             string userId,
             int startIndex,
             int recordCount,
+            string searchTerm,
             CancellationToken cancellationToken
-        ) => await
-            FetchAllPagedAndFilteredRecordsAsync(
-                startIndex,
-                recordCount,
-                Builders<Batch>
-                    .Filter
+        )
+        {
+            var builder = Builders<Batch>.Filter;
+
+            var filter =
+                builder
                     .Eq(
-                        u => u.UserId,
+                        b => b.UserId,
                         userId
                     ) &
-                Builders<Batch>
-                    .Filter
+                builder
                     .Ne(
-                        u => u.Status,
+                        b => b.Status,
                         (int)BatchStatusEnum.Archived
                     ) &
-                Builders<Batch>
-                    .Filter
+                builder
                     .SizeGt(
-                        u => u.Scans,
+                        b => b.Scans,
                         0
-                    ),
-                o => o.CaptureDate,
-                cancellationToken
-            );
+                    );
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var regex =
+                    new BsonRegularExpression(
+                        Regex.Escape(searchTerm.Trim()),
+                        "i"
+                    );
+
+                var scanBuilder =
+                    Builders<ScannedImage>
+                        .Filter;
+
+                filter &=
+                    builder
+                        .Or(
+                            builder
+                                .Regex(
+                                    b => b.Description,
+                                    regex
+                                ),
+                            builder
+                                .ElemMatch(
+                                    b => b.Scans,
+                                    scanBuilder
+                                        .Or(
+                                            scanBuilder
+                                                .Regex(
+                                                    s => s.Description,
+                                                    regex
+                                                ),
+                                            scanBuilder
+                                                .Regex(
+                                                    s => s.Transcription.Text,
+                                                    regex
+                                                )
+                                        )
+                                )
+                        );
+            }
+
+            return
+                await
+                    FetchAllPagedAndFilteredRecordsAsync(
+                        startIndex,
+                        recordCount,
+                        filter,
+                        o => o.CaptureDate,
+                        cancellationToken
+                    );
+        }
 
         public async Task<Batch> InsertBatchAsync(
             Batch batch,

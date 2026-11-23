@@ -135,8 +135,9 @@ namespace Rocket.Infrastructure.Db.Mongo
                         .Find(filter);
 
                 if (orderBy != null)
-                    findFluent
-                        .SortByDescending(orderBy);
+                    findFluent =
+                        findFluent
+                            .SortByDescending(orderBy);
 
                 var records =
                     await

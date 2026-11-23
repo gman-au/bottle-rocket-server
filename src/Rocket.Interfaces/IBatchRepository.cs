@@ -21,6 +21,7 @@ namespace Rocket.Interfaces
             string userId,
             int startIndex,
             int recordCount,
+            string searchTerm,
             CancellationToken cancellationToken
         );
 
