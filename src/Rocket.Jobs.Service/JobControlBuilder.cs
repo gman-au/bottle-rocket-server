@@ -10,12 +10,14 @@ using Rocket.Interfaces;
 namespace Rocket.Jobs.Service
 {
     public class JobControlBuilder(
+        ITranscriber transcriber,
         ICaptureNotifier captureNotifier,
         IExecutionRepository executionRepository,
         IExecutionElementRepository executionElementRepository
     ) : IJobControlBuilder
     {
         public IJobControl Build(
+            string batchId,
             string userId,
             string executionId,
             BaseExecutionStep executionStep
@@ -51,12 +53,30 @@ namespace Rocket.Jobs.Service
                             );
                     }
                 );
+            
+            var addTextTranscriptionTask =
+                new Func<string, string, Task>(async (scanId, text) =>
+                {
+                    await
+                        transcriber
+                            .ApplyTranscriptionAsync(
+                                userId,
+                                batchId,
+                                scanId,
+                                executionId,
+                                executionStep.StepName,
+                                executionStep.RunDate ?? DateTime.UtcNow,
+                                text,
+                                CancellationToken.None
+                            );
+                });
 
             var jobControl =
                 new JobControl
                 {
                     AppendLogMessageCallback = appendLogMessageTask,
-                    UpdateStepStatusCallback = updateStepStatusTask
+                    UpdateStepStatusCallback = updateStepStatusTask,
+                    AddTextTranscriptionCallback = addTextTranscriptionTask
                 };
 
             return jobControl;

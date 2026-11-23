@@ -178,6 +178,13 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
 
                     await
                         jobControl
+                            .TranscribeTextAsync(
+                                element.ScanId,
+                                extractedMarkdown
+                            );
+                    
+                    await
+                        jobControl
                             .SucceedStepAsync(
                                 $"DataLabTo OCR response: \"{extractedMarkdown}\"",
                                 element.ScanId

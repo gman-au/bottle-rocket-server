@@ -113,6 +113,7 @@ namespace Rocket.Jobs.Service
                                 await
                                     childStep
                                         .AsTask(
+                                            execution.BatchId,
                                             userId,
                                             executionId,
                                             context,

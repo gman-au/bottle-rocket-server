@@ -12,6 +12,7 @@ namespace Rocket.Jobs.Service
     {
         public static async Task AsTask(
             this BaseExecutionStep step,
+            string batchId,
             string userId,
             string executionId,
             IWorkflowExecutionContext context,
@@ -22,6 +23,7 @@ namespace Rocket.Jobs.Service
             var jobControl =
                 jobControlBuilder
                     .Build(
+                        batchId,
                         userId,
                         executionId,
                         step
@@ -77,6 +79,7 @@ namespace Rocket.Jobs.Service
                     await
                         childStep
                             .AsTask(
+                                batchId,
                                 userId,
                                 executionId,
                                 context,

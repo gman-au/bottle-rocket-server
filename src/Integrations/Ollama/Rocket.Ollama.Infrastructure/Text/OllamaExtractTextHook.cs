@@ -110,6 +110,13 @@ namespace Rocket.Ollama.Infrastructure.Text
                                 $"Ollama response: \"{response}\"",
                                 element.ScanId
                             );
+                    
+                    await
+                        jobControl
+                            .TranscribeTextAsync(
+                                element.ScanId,
+                                response
+                            );
 
                     fileResults
                         .Add((element.ScanId, response));
@@ -138,7 +145,7 @@ namespace Rocket.Ollama.Infrastructure.Text
             return
                 fileResults
                     .ToArray()
-                    .AsCompletedRawTextArtifact();
+                    .AsCompletedRawTextArtifact(Artifact);
         }
     }
 }

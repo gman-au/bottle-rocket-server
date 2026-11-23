@@ -9,5 +9,7 @@ namespace Rocket.Interfaces
         public Func<JobLogEntry, Task> AppendLogMessageCallback { get; set;}
         
         public Func<JobStatusEntry, Task> UpdateStepStatusCallback { get; set;}
+
+        public Func<string, string, Task> AddTextTranscriptionCallback { get; set; }
     }
 }

@@ -112,6 +112,13 @@ namespace Rocket.OpenAi.Infrastructure.Text
                                 $"OpenAI response: \"{response}\"",
                                 element.ScanId
                             );
+                    
+                    await
+                        jobControl
+                            .TranscribeTextAsync(
+                                element.ScanId,
+                                response
+                            );
 
                     fileResults
                         .Add((element.ScanId, response));
@@ -140,7 +147,7 @@ namespace Rocket.OpenAi.Infrastructure.Text
             return
                 fileResults
                     .ToArray()
-                    .AsCompletedRawTextArtifact();
+                    .AsCompletedRawTextArtifact(Artifact);
         }
     }
 }

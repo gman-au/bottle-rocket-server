@@ -85,5 +85,69 @@ namespace Rocket.Web.Infrastructure.Client
 
             return result;
         }
+
+        public async Task<TranscriptionSpecifics> GetMyTranscriptionAsync(
+            string batchId,
+            string scanId,
+            CancellationToken cancellationToken
+        )
+        {
+            Logger
+                .LogInformation("Received My Transcription request");
+
+            var response =
+                await
+                    AuthenticatedApiClient
+                        .GetAsync(
+                            $"/api/scans/transcription/{batchId}/{scanId}",
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<TranscriptionSpecifics>(
+                            JsonSerializerOptions,
+                            Logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
+
+        public async Task<ApiResponse> DeleteTranscriptionByIdAsync(
+            string batchId,
+            string scanId,
+            CancellationToken cancellationToken
+        )
+        {
+            Logger
+                .LogInformation("Received Delete Transcription request");
+
+            var response =
+                await
+                    AuthenticatedApiClient
+                        .DeleteAsync(
+                            $"/api/scans/transcription/delete/{batchId}/{scanId}",
+                            cancellationToken
+                        );
+
+            var result =
+                await
+                    response
+                        .TryParseResponse<ApiResponse>(
+                            JsonSerializerOptions,
+                            Logger,
+                            cancellationToken
+                        );
+
+            EnsureApiSuccessStatusCode(result);
+            EnsureHttpSuccessStatusCode(response);
+
+            return result;
+        }
     }
 }

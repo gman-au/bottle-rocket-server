@@ -18,5 +18,17 @@ namespace Rocket.Web.Infrastructure.Client
             string scanId,
             CancellationToken cancellationToken
         );
+        
+        Task<TranscriptionSpecifics> GetMyTranscriptionAsync(
+            string batchId,
+            string scanId,
+            CancellationToken cancellationToken
+        );        
+        
+        Task<ApiResponse> DeleteTranscriptionByIdAsync(
+            string batchId,
+            string scanId,
+            CancellationToken cancellationToken
+        );
     }
 }

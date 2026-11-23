@@ -215,6 +215,7 @@ namespace Rocket.Api.Host.Controllers
                             userId,
                             request.StartIndex,
                             request.RecordCount,
+                            request.SearchTerm,
                             cancellationToken
                         );
 
@@ -313,7 +314,8 @@ namespace Rocket.Api.Host.Controllers
                                     DateScanned = o.CaptureDate.ToLocalTime(),
                                     ContentType = o.ContentType,
                                     Vendor = o.Vendor,
-                                    ThumbnailBase64 = o.ThumbnailBase64
+                                    ThumbnailBase64 = o.ThumbnailBase64,
+                                    IsTranscribed = o.Transcription != null
                                 }
                             ),
                     ScanCount =

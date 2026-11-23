@@ -31,6 +31,9 @@
     <data name="ScansPreviousRunsTitle" xml:space="preserve">
         <value>Previous runs</value>
     </data>
+    <data name="ScansSearchTitle" xml:space="preserve">
+        <value>Search for text</value>
+    </data>
     <!-- FIELDS & HINTS -->
     <data name="ScansDescriptionFieldHeader" xml:space="preserve">
         <value>Description</value>

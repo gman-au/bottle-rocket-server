@@ -9,5 +9,8 @@ namespace Rocket.Api.Contracts.Batches
         
         [JsonPropertyName("record_count")]
         public int RecordCount { get; set; }
+        
+        [JsonPropertyName("search_term")]
+        public string SearchTerm { get; set; }
     }
 }

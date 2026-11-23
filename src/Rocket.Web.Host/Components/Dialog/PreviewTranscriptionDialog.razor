@@ -1,0 +1,79 @@
+﻿@using global::Markdig
+@using Microsoft.Extensions.Localization
+@using Rocket.Api.Contracts.Scans
+@using Rocket.Localization.Web
+@inject IStringLocalizer<TranscriptionResource> StringLocalizer
+
+<MudDialog Class="p-2">
+    <TitleContent>
+        <MudText
+            Color="Color.Primary"
+            GutterBottom
+            Typo="Typo.h5">
+            @StringLocalizer["TranscriptionViewTitle"]
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <div class="mud-border-tertiary border p-4 rounded" id="scroll-images" style="height: 600px; overflow-y: auto;">
+                    @((MarkupString)Markdown.ToHtml(Transcription.Text))
+                </div>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudSimpleTable
+                    Bordered
+                    Dense>
+                    <tbody>
+                    <ComplexTableRowPair
+                        Alignment="left"
+                        Title="@StringLocalizer["TranscriptionExecutionFieldHeader"]">
+                        <MudLink
+                            Disabled="@(!Transcription.ExecutionExists)"
+                            Color="Color.Secondary"
+                            Href="@($"/MyExecution/{Transcription.ExecutionId}")">
+                            @Transcription.ExecutionName
+                        </MudLink>
+                    </ComplexTableRowPair>
+                    <SimpleTableRowPair
+                        Title="@StringLocalizer["TranscriptionDateFieldHeader"]"
+                        Value=@Transcription.TranscriptionDate.ToString("yyyy-MM-dd HH:mm:ss")/>
+                    </tbody>
+                </MudSimpleTable>
+                <MudScrollToTop Selector="#scroll-images">
+                    <MudFab
+                        Color="Color.Default"
+                        StartIcon="@Icons.Material.Filled.ArrowCircleUp"
+                    />
+                </MudScrollToTop>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public TranscriptionSpecifics Transcription { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await
+            MudDialog
+                .SetOptionsAsync(
+                    new DialogOptions
+                    {
+                        FullWidth = true,
+                        CloseButton = true,
+                        CloseOnEscapeKey = true,
+                        MaxWidth = MaxWidth.Large,
+                        BackgroundClass = "dialog-blur-backdrop"
+                    }
+                );
+    }
+
+
+}

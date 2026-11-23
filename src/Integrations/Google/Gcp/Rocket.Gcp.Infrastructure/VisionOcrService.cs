@@ -108,6 +108,13 @@ namespace Rocket.Gcp.Infrastructure
                                     element.ScanId
                                 );
 
+                        await
+                            jobControl
+                                .TranscribeTextAsync(
+                                    element.ScanId,
+                                    ocrResult
+                                );
+                        
                         var resultArtifact =
                             new ArtifactDataElement
                             {

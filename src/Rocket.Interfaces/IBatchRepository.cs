@@ -21,6 +21,7 @@ namespace Rocket.Interfaces
             string userId,
             int startIndex,
             int recordCount,
+            string searchTerm,
             CancellationToken cancellationToken
         );
 
@@ -69,6 +70,21 @@ namespace Rocket.Interfaces
         );
 
         Task DeleteScanByIdAsync(
+            string userId,
+            string batchId,
+            string scanId,
+            CancellationToken cancellationToken
+        );
+
+        Task<Transcription> UpdateBatchScanTranscriptionAsync(
+            string userId,
+            string batchId,
+            string scanId,
+            Transcription transcription,
+            CancellationToken cancellationToken
+        );
+
+        Task ClearBatchScanTranscriptionsAsync(
             string userId,
             string batchId,
             string scanId,
