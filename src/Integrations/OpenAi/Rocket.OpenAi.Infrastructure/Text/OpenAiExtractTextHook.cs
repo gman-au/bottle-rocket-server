@@ -147,7 +147,7 @@ namespace Rocket.OpenAi.Infrastructure.Text
             return
                 fileResults
                     .ToArray()
-                    .AsCompletedRawTextArtifact();
+                    .AsCompletedRawTextArtifact(Artifact);
         }
     }
 }

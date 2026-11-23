@@ -145,7 +145,7 @@ namespace Rocket.Ollama.Infrastructure.Text
             return
                 fileResults
                     .ToArray()
-                    .AsCompletedRawTextArtifact();
+                    .AsCompletedRawTextArtifact(Artifact);
         }
     }
 }
