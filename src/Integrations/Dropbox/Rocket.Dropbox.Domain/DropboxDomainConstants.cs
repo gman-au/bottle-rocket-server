@@ -15,7 +15,8 @@ namespace Rocket.Dropbox.Domain
             (int)WorkflowFormatTypeEnum.RawTextData,
             (int)WorkflowFormatTypeEnum.ImageData,
             (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData,
-            (int)WorkflowFormatTypeEnum.Markdown
+            (int)WorkflowFormatTypeEnum.Markdown,
+            (int)WorkflowFormatTypeEnum.WeeklyPlanData
         ];
 
         public const int DropboxUploadOutputType = (int)WorkflowFormatTypeEnum.Void;

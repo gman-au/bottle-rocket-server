@@ -1,5 +1,5 @@
 ﻿using Rocket.Api.Contracts.Transcriptions;
-using Rocket.Domain.Transcriptions;
+using Rocket.Domain.Transcriptions.Texts;
 
 namespace Rocket.Infrastructure.Mapping.Transcriptions
 {

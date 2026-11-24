@@ -49,4 +49,26 @@
     <data name="TranscriptionProjectNotesFieldHeader" xml:space="preserve">
         <value>Notes</value>
     </data>
+    <!-- FIELDS & HINTS (WEEKLY PLAN) -->
+    <data name="TranscriptionWeeklyMondayFieldHeader" xml:space="preserve">
+        <value>Monday</value>
+    </data>
+    <data name="TranscriptionWeeklyTuesdayFieldHeader" xml:space="preserve">
+        <value>Tuesday</value>
+    </data>
+    <data name="TranscriptionWeeklyWednesdayFieldHeader" xml:space="preserve">
+        <value>Wednesday</value>
+    </data>
+    <data name="TranscriptionWeeklyThursdayFieldHeader" xml:space="preserve">
+        <value>Thursday</value>
+    </data>
+    <data name="TranscriptionWeeklyFridayFieldHeader" xml:space="preserve">
+        <value>Friday</value>
+    </data>
+    <data name="TranscriptionWeeklySaturdayFieldHeader" xml:space="preserve">
+        <value>Saturday</value>
+    </data>
+    <data name="TranscriptionWeeklySundayFieldHeader" xml:space="preserve">
+        <value>Sunday</value>
+    </data>    
 </root>

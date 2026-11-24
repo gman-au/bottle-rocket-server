@@ -28,7 +28,9 @@ namespace Rocket.Ollama.Domain
         public static readonly int[] OllamaRetitleFileInputTypes  =
         [
             (int)WorkflowFormatTypeEnum.RawTextData,
-            (int)WorkflowFormatTypeEnum.Markdown
+            (int)WorkflowFormatTypeEnum.Markdown,
+            (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData,
+            (int)WorkflowFormatTypeEnum.WeeklyPlanData
         ];
 
         public const int OllamaRetitleFileOutputType = (int)WorkflowFormatTypeEnum.Inherited;

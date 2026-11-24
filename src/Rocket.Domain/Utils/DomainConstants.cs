@@ -43,6 +43,7 @@ namespace Rocket.Domain.Utils
             { (int)WorkflowFormatTypeEnum.RawTextData, "Raw Text Data" },
             { (int)WorkflowFormatTypeEnum.Markdown, "Markdown" },
             { (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData, "Project Task Tracker Data" },
+            { (int)WorkflowFormatTypeEnum.WeeklyPlanData, "Weekly Plan Data" },
         };
 
         public static readonly Dictionary<int, string> ExecutionStatusTypes = new()

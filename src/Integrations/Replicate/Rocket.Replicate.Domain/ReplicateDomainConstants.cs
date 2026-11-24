@@ -26,7 +26,9 @@ namespace Rocket.Replicate.Domain
         public static readonly int[] ReplicateRetitleFileInputTypes  =
         [
             (int)WorkflowFormatTypeEnum.RawTextData,
-            (int)WorkflowFormatTypeEnum.Markdown
+            (int)WorkflowFormatTypeEnum.Markdown,
+            (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData,
+            (int)WorkflowFormatTypeEnum.WeeklyPlanData
         ];
 
         public const int ReplicateRetitleFileOutputType = (int)WorkflowFormatTypeEnum.Inherited;

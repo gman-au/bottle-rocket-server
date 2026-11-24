@@ -1,4 +1,4 @@
-﻿namespace Rocket.Domain.Transcriptions
+﻿namespace Rocket.Domain.Transcriptions.Texts
 {
     public record TextTranscription : BaseTranscription
     {

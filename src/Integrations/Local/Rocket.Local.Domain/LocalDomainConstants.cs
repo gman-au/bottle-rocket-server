@@ -12,7 +12,9 @@ namespace Rocket.Local.Domain
             (int)WorkflowFormatTypeEnum.File,
             (int)WorkflowFormatTypeEnum.RawTextData,
             (int)WorkflowFormatTypeEnum.ImageData,
-            (int)WorkflowFormatTypeEnum.Markdown
+            (int)WorkflowFormatTypeEnum.Markdown,
+            (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData,
+            (int)WorkflowFormatTypeEnum.WeeklyPlanData
         ];
 
         public static readonly int[] LocalRetitleInputTypes =

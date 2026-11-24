@@ -352,6 +352,11 @@
                 await
                     ShowTranscriptionPreviewDialog<PreviewTranscriptionProjectDialog>(transcription);
             }
+            if (transcription is WeeklyPlanTranscriptionSummary)
+            {
+                await
+                    ShowTranscriptionPreviewDialog<PreviewTranscriptionWeeklyPlanDialog>(transcription);
+            }
         }
         catch (Exception ex)
         {

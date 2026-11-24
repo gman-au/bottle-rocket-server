@@ -14,9 +14,11 @@ namespace Rocket.OpenAi.Injection.Serialization
                 .AddSingleton<IJsonTypeDiscriminator<BaseWorkflowStep>, OpenAiExtractTextWorkflowDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseWorkflowStep>, OpenAiExtractProjectWorkflowDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseWorkflowStep>, OpenAiRetitleFileWorkflowDiscriminator>()
+                .AddSingleton<IJsonTypeDiscriminator<BaseWorkflowStep>, OpenAiExtractWeeklyPlanWorkflowDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, OpenAiExtractTextExecutionDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, OpenAiExtractProjectExecutionDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, OpenAiRetitleFileExecutionDiscriminator>()
+                .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, OpenAiExtractWeeklyPlanExecutionDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseConnector>, OpenAiConnectorDiscriminator>();
 
             return services;

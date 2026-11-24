@@ -8,6 +8,7 @@
         RawTextData,
         File,
         ProjectTaskTrackerData,
-        Markdown
+        Markdown,
+        WeeklyPlanData
     }
 }

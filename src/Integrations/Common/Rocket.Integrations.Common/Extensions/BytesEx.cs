@@ -7,6 +7,7 @@ using Rocket.Domain.Exceptions;
 using Rocket.Domain.Extensions;
 using Rocket.Domain.Jobs;
 using Rocket.Page.Schemas.ProjectTaskTracker;
+using Rocket.Page.Schemas.WeeklyPlan;
 
 namespace Rocket.Integrations.Common.Extensions
 {
@@ -41,7 +42,7 @@ namespace Rocket.Integrations.Common.Extensions
                     BatchId = artifact?.BatchId
                 };
         }
-        
+
         public static ExecutionStepArtifact AsCompletedMarkdownArtifact(
             this IEnumerable<(string, string)> values,
             ExecutionStepArtifact artifact = null
@@ -135,6 +136,39 @@ namespace Rocket.Integrations.Common.Extensions
                 };
         }
 
+        public static ExecutionStepArtifact AsCompletedWeeklyDataArtifact(
+            this IEnumerable<(string, WeeklyPlanSchema)> values,
+            ExecutionStepArtifact artifact = null
+        )
+        {
+            var elements =
+                (values ?? []).Select(o =>
+                    new ArtifactDataElement
+                    {
+                        ScanId = o.Item1,
+                        Artifact = Encoding.Default.GetBytes(
+                            JsonSerializer
+                                .Serialize(o.Item2)
+                        ),
+                        FileExtension = CommonFileConstants.JsonFileExtension,
+                        FileName = artifact?.FileName
+                    }
+                )
+                .ToArray()
+                .EnumerateUniquely();
+
+            return
+                new ExecutionStepArtifact
+                {
+                    Result = (int)ExecutionStatusEnum.Completed,
+                    ArtifactDataFormat = (int)WorkflowFormatTypeEnum.WeeklyPlanData,
+                    Elements = elements,
+                    FileName = artifact?.FileName,
+                    UserId = artifact?.UserId,
+                    BatchId = artifact?.BatchId
+                };
+        }
+
         public static string ArtifactAsText(
             this ArtifactDataElement element
         )
@@ -192,7 +226,7 @@ namespace Rocket.Integrations.Common.Extensions
         )
         {
             if (artifact == null) return null;
-            
+
             var elements =
                 (artifact?.Elements ?? []).Select(o =>
                     {
@@ -238,7 +272,7 @@ namespace Rocket.Integrations.Common.Extensions
         )
         {
             if (artifact == null) return null;
-            
+
             var elements =
                 (artifact?.Elements ?? []).Select(o =>
                     new ArtifactDataElement
