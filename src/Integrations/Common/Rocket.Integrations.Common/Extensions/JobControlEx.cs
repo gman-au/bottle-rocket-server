@@ -35,7 +35,7 @@ namespace Rocket.Integrations.Common.Extensions
                         }
                     );
         }
-        
+
         public static async Task StartStepAsync(
             this IJobControl jobControl,
             string scanId = null
@@ -59,16 +59,24 @@ namespace Rocket.Integrations.Common.Extensions
             string scanId = null
         )
         {
+            var cancelled = exception is TaskCanceledException;
+
+            var status =
+                cancelled ? (int)ExecutionStatusEnum.Cancelled : (int)ExecutionStatusEnum.Errored;
+
             await
                 jobControl
                     .UpdateStepStatusCallback(
                         new JobStatusEntry
                         {
-                            ExecutionStatus = (int)ExecutionStatusEnum.Errored,
+                            ExecutionStatus = status,
                             ScanId = scanId,
                             Exception = exception
                         }
                     );
+            
+            if (cancelled)
+                throw exception;
         }
     }
 }

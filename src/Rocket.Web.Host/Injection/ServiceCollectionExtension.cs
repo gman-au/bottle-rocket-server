@@ -67,6 +67,7 @@ namespace Rocket.Web.Host.Injection
                     new MarkdownPipelineBuilder()
                         .DisableHtml()
                         .UseAdvancedExtensions()
+                        .UseSoftlineBreakAsHardlineBreak()
                         .Build()
                 );
 

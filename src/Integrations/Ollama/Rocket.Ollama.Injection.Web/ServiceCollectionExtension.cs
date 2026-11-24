@@ -12,7 +12,8 @@ namespace Rocket.Ollama.Injection.Web
                 .AddTransient<ISkuConnector, OllamaConnectorProduct>()
                 .AddTransient<ISkuWorkflow, OllamaExtractTextWorkflowProduct>()
                 .AddTransient<ISkuWorkflow, OllamaExtractProjectWorkflowProduct>()
-                .AddTransient<ISkuWorkflow, OllamaRetitleFileWorkflowProduct>();
+                .AddTransient<ISkuWorkflow, OllamaRetitleFileWorkflowProduct>()
+                .AddTransient<ISkuWorkflow, OllamaExtractWeeklyPlanWorkflowProduct>();
 
             services
                 .AddOllamaJsonSerialization();

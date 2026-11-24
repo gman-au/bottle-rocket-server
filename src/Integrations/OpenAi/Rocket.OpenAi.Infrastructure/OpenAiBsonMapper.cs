@@ -5,6 +5,7 @@ using Rocket.OpenAi.Domain;
 using Rocket.OpenAi.Domain.Project;
 using Rocket.OpenAi.Domain.Retitle;
 using Rocket.OpenAi.Domain.Text;
+using Rocket.OpenAi.Domain.WeeklyPlan;
 
 namespace Rocket.OpenAi.Infrastructure
 {
@@ -40,6 +41,11 @@ namespace Rocket.OpenAi.Infrastructure
                 BsonClassMap.RegisterClassMap<OpenAiRetitleFileExecutionStep>(cm => { cm.AutoMap(); });
             }
 
+            if (!BsonClassMap.IsClassMapRegistered(typeof(OpenAiExtractWeeklyPlanExecutionStep)))
+            {
+                BsonClassMap.RegisterClassMap<OpenAiExtractWeeklyPlanExecutionStep>(cm => { cm.AutoMap(); });
+            }
+
             if (!BsonClassMap.IsClassMapRegistered(typeof(OpenAiExtractTextWorkflowStep)))
             {
                 BsonClassMap.RegisterClassMap<OpenAiExtractTextWorkflowStep>(cm => { cm.AutoMap(); });
@@ -53,6 +59,11 @@ namespace Rocket.OpenAi.Infrastructure
             if (!BsonClassMap.IsClassMapRegistered(typeof(OpenAiRetitleFileWorkflowStep)))
             {
                 BsonClassMap.RegisterClassMap<OpenAiRetitleFileWorkflowStep>(cm => { cm.AutoMap(); });
+            }
+
+            if (!BsonClassMap.IsClassMapRegistered(typeof(OpenAiExtractWeeklyPlanWorkflowStep)))
+            {
+                BsonClassMap.RegisterClassMap<OpenAiExtractWeeklyPlanWorkflowStep>(cm => { cm.AutoMap(); });
             }
         }
     }

@@ -14,9 +14,11 @@ namespace Rocket.Ollama.Injection.Serialization
                 .AddSingleton<IJsonTypeDiscriminator<BaseWorkflowStep>, OllamaExtractTextWorkflowDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseWorkflowStep>, OllamaExtractProjectWorkflowDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseWorkflowStep>, OllamaRetitleFileWorkflowDiscriminator>()
+                .AddSingleton<IJsonTypeDiscriminator<BaseWorkflowStep>, OllamaExtractWeeklyPlanWorkflowDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, OllamaExtractTextExecutionDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, OllamaExtractProjectExecutionDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, OllamaRetitleFileExecutionDiscriminator>()
+                .AddSingleton<IJsonTypeDiscriminator<BaseExecutionStep>, OllamaExtractWeeklyPlanExecutionDiscriminator>()
                 .AddSingleton<IJsonTypeDiscriminator<BaseConnector>, OllamaConnectorDiscriminator>();
 
             return services;

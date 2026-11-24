@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Rocket.Interfaces;
 using Rocket.Page.Schemas.ProjectTaskTracker;
+using Rocket.Page.Schemas.WeeklyPlan;
 
 namespace Rocket.Integrations.Common.Extensions
 {
@@ -31,6 +32,20 @@ namespace Rocket.Integrations.Common.Extensions
                     .AddProjectTranscriptionCallback(
                         scanId,
                         project
+                    );
+        }       
+        
+        public static async Task TranscribeWeeklyPlanAsync(
+            this ITranscriptionControl transcriptionControl,
+            string scanId,
+            WeeklyPlanSchema weeklyPlan
+        )
+        {
+            await
+                transcriptionControl
+                    .AddWeeklyPlanTranscriptionCallback(
+                        scanId,
+                        weeklyPlan
                     );
         }
     }

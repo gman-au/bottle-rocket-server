@@ -13,5 +13,6 @@
         public const string Microsoft = "Microsoft";
         public const string FileRetitling = "File Retitling";
         public const string LocalNetworkOnly = "Local Network Only";
+        public const string Planning = "Planning";
     }
 }

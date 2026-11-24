@@ -4,6 +4,7 @@ using Rocket.Ollama.Domain;
 using Rocket.Ollama.Domain.Project;
 using Rocket.Ollama.Domain.Retitle;
 using Rocket.Ollama.Domain.Text;
+using Rocket.Ollama.Domain.WeeklyPlan;
 
 namespace Rocket.Ollama.Infrastructure
 {
@@ -43,6 +44,14 @@ namespace Rocket.Ollama.Infrastructure
                 });
             }
             
+            if (!BsonClassMap.IsClassMapRegistered(typeof(OllamaExtractWeeklyPlanExecutionStep)))
+            {
+                BsonClassMap.RegisterClassMap<OllamaExtractWeeklyPlanExecutionStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
             if (!BsonClassMap.IsClassMapRegistered(typeof(OllamaExtractTextWorkflowStep)))
             {
                 BsonClassMap.RegisterClassMap<OllamaExtractTextWorkflowStep>(cm =>
@@ -62,6 +71,14 @@ namespace Rocket.Ollama.Infrastructure
             if (!BsonClassMap.IsClassMapRegistered(typeof(OllamaRetitleFileWorkflowStep)))
             {
                 BsonClassMap.RegisterClassMap<OllamaRetitleFileWorkflowStep>(cm =>
+                {
+                    cm.AutoMap();
+                });
+            }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(OllamaExtractWeeklyPlanWorkflowStep)))
+            {
+                BsonClassMap.RegisterClassMap<OllamaExtractWeeklyPlanWorkflowStep>(cm =>
                 {
                     cm.AutoMap();
                 });

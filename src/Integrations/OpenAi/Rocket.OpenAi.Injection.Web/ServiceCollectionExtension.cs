@@ -12,7 +12,8 @@ namespace Rocket.OpenAi.Injection.Web
                 .AddTransient<ISkuConnector, OpenAiConnectorProduct>()
                 .AddTransient<ISkuWorkflow, OpenAiExtractTextWorkflowProduct>()
                 .AddTransient<ISkuWorkflow, OpenAiExtractProjectWorkflowProduct>()
-                .AddTransient<ISkuWorkflow, OpenAiRetitleFileWorkflowProduct>();
+                .AddTransient<ISkuWorkflow, OpenAiRetitleFileWorkflowProduct>()
+                .AddTransient<ISkuWorkflow, OpenAiExtractWeeklyPlanWorkflowProduct>();
 
             services
                 .AddOpenAiJsonSerialization();

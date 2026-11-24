@@ -6,6 +6,7 @@ using Rocket.Domain.Executions;
 using Rocket.Integrations.Common;
 using Rocket.Interfaces;
 using Rocket.Page.Schemas.ProjectTaskTracker;
+using Rocket.Page.Schemas.WeeklyPlan;
 
 namespace Rocket.Jobs.Service
 {
@@ -66,13 +67,38 @@ namespace Rocket.Jobs.Service
                                     CancellationToken.None
                                 );
                     }
+                );     
+            
+            var addWeeklyPlanTranscriptionTask =
+                new Func<string, WeeklyPlanSchema, Task>(async (scanId, weeklyPlan) =>
+                    {
+                        var weeklyPlanTranscription =
+                            new WeeklyPlanTranscriptionSummary
+                            {
+                                ExecutionId = executionId,
+                                ExecutionStepName = executionStep.StepName,
+                                TranscriptionDate = executionStep.RunDate ?? DateTime.UtcNow,
+                                WeeklyPlan = weeklyPlan
+                            };
+
+                        await
+                            transcriber
+                                .ApplyTranscriptionAsync(
+                                    userId,
+                                    batchId,
+                                    scanId,
+                                    weeklyPlanTranscription,
+                                    CancellationToken.None
+                                );
+                    }
                 );
 
             var jobControl =
                 new TranscriptionControl
                 {
                     AddTextTranscriptionCallback = addTextTranscriptionTask,
-                    AddProjectTranscriptionCallback = addProjectTranscriptionTask
+                    AddProjectTranscriptionCallback = addProjectTranscriptionTask,
+                    AddWeeklyPlanTranscriptionCallback = addWeeklyPlanTranscriptionTask
                 };
 
             return jobControl;

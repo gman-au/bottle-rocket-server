@@ -1,0 +1,81 @@
+﻿@using global::Markdig
+@using Microsoft.Extensions.Localization
+@using Rocket.Api.Contracts.Transcriptions
+@using Rocket.Localization.Web
+@inject IStringLocalizer<TranscriptionResource> StringLocalizer
+@inject MarkdownPipeline Pipeline
+
+<PreviewTranscriptionDialogWrapper
+    T="WeeklyPlanTranscriptionSummary"
+    Transcription="@Transcription"
+    Context="transcription">
+    <MudGrid>
+        @if (transcription?.WeeklyPlan != null)
+        {
+            <MudItem xs="12">
+                <MudTable
+                    Dense
+                    Items="@(_calendar.ToArray())"
+                    T="KeyValuePair<string, string[]>">
+                    <RowTemplate>
+                        <MudTd
+                            Class="pt-4"
+                            Style="vertical-align: baseline;"
+                            DataLabel="@(StringLocalizer["TranscriptionProjectProjectFieldHeader"])">
+                            <MudText
+                                Class="mb-4"
+                                Color="Color.Info"
+                                Typo="Typo.body2">
+                                @StringLocalizer[$"TranscriptionWeekly{context.Key}FieldHeader"]
+                            </MudText>
+                        </MudTd>
+                        <MudTd
+                            Class="pt-4"
+                            Style="vertical-align: baseline;"
+                            DataLabel="@(StringLocalizer["TranscriptionProjectTaskFieldHeader"])">
+                            @foreach (var item in context.Value)
+                            {
+                                    @(
+                                    (MarkupString)Markdown.ToHtml(
+                                        item ?? string.Empty,
+                                        Pipeline
+                                    )
+                                    )
+                            }
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudItem>
+        }
+    </MudGrid>
+</PreviewTranscriptionDialogWrapper>
+
+@code {
+
+
+    [Parameter]
+    public WeeklyPlanTranscriptionSummary Transcription { get; set; }
+
+    private Dictionary<string, string[]> _calendar;
+
+    protected override void OnParametersSet()
+    {
+        var weeklyPlan = Transcription?.WeeklyPlan;
+        if (weeklyPlan != null)
+        {
+            _calendar =
+                new Dictionary<string, string[]>
+                {
+                    { nameof(WeeklyPlanTranscriptionSummary.WeeklyPlan.Monday), weeklyPlan.Monday ?? [] },
+                    { nameof(WeeklyPlanTranscriptionSummary.WeeklyPlan.Tuesday), weeklyPlan.Tuesday ?? [] },
+                    { nameof(WeeklyPlanTranscriptionSummary.WeeklyPlan.Wednesday), weeklyPlan.Wednesday ?? [] },
+                    { nameof(WeeklyPlanTranscriptionSummary.WeeklyPlan.Thursday), weeklyPlan.Thursday ?? [] },
+                    { nameof(WeeklyPlanTranscriptionSummary.WeeklyPlan.Friday), weeklyPlan.Friday ?? [] },
+                    { nameof(WeeklyPlanTranscriptionSummary.WeeklyPlan.Saturday), weeklyPlan.Saturday ?? [] },
+                    { nameof(WeeklyPlanTranscriptionSummary.WeeklyPlan.Sunday), weeklyPlan.Sunday ?? [] },
+                };
+        }
+    }
+
+
+}

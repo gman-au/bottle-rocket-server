@@ -10,6 +10,7 @@ namespace Rocket.OpenAi.Domain
         public const string OpenAiExtractTextWorkflowCode = "OPENAI_EXTRACT_TEXT";
         public const string OpenAiExtractProjectTasksWorkflowCode = "OPENAI_EXTRACT_PROJECT";
         public const string OpenAiRetitleFileWorkflowCode = "OPENAI_RETITLE_FILE";
+        public const string OpenAiExtractWeeklyPlanWorkflowCode = "OPENAI_EXTRACT_WEEKLY_PLAN";
         
         public static readonly int[] OpenAiExtractTextInputTypes  =
         [
@@ -25,12 +26,21 @@ namespace Rocket.OpenAi.Domain
 
         public const int OpenAiExtractProjectTaskOutputType = (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData;
         
-        public static readonly int[] OpenAiRetitleFileInputTypes  =
+        public static readonly int[] OpenAiRetitleFileInputTypes =
         [
             (int)WorkflowFormatTypeEnum.RawTextData,
-            (int)WorkflowFormatTypeEnum.Markdown
+            (int)WorkflowFormatTypeEnum.Markdown,
+            (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData,
+            (int)WorkflowFormatTypeEnum.WeeklyPlanData
         ];
 
         public const int OpenAiRetitleFileOutputType = (int)WorkflowFormatTypeEnum.Inherited;
+        
+        public static readonly int[] OpenAiExtractWeeklyPlanInputTypes  =
+        [
+            (int)WorkflowFormatTypeEnum.ImageData
+        ];
+
+        public const int OpenAiExtractWeeklyPlanOutputType = (int)WorkflowFormatTypeEnum.WeeklyPlanData;
     }
 }
