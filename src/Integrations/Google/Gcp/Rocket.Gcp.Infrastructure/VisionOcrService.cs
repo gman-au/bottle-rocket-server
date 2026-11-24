@@ -110,6 +110,7 @@ namespace Rocket.Gcp.Infrastructure
 
                         await
                             jobControl
+                                .Transcription
                                 .TranscribeTextAsync(
                                     element.ScanId,
                                     ocrResult

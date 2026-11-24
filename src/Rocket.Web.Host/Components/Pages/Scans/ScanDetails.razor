@@ -2,6 +2,7 @@
 @using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts.Batches
 @using Rocket.Api.Contracts.Executions
+@using Rocket.Api.Contracts.Transcriptions
 @using Rocket.Api.Contracts.Workflows
 @using Rocket.Domain.Enum
 @using Rocket.Localization.Web
@@ -330,7 +331,7 @@
                 await
                     ApiRequestManager
                         .Scans
-                        .GetMyTranscriptionAsync(
+                        .GetMyTranscriptionAsync<TextTranscriptionSummary>(
                             _batchSpecifics.Id,
                             scanId,
                             BaseCancellationToken

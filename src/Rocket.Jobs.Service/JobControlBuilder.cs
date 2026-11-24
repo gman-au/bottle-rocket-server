@@ -10,10 +10,10 @@ using Rocket.Interfaces;
 namespace Rocket.Jobs.Service
 {
     public class JobControlBuilder(
-        ITranscriber transcriber,
         ICaptureNotifier captureNotifier,
         IExecutionRepository executionRepository,
-        IExecutionElementRepository executionElementRepository
+        IExecutionElementRepository executionElementRepository,
+        ITranscriptionControlBuilder transcriptionControlBuilder
     ) : IJobControlBuilder
     {
         public IJobControl Build(
@@ -53,30 +53,20 @@ namespace Rocket.Jobs.Service
                             );
                     }
                 );
-            
-            var addTextTranscriptionTask =
-                new Func<string, string, Task>(async (scanId, text) =>
-                {
-                    await
-                        transcriber
-                            .ApplyTranscriptionAsync(
-                                userId,
-                                batchId,
-                                scanId,
-                                executionId,
-                                executionStep.StepName,
-                                executionStep.RunDate ?? DateTime.UtcNow,
-                                text,
-                                CancellationToken.None
-                            );
-                });
 
             var jobControl =
                 new JobControl
                 {
                     AppendLogMessageCallback = appendLogMessageTask,
                     UpdateStepStatusCallback = updateStepStatusTask,
-                    AddTextTranscriptionCallback = addTextTranscriptionTask
+                    Transcription =
+                        transcriptionControlBuilder
+                            .Build(
+                                batchId,
+                                userId,
+                                executionId,
+                                executionStep
+                            )
                 };
 
             return jobControl;
@@ -120,7 +110,7 @@ namespace Rocket.Jobs.Service
                             CancellationToken.None
                         );
             }
-            
+
             if (executionStatus == (int)ExecutionStatusEnum.Running || !isElementUpdate)
             {
                 // Don't update the step status for a single element, *unless* it has started running

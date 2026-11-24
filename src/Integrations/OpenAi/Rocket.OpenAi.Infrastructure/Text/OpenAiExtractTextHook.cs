@@ -115,6 +115,7 @@ namespace Rocket.OpenAi.Infrastructure.Text
                     
                     await
                         jobControl
+                            .Transcription
                             .TranscribeTextAsync(
                                 element.ScanId,
                                 response

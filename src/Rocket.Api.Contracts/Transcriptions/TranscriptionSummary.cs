@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace Rocket.Api.Contracts.Scans
+namespace Rocket.Api.Contracts.Transcriptions
 {
-    public class TranscriptionSpecifics : ApiResponse
+    public class TranscriptionSummary : ApiResponse
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }
@@ -11,16 +11,13 @@ namespace Rocket.Api.Contracts.Scans
         [JsonPropertyName("execution_id")]
         public string ExecutionId { get; set; }
         
-        [JsonPropertyName("execution_name")]
-        public string ExecutionName { get; set; }
+        [JsonPropertyName("execution_step_name")]
+        public string ExecutionStepName { get; set; }
         
         [JsonPropertyName("execution_exists")]
         public bool ExecutionExists { get; set; }
         
         [JsonPropertyName("transcription_date")]
         public DateTime TranscriptionDate { get; set; }
-        
-        [JsonPropertyName("text")]
-        public string Text { get; set; }
     }
 }

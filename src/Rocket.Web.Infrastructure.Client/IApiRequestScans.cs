@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Scans;
+using Rocket.Api.Contracts.Transcriptions;
 
 namespace Rocket.Web.Infrastructure.Client
 {
@@ -19,11 +20,11 @@ namespace Rocket.Web.Infrastructure.Client
             CancellationToken cancellationToken
         );
         
-        Task<TranscriptionSpecifics> GetMyTranscriptionAsync(
+        Task<TranscriptionSummary> GetMyTranscriptionAsync<T>(
             string batchId,
             string scanId,
             CancellationToken cancellationToken
-        );        
+        ) where T : TranscriptionSummary;
         
         Task<ApiResponse> DeleteTranscriptionByIdAsync(
             string batchId,

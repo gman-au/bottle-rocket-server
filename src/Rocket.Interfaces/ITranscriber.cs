@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Rocket.Api.Contracts.Transcriptions;
 
 namespace Rocket.Interfaces
 {
     public interface ITranscriber
     {
-        Task ApplyTranscriptionAsync(
+        Task ApplyTranscriptionAsync<T>(
             string userId,
             string batchId,
             string scanId,
-            string executionId,
-            string executionName,
-            DateTime executionDate,
-            string text,
+            T transcriptionSummary,
             CancellationToken cancellationToken
-        );
+        ) where T : TranscriptionSummary;
 
         Task ClearTranscriptionAsync(
             string userId,

@@ -113,6 +113,7 @@ namespace Rocket.Ollama.Infrastructure.Text
                     
                     await
                         jobControl
+                            .Transcription
                             .TranscribeTextAsync(
                                 element.ScanId,
                                 response

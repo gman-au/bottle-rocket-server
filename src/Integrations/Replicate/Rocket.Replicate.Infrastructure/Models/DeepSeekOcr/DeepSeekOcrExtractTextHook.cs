@@ -152,6 +152,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DeepSeekOcr
                     
                     await
                         jobControl
+                            .Transcription
                             .TranscribeTextAsync(
                                 element.ScanId,
                                 extractedText

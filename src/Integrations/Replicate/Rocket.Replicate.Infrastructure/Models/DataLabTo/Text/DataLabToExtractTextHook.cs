@@ -178,6 +178,7 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Text
 
                     await
                         jobControl
+                            .Transcription
                             .TranscribeTextAsync(
                                 element.ScanId,
                                 extractedMarkdown

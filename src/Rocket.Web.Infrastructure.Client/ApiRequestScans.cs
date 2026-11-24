@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Scans;
+using Rocket.Api.Contracts.Transcriptions;
 using Rocket.Interfaces;
 using Rocket.Web.Infrastructure.Client.Extensions;
 
@@ -86,11 +87,11 @@ namespace Rocket.Web.Infrastructure.Client
             return result;
         }
 
-        public async Task<TranscriptionSpecifics> GetMyTranscriptionAsync(
+        public async Task<TranscriptionSummary> GetMyTranscriptionAsync<T>(
             string batchId,
             string scanId,
             CancellationToken cancellationToken
-        )
+        ) where T : TranscriptionSummary
         {
             Logger
                 .LogInformation("Received My Transcription request");
@@ -106,7 +107,7 @@ namespace Rocket.Web.Infrastructure.Client
             var result =
                 await
                     response
-                        .TryParseResponse<TranscriptionSpecifics>(
+                        .TryParseResponse<T>(
                             JsonSerializerOptions,
                             Logger,
                             cancellationToken

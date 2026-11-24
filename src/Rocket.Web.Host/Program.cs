@@ -6,6 +6,7 @@ using Rocket.Diagnostics.Injection.Web;
 using Rocket.Dropbox.Injection.Web;
 using Rocket.Gcp.Injection.Web;
 using Rocket.Google.Injection.Web;
+using Rocket.Integrations.Injection;
 using Rocket.Local.Injection.Web;
 using Rocket.Mailgun.Injection.Web;
 using Rocket.Markdig.Injection.Web;
@@ -55,6 +56,7 @@ services
 
 services
     .AddBottleRocketWebServices(configuration, environment)
+    .AddTranscriptionJsonSerialization()
     .AddMudBlazorServices(configuration);
 
 services

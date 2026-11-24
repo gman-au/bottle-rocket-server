@@ -260,6 +260,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.OpenAi.Infrastructur
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.OpenAi.Injection.Web", "Integrations\OpenAi\Rocket.OpenAi.Injection.Web\Rocket.OpenAi.Injection.Web.csproj", "{75F0B070-B87D-4D6E-B0B7-6D519A3BC6AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Integrations.Injection", "Integrations\Common\Rocket.Integrations.Injection\Rocket.Integrations.Injection.csproj", "{1AEDEF93-2A35-46D1-ADF1-27124328DEF0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -718,6 +720,10 @@ Global
 		{75F0B070-B87D-4D6E-B0B7-6D519A3BC6AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75F0B070-B87D-4D6E-B0B7-6D519A3BC6AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75F0B070-B87D-4D6E-B0B7-6D519A3BC6AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AEDEF93-2A35-46D1-ADF1-27124328DEF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AEDEF93-2A35-46D1-ADF1-27124328DEF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AEDEF93-2A35-46D1-ADF1-27124328DEF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AEDEF93-2A35-46D1-ADF1-27124328DEF0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{42CB70A2-68E4-4EB7-8AAD-4E2F987D01BA} = {365B0452-4BCB-4E07-B1AC-4D2760A4C710}
@@ -825,5 +831,6 @@ Global
 		{DB18F656-76BC-4669-9AE8-7997961DA208} = {491760D8-1029-45B4-8E29-8270F7E100BA}
 		{2743234B-A534-49AD-A866-E60C6039ABC1} = {491760D8-1029-45B4-8E29-8270F7E100BA}
 		{75F0B070-B87D-4D6E-B0B7-6D519A3BC6AA} = {491760D8-1029-45B4-8E29-8270F7E100BA}
+		{1AEDEF93-2A35-46D1-ADF1-27124328DEF0} = {0EB309F2-68DC-4EEA-94A2-2CEE0862DA84}
 	EndGlobalSection
 EndGlobal

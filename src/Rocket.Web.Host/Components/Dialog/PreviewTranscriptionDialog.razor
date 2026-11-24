@@ -1,6 +1,6 @@
 ﻿@using global::Markdig
 @using Microsoft.Extensions.Localization
-@using Rocket.Api.Contracts.Scans
+@using Rocket.Api.Contracts.Transcriptions
 @using Rocket.Localization.Web
 @inject IStringLocalizer<TranscriptionResource> StringLocalizer
 
@@ -32,7 +32,7 @@
                             Disabled="@(!Transcription.ExecutionExists)"
                             Color="Color.Secondary"
                             Href="@($"/MyExecution/{Transcription.ExecutionId}")">
-                            @Transcription.ExecutionName
+                            @Transcription.ExecutionStepName
                         </MudLink>
                     </ComplexTableRowPair>
                     <SimpleTableRowPair
@@ -57,7 +57,7 @@
     private IMudDialogInstance MudDialog { get; set; }
 
     [Parameter]
-    public TranscriptionSpecifics Transcription { get; set; }
+    public TextTranscriptionSummary Transcription { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {

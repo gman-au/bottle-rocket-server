@@ -1,6 +1,7 @@
 ﻿using System;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Rocket.Domain.Transcriptions;
 
 namespace Rocket.Domain.ScannedImages
 {
@@ -28,6 +29,6 @@ namespace Rocket.Domain.ScannedImages
         
         public string Description { get; set; }
         
-        public Transcription Transcription { get; set; }
+        public BaseTranscription Transcription { get; set; }
     }
 }

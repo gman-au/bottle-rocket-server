@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Rocket.Api.Contracts;
 using Rocket.Api.Contracts.Scans;
+using Rocket.Api.Contracts.Transcriptions;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
@@ -26,7 +27,8 @@ namespace Rocket.Api.Host.Controllers
         ICaptureNotifier captureNotifier,
         IScannedImageHandler scannedImageHandler,
         IExecutionRepository executionRepository,
-        IDashboardSnapshotProvider dashboardSnapshotProvider
+        IDashboardSnapshotProvider dashboardSnapshotProvider,
+        ITranscriptionModelMapperRegistry transcriptionModelMapperRegistry
     ) : RocketControllerBase(userManager)
     {
         [HttpGet("{batchId}/{scanId}")]
@@ -177,7 +179,7 @@ namespace Rocket.Api.Host.Controllers
             """
         )]
         [ProducesResponseType(
-            typeof(TranscriptionSpecifics),
+            typeof(TranscriptionSummary),
             StatusCodes.Status200OK
         )]
         [ProducesResponseType(
@@ -223,7 +225,7 @@ namespace Rocket.Api.Host.Controllers
             
             if (transcription == null)
                 return 
-                    ((TranscriptionSpecifics)null)
+                    ((TranscriptionSummary)null)
                     .AsApiSuccess();
             
             // check if execution link is dead
@@ -235,17 +237,16 @@ namespace Rocket.Api.Host.Controllers
                             transcription.ExecutionId,
                             cancellationToken
                         );
+            
+            var mapper =
+                transcriptionModelMapperRegistry
+                    .GetMapperForDomain(transcription.GetType());
 
             var response =
-                new TranscriptionSpecifics
-                {
-                    Id = transcription.Id,
-                    ExecutionId = transcription.ExecutionId,
-                    ExecutionName = transcription.ExecutionName,
-                    TranscriptionDate = transcription.TranscriptionDate,
-                    ExecutionExists = execution != null,
-                    Text = transcription.Text
-                };
+                mapper
+                    .From(transcription);
+
+            response.ExecutionExists = execution != null;
 
             return
                 response
