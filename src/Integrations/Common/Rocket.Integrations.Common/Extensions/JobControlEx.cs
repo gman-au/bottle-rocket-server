@@ -8,20 +8,6 @@ namespace Rocket.Integrations.Common.Extensions
 {
     public static class JobControlEx
     {
-        public static async Task TranscribeTextAsync(
-            this IJobControl jobControl,
-            string scanId,
-            string text
-        )
-        {
-            await
-                jobControl
-                    .AddTextTranscriptionCallback(
-                        scanId,
-                        text
-                    );
-        }
-        
         public static async Task SucceedStepAsync(
             this IJobControl jobControl,
             string successMessage,

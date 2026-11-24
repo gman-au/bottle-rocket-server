@@ -6,10 +6,10 @@ namespace Rocket.Interfaces
 {
     public interface IJobControl
     {
-        public Func<JobLogEntry, Task> AppendLogMessageCallback { get; set;}
-        
-        public Func<JobStatusEntry, Task> UpdateStepStatusCallback { get; set;}
+        public Func<JobLogEntry, Task> AppendLogMessageCallback { get; set; }
 
-        public Func<string, string, Task> AddTextTranscriptionCallback { get; set; }
+        public Func<JobStatusEntry, Task> UpdateStepStatusCallback { get; set; }
+        
+        public ITranscriptionControl Transcription { get; set; }
     }
 }

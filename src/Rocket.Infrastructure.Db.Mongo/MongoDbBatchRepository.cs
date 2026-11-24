@@ -13,6 +13,7 @@ using Rocket.Domain.Dashboard;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
 using Rocket.Domain.ScannedImages;
+using Rocket.Domain.Transcriptions;
 using Rocket.Domain.Utils;
 using Rocket.Infrastructure.Db.Mongo.Extensions;
 using Rocket.Interfaces;
@@ -93,27 +94,38 @@ namespace Rocket.Infrastructure.Db.Mongo
 
                 filter &=
                     builder
-                        .Or(
-                            builder
-                                .Regex(
-                                    b => b.Description,
-                                    regex
-                                ),
-                            builder
-                                .ElemMatch(
-                                    b => b.Scans,
+                        .ElemMatch(
+                            b =>
+                                b.Scans,
+                            scanBuilder
+                                .Or(
                                     scanBuilder
-                                        .Or(
-                                            scanBuilder
-                                                .Regex(
-                                                    s => s.Description,
-                                                    regex
-                                                ),
-                                            scanBuilder
-                                                .Regex(
-                                                    s => s.Transcription.Text,
-                                                    regex
-                                                )
+                                        .Regex(
+                                            s =>
+                                                s.Description,
+                                            regex
+                                        ),
+                                    // TextTranscription
+                                    scanBuilder
+                                        .Regex(
+                                            "Transcription.Text",
+                                            regex
+                                        ),
+                                    // ProjectTranscription
+                                    scanBuilder
+                                        .Regex(
+                                            "Transcription.Notes",
+                                            regex
+                                        ),
+                                    scanBuilder
+                                        .Regex(
+                                            "Transcription.Items.Project",
+                                            regex
+                                        ),
+                                    scanBuilder
+                                        .Regex(
+                                            "Transcription.Items.Task",
+                                            regex
                                         )
                                 )
                         );
@@ -359,11 +371,11 @@ namespace Rocket.Infrastructure.Db.Mongo
                 );
         }
 
-        public async Task<Transcription> UpdateBatchScanTranscriptionAsync(
+        public async Task<BaseTranscription> UpdateBatchScanTranscriptionAsync(
             string userId,
             string batchId,
             string scanId,
-            Transcription transcription,
+            BaseTranscription transcription,
             CancellationToken cancellationToken
         )
         {

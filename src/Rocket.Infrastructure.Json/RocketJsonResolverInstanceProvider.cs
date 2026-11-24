@@ -4,9 +4,11 @@ using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using Rocket.Api.Contracts.Connectors;
 using Rocket.Api.Contracts.Executions;
+using Rocket.Api.Contracts.Transcriptions;
 using Rocket.Api.Contracts.Workflows;
 using Rocket.Domain.Connectors;
 using Rocket.Domain.Executions;
+using Rocket.Domain.Transcriptions;
 using Rocket.Domain.Workflows;
 using Rocket.Interfaces;
 
@@ -22,6 +24,7 @@ namespace Rocket.Infrastructure.Json
             IEnumerable<IJsonTypeDiscriminator<BaseWorkflowStep>> workflowTypeDiscriminators,
             IEnumerable<IJsonTypeDiscriminator<BaseExecutionStep>> executionTypeDiscriminators,
             IEnumerable<IJsonTypeDiscriminator<BaseConnector>> connectorTypeDiscriminators,
+            IEnumerable<IJsonTypeDiscriminator<BaseTranscription>> transcriptionTypeDiscriminators,
             CreateWorkflowStepRequestConverter createWorkflowStepRequestConverter,
             UpdateWorkflowStepRequestConverter updateWorkflowStepRequestConverter,
             CreateConnectorRequestConverter createConnectorRequestConverter
@@ -31,7 +34,8 @@ namespace Rocket.Infrastructure.Json
                 BuildInstance(
                     workflowTypeDiscriminators,
                     executionTypeDiscriminators,
-                    connectorTypeDiscriminators
+                    connectorTypeDiscriminators,
+                    transcriptionTypeDiscriminators
                 );
             
             _defaultSerializerOptions =
@@ -54,7 +58,8 @@ namespace Rocket.Infrastructure.Json
         private static DefaultJsonTypeInfoResolver BuildInstance(
             IEnumerable<IJsonTypeDiscriminator<BaseWorkflowStep>> workflowTypeDiscriminators,
             IEnumerable<IJsonTypeDiscriminator<BaseExecutionStep>> executionTypeDiscriminators,
-            IEnumerable<IJsonTypeDiscriminator<BaseConnector>> connectorTypeDiscriminators
+            IEnumerable<IJsonTypeDiscriminator<BaseConnector>> connectorTypeDiscriminators,
+            IEnumerable<IJsonTypeDiscriminator<BaseTranscription>> transcriptionTypeDiscriminators
         )
         {
             return
@@ -118,6 +123,28 @@ namespace Rocket.Infrastructure.Json
                                     };
 
                                 foreach (var kvp in connectorTypeDiscriminators)
+                                {
+                                    typeInfo
+                                        .PolymorphismOptions
+                                        .DerivedTypes
+                                        .Add(
+                                            new JsonDerivedType(
+                                                kvp.Key,
+                                                kvp.Value
+                                            )
+                                        );
+                                }
+                            }
+
+                            if (typeInfo.Type == typeof(TranscriptionSummary))
+                            {
+                                typeInfo.PolymorphismOptions =
+                                    new JsonPolymorphismOptions
+                                    {
+                                        TypeDiscriminatorPropertyName = "$type"
+                                    };
+
+                                foreach (var kvp in transcriptionTypeDiscriminators)
                                 {
                                     typeInfo
                                         .PolymorphismOptions

@@ -113,6 +113,14 @@ namespace Rocket.OpenAi.Infrastructure.Project
 
                     await
                         jobControl
+                            .Transcription
+                            .TranscribeProjectAsync(
+                                element.ScanId,
+                                response
+                            );
+                    
+                    await
+                        jobControl
                             .SucceedStepAsync(
                                 $"OpenAI OCR response: \"{JsonSerializer
                                     .Serialize(projectTaskTrackerSchema)}\"",

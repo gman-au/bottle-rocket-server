@@ -187,6 +187,14 @@ namespace Rocket.Replicate.Infrastructure.Models.DataLabTo.Project
                                     .Serialize(projectTaskTrackerSchema)}\"",
                                 element.ScanId
                             );
+                    
+                    await
+                        jobControl
+                            .Transcription
+                            .TranscribeProjectAsync(
+                                element.ScanId,
+                                projectTaskTrackerSchema
+                            );
 
                     fileResults
                         .Add((element.ScanId, projectTaskTrackerSchema));

@@ -7,6 +7,8 @@ using Rocket.Api.Host.Notifiers;
 using Rocket.Api.Host.Prepopulation;
 using Rocket.Domain.Connectors;
 using Rocket.Domain.Executions;
+using Rocket.Domain.ScannedImages;
+using Rocket.Domain.Transcriptions;
 using Rocket.Domain.Utils;
 using Rocket.Domain.Workflows;
 using Rocket.Infrastructure;
@@ -19,7 +21,9 @@ using Rocket.Infrastructure.Detection;
 using Rocket.Infrastructure.Encryption;
 using Rocket.Infrastructure.Hashing;
 using Rocket.Infrastructure.Json;
+using Rocket.Infrastructure.Json.Transcriptions;
 using Rocket.Infrastructure.Mapping;
+using Rocket.Infrastructure.Mapping.Transcriptions;
 using Rocket.Infrastructure.QrCode;
 using Rocket.Infrastructure.Thumbnails;
 using Rocket.Interfaces;
@@ -56,6 +60,16 @@ namespace Rocket.Api.Host.Injection
             if (!BsonClassMap.IsClassMapRegistered(typeof(BaseExecutionStep)))
             {
                 BsonClassMap.RegisterClassMap<BaseExecutionStep>(cm =>
+                    {
+                        cm.AutoMap();
+                        cm.SetIsRootClass(true);
+                    }
+                );
+            }
+            
+            if (!BsonClassMap.IsClassMapRegistered(typeof(BaseTranscription)))
+            {
+                BsonClassMap.RegisterClassMap<BaseTranscription>(cm =>
                     {
                         cm.AutoMap();
                         cm.SetIsRootClass(true);
@@ -148,6 +162,7 @@ namespace Rocket.Api.Host.Injection
                 .AddTransient<IWorkflowStepModelMapperRegistry, WorkflowStepModelMapperRegistry>()
                 .AddTransient<IExecutionStepModelMapperRegistry, ExecutionStepModelMapperRegistry>()
                 .AddTransient<IConnectorModelMapperRegistry, ConnectorModelMapperRegistry>()
+                .AddTransient<ITranscriptionModelMapperRegistry, TranscriptionModelMapperRegistry>()
                 .AddTransient<IStepModelClonerRegistry, StepModelClonerRegistry>()
                 .AddTransient<IObfuscator, Obfuscator>()
                 .AddTransient<IFileRetitler, SafeFileRetitler>()
@@ -243,6 +258,7 @@ namespace Rocket.Api.Host.Injection
             services.AddSingleton<IGlobalSettingsChangedSignal, GlobalSettingsChangedSignal>();
             services.AddTransient<IWorkflowExecutionContext, WorkflowExecutionContext>();
             services.AddTransient<IJobControlBuilder, JobControlBuilder>();
+            services.AddTransient<ITranscriptionControlBuilder, TranscriptionControlBuilder>();
             services.AddHostedService<QueuedHostedService>();
             services.AddHostedService<ScanSweeperHostedService>();
 

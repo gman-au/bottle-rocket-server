@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Integrations\Common\Rocket.Integrations.Injection\Rocket.Integrations.Injection.csproj" />
         <ProjectReference Include="..\Integrations\Dropbox\Rocket.Dropbox.Injection.Api\Rocket.Dropbox.Injection.Api.csproj" />
         <ProjectReference Include="..\Integrations\Google\Gcp\Rocket.Gcp.Injection.Api\Rocket.Gcp.Injection.Api.csproj" />
         <ProjectReference Include="..\Integrations\Google\Google\Rocket.Google.Injection.Api\Rocket.Google.Injection.Api.csproj" />

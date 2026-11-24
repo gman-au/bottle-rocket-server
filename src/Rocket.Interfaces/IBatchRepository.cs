@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Rocket.Domain.Batches;
 using Rocket.Domain.Dashboard;
 using Rocket.Domain.ScannedImages;
+using Rocket.Domain.Transcriptions;
 
 namespace Rocket.Interfaces
 {
@@ -76,11 +77,11 @@ namespace Rocket.Interfaces
             CancellationToken cancellationToken
         );
 
-        Task<Transcription> UpdateBatchScanTranscriptionAsync(
+        Task<BaseTranscription> UpdateBatchScanTranscriptionAsync(
             string userId,
             string batchId,
             string scanId,
-            Transcription transcription,
+            BaseTranscription transcription,
             CancellationToken cancellationToken
         );
 

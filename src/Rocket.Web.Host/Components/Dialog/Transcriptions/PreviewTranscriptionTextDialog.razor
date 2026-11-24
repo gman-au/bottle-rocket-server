@@ -1,0 +1,23 @@
+﻿@using global::Markdig
+@using Microsoft.Extensions.Localization
+@using Rocket.Api.Contracts.Transcriptions
+@using Rocket.Localization.Web
+@inject IStringLocalizer<TranscriptionResource> StringLocalizer
+
+<PreviewTranscriptionDialogWrapper
+    T="TextTranscriptionSummary"
+    Transcription="@Transcription"
+    Context="transcription">
+    <MudText
+        Class="mb-4"
+        Color="Color.Info"
+        Typo="Typo.body2">
+        @StringLocalizer["TranscriptionTextTextFieldHeader"]
+    </MudText>
+    @((MarkupString)Markdown.ToHtml(transcription.Text))
+</PreviewTranscriptionDialogWrapper>
+
+@code {
+    [Parameter]
+    public TextTranscriptionSummary Transcription { get; set; }
+}

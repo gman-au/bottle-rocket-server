@@ -2,10 +2,12 @@
 @using Microsoft.Extensions.Localization
 @using Rocket.Api.Contracts.Batches
 @using Rocket.Api.Contracts.Executions
+@using Rocket.Api.Contracts.Transcriptions
 @using Rocket.Api.Contracts.Workflows
 @using Rocket.Domain.Enum
 @using Rocket.Localization.Web
 @using Rocket.Web.Host.Components.Dialog
+@using Rocket.Web.Host.Components.Dialog.Transcriptions
 @using Rocket.Web.Host.Extensions
 @using Rocket.Web.Host.Infrastructure
 @using Rocket.Web.Infrastructure.Client
@@ -326,7 +328,7 @@
             _isLoading = true;
             StateHasChanged();
 
-            var transcription =
+            var transcriptionResponse =
                 await
                     ApiRequestManager
                         .Scans
@@ -336,22 +338,19 @@
                             BaseCancellationToken
                         );
 
-            if (transcription != null)
-            {
-                var dialog =
-                    await
-                        DialogService
-                            .ShowAsync<PreviewTranscriptionDialog>(
-                                null,
-                                new DialogParameters
-                                {
-                                    { "Transcription", transcription }
-                                }
-                            );
+            var transcription = 
+                transcriptionResponse?
+                    .Transcription;
 
+            if (transcription is TextTranscriptionSummary)
+            {
                 await
-                    dialog
-                        .Result;
+                    ShowTranscriptionPreviewDialog<PreviewTranscriptionTextDialog>(transcription);
+            }
+            if (transcription is ProjectTranscriptionSummary)
+            {
+                await
+                    ShowTranscriptionPreviewDialog<PreviewTranscriptionProjectDialog>(transcription);
             }
         }
         catch (Exception ex)
@@ -366,7 +365,27 @@
             StateHasChanged();
         }
     }
-    
+
+    private async Task ShowTranscriptionPreviewDialog<T>(
+        TranscriptionSummary transcription
+    ) where T : IComponent
+    {
+        var dialog =
+            await
+                DialogService
+                    .ShowAsync<T>(
+                        null,
+                        new DialogParameters
+                        {
+                            { "Transcription", transcription }
+                        }
+                    );
+
+        await
+            dialog
+                .Result;
+    }
+
     private async Task ConfirmTriggerWorkflowAsync()
     {
         var dialog =

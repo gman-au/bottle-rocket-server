@@ -146,6 +146,14 @@ namespace Rocket.Ollama.Infrastructure.Project
 
                     fileResults
                         .Add((element.ScanId, secondPassResponse));
+                    
+                    await
+                        jobControl
+                            .Transcription
+                            .TranscribeProjectAsync(
+                                element.ScanId,
+                                secondPassResponse
+                            );
                 }
                 catch (Exception ex)
                 {

@@ -1,17 +1,15 @@
 ﻿using System;
 
-namespace Rocket.Domain.ScannedImages
+namespace Rocket.Domain.Transcriptions
 {
-    public class Transcription
+    public abstract record BaseTranscription
     {
         public string Id { get; set; }
         
         public string ExecutionId { get; set; }
         
-        public string ExecutionName { get; set; }
+        public string ExecutionStepName { get; set; }
         
         public DateTime TranscriptionDate { get; set; }
-        
-        public string Text { get; set; }
     }
 }

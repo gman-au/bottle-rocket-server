@@ -1,8 +1,8 @@
-﻿@using global::Markdig
-@using Microsoft.Extensions.Localization
-@using Rocket.Api.Contracts.Scans
+﻿@using Microsoft.Extensions.Localization
+@using Rocket.Api.Contracts.Transcriptions
 @using Rocket.Localization.Web
 @inject IStringLocalizer<TranscriptionResource> StringLocalizer
+@typeparam T where T : TranscriptionSummary, new()
 
 <MudDialog Class="p-2">
     <TitleContent>
@@ -16,9 +16,12 @@
     <DialogContent>
         <MudGrid>
             <MudItem xs="12" sm="6">
-                <div class="mud-border-tertiary border p-4 rounded" id="scroll-images" style="height: 600px; overflow-y: auto;">
-                    @((MarkupString)Markdown.ToHtml(Transcription.Text))
-                </div>
+                @if (ChildContent != null)
+                {
+                    <div class="mud-border-tertiary border p-4 rounded" id="scroll-images" style="height: 600px; overflow-y: auto;">
+                        @ChildContent(Transcription)
+                    </div>
+                }
             </MudItem>
             <MudItem xs="12" sm="6">
                 <MudSimpleTable
@@ -32,7 +35,7 @@
                             Disabled="@(!Transcription.ExecutionExists)"
                             Color="Color.Secondary"
                             Href="@($"/MyExecution/{Transcription.ExecutionId}")">
-                            @Transcription.ExecutionName
+                            @Transcription.ExecutionStepName
                         </MudLink>
                     </ComplexTableRowPair>
                     <SimpleTableRowPair
@@ -57,7 +60,10 @@
     private IMudDialogInstance MudDialog { get; set; }
 
     [Parameter]
-    public TranscriptionSpecifics Transcription { get; set; }
+    public T Transcription { get; set; }
+
+    [Parameter]
+    public RenderFragment<T> ChildContent { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -74,6 +80,4 @@
                     }
                 );
     }
-
-
 }

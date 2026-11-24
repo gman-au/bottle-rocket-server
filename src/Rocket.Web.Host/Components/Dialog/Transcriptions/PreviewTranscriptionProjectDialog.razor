@@ -1,0 +1,83 @@
+﻿@using Microsoft.Extensions.Localization
+@using Rocket.Api.Contracts.Transcriptions
+@using Rocket.Localization.Web
+@using Rocket.Page.Schemas.ProjectTaskTracker
+@inject IStringLocalizer<TranscriptionResource> StringLocalizer
+
+<PreviewTranscriptionDialogWrapper
+    T="ProjectTranscriptionSummary"
+    Transcription="@Transcription"
+    Context="transcription">
+    <MudGrid>
+        @if ((transcription?.Project?.Items ?? []).Any())
+        {
+            <MudItem xs="12">
+                <MudTable
+                    Dense
+                    Items="@(transcription?.Project?.Items ?? [])"
+                    T="ProjectTaskTrackerItem">
+                    <HeaderContent>
+                        <MudTh>
+                            <MudText
+                                Color="Color.Info"
+                                Typo="Typo.body2">
+                                @StringLocalizer["TranscriptionProjectProjectFieldHeader"]
+                            </MudText>
+                        </MudTh>
+                        <MudTh>
+                            <MudText
+                                Color="Color.Info"
+                                Typo="Typo.body2">
+                                @StringLocalizer["TranscriptionProjectTaskFieldHeader"]
+                            </MudText>
+                        </MudTh>
+                        <MudTh>
+                            <MudText
+                                Color="Color.Info"
+                                Typo="Typo.body2">
+                                @StringLocalizer["TranscriptionProjectDueFieldHeader"]
+                            </MudText>
+                        </MudTh>
+                        <MudTh>
+                            <MudText
+                                Color="Color.Info"
+                                Typo="Typo.body2">
+                                @StringLocalizer["TranscriptionProjectEstimatedTimeFieldHeader"]
+                            </MudText>
+                        </MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="@(StringLocalizer["TranscriptionProjectProjectFieldHeader"])">@context.Project</MudTd>
+                        <MudTd DataLabel="@(StringLocalizer["TranscriptionProjectTaskFieldHeader"])">@context.Task</MudTd>
+                        <MudTd DataLabel="@(StringLocalizer["TranscriptionProjectDueFieldHeader"])">@context.DueDate</MudTd>
+                        <MudTd DataLabel="@(StringLocalizer["TranscriptionProjectEstimatedTimeFieldHeader"])">@context.EstimatedTime</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudItem>
+        }
+        @if (!string.IsNullOrEmpty(transcription?.Project?.Notes))
+        {
+            <MudItem xs="12">
+                <MudText
+                    Class="mb-4"
+                    Color="Color.Info"
+                    Typo="Typo.body2">
+                    @StringLocalizer["TranscriptionProjectNotesFieldHeader"]
+                </MudText>
+                <MudText
+                    Typo="Typo.body2">
+                    @transcription?.Project?.Notes
+                </MudText>
+            </MudItem>
+        }
+    </MudGrid>
+</PreviewTranscriptionDialogWrapper>
+
+@code {
+
+
+    [Parameter]
+    public ProjectTranscriptionSummary Transcription { get; set; }
+
+
+}

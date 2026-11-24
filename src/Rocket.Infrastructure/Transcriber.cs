@@ -1,27 +1,24 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Rocket.Domain.ScannedImages;
+using Rocket.Api.Contracts.Transcriptions;
 using Rocket.Interfaces;
 
 namespace Rocket.Infrastructure
 {
     public class Transcriber(
         ILogger<Transcriber> logger,
+        ITranscriptionModelMapperRegistry transcriptionModelMapperRegistry,
         IBatchRepository batchRepository
     ) : ITranscriber
     {
-        public async Task ApplyTranscriptionAsync(
+        public async Task ApplyTranscriptionAsync<T>(
             string userId,
             string batchId,
             string scanId,
-            string executionId,
-            string executionName,
-            DateTime executionDate,
-            string text,
+            T transcriptionSummary,
             CancellationToken cancellationToken
-        )
+        ) where T : TranscriptionSummary
         {
             logger
                 .LogInformation(
@@ -30,14 +27,13 @@ namespace Rocket.Infrastructure
                     scanId
                 );
 
-            var transcription =
-                new Transcription
-                {
-                    ExecutionId = executionId,
-                    ExecutionName = executionName,
-                    TranscriptionDate = executionDate,
-                    Text = text
-                };
+            var mapper =
+                transcriptionModelMapperRegistry
+                    .GetMapperForView(transcriptionSummary.GetType());
+
+            var newTranscription =
+                mapper
+                    .For(transcriptionSummary);
 
             await
                 batchRepository
@@ -45,7 +41,7 @@ namespace Rocket.Infrastructure
                         userId,
                         batchId,
                         scanId,
-                        transcription,
+                        newTranscription,
                         cancellationToken
                     );
             
