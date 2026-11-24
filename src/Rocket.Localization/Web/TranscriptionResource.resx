@@ -29,4 +29,24 @@
     <data name="TranscriptionDateFieldHeader" xml:space="preserve">
         <value>Date</value>
     </data>
+    <!-- FIELDS & HINTS (TEXT) -->
+    <data name="TranscriptionTextTextFieldHeader" xml:space="preserve">
+        <value>Text</value>
+    </data>
+    <!-- FIELDS & HINTS (PROJECT) -->
+    <data name="TranscriptionProjectProjectFieldHeader" xml:space="preserve">
+        <value>Project</value>
+    </data>
+    <data name="TranscriptionProjectTaskFieldHeader" xml:space="preserve">
+        <value>Task</value>
+    </data>
+    <data name="TranscriptionProjectDueFieldHeader" xml:space="preserve">
+        <value>Due</value>
+    </data>
+    <data name="TranscriptionProjectEstimatedTimeFieldHeader" xml:space="preserve">
+        <value>Est. Time</value>
+    </data>
+    <data name="TranscriptionProjectNotesFieldHeader" xml:space="preserve">
+        <value>Notes</value>
+    </data>
 </root>

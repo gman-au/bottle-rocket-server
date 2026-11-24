@@ -73,6 +73,7 @@ services
     .AddLocalFileBlobStore(configuration)
     .AddAppHealthChecks()
     .AddTranscriptionJsonSerialization()
+    .AddTranscriptionBsonSerialization()
     .AddBottleRocketApiServices(builder.Environment);
 
 services

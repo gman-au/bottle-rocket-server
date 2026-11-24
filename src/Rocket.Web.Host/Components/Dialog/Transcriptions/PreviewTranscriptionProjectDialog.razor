@@ -1,5 +1,8 @@
-﻿@using Rocket.Api.Contracts.Transcriptions
+﻿@using Microsoft.Extensions.Localization
+@using Rocket.Api.Contracts.Transcriptions
+@using Rocket.Localization.Web
 @using Rocket.Page.Schemas.ProjectTaskTracker
+@inject IStringLocalizer<TranscriptionResource> StringLocalizer
 
 <PreviewTranscriptionDialogWrapper
     T="ProjectTranscriptionSummary"
@@ -18,36 +21,36 @@
                             <MudText
                                 Color="Color.Info"
                                 Typo="Typo.body2">
-                                Project
+                                @StringLocalizer["TranscriptionProjectProjectFieldHeader"]
                             </MudText>
                         </MudTh>
                         <MudTh>
                             <MudText
                                 Color="Color.Info"
                                 Typo="Typo.body2">
-                                Task
+                                @StringLocalizer["TranscriptionProjectTaskFieldHeader"]
                             </MudText>
                         </MudTh>
                         <MudTh>
                             <MudText
                                 Color="Color.Info"
                                 Typo="Typo.body2">
-                                Due
+                                @StringLocalizer["TranscriptionProjectDueFieldHeader"]
                             </MudText>
                         </MudTh>
                         <MudTh>
                             <MudText
                                 Color="Color.Info"
                                 Typo="Typo.body2">
-                                Est. Time
+                                @StringLocalizer["TranscriptionProjectEstimatedTimeFieldHeader"]
                             </MudText>
                         </MudTh>
                     </HeaderContent>
                     <RowTemplate>
-                        <MudTd DataLabel="Project">@context.Project</MudTd>
-                        <MudTd DataLabel="Task">@context.Task</MudTd>
-                        <MudTd DataLabel="Due">@context.DueDate</MudTd>
-                        <MudTd DataLabel="Est. Time">@context.EstimatedTime</MudTd>
+                        <MudTd DataLabel="@(StringLocalizer["TranscriptionProjectProjectFieldHeader"])">@context.Project</MudTd>
+                        <MudTd DataLabel="@(StringLocalizer["TranscriptionProjectTaskFieldHeader"])">@context.Task</MudTd>
+                        <MudTd DataLabel="@(StringLocalizer["TranscriptionProjectDueFieldHeader"])">@context.DueDate</MudTd>
+                        <MudTd DataLabel="@(StringLocalizer["TranscriptionProjectEstimatedTimeFieldHeader"])">@context.EstimatedTime</MudTd>
                     </RowTemplate>
                 </MudTable>
             </MudItem>
@@ -59,7 +62,7 @@
                     Class="mb-4"
                     Color="Color.Info"
                     Typo="Typo.body2">
-                    Notes
+                    @StringLocalizer["TranscriptionProjectNotesFieldHeader"]
                 </MudText>
                 <MudText
                     Typo="Typo.body2">

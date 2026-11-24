@@ -76,14 +76,6 @@ namespace Rocket.Api.Host.Injection
                     }
                 );
             }
-            
-            if (!BsonClassMap.IsClassMapRegistered(typeof(TextTranscription)))
-            {
-                BsonClassMap.RegisterClassMap<TextTranscription>(cm =>
-                {
-                    cm.AutoMap();
-                });
-            }
 
             var provider =
                 services

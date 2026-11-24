@@ -57,6 +57,7 @@ services
 services
     .AddBottleRocketWebServices(configuration, environment)
     .AddTranscriptionJsonSerialization()
+    .AddTranscriptionBsonSerialization()
     .AddMudBlazorServices(configuration);
 
 services
