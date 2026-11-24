@@ -7,6 +7,7 @@
 @using Rocket.Domain.Enum
 @using Rocket.Localization.Web
 @using Rocket.Web.Host.Components.Dialog
+@using Rocket.Web.Host.Components.Dialog.Transcriptions
 @using Rocket.Web.Host.Extensions
 @using Rocket.Web.Host.Infrastructure
 @using Rocket.Web.Infrastructure.Client
@@ -342,7 +343,7 @@
                 var dialog =
                     await
                         DialogService
-                            .ShowAsync<PreviewTranscriptionDialog>(
+                            .ShowAsync<PreviewTranscriptionTextDialog>(
                                 null,
                                 new DialogParameters
                                 {
