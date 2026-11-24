@@ -328,32 +328,24 @@
             _isLoading = true;
             StateHasChanged();
 
-            var transcription =
+            var transcriptionResponse =
                 await
                     ApiRequestManager
                         .Scans
-                        .GetMyTranscriptionAsync<TextTranscriptionSummary>(
+                        .GetMyTranscriptionAsync(
                             _batchSpecifics.Id,
                             scanId,
                             BaseCancellationToken
                         );
 
-            if (transcription != null)
-            {
-                var dialog =
-                    await
-                        DialogService
-                            .ShowAsync<PreviewTranscriptionTextDialog>(
-                                null,
-                                new DialogParameters
-                                {
-                                    { "Transcription", transcription }
-                                }
-                            );
+            var transcription = 
+                transcriptionResponse?
+                    .Transcription;
 
+            if (transcription is TextTranscriptionSummary)
+            {
                 await
-                    dialog
-                        .Result;
+                    ShowTranscriptionPreviewDialog<PreviewTranscriptionTextDialog>(transcription);
             }
         }
         catch (Exception ex)
@@ -368,7 +360,27 @@
             StateHasChanged();
         }
     }
-    
+
+    private async Task ShowTranscriptionPreviewDialog<T>(
+        TranscriptionSummary transcription
+    ) where T : IComponent
+    {
+        var dialog =
+            await
+                DialogService
+                    .ShowAsync<T>(
+                        null,
+                        new DialogParameters
+                        {
+                            { "Transcription", transcription }
+                        }
+                    );
+
+        await
+            dialog
+                .Result;
+    }
+
     private async Task ConfirmTriggerWorkflowAsync()
     {
         var dialog =

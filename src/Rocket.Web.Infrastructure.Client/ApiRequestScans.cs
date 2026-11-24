@@ -87,11 +87,11 @@ namespace Rocket.Web.Infrastructure.Client
             return result;
         }
 
-        public async Task<TranscriptionSummary> GetMyTranscriptionAsync<T>(
+        public async Task<GetTranscriptionResponse> GetMyTranscriptionAsync(
             string batchId,
             string scanId,
             CancellationToken cancellationToken
-        ) where T : TranscriptionSummary
+        )
         {
             Logger
                 .LogInformation("Received My Transcription request");
@@ -107,7 +107,7 @@ namespace Rocket.Web.Infrastructure.Client
             var result =
                 await
                     response
-                        .TryParseResponse<T>(
+                        .TryParseResponse<GetTranscriptionResponse>(
                             JsonSerializerOptions,
                             Logger,
                             cancellationToken

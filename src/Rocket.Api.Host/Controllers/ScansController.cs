@@ -179,7 +179,7 @@ namespace Rocket.Api.Host.Controllers
             """
         )]
         [ProducesResponseType(
-            typeof(TranscriptionSummary),
+            typeof(GetTranscriptionResponse),
             StatusCodes.Status200OK
         )]
         [ProducesResponseType(
@@ -242,11 +242,17 @@ namespace Rocket.Api.Host.Controllers
                 transcriptionModelMapperRegistry
                     .GetMapperForDomain(transcription.GetType());
 
-            var response =
+            var transcriptionResult  =
                 mapper
                     .From(transcription);
 
-            response.ExecutionExists = execution != null;
+            transcriptionResult.ExecutionExists = execution != null;
+
+            var response =
+                new GetTranscriptionResponse
+                {
+                    Transcription = transcriptionResult
+                };
 
             return
                 response
