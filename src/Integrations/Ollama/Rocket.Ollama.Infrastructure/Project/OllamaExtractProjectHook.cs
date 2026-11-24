@@ -108,7 +108,7 @@ namespace Rocket.Ollama.Infrastructure.Project
                                     ExecutionStep.FirstPassModelName,
                                     FirstPassPrompt,
                                     element.Artifact,
-                                    null,
+                                    typeof(string),
                                     useSchema: false,
                                     temperature: 0.1F,
                                     maxTokens: 1024,

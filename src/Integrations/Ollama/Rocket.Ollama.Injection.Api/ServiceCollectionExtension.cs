@@ -4,6 +4,7 @@ using Rocket.Ollama.Infrastructure;
 using Rocket.Ollama.Infrastructure.Project;
 using Rocket.Ollama.Infrastructure.Retitle;
 using Rocket.Ollama.Infrastructure.Text;
+using Rocket.Ollama.Infrastructure.WeeklyPlan;
 using Rocket.Ollama.Injection.Serialization;
 
 namespace Rocket.Ollama.Injection.Api
@@ -15,22 +16,26 @@ namespace Rocket.Ollama.Injection.Api
             services
                 .AddTransient<IIntegrationHook, OllamaExtractTextHook>()
                 .AddTransient<IIntegrationHook, OllamaExtractProjectHook>()
-                .AddTransient<IIntegrationHook, OllamaRetitleFileHook>();
+                .AddTransient<IIntegrationHook, OllamaRetitleFileHook>()
+                .AddTransient<IIntegrationHook, OllamaExtractWeeklyPlanHook>();
             
             services
                 .AddTransient<IWorkflowStepModelMapper, OllamaExtractTextWorkflowStepMapper>()
                 .AddTransient<IWorkflowStepModelMapper, OllamaExtractProjectWorkflowStepMapper>()
-                .AddTransient<IWorkflowStepModelMapper, OllamaRetitleFileWorkflowStepMapper>();
+                .AddTransient<IWorkflowStepModelMapper, OllamaRetitleFileWorkflowStepMapper>()
+                .AddTransient<IWorkflowStepModelMapper, OllamaExtractWeeklyPlanWorkflowStepMapper>();
 
             services
                 .AddTransient<IExecutionStepModelMapper, OllamaExtractTextExecutionStepMapper>()
                 .AddTransient<IExecutionStepModelMapper, OllamaExtractProjectExecutionStepMapper>()
-                .AddTransient<IExecutionStepModelMapper, OllamaRetitleFileExecutionStepMapper>();
+                .AddTransient<IExecutionStepModelMapper, OllamaRetitleFileExecutionStepMapper>()
+                .AddTransient<IExecutionStepModelMapper, OllamaExtractWeeklyPlanExecutionStepMapper>();
             
             services
                 .AddTransient<IStepModelCloner, OllamaExtractTextStepCloner>()
                 .AddTransient<IStepModelCloner, OllamaExtractProjectStepCloner>()
-                .AddTransient<IStepModelCloner, OllamaRetitleFileStepCloner>();
+                .AddTransient<IStepModelCloner, OllamaRetitleFileStepCloner>()
+                .AddTransient<IStepModelCloner, OllamaExtractWeeklyPlanStepCloner>();
             
             services
                 .AddTransient<IConnectorModelMapper, OllamaConnectorMapper>()
