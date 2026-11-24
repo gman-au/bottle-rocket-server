@@ -644,6 +644,7 @@
             (int)ExecutionStatusEnum.Completed => Color.Success,
             (int)ExecutionStatusEnum.Errored => Color.Error,
             (int)ExecutionStatusEnum.Running => Color.Info,
+            (int)ExecutionStatusEnum.Cancelled => Color.Warning,
             _ => Color.Default
         };
     }

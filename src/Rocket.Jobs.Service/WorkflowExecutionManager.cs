@@ -151,6 +151,13 @@ namespace Rocket.Jobs.Service
                                     executionId,
                                     (int)ExecutionStatusEnum.Cancelled
                                 );
+
+                            await
+                                captureNotifier
+                                    .NotifyNewExecutionUpdateAsync(
+                                        userId,
+                                        CancellationToken.None
+                                    );
                         }
                         catch (Exception ex)
                         {
@@ -210,6 +217,13 @@ namespace Rocket.Jobs.Service
                         o => o.ExecutionStatus,
                         (int)ExecutionStatusEnum.Cancelled,
                         cancellationToken
+                    );
+
+            await
+                captureNotifier
+                    .NotifyNewExecutionUpdateAsync(
+                        userId,
+                        CancellationToken.None
                     );
             
             return true;
