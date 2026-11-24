@@ -18,7 +18,9 @@
             <MudItem xs="12" sm="6">
                 @if (ChildContent != null)
                 {
-                    @ChildContent(Transcription)
+                    <div class="mud-border-tertiary border p-4 rounded" id="scroll-images" style="height: 600px; overflow-y: auto;">
+                        @ChildContent(Transcription)
+                    </div>
                 }
             </MudItem>
             <MudItem xs="12" sm="6">

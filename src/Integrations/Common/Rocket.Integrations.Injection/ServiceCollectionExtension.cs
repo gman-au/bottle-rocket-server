@@ -11,10 +11,12 @@ namespace Rocket.Integrations.Injection
         public static IServiceCollection AddTranscriptionJsonSerialization(this IServiceCollection services)
         {
             services
-                .AddSingleton<IJsonTypeDiscriminator<BaseTranscription>, TextTranscriptionDiscriminator>();
+                .AddSingleton<IJsonTypeDiscriminator<BaseTranscription>, TextTranscriptionDiscriminator>()
+                .AddSingleton<IJsonTypeDiscriminator<BaseTranscription>, ProjectTranscriptionDiscriminator>();
             
             services
-                .AddTransient<ITranscriptionModelMapper, TextTranscriptionMapper>();
+                .AddTransient<ITranscriptionModelMapper, TextTranscriptionMapper>()
+                .AddTransient<ITranscriptionModelMapper, ProjectTranscriptionMapper>();
                 
             return services;
         }

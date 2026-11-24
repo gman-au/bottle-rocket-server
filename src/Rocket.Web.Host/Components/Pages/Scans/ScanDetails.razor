@@ -347,6 +347,11 @@
                 await
                     ShowTranscriptionPreviewDialog<PreviewTranscriptionTextDialog>(transcription);
             }
+            if (transcription is ProjectTranscriptionSummary)
+            {
+                await
+                    ShowTranscriptionPreviewDialog<PreviewTranscriptionProjectDialog>(transcription);
+            }
         }
         catch (Exception ex)
         {

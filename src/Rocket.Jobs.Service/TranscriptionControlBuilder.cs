@@ -5,6 +5,7 @@ using Rocket.Api.Contracts.Transcriptions;
 using Rocket.Domain.Executions;
 using Rocket.Integrations.Common;
 using Rocket.Interfaces;
+using Rocket.Page.Schemas.ProjectTaskTracker;
 
 namespace Rocket.Jobs.Service
 {
@@ -41,12 +42,37 @@ namespace Rocket.Jobs.Service
                                     CancellationToken.None
                                 );
                     }
+                );            
+            
+            var addProjectTranscriptionTask =
+                new Func<string, ProjectTaskTrackerSchema, Task>(async (scanId, project) =>
+                    {
+                        var projectTranscription =
+                            new ProjectTranscriptionSummary
+                            {
+                                ExecutionId = executionId,
+                                ExecutionStepName = executionStep.StepName,
+                                TranscriptionDate = executionStep.RunDate ?? DateTime.UtcNow,
+                                Project = project
+                            };
+
+                        await
+                            transcriber
+                                .ApplyTranscriptionAsync(
+                                    userId,
+                                    batchId,
+                                    scanId,
+                                    projectTranscription,
+                                    CancellationToken.None
+                                );
+                    }
                 );
 
             var jobControl =
                 new TranscriptionControl
                 {
-                    AddTextTranscriptionCallback = addTextTranscriptionTask
+                    AddTextTranscriptionCallback = addTextTranscriptionTask,
+                    AddProjectTranscriptionCallback = addProjectTranscriptionTask
                 };
 
             return jobControl;

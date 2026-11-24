@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Rocket.Interfaces;
+using Rocket.Page.Schemas.ProjectTaskTracker;
 
 namespace Rocket.Integrations.Common.Extensions
 {
@@ -16,6 +17,20 @@ namespace Rocket.Integrations.Common.Extensions
                     .AddTextTranscriptionCallback(
                         scanId,
                         text
+                    );
+        }        
+        
+        public static async Task TranscribeProjectAsync(
+            this ITranscriptionControl transcriptionControl,
+            string scanId,
+            ProjectTaskTrackerSchema project
+        )
+        {
+            await
+                transcriptionControl
+                    .AddProjectTranscriptionCallback(
+                        scanId,
+                        project
                     );
         }
     }

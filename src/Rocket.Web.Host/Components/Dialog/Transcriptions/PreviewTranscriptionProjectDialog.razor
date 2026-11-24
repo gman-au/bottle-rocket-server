@@ -1,0 +1,80 @@
+﻿@using Rocket.Api.Contracts.Transcriptions
+@using Rocket.Page.Schemas.ProjectTaskTracker
+
+<PreviewTranscriptionDialogWrapper
+    T="ProjectTranscriptionSummary"
+    Transcription="@Transcription"
+    Context="transcription">
+    <MudGrid>
+        @if ((transcription?.Project?.Items ?? []).Any())
+        {
+            <MudItem xs="12">
+                <MudTable
+                    Dense
+                    Items="@(transcription?.Project?.Items ?? [])"
+                    T="ProjectTaskTrackerItem">
+                    <HeaderContent>
+                        <MudTh>
+                            <MudText
+                                Color="Color.Info"
+                                Typo="Typo.body2">
+                                Project
+                            </MudText>
+                        </MudTh>
+                        <MudTh>
+                            <MudText
+                                Color="Color.Info"
+                                Typo="Typo.body2">
+                                Task
+                            </MudText>
+                        </MudTh>
+                        <MudTh>
+                            <MudText
+                                Color="Color.Info"
+                                Typo="Typo.body2">
+                                Due
+                            </MudText>
+                        </MudTh>
+                        <MudTh>
+                            <MudText
+                                Color="Color.Info"
+                                Typo="Typo.body2">
+                                Est. Time
+                            </MudText>
+                        </MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Project">@context.Project</MudTd>
+                        <MudTd DataLabel="Task">@context.Task</MudTd>
+                        <MudTd DataLabel="Due">@context.DueDate</MudTd>
+                        <MudTd DataLabel="Est. Time">@context.EstimatedTime</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudItem>
+        }
+        @if (!string.IsNullOrEmpty(transcription?.Project?.Notes))
+        {
+            <MudItem xs="12">
+                <MudText
+                    Class="mb-4"
+                    Color="Color.Info"
+                    Typo="Typo.body2">
+                    Notes
+                </MudText>
+                <MudText
+                    Typo="Typo.body2">
+                    @transcription?.Project?.Notes
+                </MudText>
+            </MudItem>
+        }
+    </MudGrid>
+</PreviewTranscriptionDialogWrapper>
+
+@code {
+
+
+    [Parameter]
+    public ProjectTranscriptionSummary Transcription { get; set; }
+
+
+}

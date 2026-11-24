@@ -5,9 +5,7 @@
     T="TextTranscriptionSummary"
     Transcription="@Transcription"
     Context="transcription">
-    <div class="mud-border-tertiary border p-4 rounded" id="scroll-images" style="height: 600px; overflow-y: auto;">
-        @((MarkupString)Markdown.ToHtml(transcription.Text))
-    </div>
+    @((MarkupString)Markdown.ToHtml(transcription.Text))
 </PreviewTranscriptionDialogWrapper>
 
 @code {
