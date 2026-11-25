@@ -150,3 +150,7 @@ h1:focus {
         text-anchor: middle;
     }
 }
+
+.card-stretch {
+    background-size: contain !important;
+}

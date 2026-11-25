@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <!-- TITLES -->
+    <data name="TemplatesViewTitle" xml:space="preserve">
+        <value>Templates</value>
+    </data>
+    <!-- PROJECT TASKS -->
+    <data name="TemplatesProjectTasksName" xml:space="preserve">
+        <value>Project Tasks</value>
+    </data>
+    <data name="TemplatesProjectTasksDescription" xml:space="preserve">
+        <value>
+            This page template is useful for tracking individual action items and deadlines across one or more projects in a single place.
+        </value>
+    </data>
+    <!-- WEEKLY PLAN -->
+    <data name="TemplatesWeeklyPlanName" xml:space="preserve">
+        <value>Weekly Plan</value>
+    </data>
+    <data name="TemplatesWeeklyPlanDescription" xml:space="preserve">
+        <value>This page template is useful for mapping out commitments, priorities, and schedules across an entire seven-day week at a glance.</value>
+    </data>
+    <!-- CAPTIONS & MESSAGES -->
+    <data name="TemplatesViewCaption" xml:space="preserve">
+        <value>Preview</value>
+    </data>    
+    <data name="TemplatesDownloadCaption" xml:space="preserve">
+        <value>Download</value>
+    </data>
+</root>

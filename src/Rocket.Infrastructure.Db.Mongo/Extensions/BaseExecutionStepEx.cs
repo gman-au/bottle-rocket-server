@@ -4,7 +4,7 @@ using Rocket.Domain.Executions;
 
 namespace Rocket.Infrastructure.Db.Mongo.Extensions
 {
-    public static class BaseExecutionStepEx
+    internal static class BaseExecutionStepEx
     {
         public static bool UpdateStepById(
             IEnumerable<BaseExecutionStep> steps,

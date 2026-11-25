@@ -4,7 +4,7 @@ using Rocket.Domain.Executions;
 
 namespace Rocket.Infrastructure.Db.Mongo.Extensions
 {
-    public static class BaseExecutionElementEx
+    internal static class BaseExecutionElementEx
     {
         public static ExecutionElement FindElementById(
             this IEnumerable<ExecutionElement> elements,
