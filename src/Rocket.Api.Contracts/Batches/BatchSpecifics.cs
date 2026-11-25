@@ -24,5 +24,8 @@ namespace Rocket.Api.Contracts.Batches
         
         [JsonPropertyName("scan_count")]
         public int ScanCount { get; set; }
+        
+        [JsonPropertyName("transcription_type")]
+        public int? TranscriptionType { get; set; }
     }
 }

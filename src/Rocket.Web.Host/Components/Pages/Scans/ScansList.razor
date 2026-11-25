@@ -82,6 +82,7 @@
                                 Spacing="0"
                                 Class="mx-2"
                                 Justify="Justify.FlexStart">
+                                <TranscriptionChip Size="Size.Small" TranscriptionType="@batch?.TranscriptionType"/>
                                 <MudItem xs="12">
                                     <MudText Typo="Typo.subtitle2"
                                              Color="Color.Primary">@batch.ScanCount @StringLocalizer["ScansPagesCaption"]</MudText>
@@ -408,7 +409,7 @@
         {
             _isLoading = true;
             StateHasChanged();
-            
+
             // reset results
             _batches = [];
             _currentIndex = 0;

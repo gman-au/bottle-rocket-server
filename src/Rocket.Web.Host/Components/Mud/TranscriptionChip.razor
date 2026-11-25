@@ -1,0 +1,48 @@
+﻿@using Rocket.Domain.Enum
+@using Rocket.Domain.Utils
+@if (TranscriptionType.HasValue)
+{
+    <MudChip
+        Class="mx-0"
+        Size="@Size"
+        T="string"
+        Variant="Variant.Text"
+        Style="@($"color:{MapTranscriptionTypeToColor(TranscriptionType.Value)};")"
+        Icon="@MapTranscriptionTypeToIcon(TranscriptionType.Value)">
+        @DomainConstants.WorkflowFormatTypes[TranscriptionType.Value]
+    </MudChip>
+}
+
+@code {
+
+    [Parameter]
+    public Size Size { get; set; } = Size.Medium;
+
+    [Parameter]
+    public int? TranscriptionType { get; set; }
+
+    private static string MapTranscriptionTypeToIcon(
+        int transcriptionType
+    )
+    {
+        return transcriptionType switch
+        {
+            (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData => StandardIcons.TranscriptionProjectIcon,
+            (int)WorkflowFormatTypeEnum.WeeklyPlanData => StandardIcons.TranscriptionWeeklyIcon,
+            _ => StandardIcons.TranscriptionTextIcon
+        };
+    }
+
+    private static string MapTranscriptionTypeToColor(
+        int transcriptionType
+    )
+    {
+        return transcriptionType switch
+        {
+            (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData => StandardColors.ProjectTemplateColor,
+            (int)WorkflowFormatTypeEnum.WeeklyPlanData => StandardColors.WeeklyTemplateColor,
+            _ => StandardColors.TextTemplateColor
+        };
+    }
+
+}

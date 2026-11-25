@@ -22,5 +22,8 @@ namespace Rocket.Api.Contracts.Batches
         
         [JsonPropertyName("cover_thumbnail_base64")]
         public string CoverThumbnailBase64 { get; set; }
+        
+        [JsonPropertyName("transcription_type")]
+        public int? TranscriptionType { get; set; }
     }
 }

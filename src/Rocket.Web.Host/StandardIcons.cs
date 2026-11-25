@@ -43,5 +43,8 @@ namespace Rocket.Web.Host
         public const string AiIcon = Icons.Material.Filled.AutoAwesome;
         public const string TranscriptionIcon = Icons.Material.Filled.Translate;
         public const string TemplatesIcon = Icons.Material.Filled.LibraryBooks;
+        public const string TranscriptionTextIcon = Icons.Material.Filled.TextSnippet;
+        public const string TranscriptionProjectIcon = Icons.Material.Filled.ChecklistRtl;
+        public const string TranscriptionWeeklyIcon = Icons.Material.Filled.CalendarViewWeek;
     }
 }
