@@ -82,53 +82,9 @@ namespace Rocket.Infrastructure.Db.Mongo
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                var regex =
-                    new BsonRegularExpression(
-                        Regex.Escape(searchTerm.Trim()),
-                        "i"
-                    );
-
-                var scanBuilder =
-                    Builders<ScannedImage>
-                        .Filter;
-
                 filter &=
                     builder
-                        .ElemMatch(
-                            b =>
-                                b.Scans,
-                            scanBuilder
-                                .Or(
-                                    scanBuilder
-                                        .Regex(
-                                            s =>
-                                                s.Description,
-                                            regex
-                                        ),
-                                    // TextTranscription
-                                    scanBuilder
-                                        .Regex(
-                                            "Transcription.Text",
-                                            regex
-                                        ),
-                                    // ProjectTranscription
-                                    scanBuilder
-                                        .Regex(
-                                            "Transcription.Notes",
-                                            regex
-                                        ),
-                                    scanBuilder
-                                        .Regex(
-                                            "Transcription.Items.Project",
-                                            regex
-                                        ),
-                                    scanBuilder
-                                        .Regex(
-                                            "Transcription.Items.Task",
-                                            regex
-                                        )
-                                )
-                        );
+                        .AddBatchSearchTermFilter(searchTerm);
             }
 
             return
