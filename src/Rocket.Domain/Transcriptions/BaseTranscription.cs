@@ -11,5 +11,7 @@ namespace Rocket.Domain.Transcriptions
         public string ExecutionStepName { get; set; }
         
         public DateTime TranscriptionDate { get; set; }
+        
+        public abstract int WorkflowFormatType { get; }
     }
 }

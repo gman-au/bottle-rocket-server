@@ -47,6 +47,9 @@
     <data name="ScansStatusFieldHeader" xml:space="preserve">
         <value>Status</value>
     </data>
+    <data name="ScansTranscriptionFieldHeader" xml:space="preserve">
+        <value>Transcription</value>
+    </data>
     <data name="ScansVendorFieldHeader" xml:space="preserve">
         <value>Vendor</value>
     </data>

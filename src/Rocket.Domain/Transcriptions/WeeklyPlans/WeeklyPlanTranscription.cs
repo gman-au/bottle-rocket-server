@@ -1,4 +1,6 @@
-﻿namespace Rocket.Domain.Transcriptions.WeeklyPlans
+﻿using Rocket.Domain.Enum;
+
+namespace Rocket.Domain.Transcriptions.WeeklyPlans
 {
     public record WeeklyPlanTranscription : BaseTranscription
     {
@@ -15,5 +17,7 @@
         public string[] Saturday { get; set; }
         
         public string[] Sunday { get; set; }
+        
+        public override int WorkflowFormatType => (int)WorkflowFormatTypeEnum.WeeklyPlanData;
     }
 }

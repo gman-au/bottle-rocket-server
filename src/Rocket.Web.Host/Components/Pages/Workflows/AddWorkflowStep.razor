@@ -116,7 +116,7 @@
                                 <MudItem xs="6">
                                     <MudButton
                                         Variant="Variant.Text"
-                                        Style="@($"color:{Colors.Indigo.Accent2};")"
+                                        Style="@($"color:{StandardColors.TemplateColor};")"
                                         StartIcon="@StandardIcons.DownloadIcon"
                                         @onclick="@(async () => await OnTemplateDownloadAsync(template.OutputType))">
                                         @StringLocalizer["WorkflowStepsGetTemplateCaption"]

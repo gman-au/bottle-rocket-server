@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading;
@@ -14,6 +15,7 @@ using Rocket.Api.Contracts.Scans;
 using Rocket.Api.Host.Extensions;
 using Rocket.Domain.Enum;
 using Rocket.Domain.Exceptions;
+using Rocket.Domain.ScannedImages;
 using Rocket.Interfaces;
 
 namespace Rocket.Api.Host.Controllers
@@ -144,7 +146,7 @@ namespace Rocket.Api.Host.Controllers
             if (workflowIds.Count != 0)
             {
                 isStarted = true;
-                
+
                 await
                     workflowDetector
                         .DetectAndScheduleWorkflowAsync(
@@ -234,7 +236,8 @@ namespace Rocket.Api.Host.Controllers
                                     CoverContentType = o.Scans.FirstOrDefault()
                                         ?.ContentType,
                                     CoverThumbnailBase64 = o.Scans.FirstOrDefault()
-                                        ?.ThumbnailBase64
+                                        ?.ThumbnailBase64,
+                                    TranscriptionType = GetTranscriptionType(o.Scans)
                                 }
                             ),
                     TotalRecords = (int)totalRecordCount
@@ -321,7 +324,8 @@ namespace Rocket.Api.Host.Controllers
                     ScanCount =
                         record
                             .Scans
-                            .Count()
+                            .Count(),
+                    TranscriptionType = GetTranscriptionType(record.Scans)
                 };
 
             return
@@ -453,6 +457,23 @@ namespace Rocket.Api.Host.Controllers
             return
                 response
                     .AsApiSuccess();
+        }
+
+        private static int? GetTranscriptionType(
+            IEnumerable<ScannedImage> scans
+        )
+        {
+            if (scans == null) return null;
+            
+            var firstFoundTranscription =
+                scans
+                    .FirstOrDefault(o => o.Transcription != null)
+                    ?
+                    .Transcription;
+
+            return
+                firstFoundTranscription?
+                    .WorkflowFormatType;
         }
     }
 }

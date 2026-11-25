@@ -130,6 +130,14 @@
                                     Title="@StringLocalizer["ScansStatusFieldHeader"]"
                                     Value=@(MapStatusToText(_batchSpecifics.Status))
                                     ValueColor="@(IntEx.MapBatchStatusToColor(_batchSpecifics.Status))"/>
+                                @if ((_batchSpecifics?.TranscriptionType).HasValue)
+                                {
+                                    <ComplexTableRowPair
+                                        Alignment="left"
+                                        Title="@StringLocalizer["ScansTranscriptionFieldHeader"]">
+                                        <TranscriptionChip Size="Size.Medium" TranscriptionType="@_batchSpecifics?.TranscriptionType"/>
+                                    </ComplexTableRowPair>
+                                }
                                 </tbody>
                             </MudSimpleTable>
                         </div>
