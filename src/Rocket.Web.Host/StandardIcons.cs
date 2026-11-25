@@ -42,5 +42,6 @@ namespace Rocket.Web.Host
         public const string RunningIcon = Icons.Material.Filled.HourglassTop;
         public const string AiIcon = Icons.Material.Filled.AutoAwesome;
         public const string TranscriptionIcon = Icons.Material.Filled.Translate;
+        public const string TemplatesIcon = Icons.Material.Filled.LibraryBooks;
     }
 }

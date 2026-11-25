@@ -1,0 +1,161 @@
+﻿@page "/Templates"
+@using Microsoft.Extensions.Localization
+@using Rocket.Domain.Enum
+@using Rocket.Localization.Web
+@using Rocket.Web.Host.Components.Dialog
+@using Rocket.Web.Host.Infrastructure
+@inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
+@inject IWebHostErrorHandler WebHostErrorHandler
+@inject IStringLocalizer<TemplatesResource> StringLocalizer
+@inject ITemplateDownloader TemplateDownloader
+@inject IDialogService DialogService
+<MudPaper Class="p-4" elevation="2">
+    <MudText
+        Align="Align.Center"
+        Color="Color.Primary"
+        GutterBottom
+        Typo="Typo.h4">
+        @StringLocalizer["TemplatesViewTitle"]
+    </MudText>
+    <MudGrid Justify="Justify.Center" Class="pa-4">
+        @foreach (var template in AllTemplates)
+        {
+            <MudItem xs="12" sm="12" md="6" lg="4">
+                <MudCard Style="height:100%" Outlined>
+                    <MudCardHeader>
+                        <MudText
+                            Typo="Typo.h6"
+                            Color="Color.Secondary">
+                            @template.Name
+                        </MudText>
+                    </MudCardHeader>
+                    <MudCardMedia
+                        Class="card-stretch"
+                        Image="@Assets[template.ImagePath]"
+                        Height="300"/>
+                    <MudCardContent>
+                        <p>
+                            <MudText Typo="Typo.caption">
+                                @template.Description
+                            </MudText>
+                        </p>
+                    </MudCardContent>
+                    <MudCardActions Class="justify-end">
+                        <MudGrid>
+                            @if (TemplateDownloader.HasATemplate(template.OutputType))
+                            {
+                                <MudItem xs="6">
+                                    <MudButton
+                                        Variant="Variant.Text"
+                                        Color="Color.Info"
+                                        StartIcon="@StandardIcons.SearchScansIcon"
+                                        @onclick="@(async () => await LoadAndPreviewScanAsync(template.ImagePath))">
+                                        @StringLocalizer["TemplatesViewCaption"]
+                                    </MudButton>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudButton
+                                        Variant="Variant.Text"
+                                        Style="@($"color:{Colors.Indigo.Accent2};")"
+                                        StartIcon="@StandardIcons.DownloadIcon"
+                                        @onclick="@(async () => await OnTemplateDownloadAsync(template.OutputType))">
+                                        @StringLocalizer["TemplatesDownloadCaption"]
+                                    </MudButton>
+                                </MudItem>
+                            }
+                        </MudGrid>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+        <MudFlexBreak/>
+        <MudItem>
+            <GoBackButton/>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@code {
+
+    private IEnumerable<Template> AllTemplates { get; set; }
+
+    protected override Task OnParametersSetAsync()
+    {
+        AllTemplates =
+            new List<Template>
+            {
+                new()
+                {
+                    Name = StringLocalizer["TemplatesProjectTasksName"].Value,
+                    Description = StringLocalizer["TemplatesProjectTasksDescription"].Value,
+                    OutputType = (int)WorkflowFormatTypeEnum.ProjectTaskTrackerData,
+                    ImagePath = "/img/project-task-template.png"
+                },
+                new()
+                {
+                    Name = StringLocalizer["TemplatesWeeklyPlanName"].Value,
+                    Description = StringLocalizer["TemplatesWeeklyPlanDescription"].Value,
+                    OutputType = (int)WorkflowFormatTypeEnum.WeeklyPlanData,
+                    ImagePath = "/img/weekly-plan-template.png"
+                },
+            };
+
+        return
+            base
+                .OnParametersSetAsync();
+    }
+
+    private async Task LoadAndPreviewScanAsync(
+        string imagePath
+    )
+    {
+        var dialog =
+            await
+                DialogService
+                    .ShowAsync<PreviewTemplateDialog>(
+                        null,
+                        new DialogParameters
+                        {
+                            { "ImagePath", imagePath }
+                        }
+                    );
+
+        await
+            dialog
+                .Result;
+    }
+
+    private async Task OnTemplateDownloadAsync(
+        int templateOutputType
+    )
+    {
+        try
+        {
+            await
+                TemplateDownloader
+                    .GetTemplateForWorkflowTypeAsync(templateOutputType);
+        }
+        catch (Exception ex)
+        {
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private class Template
+    {
+        public string Name { get; init; }
+
+        public string Description { get; init; }
+
+        public int OutputType { get; init; }
+
+        public string ImagePath { get; init; }
+    }
+
+}

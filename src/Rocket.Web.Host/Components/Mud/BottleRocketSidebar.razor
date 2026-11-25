@@ -160,6 +160,13 @@
                         >
                             @StringLocalizer["SidebarManageSessionsTitle"]
                         </MudNavLink>
+                        <MudNavLink
+                            Match="NavLinkMatch.Prefix"
+                            Href="/Templates"
+                            Icon="@StandardIcons.TemplatesIcon"
+                        >
+                            @StringLocalizer["SidebarPageTemplatesTitle"]
+                        </MudNavLink>
                         if (_isAdmin)
                         {
                             <MudNavLink

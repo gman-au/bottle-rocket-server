@@ -73,6 +73,9 @@
     <data name="SidebarManageSessionsTitle" xml:space="preserve">
         <value>My device logins</value>
     </data>
+    <data name="SidebarPageTemplatesTitle" xml:space="preserve">
+        <value>Page templates</value>
+    </data>
     <!-- VALUES -->
     <data name="SidebarUserValue" xml:space="preserve">
         <value>User</value>
