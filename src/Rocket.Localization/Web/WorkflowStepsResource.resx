@@ -31,7 +31,10 @@
     </data>
     <!-- CAPTIONS & MESSAGES -->
     <data name="WorkflowStepsAddCaption" xml:space="preserve">
-        <value>Add step</value>
+        <value>Add</value>
+    </data>
+    <data name="WorkflowStepsGetTemplateCaption" xml:space="preserve">
+        <value>Template</value>
     </data>
     <data name="WorkflowStepsDeleteCaption" xml:space="preserve">
         <value>Delete</value>

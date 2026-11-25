@@ -4,10 +4,12 @@
 @using Rocket.Api.Contracts
 @using Rocket.Interfaces
 @using Rocket.Localization.Web
+@using Rocket.Web.Host.Infrastructure
 @inherits Rocket.Web.Host.Infrastructure.BaseSecureCancellableComponent
 @inject IEnumerable<ISkuWorkflow> WorkflowSkus
+@inject IWebHostErrorHandler WebHostErrorHandler
 @inject IStringLocalizer<WorkflowStepsResource> StringLocalizer
-
+@inject ITemplateDownloader TemplateDownloader
 <MudPaper Class="p-4" elevation="2">
     <MudText
         Align="Align.Center"
@@ -93,10 +95,11 @@
                                     </MudChip>
                                 }
                             </MudItem>
-                            <MudItem xs="12">
+                            <MudItem xs="6">
                                 <MudButton
                                     Variant="Variant.Text"
                                     Color="Color.Success"
+                                    StartIcon="@StandardIcons.AddWorkflowStepIcon"
                                     @onclick="@(() =>
                                                   NavigationManager.NavigateTo(
                                                       BuildHref(
@@ -108,6 +111,18 @@
                                     @StringLocalizer["WorkflowStepsAddCaption"]
                                 </MudButton>
                             </MudItem>
+                            @if (TemplateDownloader.HasATemplate(template.OutputType))
+                            {
+                                <MudItem xs="6">
+                                    <MudButton
+                                        Variant="Variant.Text"
+                                        Style="@($"color:{Colors.Indigo.Accent2};")"
+                                        StartIcon="@StandardIcons.DownloadIcon"
+                                        @onclick="@(async () => await OnTemplateDownloadAsync(template.OutputType))">
+                                        @StringLocalizer["WorkflowStepsGetTemplateCaption"]
+                                    </MudButton>
+                                </MudItem>
+                            }
                         </MudGrid>
                     </MudCardActions>
                 </MudCard>
@@ -167,9 +182,8 @@
         {
             FilteredSkus =
                 FilteredSkus
-                    .Where(
-                        o =>
-                            o.InputTypes.Contains(_outputTypeToFilter.Value)
+                    .Where(o =>
+                        o.InputTypes.Contains(_outputTypeToFilter.Value)
                     );
         }
     }
@@ -180,15 +194,13 @@
         {
             FilteredSkus =
                 AllSkus
-                    .Where(
-                        o =>
-                            _selectedCategories
-                                .Any(
-                                    c =>
-                                        o
-                                            .Categories
-                                            .Contains(c)
-                                )
+                    .Where(o =>
+                        _selectedCategories
+                            .Any(c =>
+                                o
+                                    .Categories
+                                    .Contains(c)
+                            )
                     );
         }
         else
@@ -225,6 +237,28 @@
                     workflowId,
                     stepId
                 );
+    }
+
+    private async Task OnTemplateDownloadAsync(
+        int templateOutputType
+    )
+    {
+        try
+        {
+            await
+                TemplateDownloader
+                    .GetTemplateForWorkflowTypeAsync(templateOutputType);
+        }
+        catch (Exception ex)
+        {
+            await
+                WebHostErrorHandler
+                    .HandleExceptionAsync(ex);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
     }
 
 }

@@ -57,6 +57,8 @@ namespace Rocket.Web.Host.Injection
                 .AddTransient<IWorkflowMermaidConverter, WorkflowMermaidConverter>()
                 .AddTransient<IExecutionMermaidConverter, ExecutionMermaidConverter>()
                 .AddTransient<IWebHostErrorHandler, WebHostErrorHandler>()
+                .AddTransient<ITemplateDownloader, TemplateDownloader>()
+                .AddTransient<IImageBase64Converter, ImageBase64Converter>()
                 .AddScoped<IThemeService, ThemeService>();
 
             services
